@@ -169,14 +169,20 @@ export class CreateListEntity extends React.Component {
     }
 
     handlerDropDown(){
-        this.el = $("#dropdown_all_entity");
+        let str = "#dropdown_all_entity" ;
+        console.log(str);
+        
+        this.el = $(str);
        
-        this.el.select2({
+        console.log("func 'handlerDropDown'");
+        console.log(this.el);
+
+        console.log(this.el.select2({
             placeholder: "выбор сущности",
             containerCssClass: "input-group input-group-sm",
             width: "auto",
-        });
-
+        }));
+    
         this.el.on("change", this.handlerChoose);
     }
 
@@ -258,8 +264,10 @@ export class CreateListEntity extends React.Component {
     }
 
     render(){
+        let str = "dropdown_all_entity";
+        console.log(str);
         return (
-            <select id="dropdown_all_entity">
+            <select id = {str}>
                 <option></option>
                 <optgroup label="организации">
                     {this.listOrganization()}
@@ -276,6 +284,7 @@ export class CreateListEntity extends React.Component {
 }
 
 CreateListEntity.propTypes = {
+    idList: PropTypes.number.isRequired,
     listShortEntity: PropTypes.object.isRequired,
     handlerSelected: PropTypes.func.isRequired,
 };
@@ -320,8 +329,8 @@ export default class CreateBodyManagementEntity extends React.Component {
             if(objShowInfo.id === data.arguments.organizationId){
                 this.setState({ showInfo: false });
             }
-
-            this.el = $("#dropdown_all_entity");
+            let str = "#dropdown_all_entity";
+            this.el = $(str);
             this.el.select2({
                 placeholder: "выбор сущности",
                 containerCssClass: "input-group input-group-sm",
@@ -343,8 +352,8 @@ export default class CreateBodyManagementEntity extends React.Component {
                     }
                 }
             }
-
-            this.el = $("#dropdown_all_entity");
+            let str = "#dropdown_all_entity";
+            this.el = $(str);
             this.el.select2({
                 placeholder: "выбор сущности",
                 containerCssClass: "input-group input-group-sm",
@@ -571,6 +580,7 @@ export default class CreateBodyManagementEntity extends React.Component {
                     </Col>
                 </Row>
                 <br/>
+
                 <ShowEntityInformation 
                     showInfo={this.state.showInfo}
                     handlerSave={this.handlerSave}
@@ -597,4 +607,3 @@ CreateBodyManagementEntity.propTypes ={
     listShortEntity: PropTypes.object.isRequired,
     listFieldActivity: PropTypes.array.isRequired,
 };
-

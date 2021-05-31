@@ -37,6 +37,11 @@ module.exports = {
             "socket.io-stream",
             "react-circle",
             "quoted-printable",
+            "react-scrollbar",
+            "react-beautiful-dnd",
+
+
+            //!
         ],
         authPage: "./authPage.js",
         mainPage: "./mainPage.js",
@@ -119,6 +124,9 @@ module.exports = {
             "socket.io-stream": "socket.io-stream/socket.io-stream.js",
             "react-circle": "react-circle/dist/index.js",
             "quoted-printable": "quoted-printable/quoted-printable.js",
+            "react-scrollbar": "react-scrollbar",
+            "react-beautiful-dnd":"react-beautiful-dnd",
+            //!
         }
     },
 
@@ -186,11 +194,11 @@ module.exports = {
             }
         },
         /*{
-                                                                                                                     test: /\.(js|jsx)$/,
-                                                                                                                    test: /\.js$/,
-                                                                                                                    exclude: /node_modules/,
-                                                                                                                    use: ["babel-loader"] //, 'eslint-loader']
-                                                                                                                },*/
+                                                                                                             test: /\.(js|jsx)$/,
+                                                                                                            test: /\.js$/,
+                                                                                                            exclude: /node_modules/,
+                                                                                                            use: ["babel-loader"] //, 'eslint-loader']
+                                                                                                        },*/
         {
             test: /\.css$/,
             use: ExtractTextPlugin.extract({
