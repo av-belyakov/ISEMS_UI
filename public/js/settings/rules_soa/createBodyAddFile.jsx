@@ -1,15 +1,12 @@
 import React from "react";
 import { ProgressBar } from "react-bootstrap";
-import PropTypes, { object } from "prop-types";
-import { data } from "jquery";
-import { relativeTimeRounding } from "moment";
-import { timeout } from "async";
+import PropTypes from "prop-types";
+
+import { helpers } from "../../common_helpers/helpers.js"; 
 
 /* 
- * Загрузка файла(ов) с правилами
- * 
-*/
-
+ * Загрузка файла(ов) с правилами 
+ * */
 export default class CreateBodyAddFile extends React.Component {
     constructor(props){
         super(props);
@@ -132,10 +129,8 @@ export default class CreateBodyAddFile extends React.Component {
         blobStream.on("data", function(chunk) {
             size += chunk.length;
  
-            console.log(`doli ${doli}% `);
-            console.log(a);
-            let percent = Math.floor(size/ file.size*100 ) ;
-            console.log(`1: ${percent}`);
+            //           let percent = Math.floor(size/ file.size*100 ) ;
+            //           console.log(`1: ${percent}`);
 
             if (file.size === size) {
                 callback(file.name);
@@ -160,7 +155,7 @@ export default class CreateBodyAddFile extends React.Component {
                     {list.map(el => (
                         <tr key={el.name} >
                             <td> {el.name} </td> 
-                            <td> {el.size}  байт </td>
+                            <td> {helpers.intConvert(el.size)}  байт </td>
                             <td>  
                                 <button type="button" className="close" onClick={() => { this.handleDeleteElement(el.name); }} aria-label="Close"> 
                                     <span aria-hidden="true">&times;</span>
@@ -178,11 +173,10 @@ export default class CreateBodyAddFile extends React.Component {
     render(){ 
         return (
             <React.Fragment>
-                <label> Выберите файл </label>
                 <form onSubmit={this.handleSubmit}>
                     <div className="custom-file">
                         <input type="file" className="custom-file-input" onChange={this.addList.bind(this)} ref={this.fileInput}  id="files" name="files[]" multiple />
-                        <label className="custom-file-label">Открыть файл</label>
+                        <label className="custom-file-label">выбрать файл</label>
                     </div>
                 </form> 
                 <br/>

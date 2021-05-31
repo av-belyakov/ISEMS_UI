@@ -164,30 +164,25 @@ export class CreateListEntity extends React.Component {
         this.listOrganization = this.listOrganization.bind(this);
 
         this.handlerChoose = this.handlerChoose.bind(this);
-
-        console.log(this.props.listShortEntity);
     }
 
     handlerDropDown(){
-        let str = "#dropdown_all_entity" ;
-        console.log(str);
-        
+        let str = "#dropdown_all_entity" ;        
         this.el = $(str);
        
-        console.log("func 'handlerDropDown'");
-        console.log(this.el);
-
-        console.log(this.el.select2({
-            placeholder: "выбор сущности",
-            containerCssClass: "input-group input-group-sm",
-            width: "auto",
-        }));
-    
         this.el.on("change", this.handlerChoose);
     }
 
     componentDidMount() {
-        this.handlerDropDown.call(this);
+        //        this.handlerDropDown.call(this);
+
+        this.el = $("#dropdown_all_entity");
+        this.el.select2({
+            placeholder: "выбор сущности",
+            containerCssClass: "input-group input-group-sm",
+            width: "auto",
+        });
+        this.el.on("change", this.handlerChoose);
     }
 
     listOrganization(){
@@ -264,10 +259,8 @@ export class CreateListEntity extends React.Component {
     }
 
     render(){
-        let str = "dropdown_all_entity";
-        console.log(str);
         return (
-            <select id = {str}>
+            <select id="dropdown_all_entity">
                 <option></option>
                 <optgroup label="организации">
                     {this.listOrganization()}
@@ -284,7 +277,6 @@ export class CreateListEntity extends React.Component {
 }
 
 CreateListEntity.propTypes = {
-    idList: PropTypes.number.isRequired,
     listShortEntity: PropTypes.object.isRequired,
     handlerSelected: PropTypes.func.isRequired,
 };
@@ -352,8 +344,8 @@ export default class CreateBodyManagementEntity extends React.Component {
                     }
                 }
             }
-            let str = "#dropdown_all_entity";
-            this.el = $(str);
+
+            this.el = $("#dropdown_all_entity");
             this.el.select2({
                 placeholder: "выбор сущности",
                 containerCssClass: "input-group input-group-sm",

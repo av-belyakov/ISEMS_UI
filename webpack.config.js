@@ -39,9 +39,6 @@ module.exports = {
             "quoted-printable",
             "react-scrollbar",
             "react-beautiful-dnd",
-
-
-            //!
         ],
         authPage: "./authPage.js",
         mainPage: "./mainPage.js",
@@ -126,7 +123,6 @@ module.exports = {
             "quoted-printable": "quoted-printable/quoted-printable.js",
             "react-scrollbar": "react-scrollbar",
             "react-beautiful-dnd":"react-beautiful-dnd",
-            //!
         }
     },
 
@@ -135,25 +131,6 @@ module.exports = {
         extensions: [".js"],
         moduleExtensions: ["*-loader"]
     },
-
-    /*externals: {
-        jquery: '$'
-    },*/
-
-    /*optimization: {
-        runtimeChunk: true,
-        splitChunks: {
-            cacheGroups: {
-                commons: {
-                    chunks: 'initial',
-                    name: 'common',
-                    test: 'common',
-                    enforce: true,
-                    minChunks: 2
-                }
-            }
-        }
-    },*/
 
     plugins: [
         //не собирать если есть ошибки
@@ -164,24 +141,12 @@ module.exports = {
             NODE_ENV: JSON.stringify(NODE_ENV)
         }),
 
-        /*
-        //объединение повторяющихся скриптов в common.js только для webpack 3
-        new webpack.optimize.CommonsChunkPlugin({ 
-            name: 'common'
-        }),*/
-
         //выносит все стили в отдельные файлы
         new ExtractTextPlugin("css/[id]_[name].css", { allChunks: true }),
 
         new webpack.ContextReplacementPlugin(/moment[\\/\\]locale$/, /ru|en-gb/),
 
         new webpack.optimize.OccurrenceOrderPlugin(true),
-        /*new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery',
-            'window.$': 'jquery',
-            'window.jQuery': 'jquery'
-        })*/
     ],
 
     module: {
@@ -192,14 +157,7 @@ module.exports = {
             options: {
                 presets: ["@babel/preset-env", "@babel/preset-react"] // используемые плагины
             }
-        },
-        /*{
-                                                                                                             test: /\.(js|jsx)$/,
-                                                                                                            test: /\.js$/,
-                                                                                                            exclude: /node_modules/,
-                                                                                                            use: ["babel-loader"] //, 'eslint-loader']
-                                                                                                        },*/
-        {
+        }, {
             test: /\.css$/,
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
@@ -214,7 +172,7 @@ module.exports = {
                     name: "[path][name].[ext]",
                     publicPath: "dist/",
                 },
-            },],
+            }],
         }, {
             test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
             exclude: /\/node_modules\//,
@@ -224,26 +182,10 @@ module.exports = {
                     name: "[path][name].[ext]",
                     publicPath: "dist/",
                 },
-            },],
-        },
-        /*{
-                                                                                                                    test: /bootstrap-tokenfield\/dist\/bootstrap-tokenfield\.min\.js/,
-                                                                                                                    loader: "imports-loader?this=>window&exports=>false&define=>false"
-                                                                                                                },
-                                                                                                                            {
-                                                                                                                                                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                                                                                                                                include: /\/node_modules\//,
-                                                                                                                                                loader: 'file-loader?name=[1]&regExp=node_modules/(.*)&publicPath=dist/'
-                                                                                                                                            },
-                                                                                                                                            {
-                                                                                                                                                test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
-                                                                                                                                                exclude: /\/node_modules\//,
-                                                                                                                                                loader: 'file-loader?name=[path][name].[ext]&publicPath=dist/'
-                                                                                                                                            },*/
-        {
+            }],
+        }, {
             test: /\.ejs$/,
             loader: "ejs-loader"
-        }
-        ]
+        }]
     }
 };

@@ -48,6 +48,7 @@
         "prop-types": "^15.7.2",
         "quoted-printable": "^1.0.1",
         "react-addons-update": "^15.6.3",
+        "react-beautiful-dnd": "^13.1.0",
         "react-circle": "^1.1.1",
         "react-customize-token-input": "^0.5.2",
         "react-dnd": "^11.1.3",

@@ -6,7 +6,7 @@
 
 module.exports = {
     /**
-     * Возвращает регулярное вырожение
+     * Возвращает регулярное выражение
      * @param {*} str 
      */
     getRegularExpression(str) {

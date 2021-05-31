@@ -3,7 +3,6 @@ assets/
 logs/
 test/
 spec/
-uploads/
 node_modules/
 keys/isems_ui_cert.pem
 keys/isems_ui_private_key.pem

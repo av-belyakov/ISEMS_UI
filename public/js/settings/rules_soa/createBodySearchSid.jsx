@@ -1,14 +1,13 @@
 import React from "react";
 import { Col, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
-
-import { ModalWindowConfirmMessage } from "../../commons/modalWindowConfirmMessage.jsx";
 import PropTypes from "prop-types";
-import ClearIcon from "@material-ui/icons/Clear";
+
+import { helpers } from "../../common_helpers/helpers.js"; 
+import { ModalWindowConfirmMessage } from "../../commons/modalWindowConfirmMessage.jsx";
 
 /* 
  * Search Sid
- * 
-*/
+ * */
 export default class CreateBodySearchSid extends React.Component {
     constructor(props){
         super(props);
@@ -134,7 +133,6 @@ export default class CreateBodySearchSid extends React.Component {
     }
 
     readWrite(){
-            
         let updateObj = this.state;
         if(this.state.contentEdit == "false"){
             updateObj.contentEdit ="true";
@@ -158,7 +156,6 @@ export default class CreateBodySearchSid extends React.Component {
         return resultStr;
     }
        
-        
     geveNewValueSID(e) {
         let value = e.target.textContent;
         let regexp = {
@@ -174,6 +171,7 @@ export default class CreateBodySearchSid extends React.Component {
             classtype:null,
             noChange: null,
         };
+
         let classType = false;
         let sid = false; 
         let msg = false;
@@ -191,14 +189,14 @@ export default class CreateBodySearchSid extends React.Component {
             } else {   // успех
                 msg = true;
             }
-        }else{
+        } else {
             err.msg = "Не корректно введён msg. Возможно он отсутвует/дублируется или потеряно \":\". msg: \"...\";";
         }
 
         // проверка поля sid
         if(result.sid.length != 1){
             err.sid = "Не корректно введён sid. Возможно он отсутвует/дублируется, потеряно \":\" или потеряна \";\". sid: \/число\/";
-        }else{          //успех 
+        } else {          //успех 
             sid = true;
         }
 
@@ -209,14 +207,15 @@ export default class CreateBodySearchSid extends React.Component {
             } else {   // успех
                 classType = true;
             }
-        }else{
+        } else {
             err.classtype = "Не корректно введён classtype. Возможно он отсутвует/дублируется или потеряно \":\". classtype: ...;";
         }
+
         let oldValue = this.state.buffSidOut.body;
 
         if((value.indexOf(oldValue) !=-1 )){
             err.noChange = "Изменения не найдены";
-        } else{
+        } else {
             noChange = true;
         }
 
@@ -268,7 +267,7 @@ export default class CreateBodySearchSid extends React.Component {
                 comandModWindow: "save",
             };
             this.showModalWindow();
-        } else{
+        } else {
             this.setState({
                 filter_error: {
                     noChange: "Изменения не найдены",
@@ -293,6 +292,7 @@ export default class CreateBodySearchSid extends React.Component {
                 });
             }
             break;
+
         case "delete":  
             this.props.socketIo.emit("delete value SID", {
                 checkSID: this.state.buffSidOut.sid,
@@ -301,12 +301,14 @@ export default class CreateBodySearchSid extends React.Component {
                 filter_error: null,
             });
             break;
+
         case "not save":  
             this.bodyForUpdate = this.state.buffSidOut.body;
             this.setState({
                 filter_error: null,
             });
             break;
+
         default:
             break;
         }
@@ -365,13 +367,13 @@ export default class CreateBodySearchSid extends React.Component {
     resultSearch(){
         if(this.state.buffSidOut == null) {
             visPole = "unvisible"; 
+            
             return;
         } 
-        let inSidBD = Object.assign({},this.state.buffSidOut);
 
+        let inSidBD = Object.assign({},this.state.buffSidOut);
         let visPole = "visible";
         let color = this.state.color;
-        
         let  disableEdit = {
             str: "disabled",
             bool: "true"
@@ -380,21 +382,21 @@ export default class CreateBodySearchSid extends React.Component {
             str: "disabled",
             bool: "true"
         };
+
         if(this.props.userPermissions.edit.status){
-            // if(this.props.userPermissions.create.status){    
-        }
-        if(this.props.userPermissionsSearch.edit.status){
             disableEdit = {
                 str: "",
                 bool: "false"
             };
         }
+
         if(this.props.userPermissions.delete.status){
             disableDelete = {
                 str: "",
                 bool: "false"
             };
         }
+
         return <React.Fragment>
             <div className={visPole}> 
                 <div className="text-left">     
@@ -403,7 +405,7 @@ export default class CreateBodySearchSid extends React.Component {
                             <div className="media">
                                 <div className="media-body">
                                     <p className="mt-0 mb-1">
-                                        Sid: {inSidBD.sid} 
+                                        Идентификатор: {inSidBD.sid} 
                                     </p>
                                     Тип:  {inSidBD.classType} 
                                 </div>
@@ -525,7 +527,7 @@ export default class CreateBodySearchSid extends React.Component {
             <React.Fragment>
                 <div className="text-left">
                     <a className="nav-link" data-toggle="collapse" href="#typeList" role="button" aria-expanded="false" aria-controls="typeList">
-                        Всего базе {k} sid (нажмите для получения информации)
+                        Общее количество сигнатур в базе {helpers.intConvert(k)} (нажмите для получения более подробной информации)
                     </a> 
                 </div>
                 <div className="collapse" id="typeList">
@@ -536,7 +538,7 @@ export default class CreateBodySearchSid extends React.Component {
                 <br/>
                 <Row>
                     <Col md={6}>
-                        <input className="form-control mr-sm-2" placeholder="Введите sid" value = {this.state.filter_search} onChange = {this.onChangeSearch}  type="search" aria-label="Search"/>
+                        <input className="form-control mr-sm-2" placeholder="номер сигнатуры" value = {this.state.filter_search} onChange = {this.onChangeSearch}  type="search" aria-label="Search"/>
                         
                     </Col>
                     <Col md={6} className="text-left">

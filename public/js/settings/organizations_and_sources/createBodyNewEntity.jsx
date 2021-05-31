@@ -549,7 +549,7 @@ export default class CreateBodyNewEntity extends React.Component {
                         <Form>
                             <Row>
                                 <Col>{this.createListElementOrganization()}</Col>
-                            </Row>
+                            </Row>  
                             <Row>
                                 <Col>{this.createListElementDivision()}</Col>
                             </Row>
