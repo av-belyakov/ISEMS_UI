@@ -93,13 +93,13 @@ class CreatePageDimanic extends React.Component {
                     </Col>
                 </Row>
 
-                <Row className="justify-content-md-center"> 
+                {/*<Row className="justify-content-md-center"> 
                     <Col className="text-left" md="auto">
                         <CreateListEntity 
                             listShortEntity={this.tmpList}
                             handlerSelected={this.handlerSelected1} />  
                     </Col>
-                </Row>
+        </Row>*/}
                 
                 <ModalWindowShowInformationTask 
                     show={this.state.showModalWindowShowTaskInformation}
