@@ -11,3 +11,4 @@ module.exports.modelAdditionalInformation = require("./modelAdditionalInformatio
 module.exports.modelSessionUserInformation = require("./modelSessionUserInformation");
 module.exports.modelNotificationLogISEMSNIH = require("./modelNotificationLogISEMS-NIH");
 module.exports.modelAdditionalPassportInformation = require("./modelAdditionalPassportInformation");
+module.exports.modelStorageSpecialGroupParameters = require("./modelStorageSpecialGroupParameters");

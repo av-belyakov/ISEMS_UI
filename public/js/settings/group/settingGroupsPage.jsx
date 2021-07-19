@@ -315,6 +315,10 @@ class CreateBodyElement extends React.Component {
         let { groupsName, listAdmin, listOtherGroup, handleCheckedItem } = this.props;
 
         let arrTmp = [];
+
+        console.log("func 'CreateBodyElement'");
+        console.log(listAdmin);
+
         for (let item in listAdmin.elements) {           
             let arrTd = groupsName.map(group => {
                 let listCategoryParameters = {

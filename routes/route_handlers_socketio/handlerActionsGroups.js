@@ -28,6 +28,7 @@ module.exports.addHandlers = function(socketIo) {
     }
 };
 
+
 function addGroup(socketIo, data) {
     const errMsg = "Невозможно добавить новую группу пользователей. Получены некорректные данные.";
     if (typeof data.arguments === "undefined") {

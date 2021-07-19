@@ -1,5 +1,7 @@
 "use strict";
 
+const debug = require("debug")("mg");
+
 const async = require("async");
 
 const writeLogFile = require("../../../libs/writeLogFile");
@@ -40,6 +42,11 @@ module.exports = function(req, res, objHeader) {
         //проверяем права на доступ к странице
         let readStatus = result.permissions.group_settings.menu_items.element_settings.setting_groups.status;
         if (readStatus === false) return res.render("403");
+
+        debug("group name: 'administrator'");
+        debug(result.mainInformation.administrator.elements.management_security_event_management);
+        debug("group name: 'observed");
+        debug(result.mainInformation.observer.elements.management_security_event_management);
 
         let objResult = {
             header: objHeader,

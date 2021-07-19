@@ -1,7 +1,5 @@
 /*
  * Описание модели группы пользователей
- *
- * Версия 0.1, дата релиза 21.01.2019
  * */
 
 "use strict";
@@ -42,10 +40,8 @@ let groupSchema = new connection.Schema({
         name: String,
         element_settings: {
             create: { id: String, status: Boolean, description: String },
-            editingInformation: { id: String, status: Boolean, description: String },
-            statusChange: { id: String, status: Boolean, description: String },
-            close: { id: String, status: Boolean, description: String },
-            delete: { id: String, status: Boolean, description: String }
+            editing_information: { id: String, status: Boolean, description: String },
+            privileged_group: { id: String, status: Boolean, description: String },
         }
     },
     management_network_interaction: {

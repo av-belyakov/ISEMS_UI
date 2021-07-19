@@ -187,26 +187,16 @@ function createModelGroups(modelGroup, next) {
                         status: true,
                         description: "создание"
                     },
-                    editingInformation: {
+                    editing_information: {
                         id: createUniqID.getMD5("administrator_management_security_event_management_editingInformation"),
                         status: true,
                         description: "редактирование информации"
                     },
-                    statusChange: {
-                        id: createUniqID.getMD5("administrator_management_security_event_management_statusChange"),
+                    privileged_group: {
+                        id: createUniqID.getMD5("administrator_management_security_event_management_privilegedGroup"),
                         status: true,
-                        description: "изменение статуса события"
+                        description: "является ли группа привилегированной"
                     },
-                    close: {
-                        id: createUniqID.getMD5("administrator_management_security_event_management_close"),
-                        status: true,
-                        description: "закрытие события"
-                    },
-                    delete: {
-                        id: createUniqID.getMD5("administrator_management_security_event_management_delete"),
-                        status: true,
-                        description: "удаление события"
-                    }
                 }
             },
             management_network_interaction: {
