@@ -3,52 +3,62 @@ import ReactDOM from "react-dom";
 import { Col, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-//import CreateBodyDynamics from "./createBodyDynamics.jsx";
-//import ModalWindowShowInformationTask from "../modal_windows/modalWindowShowInformationTask.jsx";
+import CreateVerticalMenuItems from "./createVerticalMenuItems.jsx";
+import CreatePageReport from "./createPageReport.jsx";
+import CreatePageObservedData from "./createPageObservedData.jsx";
+import CreatePageMalware from "./createPageMalware.jsx";
 
 class CreateMainPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            pageName: ""
+        };
 
-        //        this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
-        //        this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
-        //        this.handlerCloseModalWindowShowTaskInformation = this.handlerCloseModalWindowShowTaskInformation.bind(this);
+        this.switchPage = this.switchPage.bind(this);
+        this.handlerMenuItem = this.handlerMenuItem.bind(this);
     }
 
-    handlerModalWindowShowTaskTnformation(data) {
-        let objCopy = Object.assign({}, this.state);
-        objCopy.shortTaskInformation.sourceID = data.sourceID;
-        objCopy.shortTaskInformation.sourceName = data.sourceName;
-        objCopy.shortTaskInformation.taskID = data.taskID;
-        this.setState(objCopy);
-
-        this.handlerShowModalWindowShowTaskInformation();
+    handlerMenuItem(pn){
+        this.setState({ pageName: pn });
     }
 
-    handlerShowModalWindowShowTaskInformation() {
-        this.setState({ showModalWindowShowTaskInformation: true });
-    }
-
-
-    handlerCloseModalWindowShowTaskInformation() {
-        this.setState({ showModalWindowShowTaskInformation: false });
+    switchPage(){
+        switch(this.state.pageName){
+        case "":
+            return <CreatePageReport/>;
+        case "reports":
+            return <CreatePageReport/>;
+        case "observed_data":
+            return <CreatePageObservedData/>;
+        case "malware":
+            return <CreatePageMalware/>;
+        default:
+            return <CreatePageReport/>;
+        }
     }
 
     render() {
         return (
             <React.Fragment>
-                <Row className="pt-3">
+                <Row>
                     <Col md={12}>
-                        Страница модуля управления структуированной информацией о компьютерных событиях
+                        <CreateVerticalMenuItems handler={this.handlerMenuItem} value={123}/>
+                    </Col>
+                    <Col md={10}>
+                        {this.switchPage()}
                     </Col>
                 </Row>
-
             </React.Fragment>
         );
     }
 }
+
+/**
+ * <div class="col-md-2" id="header-page-vertical_menu"></div>
+                    <div class="col-md-10 panel-body widget-main text-center mt-3" id="main-page-content"></div>
+ */
 
 CreateMainPage.propTypes = {
     socketIo: PropTypes.object.isRequired,

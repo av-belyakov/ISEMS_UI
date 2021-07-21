@@ -5,7 +5,7 @@
     "scripts": {
         "start": "node ./app",
         "startWS": "webpack-dev-server --open --mode development",
-        "dev": "webpack --display-error-details --mode development --watch",
+        "dev": "webpack --config=webpack_v5.config.js --mode=development --progress",
         "build": "webpack --mode production"
     },
     "dependencies": {
@@ -53,6 +53,7 @@
         "react-customize-token-input": "^0.5.2",
         "react-dnd": "^11.1.3",
         "react-dnd-html5-backend": "^11.1.3",
+        "react-router-dom": "^5.2.0",
         "react-scrollbar": "^0.5.6",
         "select2": "^4.0.13",
         "select2-theme-bootstrap4": "^0.2.0-beta.6",
@@ -91,9 +92,9 @@
         "style-loader": "^1.2.1",
         "test": "^0.6.0",
         "url-loader": "^1.1.2",
-        "webpack": "^4.44.1",
-        "webpack-cli": "^3.3.12",
-        "webpack-dev-server": "^3.1.11"
+        "webpack": "^5.45.1",
+        "webpack-cli": "^4.7.2",
+        "webpack-dev-server": "^3.11.2"
     },
     "author": "Artemij Belyakov",
     "license": "ISC"

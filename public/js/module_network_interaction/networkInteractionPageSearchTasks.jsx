@@ -56,7 +56,7 @@ class CreatePageSearchTasks extends React.Component {
         this.handlerCloseModalWindowFiltration = this.handlerCloseModalWindowFiltration.bind(this);
         this.handlerModalWindowShowTaskTnformation = this.handlerModalWindowShowTaskTnformation.bind(this);
         this.handlerShowModalWindowShowTaskInformation = this.handlerShowModalWindowShowTaskInformation.bind(this);
-        this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
+        this.handlerCloseModalWindowShowTaskInformation = this.handlerCloseModalWindowShowTaskInformation.bind(this);
 
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);

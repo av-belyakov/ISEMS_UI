@@ -132,7 +132,7 @@ module.exports = {
     resolveLoader: {
         modules: ["node_modules"],
         extensions: [".js"],
-        moduleExtensions: ["*-loader"]
+        //moduleExtensions: ["*-loader"]
     },
 
     plugins: [
@@ -145,11 +145,11 @@ module.exports = {
         }),
 
         //выносит все стили в отдельные файлы
-        new ExtractTextPlugin("css/[id]_[name].css", { allChunks: true }),
+        //new ExtractTextPlugin("css/[id]_[name].css", { allChunks: true }),
 
         new webpack.ContextReplacementPlugin(/moment[\\/\\]locale$/, /ru|en-gb/),
 
-        new webpack.optimize.OccurrenceOrderPlugin(true),
+        //new webpack.optimize.OccurrenceOrderPlugin(true),
     ],
 
     module: {

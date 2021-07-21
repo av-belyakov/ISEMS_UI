@@ -98,6 +98,7 @@ module.exports = function (app) {
                 headerPage(req)
                     .catch((err) => {
                         writeLogFile("error", err.toString());
+                        
                         res.render("500", {});
                     });
             } else {
@@ -128,6 +129,7 @@ module.exports = function (app) {
                     res.render("index", { header: objHeader });
                 }).catch((err) => {
                     writeLogFile("error", err.toString());
+
                     res.render("500", {});
                 });
         });
@@ -158,6 +160,7 @@ module.exports = function (app) {
                     }
                 }).catch((err) => {
                     writeLogFile("error", err.toString() + funcName);
+
                     res.render("500", {});
                 });
         });
@@ -188,7 +191,7 @@ module.exports = function (app) {
     });
 
     if (process.env.NODE_ENV !== "development") {
-        app.use((err, req, res) => {
+        app.use((req, res) => {
             res.render("500", {});
         });
     }

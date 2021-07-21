@@ -97,7 +97,7 @@ class CreatePageManagingmanagingRecordsStractInfo extends React.Component {
                     <Row className="mt-2">
                         <Col md={12}>
                             <Alert variant="filled" severity="error">
-                                <strong>Ошибка!</strong> Отсутствует доступ к модулю управления сетевыми взаимодействиями. Пытаемся установить соединение...
+                                <strong>Ошибка!</strong> Отсутствует доступ к модулю управления структурированной информации. Пытаемся установить соединение...
                             </Alert>
                         </Col>
                     </Row>
@@ -120,28 +120,28 @@ class CreatePageManagingmanagingRecordsStractInfo extends React.Component {
                 {this.showModuleConnectionError.call(this)}
                 <Row className="pt-4">
                     <Col md={12} className="text-right">
-                        <Button
+                        {/*<Button
                             className="mx-1"
                             size="sm"
                             variant="outline-danger"
                             /*disabled={this.isDisabledFiltering.call(this)}
-                            onClick={this.handlerShowModalWindowFiltration} */>
+                            onClick={this.handlerShowModalWindowFiltration} >
                             фильтрация
                         </Button>
                         <Button
                             className="mx-1"
                             size="sm"
                             variant="outline-dark"
-                            /*onClick={this.handlerShowModalWindowLanCalc} */>
+                            /*onClick={this.handlerShowModalWindowLanCalc} >
                             сетевой калькулятор
                         </Button>
                         <Button
                             className="mx-1"
                             size="sm"
                             variant="outline-dark"
-                            /*onClick={this.handlerShowModalWindowEncodeDecoder} */>
+                            /*onClick={this.handlerShowModalWindowEncodeDecoder} >
                             декодер
-                        </Button>
+                        </Button>*/}
                     </Col>
                 </Row>
             </React.Fragment>
