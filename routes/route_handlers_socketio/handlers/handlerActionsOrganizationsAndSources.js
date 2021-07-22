@@ -1,16 +1,16 @@
 "use strict";
 
-const models = require("../../controllers/models");
-const MyError = require("../../libs/helpers/myError");
-const commons = require("../../libs/helpers/commons");
-const showNotify = require("../../libs/showNotify");
-const helpersFunc = require("../../libs/helpers/helpersFunc");
-const globalObject = require("../../configure/globalObject");
-const writeLogFile = require("../../libs/writeLogFile");
-const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
-const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
-const sendCommandsModuleNetworkInteraction = require("../../libs/processing/route_socketio/sendCommandsModuleNetworkInteraction");
-const informationForPageManagementOrganizationAndSource = require("../../libs/management_settings/informationForPageManagementOrganizationAndSource");
+const models = require("../../../controllers/models");
+const MyError = require("../../../libs/helpers/myError");
+const commons = require("../../../libs/helpers/commons");
+const showNotify = require("../../../libs/showNotify");
+const helpersFunc = require("../../../libs/helpers/helpersFunc");
+const globalObject = require("../../../configure/globalObject");
+const writeLogFile = require("../../../libs/writeLogFile");
+const mongodbQueryProcessor = require("../../../middleware/mongodbQueryProcessor");
+const checkUserAuthentication = require("../../../libs/check/checkUserAuthentication");
+const sendCommandsModuleNetworkInteraction = require("../../../libs/processing/route_socketio/sendCommandsModuleNetworkInteraction");
+const informationForPageManagementOrganizationAndSource = require("../../../libs/management_settings/informationForPageManagementOrganizationAndSource");
 
 /**
  * Модуль обработчик действий над сущностями (организациями, подразделениями и источниками)
@@ -62,7 +62,7 @@ function addNewEntitys(socketIo, data) {
             return authData.document.groupSettings.management_organizations_and_sources.element_settings;
         }).then((authData) => {
             //проверяем параметры полученные от пользователя
-            let obj = (require("../../libs/processing/route_socketio/validationObjectNewEntitys"))(data.arguments);
+            let obj = (require("../../../libs/processing/route_socketio/validationObjectNewEntitys"))(data.arguments);
             obj.authData = authData;
 
             return obj;
@@ -81,7 +81,7 @@ function addNewEntitys(socketIo, data) {
             return entityList;
         }).then((entityList) => {
             //добавляем новые сущности в БД
-            return (require("../../libs/processing/route_socketio/insertNewEntity"))(entityList)
+            return (require("../../../libs/processing/route_socketio/insertNewEntity"))(entityList)
                 .then(() => {
                     showNotify({
                         socketIo: socketIo,

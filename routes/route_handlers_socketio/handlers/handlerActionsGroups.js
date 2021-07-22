@@ -2,14 +2,14 @@
 
 const async = require("async");
 
-const models = require("../../controllers/models");
-const MyError = require("../../libs/helpers/myError");
-const showNotify = require("../../libs/showNotify");
-const createUniqID = require("../../libs/helpers/createUniqID");
-const globalObject = require("../../configure/globalObject");
-const writeLogFile = require("../../libs/writeLogFile");
-const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
-const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
+const models = require("../../../controllers/models");
+const MyError = require("../../../libs/helpers/myError");
+const showNotify = require("../../../libs/showNotify");
+const createUniqID = require("../../../libs/helpers/createUniqID");
+const globalObject = require("../../../configure/globalObject");
+const writeLogFile = require("../../../libs/writeLogFile");
+const mongodbQueryProcessor = require("../../../middleware/mongodbQueryProcessor");
+const checkUserAuthentication = require("../../../libs/check/checkUserAuthentication");
 
 /**
  * Модуль для управления группами пользователей

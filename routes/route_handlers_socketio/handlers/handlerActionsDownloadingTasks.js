@@ -2,12 +2,12 @@
 
 const debug = require("debug")("hadt");
 
-const MyError = require("../../libs/helpers/myError");
-const showNotify = require("../../libs/showNotify");
-const getSessionId = require("../../libs/helpers/getSessionId.js");
-const globalObject = require("../../configure/globalObject");
-const writeLogFile = require("../../libs/writeLogFile");
-const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
+const MyError = require("../../../libs/helpers/myError");
+const showNotify = require("../../../libs/showNotify");
+const getSessionId = require("../../../libs/helpers/getSessionId.js");
+const globalObject = require("../../../configure/globalObject");
+const writeLogFile = require("../../../libs/writeLogFile");
+const checkUserAuthentication = require("../../../libs/check/checkUserAuthentication");
 
 /**
  * Модуль обработчик действий связанных со скачиванием файлов
@@ -28,7 +28,6 @@ module.exports.addHandlers = function(socketIo) {
         socketIo.on(e, handlers[e].bind(null, socketIo));
     }
 };
-
 
 /**
  * Обработчик запроса на скачивание файлов
@@ -74,7 +73,7 @@ function startDownloadingFiles(socketIo, data) {
                             msgType: "command",
                             msgSection: "download control",
                             msgInstruction: "to start downloading",
-                            taskID: require("../../libs/helpers/helpersFunc").getRandomHex(),
+                            taskID: require("../../../libs/helpers/helpersFunc").getRandomHex(),
                             options: data.arguments.o,
                         });
                     }
@@ -144,7 +143,7 @@ function stopDownloadFiles(socketIo, data) {
                             msgType: "command",
                             msgSection: "download control",
                             msgInstruction: "to cancel downloading",
-                            taskID: require("../../libs/helpers/helpersFunc").getRandomHex(),
+                            taskID: require("../../../libs/helpers/helpersFunc").getRandomHex(),
                             options: {
                                 id: +(data.arguments.sourceID),
                                 tidapp: data.arguments.taskID,
@@ -217,7 +216,7 @@ function getListFilesTask(socketIo, data) {
 
                 debug("send request file list--->");
 
-                let hex = require("../../libs/helpers/helpersFunc").getRandomHex();
+                let hex = require("../../../libs/helpers/helpersFunc").getRandomHex();
 
                 globalObject.setData("tasks", hex, {
                     eventName: "part of the list files",
@@ -337,7 +336,7 @@ function getNextChunk(socketIo, data) {
                         ccn: data.nextChunk, //номер текущей части
                     },
                     tntf: objInfo.taskFound,
-                    slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(objInfo.list),
+                    slft: require("../../../libs/helpers/helpersFunc").modifyListFoundTasks(objInfo.list),
                 }
             });
         }).catch((err) => {

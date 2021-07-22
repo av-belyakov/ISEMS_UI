@@ -3,7 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const writeLogFile = require("../../libs/writeLogFile");
+const writeLogFile = require("../../../libs/writeLogFile");
 
 /**
  * Модуль обработчик файлов поступающих из User Interface
@@ -86,8 +86,8 @@ function parser(data){
                         msg: c_msg,
                         body: strBody, 
                     }
-                  }
-            }
+                }
+            };
             arrList.push(element);
             // console.log(`sid ${b_sid} classType ${a_classType}`);
         }
@@ -116,8 +116,8 @@ async function processing(fileName){
     try{
         let data = await readFileRule(fileName);
         let listRules = await parser(data);
-        let mongooseModel = require("../../controllers/models").modelSOARules;
-        let requireMong = (require("../../middleware/mongodbQueryProcessor"));
+        let mongooseModel = require("../../../controllers/models").modelSOARules;
+        let requireMong = (require("../../../middleware/mongodbQueryProcessor"));
        
         await ((listRules ) => {
             return new Promise((resolve,reject) => {

@@ -1,11 +1,11 @@
 "use strict";
 
-const MyError = require("../../libs/helpers/myError");
-const showNotify = require("../../libs/showNotify");
-const helpersFunc = require("../../libs/helpers/helpersFunc");
-const writeLogFile = require("../../libs/writeLogFile");
-const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
-const sendCommandsModuleNetworkInteraction = require("../../libs/processing/route_socketio/sendCommandsModuleNetworkInteraction");
+const MyError = require("../../../libs/helpers/myError");
+const showNotify = require("../../../libs/showNotify");
+const helpersFunc = require("../../../libs/helpers/helpersFunc");
+const writeLogFile = require("../../../libs/writeLogFile");
+const checkUserAuthentication = require("../../../libs/check/checkUserAuthentication");
+const sendCommandsModuleNetworkInteraction = require("../../../libs/processing/route_socketio/sendCommandsModuleNetworkInteraction");
 
 /**
  * Модуль обработчик действий связанных с фильтрацией файлов
@@ -41,7 +41,7 @@ function startNewTask(socketIo, data) {
 
             return { login: authData.document.userLogin, name: authData.document.userName };
         }).then((userInfo) => {
-            let obj = (require("../../libs/processing/route_socketio/validationFileFilteringParameters"))(data.arguments);
+            let obj = (require("../../../libs/processing/route_socketio/validationFileFilteringParameters"))(data.arguments);
 
             if (!obj.isValid) {
                 throw new MyError("management validation", obj.errorMsg);

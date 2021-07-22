@@ -238,19 +238,19 @@ function eventsModuleNetworkInteraction(socketIo) {
                     debug(`received message 'processing information search task', TYPE: '${taskInfo.eventName}' TO WIDGET '${taskInfo.eventForWidgets}'`);
 
                     if (taskInfo.eventName === "list all tasks") {
-                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo);
+                        require("./route_handlers_socketio/handlers/handlerActionsProcessedReceivedListTasks").receivedListAllTasks(socketIo, msg, taskInfo);
                     }
 
                     //только для вкладки "загрузка файлов" и для виджетов 
                     if (taskInfo.eventName === "list tasks which need to download files") {
-                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo);
+                        require("./route_handlers_socketio/handlers/handlerActionsProcessedReceivedListTasks").receivedListTasksDownloadFiles(socketIo, msg, taskInfo);
                     }
 
                     //только для виджета "выгруженные файлы не рассмотрены" и
                     // для вкладки поиск, значение "по умолчанию", выводить список
                     // не закрытых пользователем задач
                     if (taskInfo.eventName === "list unresolved tasks") {
-                        require("./route_handlers_socketio/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo);
+                        require("./route_handlers_socketio/handlers/handlerActionsProcessedReceivedListTasks").receivedListUnresolvedTask(socketIo, msg, taskInfo);
                     }
                 } else {
                     helpersFunc.sendBroadcastSocketIo("module NI API", {

@@ -2,8 +2,8 @@
 
 const fs = require("fs");
 const path = require("path");
-const showNotify = require("../../libs/showNotify");
-const writeLogFile = require("../../libs/writeLogFile");
+const showNotify = require("../../../libs/showNotify");
+const writeLogFile = require("../../../libs/writeLogFile");
 
 /**
  * Модуль для обновления SID в базе данных
@@ -69,8 +69,8 @@ function processing(data){
     try{
         
         let newRule = parser(data.updateBody);
-        let mongooseModel = require("../../controllers/models").modelSOARules;
-        let requireMong = (require("../../middleware/mongodbQueryProcessor"));
+        let mongooseModel = require("../../../controllers/models").modelSOARules;
+        let requireMong = (require("../../../middleware/mongodbQueryProcessor"));
 
         return new Promise((resolve,reject) => {
             requireMong.queryUpdate(

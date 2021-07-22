@@ -2,15 +2,15 @@
 
 const crypto = require("crypto");
 
-const models = require("../../controllers/models");
-const MyError = require("../../libs/helpers/myError");
-const showNotify = require("../../libs/showNotify");
-const helpersFunc = require("../../libs/helpers/helpersFunc");
-const hashPassword = require("../../libs/hashPassword");
-const writeLogFile = require("../../libs/writeLogFile");
-const informationAboutUser = require("../../libs/management_settings/informationAboutUser");
-const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
-const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
+const models = require("../../../controllers/models");
+const MyError = require("../../../libs/helpers/myError");
+const showNotify = require("../../../libs/showNotify");
+const helpersFunc = require("../../../libs/helpers/helpersFunc");
+const hashPassword = require("../../../libs/hashPassword");
+const writeLogFile = require("../../../libs/writeLogFile");
+const informationAboutUser = require("../../../libs/management_settings/informationAboutUser");
+const mongodbQueryProcessor = require("../../../middleware/mongodbQueryProcessor");
+const checkUserAuthentication = require("../../../libs/check/checkUserAuthentication");
 
 /**
  * Модуль обработчик изменения пароля пользователя

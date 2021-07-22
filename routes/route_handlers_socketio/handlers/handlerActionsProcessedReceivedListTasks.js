@@ -1,8 +1,8 @@
 "use strict";
 
-const helpersFunc = require("../../libs/helpers/helpersFunc");
-const writeLogFile = require("../../libs/writeLogFile");
-const globalObject = require("../../configure/globalObject");
+const helpersFunc = require("../../../libs/helpers/helpersFunc");
+const writeLogFile = require("../../../libs/writeLogFile");
+const globalObject = require("../../../configure/globalObject");
 
 const MAX_CHUNK_SIZE = 10;
 
@@ -61,7 +61,7 @@ module.exports.receivedListAllTasks = function(socketIo, data, taskInfo) {
                         ccn: 1, //номер текущей части
                     },
                     tntf: data.options.tntf,
-                    slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
+                    slft: require("../../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
                 }
             };
 
@@ -155,7 +155,7 @@ module.exports.receivedListTasksDownloadFiles = function(socketIo, data, taskInf
                         ccn: 1, //номер текущей части
                     },
                     tntf: data.options.tntf,
-                    slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
+                    slft: require("../../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
                 }
             };
 
@@ -248,7 +248,7 @@ module.exports.receivedListUnresolvedTask = function(socketIo, data, taskInfo) {
                         ccn: 1, //номер текущей части
                     },
                     tntf: data.options.tntf,
-                    slft: require("../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
+                    slft: require("../../../libs/helpers/helpersFunc").modifyListFoundTasks(data.options.slft.slice(0, MAX_CHUNK_SIZE)),
                 }
             };
 

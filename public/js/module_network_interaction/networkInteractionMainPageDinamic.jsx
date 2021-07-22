@@ -24,10 +24,6 @@ class CreatePageDimanic extends React.Component {
         this.handlerCloseModalWindowShowTaskInformation=this.handlerCloseModalWindowShowTaskInformation.bind(this);
     }
 
-    handlerSelected1(){
-
-    }
-
     handlerModalWindowShowTaskTnformation(data){
         let objCopy = Object.assign({}, this.state);
         objCopy.shortTaskInformation.sourceID = data.sourceID;
@@ -41,7 +37,6 @@ class CreatePageDimanic extends React.Component {
     handlerShowModalWindowShowTaskInformation(){
         this.setState({ showModalWindowShowTaskInformation: true });
     }
-
 
     handlerCloseModalWindowShowTaskInformation(){
         this.setState({ showModalWindowShowTaskInformation: false });

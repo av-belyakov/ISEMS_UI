@@ -3,18 +3,18 @@
 const async = require("async");
 const crypto = require("crypto");
 
-const models = require("../../controllers/models");
-const MyError = require("../../libs/helpers/myError");
-const commons = require("../../libs/helpers/commons");
-const showNotify = require("../../libs/showNotify");
-const helpersFunc = require("../../libs/helpers/helpersFunc");
-const hashPassword = require("../../libs/hashPassword");
-const createUniqID = require("../../libs/helpers/createUniqID");
-const writeLogFile = require("../../libs/writeLogFile");
-const informationAboutUser = require("../../libs/management_settings/informationAboutUser");
-const informationItemGroups = require("../../libs/management_settings/informationItemGroups");
-const mongodbQueryProcessor = require("../../middleware/mongodbQueryProcessor");
-const checkUserAuthentication = require("../../libs/check/checkUserAuthentication");
+const models = require("../../../controllers/models");
+const MyError = require("../../../libs/helpers/myError");
+const commons = require("../../../libs/helpers/commons");
+const showNotify = require("../../../libs/showNotify");
+const helpersFunc = require("../../../libs/helpers/helpersFunc");
+const hashPassword = require("../../../libs/hashPassword");
+const createUniqID = require("../../../libs/helpers/createUniqID");
+const writeLogFile = require("../../../libs/writeLogFile");
+const informationAboutUser = require("../../../libs/management_settings/informationAboutUser");
+const informationItemGroups = require("../../../libs/management_settings/informationItemGroups");
+const mongodbQueryProcessor = require("../../../middleware/mongodbQueryProcessor");
+const checkUserAuthentication = require("../../../libs/check/checkUserAuthentication");
 
 /**
  * Модуль обработчик действий над пользователями
@@ -293,7 +293,7 @@ function deleteUser(socketIo, data) {
 
         }).then(() => {
             new Promise((resolve, reject) => {
-                mongodbQueryProcessor.queryDelete(require("../../controllers/models").modelUser, { query: { user_id: data.arguments.userID } }, err => {
+                mongodbQueryProcessor.queryDelete(require("../../../controllers/models").modelUser, { query: { user_id: data.arguments.userID } }, err => {
                     if (err) reject(err);
                     resolve();
                 });
