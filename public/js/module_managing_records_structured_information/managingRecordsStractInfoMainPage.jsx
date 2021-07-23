@@ -35,15 +35,12 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
     },
-    appBar: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
-    },
     drawer: {
         width: drawerWidth,
         flexShrink: 0,
     },
     drawerPaper: {
+        marginTop: 85,
         width: drawerWidth,
     },
     // necessary for content to be below app bar
@@ -59,20 +56,21 @@ function LeftElements(props){
     const classes = useStyles();
 
     return (
-        <Drawer
-            className={classes.drawer}
-            variant="permanent"
-            classes={{paper: classes.drawerPaper}}
-            anchor="left">
-            <Tabs
-                value={props.handler}
-                indicatorcolor="primary"
-                orientation="vertical"
-                variant="scrollable"
-                aria-label="Vertical tabs example" >
-                {props.list}
-            </Tabs>
-        </Drawer>
+        <React.Fragment>
+            <Drawer
+                className={classes.drawer}
+                variant="permanent"
+                classes={{paper: classes.drawerPaper}}
+                anchor="left">
+                <Tabs
+                    value={props.handler()}
+                    indicatorcolor="primary"
+                    orientation="vertical"
+                    variant="scrollable">
+                    {props.list}
+                </Tabs>
+            </Drawer>
+        </React.Fragment>
     );
 }
 
@@ -182,6 +180,8 @@ class CreateMainPage extends React.Component {
             list.push(<Tooltip title={this.menuItem[item].title} key={`tooltip_menu_item_${this.menuItem[item].num}`}>
                 <Tab 
                     href={item} 
+                    wrapped
+                    textColor="secondary"
                     containerelement={<LinkRouter to={item}/>}
                     label={this.menuItem[item].label} 
                     key={`menu_item_${this.menuItem[item].num}`}/>
@@ -193,31 +193,13 @@ class CreateMainPage extends React.Component {
                 <BrowserRouter>
                     <CssBaseline />
                     <Row>
-                        {/*<Col md={2}>
-                            <Tabs
-                                value={this.getSelectedMenuItem.call(this)}
-                                indicatorcolor="primary"
-                                orientation="vertical"
-                                variant="scrollable"
-                                aria-label="Vertical tabs example" >
-                                {list}
-                            </Tabs>
-                        </Col>
-                        <Col md={10}>
-                            <ChildElements socketIo={this.props.socketIo} />
-                        </Col>*/}
                         <Col md={2}>
-                            <LeftElements list={list} handler={this.getSelectedMenuItem}/>
-                            {/**
-                             * В LeftElements попробовать перейти на List вместо Tab
-                             * 
-                             */}
+                            <LeftElements menuItem={this.menuItem} list={list} handler={this.getSelectedMenuItem}/>
                         </Col>
                         <Col md={10}>
-                            <ChildElements socketIo={this.props.socketIo} />
+                            <ChildElements socketIo={this.props.socketIo}/>
                         </Col>
                     </Row>
-
                 </BrowserRouter>
             </React.Fragment>
         );

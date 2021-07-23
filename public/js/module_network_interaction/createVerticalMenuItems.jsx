@@ -28,7 +28,11 @@ class CreateMenuItemsVertical extends React.Component {
     createMenu(){
         let list = [];
         for(let item in this.menuItem){
-            list.push(<Tab href={item} label={this.menuItem[item].label} key={`menu_item_${this.menuItem[item].num}`} />);
+            list.push(<Tab 
+                href={item} 
+                wrapped
+                label={this.menuItem[item].label} 
+                key={`menu_item_${this.menuItem[item].num}`} />);
         }
 
         return (
@@ -36,8 +40,7 @@ class CreateMenuItemsVertical extends React.Component {
                 value={this.getSelectedMenuItem.call(this)}
                 indicatorColor="primary"
                 orientation="vertical"
-                variant="scrollable"
-                aria-label="Vertical tabs example" >
+                variant="scrollable" >
                 {list}
             </Tabs>
         );
