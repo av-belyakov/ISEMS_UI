@@ -160,7 +160,14 @@ class MyEventEmitterConnAPI extends EventEmitter {
         options: {}
      * }
      */
-    sendMessage({
+    sendMessage(msg){
+
+        console.log("func 'sendMessage', START...");
+        console.log(msg);
+
+        this.connection.sendUTF(JSON.stringify(msg));
+    }
+    /*sendMessage({
         msgType: t,
         msgSection: s,
         msgInstruction: i = null,
@@ -205,7 +212,7 @@ class MyEventEmitterConnAPI extends EventEmitter {
         });
 
         this.connection.sendUTF(jsonMsg);
-    }
+    }*/
 }
 
 /**

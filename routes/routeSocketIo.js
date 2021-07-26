@@ -53,8 +53,8 @@ module.exports.eventHandlingUserInterface = function(eventEmiterTimerTick, socke
     require("./route_handlers_socketio/networkInteractionHandlerTemplate").addHandlers(socketIo, eventEmiterTimerTick);
 
     /* --- 
-            ОБРАБОТЧИК ДЕЙСТВИЙ СВЯЗАННЫХ С УПРАВЛЕНИЕМ ДОКУМЕНТАМИ СОДЕРЖАЩИМИ СТРУКТУРИРОВАННУЮ 
-        ИНФОРМАЦИЯ О КОМПЬЮТЕРНЫХ  УГРОЗАХ
+            ОБРАБОТЧИК ДЕЙСТВИЙ, СВЯЗАННЫХ С УПРАВЛЕНИЕМ ДОКУМЕНТАМИ, СОДЕРЖАЩИМИ СТРУКТУРИРОВАННУЮ 
+        ИНФОРМАЦИЯ О КОМПЬЮТЕРНЫХ УГРОЗАХ
      --- */
     require("./route_handlers_socketio/handlers/handlerActionsDocContainingStructuredInformation").addHandlers(socketIo);
 };
