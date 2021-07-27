@@ -66,7 +66,7 @@ function getAllCountDocTypeReport(socketIo, data){
 
                     let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                     if (conn !== null) {
-                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}`);
+                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`);
 
                         debug(`send request message /'get all count doc type 'reports'/' taskID: ${taskID} --->`);
 

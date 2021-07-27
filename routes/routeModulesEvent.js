@@ -364,6 +364,29 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
         }).on("message", (msg) => {
             debug("--- MESSAGE from module ISEMS-MRSICT ---");
             debug(msg);
+        }).on("document message", (msg) => {
+            debug("--- DOCUMENT MESSAGE from module ISEMS-MRSICT ---");
+            debug(msg);
+
+            /**
+         * не всем пользователем можно показывать весь результат
+         * например, только привилегерованным пользователям можно показать весь список 
+         * Хотя возможно будет правильней на этапе формирования запроса позаботится о защите информации
+         * от непревелигированных пользователей
+         */
+
+
+            if (globalObject.hasData("tasks", msg.task_id)) {
+                let taskInfo = globalObject.getData("tasks", msg.taskID);
+                if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "isems-mrsi response ui", msg)) {
+                    helpersFunc.sendBroadcastSocketIo("isems-mrsi response ui", msg);
+                }
+            } else {
+                helpersFunc.sendBroadcastSocketIo("isems-mrsi response ui", msg);
+            }
+        }).on("binary message", (msg) => {
+            debug("--- BINARY MESSAGE from module ISEMS-MRSICT ---");
+            debug(msg);
         }).on("close", (msg) => {
             debug("--- CONNECTION CLOSE, module ISEMS-MRSICT ---");
             debug(msg);

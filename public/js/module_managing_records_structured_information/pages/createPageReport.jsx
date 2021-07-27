@@ -35,6 +35,25 @@ export default class CreatePageReport extends React.Component {
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
             console.log("class 'CreatePageReport', receive event:");
             console.log(data);
+        
+            switch(data.section){
+            case "handling search requests":
+                if(typeof data.additional_parameters.number_documents_found !== "undefined"){
+                    console.log("результат ввиде колличества найденных документов");
+
+                    this.setState({ totalReports: data.additional_parameters.number_documents_found });
+                } else if(typeof data.additional_parameters.transmitted_data !== "undefined"){
+                    console.log("результат ввиде полного списка найденной информации");
+                } else {
+                    console.log("наверное информационное сообщение что данные не определены");
+                }
+
+                return;
+        
+            case "":
+        
+                return;
+            }
         });
     }
 

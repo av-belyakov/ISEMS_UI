@@ -58,7 +58,6 @@ module.exports = {
         networkInteractionPageNotificationLog: "./module_network_interaction/networkInteractionPageNotificationLog.jsx",
         networkInteractionPageStatisticsAndAnalytics: "./module_network_interaction/networkInteractionPageStatisticsAndAnalytics.jsx",
         networkInteractionPageStatisticsAndAnalyticsDetalTask: "./module_network_interaction/networkInteractionPageStatisticsAndAnalyticsDetalTask.jsx",
-        managingRecordsStractInfoMainHeader: "./module_managing_records_structured_information/managingRecordsStractInfoMainHeader.jsx",
         managingRecordsStractInfoMainPage: "./module_managing_records_structured_information/managingRecordsStractInfoMainPage.jsx",
         managingAnalusisMainHeader: "./module_analysis/pageManagingAnalysis.jsx",
         drawingAlertsMessage: "./drawingAlertsMessage.jsx",

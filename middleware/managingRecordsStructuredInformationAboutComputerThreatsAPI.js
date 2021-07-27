@@ -68,33 +68,21 @@ class MyEventEmitterConnAPI extends EventEmitter {
                 console.log(`type: ${msg.type}`);
                 console.log(msg);
 
-                /*if (msg.type !== "utf8") {
-                    this.emit("error message", new Error("Incorrect message format is accepted, binary data may be accepted"));
-
+                if (msg.type === "utf8") {
+                    try {
+                        let json = JSON.parse(msg.utf8Data);
+    
+                        this.emit("document message", json);
+                    } catch (err) {
+                        this.emit("error message", err);
+                    }
+    
                     return;
+                } else {
+                    console.log("получены бинарные данные");
+
+                    this.emit("binary message", msg.binaryData);
                 }
-
-                try {
-                    let json = JSON.parse(msg.utf8Data);
-
-                    if (typeof this.msgType[json.t] === "undefined") {
-                        throw new Error("Invalid JSON message type accepted");
-                    }
-
-                    let mt = this.msgType[json.t];
-
-                    if (typeof mt[json.s] === "undefined") {
-                        throw new Error("Invalid value in \"section\" field of JSON message");
-                    }
-
-                    this.emit(mt[json.s], {
-                        instruction: json.i,
-                        taskID: (typeof json.tid !== "undefined") ? json.tid : "",
-                        options: json.o
-                    });
-                } catch (err) {
-                    this.emit("error message", err);
-                }*/
             });
         });
 
@@ -167,52 +155,6 @@ class MyEventEmitterConnAPI extends EventEmitter {
 
         this.connection.sendUTF(JSON.stringify(msg));
     }
-    /*sendMessage({
-        msgType: t,
-        msgSection: s,
-        msgInstruction: i = null,
-        taskID: tid = null,
-        options: o
-    }) {
-
-        if (typeof this.msgType[t] === "undefined") {
-            this.emit("error", new Error("An error occurred while sending message, field \"msgType\" has incorrect value or is not set"));
-
-            return;
-        }
-
-        if (typeof this.msgType[t][s] === "undefined") {
-            this.emit("error", new Error("An error occurred while sending message, field \"msgSection\" has incorrect value or is not set"));
-
-            return;
-        }
-
-        if (i === null) {
-            this.emit("error", new Error("An error occurred while sending message, field \"msgInstruction\" has incorrect value or is not set"));
-
-            return;
-        }
-
-        if (tid === null) {
-            this.emit("user notification", "Attention, the task ID is not set, when receiving the message it will not be possible to identify the task");
-        }
-
-        if (typeof o === "undefined") {
-            this.emit("error", new Error("An error occurred while sending message, field \"options\" has incorrect value or is not set"));
-
-            return;
-        }
-
-        let jsonMsg = JSON.stringify({
-            t,
-            s,
-            i,
-            tid,
-            o
-        });
-
-        this.connection.sendUTF(jsonMsg);
-    }*/
 }
 
 /**

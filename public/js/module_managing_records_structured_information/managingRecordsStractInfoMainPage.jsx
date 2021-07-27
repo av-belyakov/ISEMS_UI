@@ -1,12 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Col, Row } from "react-bootstrap";
-import { Tab, Tabs, Tooltip } from "@material-ui/core";
+import { CssBaseline, Drawer, Tab, Tabs, Tooltip, LinearProgress } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { BrowserRouter, Link as LinkRouter } from "react-router-dom";
+import { Alert } from "material-ui-lab";
 import { makeStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import CssBaseline from "@material-ui/core/CssBaseline";
 
 import CreatePageReport from "./pages/createPageReport.jsx";
 import CreatePageObservedData from "./pages/createPageObservedData.jsx";
@@ -102,7 +101,10 @@ class CreateMainPage extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            "connectModuleMRSICT": this.connectModuleMRSICT.call(this),
+        };
+
         this.menuItem = {
             "/security_event_management?name=reports": { 
                 "num": 0, 
@@ -149,6 +151,55 @@ class CreateMainPage extends React.Component {
                 "label": "отчетные материалы", 
                 "title": "формирование файлов отчетных материалов" },
         };
+
+        this.handlerEvents = this.handlerEvents.call(this);
+    }
+
+    connectModuleMRSICT() {
+        return (typeof this.props.listItems !== "undefined") ? this.props.listItems.connectionModules.moduleMRSICT : false;
+    }
+
+    requestEmitter() {
+        if (!this.state.connectModuleMRSICT) {
+            return;
+        }
+    }
+
+    handlerEvents() {
+        this.props.socketIo.on("module_MRSICT-API", (data) => {
+            if (data.type === "connectModuleMRSICT") {
+                if (data.options.connectionStatus) {
+                    this.setState({ "connectModuleMRSICT": true });
+
+                    location.reload();
+                } else {
+                    if (!this.state.connectModuleMRSICT) {
+                        return;
+                    }
+
+                    this.setState({ "connectModuleMRSICT": false });
+                }
+            }
+        });
+    }
+
+    showModuleConnectionError() {
+        return (
+            <React.Fragment>
+                <Row className="mt-2">
+                    <Col md={12}>
+                        <Alert variant="filled" severity="error">
+                            <strong>Ошибка!</strong> Отсутствует доступ к модулю управления структурированной информации. Пытаемся установить соединение...
+                        </Alert>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={12}>
+                        <LinearProgress color="secondary" />
+                    </Col>
+                </Row>
+            </React.Fragment>
+        );
     }
 
     getSelectedMenuItem(){
@@ -164,7 +215,11 @@ class CreateMainPage extends React.Component {
         }
     }
 
-    render() {
+    createMainElements(){
+        /*if (!this.state.connectModuleMRSICT){
+            return this.showModuleConnectionError.call(this);
+        }*/
+
         let list = [];
         for(let item in this.menuItem){
             list.push(<Tooltip title={this.menuItem[item].title} key={`tooltip_menu_item_${this.menuItem[item].num}`}>
@@ -179,20 +234,22 @@ class CreateMainPage extends React.Component {
         }
 
         return (
-            <React.Fragment>
-                <BrowserRouter>
-                    <CssBaseline />
-                    <Row>
-                        <Col md={2}>
-                            <LeftElements menuItem={this.menuItem} list={list} handler={this.getSelectedMenuItem}/>
-                        </Col>
-                        <Col md={10}>
-                            <ChildElements socketIo={this.props.socketIo}/>
-                        </Col>
-                    </Row>
-                </BrowserRouter>
-            </React.Fragment>
+            <BrowserRouter>
+                <CssBaseline />
+                <Row>
+                    <Col md={2}>
+                        <LeftElements menuItem={this.menuItem} list={list} handler={this.getSelectedMenuItem}/>
+                    </Col>
+                    <Col md={10}>
+                        {(!this.state.connectModuleMRSICT) ? this.showModuleConnectionError.call(this):  <ChildElements socketIo={this.props.socketIo}/>}
+                    </Col>
+                </Row>
+            </BrowserRouter>
         );
+    }
+
+    render() {
+        return this.createMainElements.call(this);
     }
 }
 
