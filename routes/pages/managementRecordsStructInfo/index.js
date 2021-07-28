@@ -21,14 +21,6 @@ module.exports = function (req, res, objHeader) {
                 if (err) callback(err);
                 else callback(null, result);
             });
-        },
-        mainInformation: (callback) => {
-
-            callback(null, {});
-
-        },
-        widgetsInformation: (callback) => {
-            callback(null, {});
         }
     }, (err, result) => {
         if (err) {
@@ -56,9 +48,7 @@ module.exports = function (req, res, objHeader) {
                         "managingRecordsStructuredInformationAboutComputerThreats",
                         "connectionEstablished")
                 },
-                userPermissions: userPermissions.management_network_interaction.element_settings,
-                mainInformation: result.mainInformation,
-                widgetsInformation: result.widgetsInformation,
+                userPermissions: userPermissions.management_security_event_management.element_settings,
             },
         });
     });

@@ -69,31 +69,31 @@ function ChildElements(props){
     
     switch(name){
     case "":
-        return <CreatePageReport socketIo={props.socketIo}/>;
+        return <CreatePageReport socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "reports":
-        return <CreatePageReport socketIo={props.socketIo}/>;
+        return <CreatePageReport socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "observed_data":
-        return <CreatePageObservedData socketIo={props.socketIo}/>;
+        return <CreatePageObservedData socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "malware":
-        return <CreatePageMalware socketIo={props.socketIo}/>;
+        return <CreatePageMalware socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "vulnerability":
-        return <CreatePageVulnerability socketIo={props.socketIo}/>;
+        return <CreatePageVulnerability socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "threat_actor":
-        return <CreatePageThreatActor socketIo={props.socketIo}/>;
+        return <CreatePageThreatActor socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "infrastructure":
-        return <CreatePageInfrastructure socketIo={props.socketIo}/>;
+        return <CreatePageInfrastructure socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "tools":
-        return <CreatePageTools socketIo={props.socketIo}/>;
+        return <CreatePageTools socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "statistic":
-        return <CreatePageStatistic socketIo={props.socketIo}/>;
+        return <CreatePageStatistic socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "change_log":
-        return <CreatePageChangeLog socketIo={props.socketIo}/>;
+        return <CreatePageChangeLog socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "final_documents":
-        return <CreatePageFinalDocuments socketIo={props.socketIo}/>;
+        return <CreatePageFinalDocuments socketIo={props.socketIo} receivedData={props.receivedData}/>;
     case "reporting_materials":
-        return <CreatePageReportingMaterials socketIo={props.socketIo}/>;
+        return <CreatePageReportingMaterials socketIo={props.socketIo} receivedData={props.receivedData}/>;
     default:
-        return <CreatePageReport socketIo={props.socketIo}/>;
+        return <CreatePageReport socketIo={props.socketIo} receivedData={props.receivedData}/>;
     }
 }
 
@@ -156,7 +156,7 @@ class CreateMainPage extends React.Component {
     }
 
     connectModuleMRSICT() {
-        return (typeof this.props.listItems !== "undefined") ? this.props.listItems.connectionModules.moduleMRSICT : false;
+        return (typeof this.props.receivedData !== "undefined") ? this.props.receivedData.connectionModules.moduleMRSICT : false;
     }
 
     requestEmitter() {
@@ -241,7 +241,9 @@ class CreateMainPage extends React.Component {
                         <LeftElements menuItem={this.menuItem} list={list} handler={this.getSelectedMenuItem}/>
                     </Col>
                     <Col md={10}>
-                        {(!this.state.connectModuleMRSICT) ? this.showModuleConnectionError.call(this):  <ChildElements socketIo={this.props.socketIo}/>}
+                        {(!this.state.connectModuleMRSICT) ? 
+                            this.showModuleConnectionError.call(this):  
+                            <ChildElements socketIo={this.props.socketIo} receivedData={this.props.receivedData} />}
                     </Col>
                 </Row>
             </BrowserRouter>
@@ -255,9 +257,9 @@ class CreateMainPage extends React.Component {
 
 CreateMainPage.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    listItems: PropTypes.object.isRequired,
+    receivedData: PropTypes.object.isRequired,
 };
 
 ReactDOM.render(<CreateMainPage
     socketIo={socket}
-    listItems={receivedFromServer} />, document.getElementById("main-page-content"));
+    receivedData={receivedFromServer} />, document.getElementById("main-page-content"));

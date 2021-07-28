@@ -24,10 +24,18 @@ export default class CreateWidgetsPageReport extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
-            console.log("class 'CreatePageReport', receive event:");
+            console.log("class 'CreateWidgetsPageReport', receive event:");
             console.log(data);
         
+            if(!data.eventForWidgets){
+                return;
+            }
+
             switch(data.section){
+            case "get count doc type 'reports' status 'open'":
+                this.setState({ numOpenReports: data.additional_parameters.number_documents_found });
+
+                return;
             case "handling search requests":
                 if(typeof data.additional_parameters.number_documents_found !== "undefined"){
                     console.log("результат ввиде колличества найденных документов");
@@ -49,7 +57,7 @@ export default class CreateWidgetsPageReport extends React.Component {
     }
 
     requestEmitter(){
-        this.props.socketIo.emit("managing records structured information: get all count doc type 'reports'", { arguments: {}});
+        this.props.socketIo.emit("isems-mrsi ui request: get count doc type 'reports' status 'open'", { arguments: {}});
     }
 
     render(){

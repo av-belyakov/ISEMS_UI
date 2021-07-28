@@ -378,7 +378,11 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
 
             if (globalObject.hasData("tasks", msg.task_id)) {
                 let taskInfo = globalObject.getData("tasks", msg.taskID);
-                if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "isems-mrsi response ui", msg)) {
+                if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "isems-mrsi response ui", { 
+                    section: taskInfo.eventName,
+                    eventForWidgets: taskInfo.eventForWidgets,
+                    information: msg,
+                })) {
                     helpersFunc.sendBroadcastSocketIo("isems-mrsi response ui", msg);
                 }
             } else {
