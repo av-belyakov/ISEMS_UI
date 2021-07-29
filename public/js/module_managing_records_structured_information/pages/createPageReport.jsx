@@ -1,12 +1,14 @@
 import React from "react";
-import { Button, Col, Container, Spinner, Row, Navbar } from "react-bootstrap";
-//import {  } from "@material-ui/core";
+import { Col, Row } from "react-bootstrap";
+import { Button } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 import CreateMainTableReport from "../tables/createMainTableForReport.jsx";
 import CreateWidgetsPageReport from "../widgets/createWidgetsPageReport.jsx";
 import CreateSearchElementReport from "../any_elements/createSearchElementForReport.jsx";
 import ModalWindowAddReportSTIX from "../../modal_windows/modalWindowAddReportSTIX.jsx";
+
+import { CreateButtonNewReport } from "../buttons/createButtonNewReport.jsx";
 
 export default class CreatePageReport extends React.Component {
     constructor(props){
@@ -49,24 +51,19 @@ export default class CreatePageReport extends React.Component {
     }
 
     isDisabledNewReport(){
-        return (this.props.receivedData.userPermissions.create.status)? "": "disabled";
+        return !this.props.receivedData.userPermissions.create.status;
     }
 
     render(){
         return (
             <React.Fragment>
+                <CreateWidgetsPageReport socketIo={this.props.socketIo}/>
+
                 <Row>
-                    <Col md={6} className="text-left">
-                        <CreateWidgetsPageReport socketIo={this.props.socketIo}/>
-                    </Col>
-                    <Col md={6} className="text-right">
-                        <Button
-                            size="sm"
-                            variant="outline-primary"
-                            disabled={this.isDisabledNewReport.call(this)}
-                            onClick={this.handlerShowModalWindowAddReport} >
-                            добавить
-                        </Button>
+                    <Col md={12} className="text-right pt-2">
+                        <CreateButtonNewReport 
+                            buttonIsDisabled={this.isDisabledNewReport.call(this)}
+                            handlerShowModalWindow={this.handlerShowModalWindowAddReport}/>
                     </Col>
                 </Row>
 
