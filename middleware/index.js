@@ -92,6 +92,9 @@ module.exports = function (app, express, io) {
         globalObject.setData("descriptionSocketIo", "userConnections", socket.id, socket);
 
         console.log(`socketIo CONNECTION with id: '${socket.id}'`);
+        console.log("======== func 'middleware', index, socket.io ========");
+        console.log(globalObject.getData("descriptionSocketIo", "userConnections"));
+        console.log("===============");
 
         //обработчик событий User Interface
         routeSocketIo.eventHandlingUserInterface(eventEmiterTimerTick, socket);

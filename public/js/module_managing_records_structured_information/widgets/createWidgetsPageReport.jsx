@@ -55,22 +55,17 @@ export default class CreateWidgetsPageReport extends React.Component {
         super(props);
 
         this.state = {
-            numOpenReports: 0, //количество докладов ожидающих обработки (не опубликованных)
-            showNumOpenReports: false,
-            numPublishedReports: 0, //количество опубликованных докладов
-            showNumPublishedReports: false,
-            numTotalReports: 0, //общее количество докладов, это сумма numOpenReports + numPublishedReports
-            showNumTotalReports: false,
-            numSuccessfullyImplementedComputerThreat: 0, //успешно реализованные компьютерные угрозы
-            showNumSuccessfullyImplementedComputerThreat: false,
-            numComputerThreatNotSuccessful: 0, //компьютерные угрозы не являющиеся успешными
-            showNumComputerThreatNotSuccessful: false,
-            numUnconfirmedComputerThreat: 0, //не подтвердившиеся компьютерные угрозы
-            showNumUnconfirmedComputerThreat: false,
+            openReports: { num: 0, show: false }, //количество докладов ожидающих обработки (не опубликованных)
+            publishedReports: { num: 0, show: false }, //количество опубликованных докладов
+            successfullyImplementedComputerThreat: { num: 0, show: false }, //успешно реализованные компьютерные угрозы
+            computerThreatNotSuccessful: { num: 0, show: false }, //компьютерные угрозы не являющиеся успешными
+            unconfirmedComputerThreat: { num: 0, show: false }, //не подтвердившиеся компьютерные угрозы
         };
 
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
+
+        this.getTotalReport = this.getTotalReport.bind(this);
     }
 
     handlerEvents(){
@@ -83,20 +78,23 @@ export default class CreateWidgetsPageReport extends React.Component {
             }
 
             switch(data.section){
-            case "get count doc type 'reports' status 'open'":
-                this.setState({ numOpenReports: data.additional_parameters.number_documents_found });
+            case "doc type 'reports' status 'open'":
+                this.setState({ 
+                    openReports: {
+                        num: data.information.additional_parameters.number_documents_found,
+                        show: true,
+                    },
+                });
 
                 return;
-            case "handling search requests":
-                if(typeof data.additional_parameters.number_documents_found !== "undefined"){
-                    console.log("результат ввиде колличества найденных документов");
 
-                    this.setState({ totalReports: data.additional_parameters.number_documents_found });
-                } else if(typeof data.additional_parameters.transmitted_data !== "undefined"){
-                    console.log("результат ввиде полного списка найденной информации");
-                } else {
-                    console.log("наверное информационное сообщение что данные не определены");
-                }
+            case "get count doc type 'reports' status 'published'":
+                this.setState({ 
+                    publishedReports: {
+                        num: data.information.additional_parameters.number_documents_found,
+                        show: true,
+                    },
+                });
 
                 return;
         
@@ -107,86 +105,96 @@ export default class CreateWidgetsPageReport extends React.Component {
         });
 
         /** test timer */
+        /**
+         *          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         * Надо сделать обработку данных для формирования виджетов:
+         * - успешно реализованные компьютерные угрозы
+         * - компьютерные угрозы не являющиеся успешными
+         * - не подтвердившиеся компьютерные угрозы
+         * 
+         */
         setTimeout(()=>{
-            this.setState({ showNumOpenReports: true });
-        }, 5000);
-        setTimeout(()=>{
-            this.setState({ showNumPublishedReports: true });
-        }, 6000);
-        setTimeout(()=>{
-            this.setState({ showNumTotalReports: true });
-        }, 7000);
-        setTimeout(()=>{
-            this.setState({ showNumSuccessfullyImplementedComputerThreat: true });
+            this.setState({ successfullyImplementedComputerThreat: { num: 0, show: true } });
         }, 8000);
         setTimeout(()=>{
-            this.setState({ showNumComputerThreatNotSuccessful: true });
+            this.setState({ computerThreatNotSuccessful: { num: 0, show: true } });
         }, 9000);
         setTimeout(()=>{
-            this.setState({ showNumUnconfirmedComputerThreat: true });
+            this.setState({ unconfirmedComputerThreat: { num: 0, show: true } });
         }, 10000);
     }
 
     requestEmitter(){
         this.props.socketIo.emit("isems-mrsi ui request: get count doc type 'reports' status 'open'", { arguments: {}});
+        this.props.socketIo.emit("isems-mrsi ui request: get count doc type 'reports' status 'published'", { arguments: {}});
+    }
+
+    getTotalReport(){
+        if(!this.state.openReports.show || !this.state.publishedReports.show){
+            return { numTotalReports: 0, showNumTotalReports: false };
+        }
+
+        return { numTotalReports: (this.state.openReports.num+this.state.publishedReports.num), showNumTotalReports: true };
     }
 
     render(){
+        let { numTotalReports, showNumTotalReports } = this.getTotalReport();
+
         return (
             <React.Fragment>
                 <Row>
                     <Col md={2}>
                         <CardElement 
-                            count={this.state.numOpenReports}
+                            count={this.state.openReports.num}
                             avatarColor="lightGreen"
                             avatarText="д"
                             text="обрабатываемые"
-                            show={this.state.showNumOpenReports}
+                            show={this.state.openReports.show}
                             titleText="количество докладов ожидающих обработки" />
                     </Col>
                     <Col md={2}>
                         <CardElement 
-                            count={this.state.numPublishedReports}
+                            count={this.state.publishedReports.num}
                             avatarColor="lightGreen"
                             avatarText="д"
                             text="опубликованные"
-                            show={this.state.showNumPublishedReports}
+                            show={this.state.publishedReports.show}
                             titleText="количество опубликованных докладов" />
                     </Col>
                     <Col md={2}>
                         <CardElement 
-                            count={this.state.numTotalReports}
+                            count={numTotalReports}
                             avatarColor="teal"
                             avatarText="д"
                             text="всего"
-                            show={this.state.showNumTotalReports}
+                            show={showNumTotalReports}
                             titleText="общее количество докладов" />
                     </Col>
                     <Col md={2}>
                         <CardElement 
-                            count={this.state.numSuccessfullyImplementedComputerThreat}
+                            count={this.state.successfullyImplementedComputerThreat.num}
                             avatarColor="red"
                             avatarText="ку"
                             text="успешно"
-                            show={this.state.showNumSuccessfullyImplementedComputerThreat}
+                            show={this.state.successfullyImplementedComputerThreat.show}
                             titleText="успешно реализованные компьютерные угрозы" />
                     </Col>
                     <Col md={2}>
                         <CardElement 
-                            count={this.state.numComputerThreatNotSuccessful}
+                            count={this.state.computerThreatNotSuccessful.num}
                             avatarColor="yellow"
                             avatarText="ку"
                             text="безуспешно"
-                            show={this.state.showNumComputerThreatNotSuccessful}
+                            show={this.state.computerThreatNotSuccessful.show}
                             titleText="компьютерные угрозы не являющиеся успешными" />
                     </Col>
                     <Col md={2}>
                         <CardElement 
-                            count={this.state.numUnconfirmedComputerThreat}
+                            count={this.state.unconfirmedComputerThreat.num}
                             avatarColor="grey"
                             avatarText="ку"
                             text="отклоненные"
-                            show={this.state.showNumUnconfirmedComputerThreat}
+                            show={this.state.unconfirmedComputerThreat.show}
                             titleText="не подтвердившиеся компьютерные угрозы" />
                     </Col>
                 </Row>

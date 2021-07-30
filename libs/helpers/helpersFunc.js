@@ -101,7 +101,12 @@ module.exports.modifyListFoundTasks = (oldList) => {
 };
 
 module.exports.sendMessageByUserSocketIo = (userSocketId, e, msg) => {
+    if(typeof userSocketId === "undefined"){
+        return false;
+    }
+
     let socketIo = globalObject.getData("descriptionSocketIo", "userConnections", userSocketId);
+    
     if (socketIo !== null) {
         socketIo.emit(e, msg);
 

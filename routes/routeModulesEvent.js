@@ -377,15 +377,34 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
 
 
             if (globalObject.hasData("tasks", msg.task_id)) {
-                let taskInfo = globalObject.getData("tasks", msg.taskID);
+                let taskInfo = globalObject.getData("tasks", msg.task_id);
+
+                /*
+                console.log("-----====== func 'routeModulesEvent', task info ======-----");
+                console.log(taskInfo);
+                console.log("________ 1 ________");
+                for(let sid in globalObject.getData("descriptionSocketIo", "userConnections")){
+                    console.log(`sid; ${sid}`);
+                }
+                console.log("________ 2 ________");
+                console.log(globalObject.getData("descriptionSocketIo", "userConnections", taskInfo.socketId));
+                console.log("======================");
+                */
+
                 if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, "isems-mrsi response ui", { 
                     section: taskInfo.eventName,
                     eventForWidgets: taskInfo.eventForWidgets,
                     information: msg,
                 })) {
+
+                    debug("2222222");
+
                     helpersFunc.sendBroadcastSocketIo("isems-mrsi response ui", msg);
                 }
             } else {
+
+                debug("33333");
+
                 helpersFunc.sendBroadcastSocketIo("isems-mrsi response ui", msg);
             }
         }).on("binary message", (msg) => {

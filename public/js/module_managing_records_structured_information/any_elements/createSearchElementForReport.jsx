@@ -27,7 +27,7 @@ export default class CreateSearchElementReport extends React.Component {
         return (
             <React.Fragment>
                 <hr/>
-                <Row><Col md={12} className="pt-4 text-center"><h3>Область основного набор элементов поиска страницы Report</h3></Col></Row>
+                <Row><Col md={12} className="pt-4 text-center"><h3>Область основного набора элементов поиска страницы Report</h3></Col></Row>
                 <Row><Col md={12} className="text-center">{(this.props.userPermissions.privileged_group.status)? 
                     <span className="text-success">привилегированная группа</span>: 
                     <span className="text-danger">непривилегированная группа</span>}</Col></Row>
