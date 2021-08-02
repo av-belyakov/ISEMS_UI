@@ -19,6 +19,18 @@ module.exports.addHandlers = function(socketIo) {
     const handlers = {
         "isems-mrsi ui request: get count doc type 'reports' status 'open'": getCountOpenReports,
         "isems-mrsi ui request: get count doc type 'reports' status 'published'": getCountPublishedReports,
+        //"isems-mrsi ui request: get count doc type 'reports' status 'published'"
+        /**
+         * 'successfully implemented computer threat', 'unsuccessfully computer threat', 'false positive'
+         * 
+         * Не знаю, наверное поиск по STIX объектам типа 'grouping' содержащих списки ID STIX объектов типа
+         * 'report' с именами 'successfully implemented computer threat', 'unsuccessfully computer threat', 'false positive'
+         * нужно делать отдельно (ЭТО ВОПРОС НЕ К UI А К MRISCT)!!! Потому как некторорые STIX объекты типа 'grouping'
+         * могут, через некоторое время функционирования ПО, содержать достаточно объемные списки ID в поле ObjectRef,
+         * соответственное для передачи такого большого количества нужна сегментация. Да и разделение информации об общем колличестве
+         * и информации, содержащей непосредственно набор ID, нужно предусмотреть.
+         * 
+         */
     };
     //network interaction:
     for (let e in handlers) {
