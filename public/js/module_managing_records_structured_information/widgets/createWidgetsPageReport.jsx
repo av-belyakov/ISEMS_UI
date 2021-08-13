@@ -5,6 +5,7 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import { makeStyles } from "@material-ui/core/styles";
 import { grey, lightGreen, teal, red, yellow } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
+import { FreeBreakfastRounded } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -98,8 +99,52 @@ export default class CreateWidgetsPageReport extends React.Component {
 
                 return;
         
-            case "":
-        
+            case "get count doc statuses decisions made computer threats":
+
+                console.log("func 'createWidgetsPageReport', section: get count doc statuses decisions made computer threats");
+                console.log(data);
+                console.log(data.information.additional_parameters.list_computer_threat);
+
+                /**
+ * Не понимаю почему то key === 'successfully implemented computer threat не равны, так же как и 'unsuccessfully computer threat',
+ * 'false positive'
+ * 
+ * СДелать обработку информационных сообщений. Не выводятся сообщения об ошибки.
+ */
+
+
+                for(let key in data.information.additional_parameters.list_computer_threat){
+
+                    console.log(`key: '${key}' - (key === 'successfully implemented computer threat': ${key === "successfully implemented computer threat"})`);
+
+                    switch(key){
+                    case "successfully implemented computer threat":
+                        this.setState({
+                            successfullyImplementedComputerThreat: { 
+                                num: data.information.additional_parameters.list_computer_threat[key], 
+                                show: true, 
+                            }});
+                        break;
+
+                    case "unsuccessfully computer threat":
+                        this.setState({
+                            computerThreatNotSuccessful: { 
+                                num: data.information.additional_parameters.list_computer_threat[key], 
+                                show: true, 
+                            }});
+                        break;
+
+                    case "false positive":
+                        this.setState({
+                            unconfirmedComputerThreat: { 
+                                num: data.information.additional_parameters.list_computer_threat[key], 
+                                show: true, 
+                            }});
+                        break;
+
+                    }
+                }
+
                 return;
             }
         });
@@ -112,7 +157,7 @@ export default class CreateWidgetsPageReport extends React.Component {
          * - компьютерные угрозы не являющиеся успешными
          * - не подтвердившиеся компьютерные угрозы
          * 
-         */
+         
         setTimeout(()=>{
             this.setState({ successfullyImplementedComputerThreat: { num: 0, show: true } });
         }, 8000);
@@ -121,12 +166,13 @@ export default class CreateWidgetsPageReport extends React.Component {
         }, 9000);
         setTimeout(()=>{
             this.setState({ unconfirmedComputerThreat: { num: 0, show: true } });
-        }, 10000);
+        }, 10000);*/
     }
 
     requestEmitter(){
         this.props.socketIo.emit("isems-mrsi ui request: get count doc type 'reports' status 'open'", { arguments: {}});
         this.props.socketIo.emit("isems-mrsi ui request: get count doc type 'reports' status 'published'", { arguments: {}});
+        this.props.socketIo.emit("isems-mrsi ui request: get count doc statuses decisions made computer threats", { arguments: {}});
     }
 
     getTotalReport(){
