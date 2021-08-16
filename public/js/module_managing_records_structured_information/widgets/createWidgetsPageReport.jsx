@@ -5,7 +5,6 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import { makeStyles } from "@material-ui/core/styles";
 import { grey, lightGreen, teal, red, yellow } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
-import { FreeBreakfastRounded } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -100,23 +99,7 @@ export default class CreateWidgetsPageReport extends React.Component {
                 return;
         
             case "get count doc statuses decisions made computer threats":
-
-                console.log("func 'createWidgetsPageReport', section: get count doc statuses decisions made computer threats");
-                console.log(data);
-                console.log(data.information.additional_parameters.list_computer_threat);
-
-                /**
- * Не понимаю почему то key === 'successfully implemented computer threat не равны, так же как и 'unsuccessfully computer threat',
- * 'false positive'
- * 
- * СДелать обработку информационных сообщений. Не выводятся сообщения об ошибки.
- */
-
-
                 for(let key in data.information.additional_parameters.list_computer_threat){
-
-                    console.log(`key: '${key}' - (key === 'successfully implemented computer threat': ${key === "successfully implemented computer threat"})`);
-
                     switch(key){
                     case "successfully implemented computer threat":
                         this.setState({
@@ -148,25 +131,6 @@ export default class CreateWidgetsPageReport extends React.Component {
                 return;
             }
         });
-
-        /** test timer */
-        /**
-         *          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-         * Надо сделать обработку данных для формирования виджетов:
-         * - успешно реализованные компьютерные угрозы
-         * - компьютерные угрозы не являющиеся успешными
-         * - не подтвердившиеся компьютерные угрозы
-         * 
-         
-        setTimeout(()=>{
-            this.setState({ successfullyImplementedComputerThreat: { num: 0, show: true } });
-        }, 8000);
-        setTimeout(()=>{
-            this.setState({ computerThreatNotSuccessful: { num: 0, show: true } });
-        }, 9000);
-        setTimeout(()=>{
-            this.setState({ unconfirmedComputerThreat: { num: 0, show: true } });
-        }, 10000);*/
     }
 
     requestEmitter(){
@@ -276,12 +240,6 @@ function CardElement(props){
                 <div className={classes.root}><Skeleton variant="rect" width={190} height={88}/></div>}
         </Tooltip>);
 }
-
-/**
- * 
- * написать обработчик событий для виджета
- * 
- */
 
 CardElement.propTypes = {
     show: PropTypes.bool,

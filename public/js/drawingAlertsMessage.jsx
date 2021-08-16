@@ -48,7 +48,7 @@ class DrawingAlertMessage extends React.Component {
             <Snackbar 
                 open={this.state.showSnackbar} 
                 onClose={this.handleClose.bind(this)} 
-                autoHideDuration={6000} 
+                autoHideDuration={9000} 
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}>
                 <Alert onClose={this.handleClose.bind(this)} severity={this.titleObj[level].severity}>
                     {this.props.notiyMsg.message}

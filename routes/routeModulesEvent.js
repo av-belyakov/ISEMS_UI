@@ -407,6 +407,15 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
 
                 helpersFunc.sendBroadcastSocketIo("isems-mrsi response ui", msg);
             }
+
+            //вывод информационного сообщения
+            if(!msg.is_successful){
+                showNotify({
+                    socketIo: socketIo,
+                    type: msg.information_message.msg_type,
+                    message: `МОДУЛЬ УПРАВЛЕНИЯ СТРУКТУРИРОВАННОЙ ИНФОРМАЦИЕЙ (${msg.information_message.msg})`,
+                });
+            }            
         }).on("binary message", (msg) => {
             debug("--- BINARY MESSAGE from module ISEMS-MRSICT ---");
             debug(msg);
@@ -419,10 +428,6 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
             }
 
             globalObject.setData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "previousConnectionStatus", false);
-        }).on("user notification", (notify) => {
-            debug("--- USER NOTIFICATION, module ISEMS-MRSICT ---");
-            debug(notify);
-
         }).on("error", (err) => {
             debug("--- ERROR, module ISEMS-MRSICT ---");
             debug(err);
