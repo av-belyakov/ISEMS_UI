@@ -375,9 +375,15 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
          * от непревелигированных пользователей
          */
 
+            if(!msg.is_successful){
+                return;
+            }
 
             if (globalObject.hasData("tasks", msg.task_id)) {
                 let taskInfo = globalObject.getData("tasks", msg.task_id);
+
+                debug("---- taskInfo ----");
+                debug(taskInfo);
 
                 /*
                 console.log("-----====== func 'routeModulesEvent', task info ======-----");
