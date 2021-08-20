@@ -221,24 +221,23 @@ function CardElement(props){
     const { text, count, avatarColor, avatarText, titleText, show } = props;
     const classes = useStyles();
   
-    return (
-        <Tooltip title={titleText}>
-            {(show)?
-                <div className={classes.root}>
-                    <Paper className={classes.paper}>
-                        <Grid container wrap="nowrap" spacing={3}>
-                            <Grid item>
-                                <AvatarElement color={avatarColor} text={avatarText}/>
-                            </Grid>
-                            <Grid item xs zeroMinWidth>
-                                <h5>{count}</h5>
-                                <Typography noWrap>{text}</Typography>
-                            </Grid>
+    return (<Tooltip title={titleText}>
+        {(show)?
+            <div className={classes.root}>
+                <Paper className={classes.paper}>
+                    <Grid container wrap="nowrap" spacing={3}>
+                        <Grid item>
+                            <AvatarElement color={avatarColor} text={avatarText}/>
                         </Grid>
-                    </Paper>
-                </div>:
-                <div className={classes.root}><Skeleton variant="rect" width={190} height={88}/></div>}
-        </Tooltip>);
+                        <Grid item xs zeroMinWidth>
+                            <h5>{count}</h5>
+                            <Typography noWrap>{text}</Typography>
+                        </Grid>
+                    </Grid>
+                </Paper>
+            </div>:
+            <div className={classes.root}><Skeleton variant="rect" width={190} height={88}/></div>}
+    </Tooltip>);
 }
 
 CardElement.propTypes = {
