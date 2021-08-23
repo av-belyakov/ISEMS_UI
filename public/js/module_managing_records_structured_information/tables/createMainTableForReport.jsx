@@ -18,8 +18,10 @@ const useStyles = makeStyles({
 
 const columns = [
     { id: "num", label: "№", minWidth: 45 },
-    { id: "create", label: "Дата создания", minWidth: 150 },
-    { id: "modify", label: "Дата модификации", minWidth: 150 },
+    { id: "type", label: "Тип", minWidth: 45, align: "center", },
+    { id: "create", label: "Дата создания", minWidth: 130 },
+    { id: "modify", label: "Дата модификации", minWidth: 130 },
+    { id: "publication", label: "Дата публикации", minWidth: 130 },
     { id: "name", label: "Наименование", minWidth: 170 },
     {
         id: "content_type",
@@ -128,13 +130,40 @@ function CreateTable(props){
                 </TableHead>
                 <TableBody>
                     {listReports.map((item, num) => {
+
+                        console.log(`${item.published}: ${Date.parse(item.published)}`);
+
+                        let timePublished = <span className="text-secondary">не опубликовано</span>;
+                        if(Date.parse(item.published) > 0){
+                            timePublished = helpers.convertDateFromString(item.published);
+                        }
+
+                        let imgTypeSTIX = "";
+
+                        console.log(`stix type: ${item.type}: ${helpers.getLinkImageSTIXObject(item.type)}`);
+
+                        if(typeof helpers.getLinkImageSTIXObject(item.type) !== "undefined"){
+                            imgTypeSTIX = <img src={`/images/stix_object/${helpers.getLinkImageSTIXObject(item.type).link}`} width="35" height="35" />;
+                        }
+
                         return (
                             <TableRow key={`table_row_${item.id}`}>
                                 <TableCell>{`${++num}.`}</TableCell>
-                                <TableCell>{item.created}</TableCell>
-                                <TableCell>{item.modified}</TableCell>
+                                <TableCell align="center">{imgTypeSTIX}</TableCell>
+                                <TableCell>{helpers.convertDateFromString(item.created)}</TableCell>
+                                <TableCell>{helpers.convertDateFromString(item.modified)}</TableCell>
+                                <TableCell>{timePublished}</TableCell>
                                 <TableCell>{item.name}</TableCell>
-                                <TableCell align="right">{JSON.stringify(item.report_types)}</TableCell>
+                                <TableCell align="right">{item.report_types.map((elem) => {
+
+                                    /** сделать названия и всплывающие подсказки для каждого из типов STIX объектов */
+
+                                    return <img 
+                                        key={`key_report_type_${elem}`} 
+                                        src={`/images/stix_object/${helpers.getLinkImageSTIXObject(elem).link}`} 
+                                        width="35" 
+                                        height="35" />;
+                                })}</TableCell>
                             </TableRow>
                         );
                     })}

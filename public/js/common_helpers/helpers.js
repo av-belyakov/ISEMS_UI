@@ -28,6 +28,21 @@ let helpers = {
         return (new Date((+dateUnix - x)).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, ""));
     },
 
+    //конвертирование даты и времени из строки формата "2017-02-20T01:34:11Z" в объект Date
+    convertDateFromString(dateString){
+        let x = -(new Date()).getTimezoneOffset() * 60000;
+
+        return new Date(Date.parse(dateString) - x).toLocaleString("ru", {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            timezone: "Europe/Moscow",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric"
+        });
+    },
+
     //получить цвет значения
     getColor(number) {
         if (0 <= number && number <= 35) return "color: #83B4D7;";
@@ -137,6 +152,176 @@ let helpers = {
     //генератор токена
     tokenRand() {
         return (Math.random().toString(14).substr(2)) + (Math.random().toString(14).substr(2));
+    },
+
+    getLinkImageSTIXObject(nameSTIXObject){
+        const listLink = {
+            "artifact": {
+                "link": "Artifact-Square.png",
+                "description": "",
+            },				
+            "directory": {
+                "link": "Directory-Square.png",
+                "description": "",
+            },				
+            "file": {
+                "link": "File-Square.png",
+                "description": "",
+            },					
+            "mutex": {
+                "link": "Mutex-Square.png",
+                "description": "",
+            },				
+            "process": {
+                "link": "Process-Square.png",
+                "description": "",
+            },			
+            "software": {
+                "link": "Software-Square.png",
+                "description": "",
+            },				
+            "url": {
+                "link": "URL-Square.png",
+                "description": "",
+            },				
+            "windows-registry-key": {
+                "link": "WindowsRegistryKey-Square.png",
+                "description": "",
+            },			
+            "x509-certificate": {
+                "link": "X509Certificate-Square.png",
+                "description": "",
+            },		
+            "attack-pattern": {
+                "link": "attack-pattern-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "autonomous-system": {
+                "link": "autonomous-system-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "campaign": {
+                "link": "campaign-square-dark-300-dpi.png",
+                "description": "",
+            },		
+            "course-of-action": {
+                "link": "coa-square-dark-300-dpi.png",
+                "description": "",
+            },	
+            "domain-name": {
+                "link": "domain-name-square-dark-300-dpi.png",
+                "description": "",
+            },		
+            "email-addr": {
+                "link": "email-addr-square-dark-300-dpi.png",
+                "description": "",
+            },	
+            "email-message": {
+                "link": "email-msg-square-dark-300-dpi.png",
+                "description": "",
+            },	
+            "grouping": {
+                "link": "grouping-square-dark-300-dpi.png",
+                "description": "",
+            },	
+            "identity": {
+                "link": "identity-square-dark-300-dpi.png",
+                "description": "",
+            },		
+            "incident": {
+                "link": "incident-square-dark-300-dpi.png",
+                "description": "",
+            },	
+            "indicator": {
+                "link": "indicator-square-dark-300-dpi.png",
+                "description": "",
+            },		
+            "infrastructure": {
+                "link": "infrastructure-square-dark-300-dpi.png",	
+                "description": "",
+            },	
+            "intrusion-set": {
+                "link": "intrusion-set-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "ipv4-addr": {
+                "link": "ipv4-addr-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "ipv6-addr": {
+                "link": "ipv6-addr-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "location": {
+                "link": "location-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "mac-addr": {
+                "link": "mac-addr-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "malware": {
+                "link": "malware-analysis-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "malware-analysis": {
+                "link": "malware-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "network-traffic": {
+                "link": "network-traffic-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "note": {
+                "link": "note-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "observed-data": {
+                "link": "observed-data-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "opinion": {
+                "link": "opinion-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "relationship": {
+                "link": "relationship-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "report": {
+                "link": "report-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "sighting": {
+                "link": "sighting-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "threat-actor": {
+                "link": "threat-actor-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "tool": {
+                "link": "tool-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "user-account": {
+                "link": "user-account-square-dark-300-dpi.png",
+                "description": "",
+            },
+            "vulnerability": {
+                "link": "vulnerability-square-dark-300-dpi.png",
+                "description": "",
+            },
+            //"": "bundle-square-dark-300-dpi.png",	
+            //"": "http-square-dark-300-dpi.png",	
+            //"": "language-square-dark-300-dpi.png",
+            //"": "source-square-dark-300-dpi.png",
+            //"": "tlp-amber-square-dark-300-dpi.png",
+            //"": "victim-square-dark-300-dpi.png",
+            //"": "victim-target-square-dark-300-dpi.png",
+        };
+
+        return listLink[nameSTIXObject];
     }
 };
 
