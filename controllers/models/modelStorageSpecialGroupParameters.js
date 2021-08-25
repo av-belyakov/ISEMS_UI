@@ -17,7 +17,7 @@ const connection = globalObject.getData("descriptionDB", "MongoDB", "connection"
  */
 let storageSpecialGroupParametersSchema = new connection.Schema({
     list_objects_available_viewing: [{
-        group_name: { type: String, index: true, unique: true },
+        group_name: { type: String, index: true },
         object_id: String,
         collection_name: String,
         user_name: String,

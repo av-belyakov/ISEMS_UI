@@ -158,159 +158,159 @@ let helpers = {
         const listLink = {
             "artifact": {
                 "link": "Artifact-Square.png",
-                "description": "",
+                "description": "Artifact СO STIX - Артефакт",
             },				
             "directory": {
                 "link": "Directory-Square.png",
-                "description": "",
+                "description": "Directory СO STIX - Каталог",
             },				
             "file": {
                 "link": "File-Square.png",
-                "description": "",
+                "description": "File СO STIX - Файл",
             },					
             "mutex": {
                 "link": "Mutex-Square.png",
-                "description": "",
+                "description": "Mutex СO STIX - Мьютекс",
             },				
             "process": {
                 "link": "Process-Square.png",
-                "description": "",
+                "description": "Process СO STIX - Процесс",
             },			
             "software": {
                 "link": "Software-Square.png",
-                "description": "",
+                "description": "Software СO STIX - Программное обеспечение",
             },				
             "url": {
                 "link": "URL-Square.png",
-                "description": "",
+                "description": "URL CO STIX - Унифицированный указатель ресурса",
             },				
             "windows-registry-key": {
                 "link": "WindowsRegistryKey-Square.png",
-                "description": "",
+                "description": "Windows registry key CO STIX - Раздел реестра Windows",
             },			
             "x509-certificate": {
                 "link": "X509Certificate-Square.png",
-                "description": "",
+                "description": "x509 certificate CO STIX - x509 сертификат",
             },		
             "attack-pattern": {
                 "link": "attack-pattern-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Attack Pattern DO STIX - Шаблон атаки",
             },
             "autonomous-system": {
                 "link": "autonomous-system-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Autonomous system DO STIX - Автономная система",
             },
             "campaign": {
                 "link": "campaign-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Campaign DO STIX - Кампания",
             },		
             "course-of-action": {
                 "link": "coa-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Course of Action DO STIX - Реагирование",
             },	
             "domain-name": {
                 "link": "domain-name-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Domain name CO STIX - Доменное имя",
             },		
             "email-addr": {
                 "link": "email-addr-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Email address CO STIX - Email адрес",
             },	
             "email-message": {
                 "link": "email-msg-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Email message CO STIX - Email сообщение",
             },	
             "grouping": {
                 "link": "grouping-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Grouping DO STIX - Группировка",
             },	
             "identity": {
                 "link": "identity-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Identity DO STIX - Идентичность",
             },		
             "incident": {
                 "link": "incident-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Incident DO STIX - Инцидент",
             },	
             "indicator": {
                 "link": "indicator-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Indicator DO STIX - Индикатор",
             },		
             "infrastructure": {
                 "link": "infrastructure-square-dark-300-dpi.png",	
-                "description": "",
+                "description": "Infrastructure DO STIX - Инфраструктура",
             },	
             "intrusion-set": {
                 "link": "intrusion-set-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Intrusion Set DO STIX - Набор вторжения",
             },
             "ipv4-addr": {
                 "link": "ipv4-addr-square-dark-300-dpi.png",
-                "description": "",
+                "description": "IPv4 address CO STIX - IP адрес версии 4",
             },
             "ipv6-addr": {
                 "link": "ipv6-addr-square-dark-300-dpi.png",
-                "description": "",
+                "description": "IPv6 address CO STIX - IP адрес версии 6",
             },
             "location": {
                 "link": "location-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Location DO STIX - Местоположение",
             },
             "mac-addr": {
                 "link": "mac-addr-square-dark-300-dpi.png",
-                "description": "",
+                "description": "MAC address CO STIX - MAC адрес",
             },
             "malware": {
                 "link": "malware-analysis-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Malware DO STIX - Вредоносное программное обеспечение",
             },
             "malware-analysis": {
                 "link": "malware-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Malware analysis DO STIX - Анализ вредоносного программного обеспечения",
             },
             "network-traffic": {
                 "link": "network-traffic-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Network traffic CO STIX - Сетевой трафик",
             },
             "note": {
                 "link": "note-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Note DO STIX - Примечание",
             },
             "observed-data": {
                 "link": "observed-data-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Observed Data DO STIX - Наблюдение",
             },
             "opinion": {
                 "link": "opinion-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Opinion DO STIX - Мнение",
             },
             "relationship": {
                 "link": "relationship-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Relationship RO STIX - Отношение",
             },
             "report": {
                 "link": "report-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Report DO STIX - Доклад",
             },
             "sighting": {
                 "link": "sighting-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Sighting RO STIX - Визирование",
             },
             "threat-actor": {
                 "link": "threat-actor-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Threat actor DO STIX - Исполнитель угроз",
             },
             "tool": {
                 "link": "tool-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Tool DO STIX - Инструмент",
             },
             "user-account": {
                 "link": "user-account-square-dark-300-dpi.png",
-                "description": "",
+                "description": "User account CO STIX - Учетная запись пользователя",
             },
             "vulnerability": {
                 "link": "vulnerability-square-dark-300-dpi.png",
-                "description": "",
+                "description": "Vulnerability DO STIX - Уязвимость",
             },
             //"": "bundle-square-dark-300-dpi.png",	
             //"": "http-square-dark-300-dpi.png",	

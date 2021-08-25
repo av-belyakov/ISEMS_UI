@@ -64,9 +64,9 @@ class MyEventEmitterConnAPI extends EventEmitter {
             });
 
             connection.on("message", (msg) => {
-                console.log("func 'managingRecordsStructuredInformationAboutComputerThreatsAPI', EVENT: 'message'");
-                console.log(`type: ${msg.type}`);
-                console.log(msg);
+                //console.log("func 'managingRecordsStructuredInformationAboutComputerThreatsAPI', EVENT: 'message'");
+                //console.log(`type: ${msg.type}`);
+                //console.log(msg);
 
                 if (msg.type === "utf8") {
                     try {

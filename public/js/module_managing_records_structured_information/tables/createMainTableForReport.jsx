@@ -1,20 +1,37 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, LinearProgress } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import Pagination from "@material-ui/lab/Pagination";
+import { 
+    Table, 
+    TableBody, 
+    TableCell, 
+    TableContainer, 
+    TableHead, 
+    TableRow, 
+    Tooltip, 
+    TablePagination, 
+    Paper, 
+    LinearProgress } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers//helpers";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     root: {
         width: "100%",
     },
     container: {
-        maxHeight: 440,
+        maxHeight: 750,
     },
-});
+    pagination: {
+        width: "100%",
+        align: "center",
+        textAlign: "center",
+        alignItems: "center",
+        alignContent: "center",
+        padding: theme.spacing(2,2),
+    },
+}));
 
 const columns = [
     { id: "num", label: "№", minWidth: 45 },
@@ -38,6 +55,8 @@ export default class CreateMainTableForReport extends React.Component {
 
         this.state = {
             listReports: [],
+            countSearchReports: 0,
+            currentPagePagination: 0,
         };
 
         this.handlerEvents.call(this);
@@ -50,29 +69,32 @@ export default class CreateMainTableForReport extends React.Component {
             //            console.log("class 'CreateMainTableForReport'");
             //            console.log(data);
 
+            if(data.section === "send search request, count found elem, table page report"){
+                console.log("___ data for COUNT DOCUMENTS START");
+                console.log(data);
+                console.log("___ data for COUNT DOCUMENTS END");
+
+                if(!data.information.is_successful){
+                    return;
+                }
+
+                this.setState({ countSearchReports: data.information.additional_parameters.number_documents_found });
+            }
+
             if(data.section === "send search request, table page report"){
                 console.log("___ data for table START");
                 console.log(data);
                 console.log("___ data for table END");
 
                 if((typeof data.information === "undefined") || (data.information === null)){
-
-                    console.log("ERROR: 1");
-
                     return;
                 }
 
                 if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
-                    
-                    console.log("ERROR: 2");
-                    
                     return;
                 }
 
                 if((typeof data.information.additional_parameters.transmitted_data === "undefined") || (data.information.additional_parameters.transmitted_data === null)){
-                    
-                    console.log("ERROR: 3");
-                    
                     return;
                 }
 
@@ -83,12 +105,23 @@ export default class CreateMainTableForReport extends React.Component {
 
     requestEmitter(){}
 
+    showDocumentCount(){
+        return (
+            <Row>
+                <Col md={12} className="text-left pb-2"><i>{`Всего документов найдено: ${this.state.countSearchReports}`}</i></Col>
+            </Row>
+        );
+    }
+
     render(){
         return (
             <React.Fragment>
                 <hr/>
-                <Row><Col md={12} className="pt-4 text-center"><h3>Область основной таблицы страницы Report!</h3></Col></Row>
-                <CreateTable listReports={this.state.listReports}/>
+                {this.showDocumentCount.call(this)}
+                <CreateTable 
+                    listReports={this.state.listReports} 
+                    countSearchReports={this.state.countSearchReports} 
+                    currentPagePagination={this.state.currentPagePagination}/>
             </React.Fragment>
         );
     }
@@ -98,13 +131,17 @@ CreateMainTableForReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
 };
 
-function CustomPagination() {
-    
-}
-
 function CreateTable(props){
-    let { listReports } = props;
+    let { listReports, countSearchReports, currentPagePagination } = props;
     const classes = useStyles();
+
+    const onPageChange = ()=>{
+        console.log("handler func 'onPageChange', START...");
+    };
+
+    const onRowsPerPageChange = ()=>{
+        console.log("handler func 'onRowsPerPageChange', START...");
+    };
 
     console.log("CreateTable");
     console.log(listReports);
@@ -130,20 +167,18 @@ function CreateTable(props){
                 </TableHead>
                 <TableBody>
                     {listReports.map((item, num) => {
-
-                        console.log(`${item.published}: ${Date.parse(item.published)}`);
-
-                        let timePublished = <span className="text-secondary">не опубликовано</span>;
+                        let imgTypeSTIX = "",
+                            timePublished = <span className="text-secondary">не опубликовано</span>;
+                        
                         if(Date.parse(item.published) > 0){
                             timePublished = helpers.convertDateFromString(item.published);
                         }
 
-                        let imgTypeSTIX = "";
-
-                        console.log(`stix type: ${item.type}: ${helpers.getLinkImageSTIXObject(item.type)}`);
-
-                        if(typeof helpers.getLinkImageSTIXObject(item.type) !== "undefined"){
-                            imgTypeSTIX = <img src={`/images/stix_object/${helpers.getLinkImageSTIXObject(item.type).link}`} width="35" height="35" />;
+                        let currentType = helpers.getLinkImageSTIXObject(item.type);
+                        if(typeof currentType !== "undefined"){
+                            imgTypeSTIX = <Tooltip title={currentType.description} key={`key_tooltip_report_type_${currentType.link}`}>
+                                <img src={`/images/stix_object/${currentType.link}`} width="35" height="35" />
+                            </Tooltip>;
                         }
 
                         return (
@@ -155,24 +190,40 @@ function CreateTable(props){
                                 <TableCell>{timePublished}</TableCell>
                                 <TableCell>{item.name}</TableCell>
                                 <TableCell align="right">{item.report_types.map((elem) => {
+                                    let linkImage = helpers.getLinkImageSTIXObject(elem);
 
-                                    /** сделать названия и всплывающие подсказки для каждого из типов STIX объектов */
+                                    if(typeof linkImage === "undefined"){
+                                        return;
+                                    }
 
-                                    return <img 
-                                        key={`key_report_type_${elem}`} 
-                                        src={`/images/stix_object/${helpers.getLinkImageSTIXObject(elem).link}`} 
-                                        width="35" 
-                                        height="35" />;
-                                })}</TableCell>
+                                    return (<Tooltip title={linkImage.description} key={`key_tooltip_report_type_${elem}`}>
+                                        <img 
+                                            key={`key_report_type_${elem}`} 
+                                            src={`/images/stix_object/${linkImage.link}`} 
+                                            width="35" 
+                                            height="35" />
+                                    </Tooltip>);
+                                })}
+                                </TableCell>
                             </TableRow>
                         );
                     })}
                 </TableBody>
             </Table>
         </TableContainer>
+        <TablePagination
+            rowsPerPageOptions={[10, 20, 30]}
+            component="div"
+            count={countSearchReports}
+            rowsPerPage={10}
+            page={currentPagePagination}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={onRowsPerPageChange} />
     </Paper>);
 }
-//helpers.getDate(item.created)
+
 CreateTable.propTypes = {
     listReports: PropTypes.array.isRequired,
+    countSearchReports: PropTypes.number,
+    currentPagePagination: PropTypes.number,
 };

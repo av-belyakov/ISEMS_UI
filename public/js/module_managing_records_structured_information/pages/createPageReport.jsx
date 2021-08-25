@@ -19,7 +19,7 @@ export default class CreatePageReport extends React.Component {
             showModalWindowAddReport: false,
             requestDetails: {
                 paginateParameters: {
-                    maxPartSize: 15,
+                    maxPartSize: 10,
                     currentPartNumber: 1,
                 },
                 sortableField: "data_created",
@@ -109,6 +109,10 @@ export default class CreatePageReport extends React.Component {
         console.log("func 'requestEmitter', page Report");
         console.log(this.state.requestDetails);
 
+        //запрос краткой информации (количество) по заданным параметрам
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: this.state.requestDetails });
+
+        //запрос полной информации по заданным параметрам
         this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: this.state.requestDetails });
     }
 
