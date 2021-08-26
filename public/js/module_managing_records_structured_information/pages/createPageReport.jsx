@@ -1,6 +1,7 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { Button } from "@material-ui/core";
+//import lodash from "lodash";
 import PropTypes from "prop-types";
 
 import CreateMainTableReport from "../tables/createMainTableForReport.jsx";
@@ -19,7 +20,7 @@ export default class CreatePageReport extends React.Component {
             showModalWindowAddReport: false,
             requestDetails: {
                 paginateParameters: {
-                    maxPartSize: 10,
+                    maxPartSize: 30,
                     currentPartNumber: 1,
                 },
                 sortableField: "data_created",
@@ -97,12 +98,12 @@ export default class CreatePageReport extends React.Component {
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
 
+        this.handlerRequestNextPageOfTable = this.handlerRequestNextPageOfTable.bind(this);
         this.handlerShowModalWindowAddReport = this.handlerShowModalWindowAddReport.bind(this);
         this.handlerCloseModalWindowAddReport = this.handlerCloseModalWindowAddReport.bind(this);
     }
 
-    handlerEvents(){
-    }
+    handlerEvents(){}
 
     requestEmitter(){
 
@@ -122,6 +123,22 @@ export default class CreatePageReport extends React.Component {
 
     handlerCloseModalWindowAddReport(){
         this.setState({ showModalWindowAddReport: false });
+    }
+
+    handlerRequestNextPageOfTable(numPagination){
+        console.log("func 'handlerRequestNextPageOfTable', START... обработчик запроса следующей страницы таблицы");
+        console.log(`func 'handlerRequestNextPageOfTable', received numPagination: ${numPagination}`);
+
+        let requestDetailsTmp = _.cloneDeep(this.state.requestDetails);
+        requestDetailsTmp.paginateParameters.currentPartNumber = numPagination;
+
+        this.setState({ requestDetails: requestDetailsTmp });
+
+        //запрос полной информации по заданным параметрам
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: requestDetailsTmp });
+
+        console.log("func 'handlerRequestNextPageOfTable', requestDetails AFTER");
+        console.log(this.state.requestDetails);
     }
 
     isDisabledNewReport(){
@@ -145,7 +162,7 @@ export default class CreatePageReport extends React.Component {
                 <CreateSearchElementReport socketIo={this.props.socketIo} userPermissions={this.props.receivedData.userPermissions}/>
 
                 {/** основная таблица страницы */}
-                <CreateMainTableReport socketIo={this.props.socketIo}/>
+                <CreateMainTableReport socketIo={this.props.socketIo} handlerRequestNextPageOfTable={this.handlerRequestNextPageOfTable}/>
 
                 <ModalWindowAddReportSTIX
                     show={this.state.showModalWindowAddReport}

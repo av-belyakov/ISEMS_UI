@@ -340,14 +340,38 @@ function sendSearchRequestPageReport(socketIo, data){
                 });
             });
         }).then((result) => {            
+            if(!result.isPrivilegedGroup){
+                /*return new Promise((resolve, reject) => {
+                    let countElements = 0;
 
-            /**
-                 * 
-                 * делаем запрос к БД UI для получение информации о разрешенных
-                 * к просмотру, данным пользователем, докладов и с учетом пагинаторов
-                 * collection - storage_special_group_parameters
-                 */
+                    mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
+                        query: { group_name: result.userGroup },
+                        select: { _id: 0, __v: 0 }
+                    }, (err, queryResult) => {
+                        if(err) {
+                            reject(err);
+                        }
 
+                        if(!isNull(queryResult)){
+                            countElements = queryResult.length;
+                        }
+
+                        let msg = {
+                            task_id: createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`),
+                            section: "handling search requests",
+                            additional_parameters: { number_documents_found: countElements },
+                        };
+
+                        helpersFunc.sendMessageByUserSocketIo(socketIo.id, "isems-mrsi response ui", { 
+                            section: section,
+                            eventForWidgets: false,
+                            information: msg,
+                        });
+
+                        resolve();
+                    });
+                });*/
+            }
 
             return new Promise((resolve, reject) => {
 

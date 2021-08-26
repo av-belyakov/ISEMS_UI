@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 const columns = [
     { id: "num", label: "№", minWidth: 45 },
     { id: "type", label: "Тип", minWidth: 45, align: "center", },
+    { id: "item_id", label: "ID", minWidth: 170 }, //вывод ID ТОЛЬКО для ТЕСТОВ!!!!
     { id: "create", label: "Дата создания", minWidth: 130 },
     { id: "modify", label: "Дата модификации", minWidth: 130 },
     { id: "publication", label: "Дата публикации", minWidth: 130 },
@@ -56,8 +57,12 @@ export default class CreateMainTableForReport extends React.Component {
         this.state = {
             listReports: [],
             countSearchReports: 0,
-            currentPagePagination: 0,
+            numCurrentPagePagination: 0,
+            countShowReportsPerPage: 10,
         };
+
+        this.handlerOnPageChange = this.handlerOnPageChange.bind(this);
+        this.handlerOnRowsPerPageChange = this.handlerOnRowsPerPageChange.bind(this);
 
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
@@ -70,9 +75,9 @@ export default class CreateMainTableForReport extends React.Component {
             //            console.log(data);
 
             if(data.section === "send search request, count found elem, table page report"){
-                console.log("___ data for COUNT DOCUMENTS START");
-                console.log(data);
-                console.log("___ data for COUNT DOCUMENTS END");
+                //console.log("___ data for COUNT DOCUMENTS START");
+                //console.log(data);
+                //console.log("___ data for COUNT DOCUMENTS END");
 
                 if(!data.information.is_successful){
                     return;
@@ -98,12 +103,46 @@ export default class CreateMainTableForReport extends React.Component {
                     return;
                 }
 
-                this.setState({ listReports: data.information.additional_parameters.transmitted_data });
+                let listReportsTmp = [];
+                for(let item of this.state.listReports){
+                    listReportsTmp.push(item);
+                }
+
+                for(let item of data.information.additional_parameters.transmitted_data){
+                    listReportsTmp.push(item);
+                }
+
+                console.log(`______ func 'handlerEvents' num listReportsTmp: ______ ${listReportsTmp.length}`);
+
+                this.setState({ listReports: listReportsTmp });
             }
         });
     }
 
     requestEmitter(){}
+
+    handlerOnRowsPerPageChange(rowsPerPage){
+        console.log("handler func 'handlerOnRowsPerPageChange', START...");
+        
+        this.setState({ countShowReportsPerPage: rowsPerPage });
+    }
+
+    handlerOnPageChange(numCurrentPagePagination){
+        console.log("func 'handlerOnPageChange', START...");
+        console.log(numCurrentPagePagination);
+
+        if(numCurrentPagePagination > this.state.numCurrentPagePagination){
+            console.log("___func 'handlerOnPageChange', --->>>");
+
+            if(((30 * numCurrentPagePagination) < this.state.countSearchReports) && (this.state.listReports.length < this.state.countSearchReports)){
+                this.props.handlerRequestNextPageOfTable(numCurrentPagePagination+1);
+            }
+        } else {
+            console.log("func 'handlerOnPageChange', <<<");
+        }
+
+        this.setState({ numCurrentPagePagination: numCurrentPagePagination });
+    }
 
     showDocumentCount(){
         return (
@@ -121,7 +160,10 @@ export default class CreateMainTableForReport extends React.Component {
                 <CreateTable 
                     listReports={this.state.listReports} 
                     countSearchReports={this.state.countSearchReports} 
-                    currentPagePagination={this.state.currentPagePagination}/>
+                    numCurrentPagePagination={this.state.numCurrentPagePagination}
+                    countShowReportsPerPage={this.state.countShowReportsPerPage} 
+                    handlerOnPageChange={this.handlerOnPageChange}
+                    handlerOnRowsPerPageChange={this.handlerOnRowsPerPageChange}/>
             </React.Fragment>
         );
     }
@@ -129,22 +171,30 @@ export default class CreateMainTableForReport extends React.Component {
 
 CreateMainTableForReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    handlerRequestNextPageOfTable: PropTypes.func.isRequired
 };
 
 function CreateTable(props){
-    let { listReports, countSearchReports, currentPagePagination } = props;
+    let { 
+        listReports, 
+        countSearchReports, 
+        numCurrentPagePagination, 
+        countShowReportsPerPage,
+        handlerOnPageChange,
+        handlerOnRowsPerPageChange,
+    } = props;
     const classes = useStyles();
 
-    const onPageChange = ()=>{
-        console.log("handler func 'onPageChange', START...");
+    const onPageChange = (elem, data) => {
+        console.log("func 'onPageChange', START...");
+        console.log(elem);
+
+        handlerOnPageChange(data);
     };
 
-    const onRowsPerPageChange = ()=>{
-        console.log("handler func 'onRowsPerPageChange', START...");
+    const onRowsPerPageChange = (data) => {
+        handlerOnRowsPerPageChange(data.target.value);
     };
-
-    console.log("CreateTable");
-    console.log(listReports);
 
     if(listReports.length === 0){
         return <LinearProgress />;
@@ -181,32 +231,35 @@ function CreateTable(props){
                             </Tooltip>;
                         }
 
-                        return (
-                            <TableRow key={`table_row_${item.id}`}>
-                                <TableCell>{`${++num}.`}</TableCell>
-                                <TableCell align="center">{imgTypeSTIX}</TableCell>
-                                <TableCell>{helpers.convertDateFromString(item.created)}</TableCell>
-                                <TableCell>{helpers.convertDateFromString(item.modified)}</TableCell>
-                                <TableCell>{timePublished}</TableCell>
-                                <TableCell>{item.name}</TableCell>
-                                <TableCell align="right">{item.report_types.map((elem) => {
-                                    let linkImage = helpers.getLinkImageSTIXObject(elem);
-
-                                    if(typeof linkImage === "undefined"){
-                                        return;
-                                    }
-
-                                    return (<Tooltip title={linkImage.description} key={`key_tooltip_report_type_${elem}`}>
-                                        <img 
-                                            key={`key_report_type_${elem}`} 
-                                            src={`/images/stix_object/${linkImage.link}`} 
-                                            width="35" 
-                                            height="35" />
-                                    </Tooltip>);
-                                })}
-                                </TableCell>
-                            </TableRow>
-                        );
+                        if((num >= (countShowReportsPerPage * numCurrentPagePagination)) && (num < (countShowReportsPerPage * (numCurrentPagePagination + 1)))){
+                            return (
+                                <TableRow key={`table_row_${item.id}`}>
+                                    <TableCell>{`${++num}.`}</TableCell>
+                                    <TableCell align="center">{imgTypeSTIX}</TableCell>
+                                    <TableCell >{item.id}</TableCell>
+                                    <TableCell>{helpers.convertDateFromString(item.created)}</TableCell>
+                                    <TableCell>{helpers.convertDateFromString(item.modified)}</TableCell>
+                                    <TableCell>{timePublished}</TableCell>
+                                    <TableCell>{item.name}</TableCell>
+                                    <TableCell align="right">{item.report_types.map((elem) => {
+                                        let linkImage = helpers.getLinkImageSTIXObject(elem);
+    
+                                        if(typeof linkImage === "undefined"){
+                                            return;
+                                        }
+    
+                                        return (<Tooltip title={linkImage.description} key={`key_tooltip_report_type_${elem}`}>
+                                            <img 
+                                                key={`key_report_type_${elem}`} 
+                                                src={`/images/stix_object/${linkImage.link}`} 
+                                                width="35" 
+                                                height="35" />
+                                        </Tooltip>);
+                                    })}
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        }
                     })}
                 </TableBody>
             </Table>
@@ -215,8 +268,8 @@ function CreateTable(props){
             rowsPerPageOptions={[10, 20, 30]}
             component="div"
             count={countSearchReports}
-            rowsPerPage={10}
-            page={currentPagePagination}
+            rowsPerPage={countShowReportsPerPage}
+            page={numCurrentPagePagination}
             onPageChange={onPageChange}
             onRowsPerPageChange={onRowsPerPageChange} />
     </Paper>);
@@ -225,5 +278,8 @@ function CreateTable(props){
 CreateTable.propTypes = {
     listReports: PropTypes.array.isRequired,
     countSearchReports: PropTypes.number,
-    currentPagePagination: PropTypes.number,
+    numCurrentPagePagination: PropTypes.number,
+    countShowReportsPerPage: PropTypes.number,
+    handlerOnPageChange: PropTypes.func.isRequired,
+    handlerOnRowsPerPageChange: PropTypes.func.isRequired,
 };
