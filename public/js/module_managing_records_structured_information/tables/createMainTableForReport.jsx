@@ -1,6 +1,8 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
+    Avatar,
+    Chip,
     Table, 
     TableBody, 
     TableCell, 
@@ -23,24 +25,16 @@ const useStyles = makeStyles((theme) => ({
     container: {
         maxHeight: 750,
     },
-    pagination: {
-        width: "100%",
-        align: "center",
-        textAlign: "center",
-        alignItems: "center",
-        alignContent: "center",
-        padding: theme.spacing(2,2),
-    },
 }));
 
 const columns = [
     { id: "num", label: "№", minWidth: 45 },
     { id: "type", label: "Тип", minWidth: 45, align: "center", },
-    { id: "item_id", label: "ID", minWidth: 170 }, //вывод ID ТОЛЬКО для ТЕСТОВ!!!!
-    { id: "create", label: "Дата создания", minWidth: 130 },
-    { id: "modify", label: "Дата модификации", minWidth: 130 },
-    { id: "publication", label: "Дата публикации", minWidth: 130 },
-    { id: "name", label: "Наименование", minWidth: 170 },
+    { id: "item_id", label: "Доступен для групп", minWidth: 170 },
+    { id: "create", label: "Создан", minWidth: 130 },
+    { id: "modify", label: "Модифицирован", minWidth: 130 },
+    { id: "publication", label: "Опубликован", minWidth: 130 },
+    { id: "name", label: "Краткое название", minWidth: 170 },
     {
         id: "content_type",
         label: "Типы контента",
@@ -61,7 +55,9 @@ export default class CreateMainTableForReport extends React.Component {
             countShowReportsPerPage: 10,
         };
 
+        this.getChipForGroups = this.getChipForGroups.bind(this);
         this.handlerOnPageChange = this.handlerOnPageChange.bind(this);
+        this.handlerTableOnClick = this.handlerTableOnClick.bind(this);
         this.handlerOnRowsPerPageChange = this.handlerOnRowsPerPageChange.bind(this);
 
         this.handlerEvents.call(this);
@@ -144,6 +140,20 @@ export default class CreateMainTableForReport extends React.Component {
         this.setState({ numCurrentPagePagination: numCurrentPagePagination });
     }
 
+    handlerTableOnClick(elem, elemId){
+        console.log("func 'handlerTableOnClick', START...");
+        console.log(elem);
+        console.log(`ID element: '${elemId}'`);
+
+        this.props.handlerShowModalWindowInformationReport(elemId);
+    }
+
+    getChipForGroups(elemId){
+        //тут нужно выполнить поиск в списке докладов доступных для групп и вывести результат сложив со значком administrator
+
+        return <Chip avatar={<Avatar>A</Avatar>} label="Administrator" disabled/>;
+    }
+
     showDocumentCount(){
         return (
             <Row>
@@ -162,8 +172,10 @@ export default class CreateMainTableForReport extends React.Component {
                     countSearchReports={this.state.countSearchReports} 
                     numCurrentPagePagination={this.state.numCurrentPagePagination}
                     countShowReportsPerPage={this.state.countShowReportsPerPage} 
+                    handlerTableOnClick={this.handlerTableOnClick}
                     handlerOnPageChange={this.handlerOnPageChange}
-                    handlerOnRowsPerPageChange={this.handlerOnRowsPerPageChange}/>
+                    handlerOnRowsPerPageChange={this.handlerOnRowsPerPageChange}
+                    getChipForGroups={this.getChipForGroups} />
             </React.Fragment>
         );
     }
@@ -171,7 +183,8 @@ export default class CreateMainTableForReport extends React.Component {
 
 CreateMainTableForReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    handlerRequestNextPageOfTable: PropTypes.func.isRequired
+    handlerRequestNextPageOfTable: PropTypes.func.isRequired,
+    handlerShowModalWindowInformationReport: PropTypes.func.isRequired,
 };
 
 function CreateTable(props){
@@ -180,8 +193,10 @@ function CreateTable(props){
         countSearchReports, 
         numCurrentPagePagination, 
         countShowReportsPerPage,
+        handlerTableOnClick,
         handlerOnPageChange,
         handlerOnRowsPerPageChange,
+        getChipForGroups,
     } = props;
     const classes = useStyles();
 
@@ -218,7 +233,7 @@ function CreateTable(props){
                 <TableBody>
                     {listReports.map((item, num) => {
                         let imgTypeSTIX = "",
-                            timePublished = <span className="text-secondary">не опубликовано</span>;
+                            timePublished = <span className="text-secondary">не опубликован</span>;
                         
                         if(Date.parse(item.published) > 0){
                             timePublished = helpers.convertDateFromString(item.published);
@@ -233,10 +248,10 @@ function CreateTable(props){
 
                         if((num >= (countShowReportsPerPage * numCurrentPagePagination)) && (num < (countShowReportsPerPage * (numCurrentPagePagination + 1)))){
                             return (
-                                <TableRow key={`table_row_${item.id}`}>
+                                <TableRow key={`table_row_${item.id}`} hover role="checkbox" tabIndex={-1} onClick={(elem) => { handlerTableOnClick(elem, item.id); }}>
                                     <TableCell>{`${++num}.`}</TableCell>
                                     <TableCell align="center">{imgTypeSTIX}</TableCell>
-                                    <TableCell >{item.id}</TableCell>
+                                    <TableCell >{getChipForGroups(item.id)}</TableCell>
                                     <TableCell>{helpers.convertDateFromString(item.created)}</TableCell>
                                     <TableCell>{helpers.convertDateFromString(item.modified)}</TableCell>
                                     <TableCell>{timePublished}</TableCell>
@@ -280,6 +295,8 @@ CreateTable.propTypes = {
     countSearchReports: PropTypes.number,
     numCurrentPagePagination: PropTypes.number,
     countShowReportsPerPage: PropTypes.number,
+    handlerTableOnClick: PropTypes.func.isRequired,
     handlerOnPageChange: PropTypes.func.isRequired,
     handlerOnRowsPerPageChange: PropTypes.func.isRequired,
+    getChipForGroups: PropTypes.func.isRequired,
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { Button } from "@material-ui/core";
+//import { Button } from "@material-ui/core";
 //import lodash from "lodash";
 import PropTypes from "prop-types";
 
@@ -8,6 +8,7 @@ import CreateMainTableReport from "../tables/createMainTableForReport.jsx";
 import CreateWidgetsPageReport from "../widgets/createWidgetsPageReport.jsx";
 import CreateSearchElementReport from "../any_elements/createSearchElementForReport.jsx";
 import ModalWindowAddReportSTIX from "../../modal_windows/modalWindowAddReportSTIX.jsx";
+import ModalWindowShowInformationReportSTIX from "../../modal_windows/modalWindowShowInformationReportSTIX.jsx";
 
 import { CreateButtonNewReport } from "../buttons/createButtonNewReport.jsx";
 
@@ -18,6 +19,8 @@ export default class CreatePageReport extends React.Component {
         this.state = {
             showSpinner: true,
             showModalWindowAddReport: false,
+            showModalWindowInformationReport: false,
+            showReportId: "",
             requestDetails: {
                 paginateParameters: {
                     maxPartSize: 30,
@@ -101,15 +104,13 @@ export default class CreatePageReport extends React.Component {
         this.handlerRequestNextPageOfTable = this.handlerRequestNextPageOfTable.bind(this);
         this.handlerShowModalWindowAddReport = this.handlerShowModalWindowAddReport.bind(this);
         this.handlerCloseModalWindowAddReport = this.handlerCloseModalWindowAddReport.bind(this);
+        this.handlerShowModalWindowInformationReport = this.handlerShowModalWindowInformationReport.bind(this);
+        this.handlerCloseModalWindowInformationReport = this.handlerCloseModalWindowInformationReport.bind(this);
     }
 
     handlerEvents(){}
 
     requestEmitter(){
-
-        console.log("func 'requestEmitter', page Report");
-        console.log(this.state.requestDetails);
-
         //запрос краткой информации (количество) по заданным параметрам
         this.props.socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: this.state.requestDetails });
 
@@ -125,10 +126,21 @@ export default class CreatePageReport extends React.Component {
         this.setState({ showModalWindowAddReport: false });
     }
 
-    handlerRequestNextPageOfTable(numPagination){
-        console.log("func 'handlerRequestNextPageOfTable', START... обработчик запроса следующей страницы таблицы");
-        console.log(`func 'handlerRequestNextPageOfTable', received numPagination: ${numPagination}`);
+    handlerShowModalWindowInformationReport(elemId){
+        //запрос информации об STIX объекте типа 'report' (доклад) по его ID
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: elemId });
 
+        this.setState({ 
+            showReportId: elemId,
+            showModalWindowInformationReport: true, 
+        });
+    }
+
+    handlerCloseModalWindowInformationReport(){
+        this.setState({ showModalWindowInformationReport: false });
+    }
+
+    handlerRequestNextPageOfTable(numPagination){
         let requestDetailsTmp = _.cloneDeep(this.state.requestDetails);
         requestDetailsTmp.paginateParameters.currentPartNumber = numPagination;
 
@@ -136,9 +148,6 @@ export default class CreatePageReport extends React.Component {
 
         //запрос полной информации по заданным параметрам
         this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: requestDetailsTmp });
-
-        console.log("func 'handlerRequestNextPageOfTable', requestDetails AFTER");
-        console.log(this.state.requestDetails);
     }
 
     isDisabledNewReport(){
@@ -162,11 +171,20 @@ export default class CreatePageReport extends React.Component {
                 <CreateSearchElementReport socketIo={this.props.socketIo} userPermissions={this.props.receivedData.userPermissions}/>
 
                 {/** основная таблица страницы */}
-                <CreateMainTableReport socketIo={this.props.socketIo} handlerRequestNextPageOfTable={this.handlerRequestNextPageOfTable}/>
+                <CreateMainTableReport 
+                    socketIo={this.props.socketIo} 
+                    handlerRequestNextPageOfTable={this.handlerRequestNextPageOfTable}
+                    handlerShowModalWindowInformationReport={this.handlerShowModalWindowInformationReport} />
 
                 <ModalWindowAddReportSTIX
                     show={this.state.showModalWindowAddReport}
                     onHide={this.handlerCloseModalWindowAddReport}
+                    socketIo={this.props.socketIo} />
+
+                <ModalWindowShowInformationReportSTIX 
+                    show={this.state.showModalWindowInformationReport}
+                    onHide={this.handlerCloseModalWindowInformationReport}
+                    showReportId={this.state.showReportId}
                     socketIo={this.props.socketIo} />
             </React.Fragment>
         );

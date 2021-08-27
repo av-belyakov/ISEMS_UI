@@ -35,7 +35,7 @@ export default class ModalWindowAddReportSTIX extends React.Component {
                 aria-labelledby="contained-modal-title-vcenter" >
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        Добавить группу
+                        Новый доклад
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>

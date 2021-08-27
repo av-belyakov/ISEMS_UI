@@ -70,9 +70,6 @@ export default class CreateWidgetsPageReport extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
-            console.log("class 'CreateWidgetsPageReport', receive event:");
-            console.log(data);
-        
             if(!data.eventForWidgets){
                 return;
             }
