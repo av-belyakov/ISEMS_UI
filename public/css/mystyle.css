@@ -52,3 +52,8 @@
     height: 60px;
     width: 390px;
 }
+
+.modal-90w {
+    min-width: 70%;
+    z-index: 100;
+}

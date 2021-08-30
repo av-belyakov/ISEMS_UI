@@ -58,7 +58,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             <Modal
                 show={this.props.show}
                 onHide={this.modalClose}
-                //dialogClassName="modal-90w"
+                dialogClassName="modal-90w"
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter" >
                 <Modal.Header closeButton>
@@ -68,7 +68,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 </Modal.Header>
                 <Modal.Body>
                     Show Information Report STIX ID:{this.props.showReportId}.
-                    Здесь должна быть полная информация о дакладе с ID {this.props.showReportId}, включая дополнительную
+                    Здесь должна быть полная информация о докладе с ID {this.props.showReportId}, включая дополнительную
                     информацию о других объектах STIX, получаемой через сслыки в object_refs. А так же информация о группах
                     для кторых возможен просмотр данного доклада и элементы добавления или удаления разрешения доступа для групп.
                     <hr/>
