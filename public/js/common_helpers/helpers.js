@@ -29,13 +29,15 @@ let helpers = {
     },
 
     //конвертирование даты и времени из строки формата "2017-02-20T01:34:11Z" в объект Date
-    convertDateFromString(dateString){
+    convertDateFromString(dateString, { monthDescription = "numeric", dayDescription = "numeric" }){
         let x = -(new Date()).getTimezoneOffset() * 60000;
 
         return new Date(Date.parse(dateString) - x).toLocaleString("ru", {
             year: "numeric",
-            month: "numeric",
-            day: "numeric",
+            //month: "numeric",
+            month: monthDescription,
+            //day: "numeric",
+            day: dayDescription,
             timezone: "Europe/Moscow",
             hour: "numeric",
             minute: "numeric",
