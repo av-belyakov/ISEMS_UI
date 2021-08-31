@@ -29,6 +29,7 @@ module.exports.addHandlers = function(socketIo) {
         "isems-mrsi ui request: send search request, table page report": sendSearchRequestPageReport,
         "isems-mrsi ui request: send search request, cound found elem, table page report": sendSearchRequestCountFoundElemPageReport,
         "isems-mrsi ui request: send search request, get report for id": sendSearchRequestGetReportForId,
+        "isems-mrsi ui request: get list computer threat": getListComputerThreat,
     };
     //network interaction:
     for (let e in handlers) {
@@ -746,86 +747,6 @@ function sendSearchRequestGetReportForId(socketIo, data){
             ], (err) => {
                 if (err) throw(err);
             });
-   
-
-            /**
- * 1. Проверить является ли пользователь 'привилегированным'.
- * 2. Если пользователь не 'привилегированный', проверить разрешен ли ему достук к данному докладу
- * 3. Если пользователь 'привилегированный' получить список групп которым разрешен доступ к докладу (кстати
- * и при удалении или добавлении доступа для новой группы нужно учитывать является ли пользователь 'привилегированным')
- * 4. отправить запрос на получения всей информации по докладу (тип 'report')
- * 5. Пункты 4 и 5 делать параллельно
- */
-
-        /*if(!result.isPrivilegedGroup){
-            return new Promise((resolve, reject) => {
-                let countElements = 0;
-
-                mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
-                    query: { group_name: result.userGroup },
-                    select: { _id: 0, __v: 0 }
-                }, (err, queryResult) => {
-                    if(err) {
-                        reject(err);
-                    }
-
-                    if(!isNull(queryResult)){
-                        countElements = queryResult.length;
-                    }
-
-                    let msg = {
-                        task_id: createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`),
-                        section: "handling search requests",
-                        additional_parameters: { number_documents_found: countElements },
-                    };
-
-                    helpersFunc.sendMessageByUserSocketIo(socketIo.id, "isems-mrsi response ui", { 
-                        section: section,
-                        eventForWidgets: false,
-                        information: msg,
-                    });
-
-                    resolve();
-                });
-            });
-        }
-
-        return new Promise((resolve, reject) => {
-            process.nextTick(() => {
-                try {
-                    let dataReq = getRequestPattern(data);
-                    dataReq.paginate_parameters = { max_part_size: 0, current_part_number: 0 };
-
-                    if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
-                        return reject(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
-                    }
-
-                    let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
-                    if (conn !== null) {
-                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`);
-
-                        globalObject.setData("tasks", taskID, {
-                            eventName: section,
-                            eventForWidgets: false,
-                            userSessionID: result.sessionId,
-                            generationTime: +new Date(),
-                            socketId: socketIo.id,
-                        });
-
-                        conn.sendMessage({
-                            task_id: taskID,
-                            section: "handling search requests",
-                            user_name_generated_task: result.userName,
-                            request_details: dataReq,
-                        });
-                    }
-
-                    resolve();
-                } catch(err){
-                    reject(err);
-                }
-            });
-        });*/
         }).catch((err) => {
             debug(err);
 
@@ -845,6 +766,67 @@ function sendSearchRequestGetReportForId(socketIo, data){
 
             writeLogFile("error", err.toString() + funcName);
         });
+}
+
+/**
+ * Обработчик запроса для получения количества найденной информации на странице 'доклады' (STIX тип 'reports')
+ * 
+ * @param {*} socketIo - дескриптор websocket соединения
+ * @param {*} data - данные 
+ */
+function getListComputerThreat(socketIo, data){
+    let funcName = " (func 'getListComputerThreat')";
+
+    debug(`${funcName}, START...`);
+    debug(data);
+/**
+        7.1.  Структура и формат JSON документа, получаемого от графического пользовательского интерфейса ISEMS-UI и содержащего ЗАПРОС, для получения СПИСКА 
+id и названий относящихся, к заранее определенному в приложении, списку, 'типы принимаемых решений по компьютерным угрозам' (types decisions made 
+computer threat) или 'типы компьютерных угроз' (types computer threat).
+{
+    task_id: STRING // уникальный ID задачи (обязательное значение)
+    section: "handling search requests",
+    user_name_generated_task: "",
+    request_details: {
+        collection_name: "get list computer threat",
+        paginate_parameters: { // в данном запросе не обязательно
+            max_part_size: 0,
+            current_part_number: 0
+        }
+        sortable_field: "", // в данном запросе не обязательно
+
+        // параметры для поиска списка 
+        search_parameters: {
+            type_list: "" //"types decisions made computer threat" для 'типы принимаемых решений по компьютерным угрозам' или
+                // "types computer threat" для 'типы компьютерных угроз'
+        }
+    } 
+}
+
+    7.2. Структура и формат JSON документа, отправляемого в графический пользовательский интерфейс ISEMS-UI и содержащего ОТВЕТ на запрос СПИСКА 
+id и названий, относящихся, к заранее определенному в приложении списку 'типы принимаемых решений по компьютерным угрозам' (types decisions made 
+computer threat) или 'типы компьютерных угроз' (types computer threat).
+{
+    task_id: STRING // уникальный ID задачи (обязательное значение)
+    section: "handling search requests" // секция обработки данных (обязательное значение, для данного типа действия ТОЛЬКО "handling search requests")
+	is_successful: BOOL // был ли запрос успешно обработан (в данном случае TRUE)
+	description: STRING // дополнительное описание (В ДАННОМ СЛУЧАЕ НЕ ЗАПОЛНЯЕТСЯ)
+	information_message: { // информационное сообщение (НЕ ОБЯЗАТЕЛЬНО К ЗАПОЛНЕНИЮ)
+        msg_type: STRING // тип информационного сообщения
+        msg: STRING // информационное сообщение
+    }
+    additional_parameters: {
+        type_list: "" //"types decisions made computer threat" для 'типы принимаемых решений по компьютерным угрозам' или
+            // "types computer threat" для 'типы компьютерных угроз'
+        list: [
+            {
+                id: STRING // id типа 'grouping' относящийся к определенному списку
+                description: "" // name типа 'grouping'
+            }
+        ]
+    }
+}
+         */
 }
 
 function getRequestPattern(reqData){

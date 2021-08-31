@@ -16,7 +16,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
-import { helpers } from "../../common_helpers//helpers";
+import { helpers } from "../../common_helpers/helpers";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -236,7 +236,7 @@ function CreateTable(props){
                             timePublished = <span className="text-secondary">не опубликован</span>;
                         
                         if(Date.parse(item.published) > 0){
-                            timePublished = helpers.convertDateFromString(item.published);
+                            timePublished = helpers.convertDateFromString(item.published, {});
                         }
 
                         let currentType = helpers.getLinkImageSTIXObject(item.type);
@@ -252,8 +252,8 @@ function CreateTable(props){
                                     <TableCell>{`${++num}.`}</TableCell>
                                     <TableCell align="center">{imgTypeSTIX}</TableCell>
                                     <TableCell >{getChipForGroups(item.id)}</TableCell>
-                                    <TableCell>{helpers.convertDateFromString(item.created)}</TableCell>
-                                    <TableCell>{helpers.convertDateFromString(item.modified)}</TableCell>
+                                    <TableCell>{helpers.convertDateFromString(item.created, {})}</TableCell>
+                                    <TableCell>{helpers.convertDateFromString(item.modified, {})}</TableCell>
                                     <TableCell>{timePublished}</TableCell>
                                     <TableCell>{item.name}</TableCell>
                                     <TableCell align="right">{item.report_types.map((elem) => {
