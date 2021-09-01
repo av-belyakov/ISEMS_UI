@@ -181,6 +181,7 @@ export default class ShowCommonPropertiesDomainObjectSTIX extends React.Componen
             {/** 
              * не забыть сделать Extensions 
              * СДЕЛАТЬ АККОРДИОН
+             * 
             */}
 
         </React.Fragment>);
