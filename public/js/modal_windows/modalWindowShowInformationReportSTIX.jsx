@@ -2,12 +2,23 @@
 
 import React from "react";
 import { Col, Button, Modal, Row } from "react-bootstrap";
-import { Chip } from "@material-ui/core";
-//import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
 import ShowCommonPropertiesDomainObjectSTIX from "../module_managing_records_structured_information/any_elements/showCommonPropertiesDomainObjectSTIX.jsx";
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        width: "100%",
+    },
+    heading: {
+        fontSize: theme.typography.pxToRem(15),
+        fontWeight: theme.typography.fontWeightRegular,
+    },
+}));
 
 export default class ModalWindowShowInformationReportSTIX extends React.Component {
     constructor(props){
@@ -29,9 +40,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         //обработка события связанного с приемом списка групп которым разрешен доступ к данному докладу
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
 
-            console.log("class 'ModalWindowShowInformationReportSTIX', func 'handlerEvents'");
-            console.log(`sections: ${data.section}`);
-            console.log(data.information.additional_parameters);
+            //console.log("class 'ModalWindowShowInformationReportSTIX', func 'handlerEvents'");
+            //console.log(`sections: ${data.section}`);
+            //console.log(data.information.additional_parameters);
 
             if(data.section === "list of groups that are allowed access"){
                 this.setState({ availableForGroups: data.information.additional_parameters });
@@ -86,44 +97,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
             return <i>{helpers.convertDateFromString(reportInfo.published, { monthDescription: "long", dayDescription: "numeric" })}</i>;
         };
-        let additionalName = () => {
-            if(reportInfo.outside_specification.additional_name.length === 0){
-                return <span className="text-dark">не определено</span>;
-            }
-
-            return <i>{reportInfo.outside_specification.additional_name}</i>;
-        };
-        let decisionsMadeComputerThreat = () => {
-            /**
-             * 
-             * 
-             * Здесь надо транслировать наименование типа принимаемых решений на русский язык
-             * для этого нужно сделать обработку запроса списков на backend
-             * запрос нужно сделать при формировании страницы  REPORT
-            */
-
-            if(reportInfo.outside_specification.decisions_made_computer_threat.length === 0){
-                return <span className="text-secondary">решение не принималось</span>;
-            }
-    
-            return <i>{reportInfo.outside_specification.decisions_made_computer_threat}</i>;
-        };
-        let computerThreatType = () => {
-            /**
-             * 
-             * 
-             * 
-             * Здесь надо транслировать наименование компьютерной атаки на русский язык
-             * для этого нужно сделать обработку запроса списков на backend 
-             * запрос нужно сделать при формировании страницы  REPORT
-             * */
-
-            if(reportInfo.outside_specification.computer_threat_type.length === 0){
-                return <span className="text-secondary">не определен</span>;
-            }
-    
-            return <i>{reportInfo.outside_specification.computer_threat_type}</i>;
-        };
 
         return (
             <Modal
@@ -162,22 +135,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                             <Row>
                                 <Col md={12}><p><i>{reportInfo.description}</i></p></Col>
                             </Row>
-                            <Row className="mt-2 mb-2">
-                                <Col md={12} className="text-center">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</Col>
-                            </Row>
-                            <Row>
-                                <Col md={6} className="text-left"><span className="text-muted">дополнительное наименование</span>:</Col>
-                                <Col md={6} className="text-center">{additionalName()}</Col>
-                            </Row>
-                            <Row>
-                                <Col md={6} className="text-left"><span className="text-muted">принятое решение по компьютерной угрозе</span>:</Col>
-                                <Col md={6} className="text-center">{decisionsMadeComputerThreat()}</Col>
-                            </Row>
-                            <Row>
-                                <Col md={6} className="text-left"><span className="text-muted">тип компьютерной угрозы</span>:</Col>
-                                <Col md={6} className="text-center">{computerThreatType()}</Col>
-                            </Row>
-                            <ShowCommonPropertiesDomainObjectSTIX commonData={reportInfo} />
+                            <CreateAccordion reportInfo={reportInfo} />
+                            {/*<ShowCommonPropertiesDomainObjectSTIX commonData={reportInfo} />*/}
                             {/**
                              * 
                              * НЕ ЗАБЫТь прочитать и обработать поле object_refs!!! 
@@ -225,4 +184,89 @@ ModalWindowShowInformationReportSTIX.propTypes = {
     onHide: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
     showReportId: PropTypes.string.isRequired,
+};
+
+function CreateAccordion(props){
+    const classes = useStyles();
+    let { reportInfo } = props,
+        outsideSpecification = reportInfo.outside_specification;
+
+    let additionalName = () => {
+        if(outsideSpecification.additional_name.length === 0){
+            return <span className="text-dark">не определено</span>;
+        }
+
+        return <i>{outsideSpecification.additional_name}</i>;
+    };
+    let decisionsMadeComputerThreat = () => {
+    /**
+     * 
+     * 
+     * Здесь надо транслировать наименование типа принимаемых решений на русский язык
+     * для этого нужно сделать обработку запроса списков на backend
+     * запрос нужно сделать при формировании страницы  REPORT
+    */
+
+        if(outsideSpecification.decisions_made_computer_threat.length === 0){
+            return <span className="text-secondary">решение не принималось</span>;
+        }
+
+        return <i>{outsideSpecification.decisions_made_computer_threat}</i>;
+    };
+    let computerThreatType = () => {
+    /**
+     * 
+     * 
+     * 
+     * Здесь надо транслировать наименование компьютерной атаки на русский язык
+     * для этого нужно сделать обработку запроса списков на backend 
+     * запрос нужно сделать при формировании страницы  REPORT
+     * */
+
+        if(outsideSpecification.computer_threat_type.length === 0){
+            return <span className="text-secondary">не определен</span>;
+        }
+
+        return <i>{outsideSpecification.computer_threat_type}</i>;
+    };
+
+    return (
+        <Accordion>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel-add-info-not-stix"
+                id="panel-add-info-not-stix-header">
+                <Typography className={classes.heading}>Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Grid container>
+                    <Grid container direction="row">
+                        <Grid item md={6}>дополнительное наименование</Grid>
+                        <Grid item md={6}>{additionalName()}</Grid>
+                    </Grid>
+                    <Grid container direction="row">
+                        <Grid item md={6}>принятое решение по компьютерной угрозе</Grid>
+                        <Grid item md={6}>{decisionsMadeComputerThreat()}</Grid>
+                    </Grid>
+                    <Grid container direction="row">
+                        <Grid item md={6}>тип компьютерной угрозы</Grid>
+                        <Grid item md={6}>{computerThreatType()}</Grid>
+                    </Grid>
+                </Grid>
+            </AccordionDetails>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel-add-technic-info"
+                id="panel-add-technic-info-header">
+                <Typography className={classes.heading}>Дополнительная техническая информация</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <ShowCommonPropertiesDomainObjectSTIX commonData={reportInfo} />
+            </AccordionDetails>
+        </Accordion>
+    );
+}
+
+CreateAccordion.propTypes = {
+    reportInfo: PropTypes.object.isRequired,
 };
