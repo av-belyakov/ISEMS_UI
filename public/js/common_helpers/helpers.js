@@ -160,159 +160,159 @@ let helpers = {
         const listLink = {
             "artifact": {
                 "link": "Artifact-Square.png",
-                "description": "Artifact СO STIX - Артефакт",
+                "description": "Артефакт (Artifact СO STIX)",
             },				
             "directory": {
                 "link": "Directory-Square.png",
-                "description": "Directory СO STIX - Каталог",
+                "description": "Каталог (Directory СO STIX)",
             },				
             "file": {
                 "link": "File-Square.png",
-                "description": "File СO STIX - Файл",
+                "description": "Файл (File СO STIX)",
             },					
             "mutex": {
                 "link": "Mutex-Square.png",
-                "description": "Mutex СO STIX - Мьютекс",
+                "description": "Мьютекс (Mutex СO STIX)",
             },				
             "process": {
                 "link": "Process-Square.png",
-                "description": "Process СO STIX - Процесс",
+                "description": "Процесс (Process СO STIX)",
             },			
             "software": {
                 "link": "Software-Square.png",
-                "description": "Software СO STIX - Программное обеспечение",
+                "description": "Программное обеспечение (Software СO STIX)",
             },				
             "url": {
                 "link": "URL-Square.png",
-                "description": "URL CO STIX - Унифицированный указатель ресурса",
+                "description": "Унифицированный указатель ресурса (URL CO STIX)",
             },				
             "windows-registry-key": {
                 "link": "WindowsRegistryKey-Square.png",
-                "description": "Windows registry key CO STIX - Раздел реестра Windows",
+                "description": "Раздел реестра Windows (Windows registry key CO STIX)",
             },			
             "x509-certificate": {
                 "link": "X509Certificate-Square.png",
-                "description": "x509 certificate CO STIX - x509 сертификат",
+                "description": "x509 сертификат (x509 certificate CO STIX)",
             },		
             "attack-pattern": {
                 "link": "attack-pattern-square-dark-300-dpi.png",
-                "description": "Attack Pattern DO STIX - Шаблон атаки",
+                "description": "Шаблон атаки (Attack Pattern DO STIX)",
             },
             "autonomous-system": {
                 "link": "autonomous-system-square-dark-300-dpi.png",
-                "description": "Autonomous system DO STIX - Автономная система",
+                "description": "Автономная система (Autonomous system DO STIX)",
             },
             "campaign": {
                 "link": "campaign-square-dark-300-dpi.png",
-                "description": "Campaign DO STIX - Кампания",
+                "description": "Кампания (Campaign DO STIX)",
             },		
             "course-of-action": {
                 "link": "coa-square-dark-300-dpi.png",
-                "description": "Course of Action DO STIX - Реагирование",
+                "description": "Реагирование (Course of Action DO STIX)",
             },	
             "domain-name": {
                 "link": "domain-name-square-dark-300-dpi.png",
-                "description": "Domain name CO STIX - Доменное имя",
+                "description": "Доменное имя (Domain name CO STIX)",
             },		
             "email-addr": {
                 "link": "email-addr-square-dark-300-dpi.png",
-                "description": "Email address CO STIX - Email адрес",
+                "description": "Email адрес (Email address CO STIX)",
             },	
             "email-message": {
                 "link": "email-msg-square-dark-300-dpi.png",
-                "description": "Email message CO STIX - Email сообщение",
+                "description": "Email сообщение (Email message CO STIX)",
             },	
             "grouping": {
                 "link": "grouping-square-dark-300-dpi.png",
-                "description": "Grouping DO STIX - Группировка",
+                "description": "Группировка (Grouping DO STIX)",
             },	
             "identity": {
                 "link": "identity-square-dark-300-dpi.png",
-                "description": "Identity DO STIX - Идентичность",
+                "description": "Идентичность (Identity DO STIX)",
             },		
             "incident": {
                 "link": "incident-square-dark-300-dpi.png",
-                "description": "Incident DO STIX - Инцидент",
+                "description": "Инцидент (Incident DO STIX)",
             },	
             "indicator": {
                 "link": "indicator-square-dark-300-dpi.png",
-                "description": "Indicator DO STIX - Индикатор",
+                "description": "Индикатор (Indicator DO STIX)",
             },		
             "infrastructure": {
                 "link": "infrastructure-square-dark-300-dpi.png",	
-                "description": "Infrastructure DO STIX - Инфраструктура",
+                "description": "Инфраструктура (Infrastructure DO STIX)",
             },	
             "intrusion-set": {
                 "link": "intrusion-set-square-dark-300-dpi.png",
-                "description": "Intrusion Set DO STIX - Набор вторжения",
+                "description": "Набор вторжения (Intrusion Set DO STIX)",
             },
             "ipv4-addr": {
                 "link": "ipv4-addr-square-dark-300-dpi.png",
-                "description": "IPv4 address CO STIX - IP адрес версии 4",
+                "description": "IP адрес версии 4 (IPv4 address CO STIX)",
             },
             "ipv6-addr": {
                 "link": "ipv6-addr-square-dark-300-dpi.png",
-                "description": "IPv6 address CO STIX - IP адрес версии 6",
+                "description": "IP адрес версии 6 (IPv6 address CO STIX)",
             },
             "location": {
                 "link": "location-square-dark-300-dpi.png",
-                "description": "Location DO STIX - Местоположение",
+                "description": "Местоположение (Location DO STIX)",
             },
             "mac-addr": {
                 "link": "mac-addr-square-dark-300-dpi.png",
-                "description": "MAC address CO STIX - MAC адрес",
+                "description": "MAC адрес (MAC address CO STIX)",
             },
             "malware": {
                 "link": "malware-analysis-square-dark-300-dpi.png",
-                "description": "Malware DO STIX - Вредоносное программное обеспечение",
+                "description": "Вредоносное программное обеспечение (Malware DO STIX)",
             },
             "malware-analysis": {
                 "link": "malware-square-dark-300-dpi.png",
-                "description": "Malware analysis DO STIX - Анализ вредоносного программного обеспечения",
+                "description": "Анализ вредоносного программного обеспечения (Malware analysis DO STIX)",
             },
             "network-traffic": {
                 "link": "network-traffic-square-dark-300-dpi.png",
-                "description": "Network traffic CO STIX - Сетевой трафик",
+                "description": "Сетевой трафик (Network traffic CO STIX)",
             },
             "note": {
                 "link": "note-square-dark-300-dpi.png",
-                "description": "Note DO STIX - Примечание",
+                "description": "Примечание (Note DO STIX)",
             },
             "observed-data": {
                 "link": "observed-data-square-dark-300-dpi.png",
-                "description": "Observed Data DO STIX - Наблюдение",
+                "description": "Наблюдение (Observed Data DO STIX)",
             },
             "opinion": {
                 "link": "opinion-square-dark-300-dpi.png",
-                "description": "Opinion DO STIX - Мнение",
+                "description": "Мнение (Opinion DO STIX)",
             },
             "relationship": {
                 "link": "relationship-square-dark-300-dpi.png",
-                "description": "Relationship RO STIX - Отношение",
+                "description": "Отношение (Relationship RO STIX)",
             },
             "report": {
                 "link": "report-square-dark-300-dpi.png",
-                "description": "Report DO STIX - Доклад",
+                "description": "Доклад (Report DO STIX)",
             },
             "sighting": {
                 "link": "sighting-square-dark-300-dpi.png",
-                "description": "Sighting RO STIX - Визирование",
+                "description": "Визирование (Sighting RO STIX)",
             },
             "threat-actor": {
                 "link": "threat-actor-square-dark-300-dpi.png",
-                "description": "Threat actor DO STIX - Исполнитель угроз",
+                "description": "Исполнитель угроз (Threat actor DO STIX)",
             },
             "tool": {
                 "link": "tool-square-dark-300-dpi.png",
-                "description": "Tool DO STIX - Инструмент",
+                "description": "Инструмент (Tool DO STIX)",
             },
             "user-account": {
                 "link": "user-account-square-dark-300-dpi.png",
-                "description": "User account CO STIX - Учетная запись пользователя",
+                "description": "Учетная запись пользователя (User account CO STIX)",
             },
             "vulnerability": {
                 "link": "vulnerability-square-dark-300-dpi.png",
-                "description": "Vulnerability DO STIX - Уязвимость",
+                "description": "Уязвимость (Vulnerability DO STIX)",
             },
             //"": "bundle-square-dark-300-dpi.png",	
             //"": "http-square-dark-300-dpi.png",	

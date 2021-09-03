@@ -399,8 +399,8 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
 
                 if((typeof msg.additional_parameters !== "undefined") && (typeof msg.additional_parameters.transmitted_data !== "undefined")){
 
-                    console.log("-----====== func 'routeModulesEvent', task info ======-----");
-                    console.log(msg.additional_parameters);
+                    //console.log("-----====== func 'routeModulesEvent', task info ======-----");
+                    //console.log(msg.additional_parameters);
                     
                     for(let item of msg.additional_parameters.transmitted_data){
                         console.log(item.id);

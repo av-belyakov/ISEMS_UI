@@ -66,15 +66,7 @@ export default class CreateMainTableForReport extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
-
-            //            console.log("class 'CreateMainTableForReport'");
-            //            console.log(data);
-
             if(data.section === "send search request, count found elem, table page report"){
-                //console.log("___ data for COUNT DOCUMENTS START");
-                //console.log(data);
-                //console.log("___ data for COUNT DOCUMENTS END");
-
                 if(!data.information.is_successful){
                     return;
                 }
@@ -83,10 +75,6 @@ export default class CreateMainTableForReport extends React.Component {
             }
 
             if(data.section === "send search request, table page report"){
-                console.log("___ data for table START");
-                console.log(data);
-                console.log("___ data for table END");
-
                 if((typeof data.information === "undefined") || (data.information === null)){
                     return;
                 }
@@ -108,8 +96,6 @@ export default class CreateMainTableForReport extends React.Component {
                     listReportsTmp.push(item);
                 }
 
-                console.log(`______ func 'handlerEvents' num listReportsTmp: ______ ${listReportsTmp.length}`);
-
                 this.setState({ listReports: listReportsTmp });
             }
         });
@@ -117,16 +103,11 @@ export default class CreateMainTableForReport extends React.Component {
 
     requestEmitter(){}
 
-    handlerOnRowsPerPageChange(rowsPerPage){
-        console.log("handler func 'handlerOnRowsPerPageChange', START...");
-        
+    handlerOnRowsPerPageChange(rowsPerPage){        
         this.setState({ countShowReportsPerPage: rowsPerPage });
     }
 
     handlerOnPageChange(numCurrentPagePagination){
-        console.log("func 'handlerOnPageChange', START...");
-        console.log(numCurrentPagePagination);
-
         if(numCurrentPagePagination > this.state.numCurrentPagePagination){
             console.log("___func 'handlerOnPageChange', --->>>");
 
@@ -141,10 +122,6 @@ export default class CreateMainTableForReport extends React.Component {
     }
 
     handlerTableOnClick(elem, elemId){
-        console.log("func 'handlerTableOnClick', START...");
-        console.log(elem);
-        console.log(`ID element: '${elemId}'`);
-
         this.props.handlerShowModalWindowInformationReport(elemId);
     }
 
@@ -155,29 +132,25 @@ export default class CreateMainTableForReport extends React.Component {
     }
 
     showDocumentCount(){
-        return (
-            <Row>
-                <Col md={12} className="text-left pb-2"><i>{`Всего документов найдено: ${this.state.countSearchReports}`}</i></Col>
-            </Row>
-        );
+        return (<Row>
+            <Col md={12} className="text-left pb-2"><i>{`Всего документов найдено: ${this.state.countSearchReports}`}</i></Col>
+        </Row>);
     }
 
     render(){
-        return (
-            <React.Fragment>
-                <hr/>
-                {this.showDocumentCount.call(this)}
-                <CreateTable 
-                    listReports={this.state.listReports} 
-                    countSearchReports={this.state.countSearchReports} 
-                    numCurrentPagePagination={this.state.numCurrentPagePagination}
-                    countShowReportsPerPage={this.state.countShowReportsPerPage} 
-                    handlerTableOnClick={this.handlerTableOnClick}
-                    handlerOnPageChange={this.handlerOnPageChange}
-                    handlerOnRowsPerPageChange={this.handlerOnRowsPerPageChange}
-                    getChipForGroups={this.getChipForGroups} />
-            </React.Fragment>
-        );
+        return (<React.Fragment>
+            <hr/>
+            {this.showDocumentCount.call(this)}
+            <CreateTable 
+                listReports={this.state.listReports} 
+                countSearchReports={this.state.countSearchReports} 
+                numCurrentPagePagination={this.state.numCurrentPagePagination}
+                countShowReportsPerPage={this.state.countShowReportsPerPage} 
+                handlerTableOnClick={this.handlerTableOnClick}
+                handlerOnPageChange={this.handlerOnPageChange}
+                handlerOnRowsPerPageChange={this.handlerOnRowsPerPageChange}
+                getChipForGroups={this.getChipForGroups} />
+        </React.Fragment>);
     }
 }
 
@@ -199,14 +172,9 @@ function CreateTable(props){
         getChipForGroups,
     } = props;
     const classes = useStyles();
-
     const onPageChange = (elem, data) => {
-        console.log("func 'onPageChange', START...");
-        console.log(elem);
-
         handlerOnPageChange(data);
     };
-
     const onRowsPerPageChange = (data) => {
         handlerOnRowsPerPageChange(data.target.value);
     };

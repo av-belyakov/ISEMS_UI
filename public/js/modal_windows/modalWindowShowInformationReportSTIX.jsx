@@ -2,7 +2,19 @@
 
 import React from "react";
 import { Col, Button, Modal, Row } from "react-bootstrap";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Grid } from "@material-ui/core";
+import { 
+    Accordion, 
+    AccordionSummary, 
+    AccordionDetails,
+    Typography, 
+    Grid,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemIcon,
+    ListItemText,
+    ListSubheader,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import PropTypes from "prop-types";
@@ -117,17 +129,27 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                             <Row>
                                 <Col md={12} className="text-center">ID:"<i>{reportInfo.id}</i>"</Col>
                             </Row>
-                            <Row>
-                                <Col md={12} className="ml-4 mt-2">Дата и время:</Col>
-                            </Row>                    
-                            <Row>
-                                <Col md={12}><span className="text-muted">создания</span> - <i>{helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}</i>,</Col>
-                            </Row>
-                            <Row>
-                                <Col md={12}><span className="text-muted">последнего обновления</span> - <i>{helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}</i>,</Col>
-                            </Row>
-                            <Row>
-                                <Col md={12}><span className="text-muted">публикации</span> - {published()}.</Col>
+                            <Row className="mt-2">
+                                <Col md={5}>
+                                    <Row>
+                                        <Col md={12} className="ml-4">Дата и время:</Col>
+                                    </Row>                    
+                                    <Row>
+                                        <Col md={12}><span className="text-muted">создания</span> - <i>{helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}</i>,</Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={12}><span className="text-muted">последнего обновления</span> - <i>{helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}</i>,</Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={12}><span className="text-muted">публикации</span> - {published()}.</Col>
+                                    </Row>
+                                </Col>
+                                <Col md={7} className="text-center">
+                                    здесь будем выводить группы для которых открыт доступ к этому Докладу и
+                                    элементы упрвления доступом групп к данному Докладу
+                                    <br/>
+                                    {JSON.stringify(this.state.availableForGroups)}
+                                </Col>
                             </Row>
                             <Row>
                                 <Col md={12} className="ml-4 mt-2">Подробное описание:</Col>
@@ -136,25 +158,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                 <Col md={12}><p><i>{reportInfo.description}</i></p></Col>
                             </Row>
                             <CreateAccordion reportInfo={reportInfo} />
-                            {/*<ShowCommonPropertiesDomainObjectSTIX commonData={reportInfo} />*/}
-                            {/**
-                             * 
-                             * НЕ ЗАБЫТь прочитать и обработать поле object_refs!!! 
-                             * 
-                             */}
-                            <Row>
-                                <Col md={12}>
-                                    
-                                </Col>
-                            </Row>
+                            <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
                         </Col>
                     </Row>
-
                     <hr/>
-                    <Row>
-                        <Col md={8}>{JSON.stringify(this.state.reportInfo)}</Col>
-                        <Col md={4}>{JSON.stringify(this.state.availableForGroups)}</Col>
-                    </Row>
                     <Row>
                         <Col className="pt-4 text-right"><small>1 - чем больше тем увереннее</small></Col>
                     </Row>
@@ -166,18 +173,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         );
     }
 }
-
-/**
-// Name - имя используемое для идентификации "Report" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
-// Description - более подробное описание
-// ReportTypes [] - заранее определенный (предложенный) перечень возможных типов контента содержащихся в этом отчете
-// Published - время, в формате "2016-05-12T08:17:27.000Z", когда данный отчет был официально опубликован (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
-// ObjectRefs [] - список идентификаторов STIX объектов, которые ссылаются на этот отчет (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
-// OutsideSpecification - свойства не входящие в основную спецификацию STIX 2.0
-    //AdditionalName - дополнительное наименование
-    // DecisionsMadeComputerThreat - принятые решения по компьютерной угрозе
-    // ComputerThreatType - тип компьютерной угрозы
- */
 
 ModalWindowShowInformationReportSTIX.propTypes = {
     show: PropTypes.bool,
@@ -230,7 +225,7 @@ function CreateAccordion(props){
         return <i>{outsideSpecification.computer_threat_type}</i>;
     };
 
-    return (
+    return (<Grid container>
         <Accordion>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -241,19 +236,21 @@ function CreateAccordion(props){
             <AccordionDetails>
                 <Grid container>
                     <Grid container direction="row">
-                        <Grid item md={6}>дополнительное наименование</Grid>
-                        <Grid item md={6}>{additionalName()}</Grid>
+                        <Grid item md={4}>дополнительное наименование</Grid>
+                        <Grid item md={8}>{additionalName()}</Grid>
                     </Grid>
                     <Grid container direction="row">
-                        <Grid item md={6}>принятое решение по компьютерной угрозе</Grid>
-                        <Grid item md={6}>{decisionsMadeComputerThreat()}</Grid>
+                        <Grid item md={4}>принятое решение по компьютерной угрозе</Grid>
+                        <Grid item md={8}>{decisionsMadeComputerThreat()}</Grid>
                     </Grid>
                     <Grid container direction="row">
-                        <Grid item md={6}>тип компьютерной угрозы</Grid>
-                        <Grid item md={6}>{computerThreatType()}</Grid>
+                        <Grid item md={4}>тип компьютерной угрозы</Grid>
+                        <Grid item md={8}>{computerThreatType()}</Grid>
                     </Grid>
                 </Grid>
             </AccordionDetails>
+        </Accordion>
+        <Accordion>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel-add-technic-info"
@@ -261,12 +258,53 @@ function CreateAccordion(props){
                 <Typography className={classes.heading}>Дополнительная техническая информация</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                <ShowCommonPropertiesDomainObjectSTIX commonData={reportInfo} />
+                <ShowCommonPropertiesDomainObjectSTIX reportInfo={reportInfo} />
             </AccordionDetails>
         </Accordion>
-    );
+    </Grid>);
 }
 
 CreateAccordion.propTypes = {
     reportInfo: PropTypes.object.isRequired,
+};
+
+function GetListObjectRefs(props){
+    let { listObjectRef } = props;
+
+    return <Row>
+        <Col md={12}>
+            <List component="nav"
+                dense
+                subheader={
+                    <ListSubheader component="div" id="nested-list-subheader">
+                        список идентификаторов объектов связанных с этим Докладом
+                    </ListSubheader>
+                }>
+                {listObjectRef.map((item, key) => {
+                    let itemText = <i>{item}</i>;
+                    let type = item.split("--");
+                    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+                    
+                    if(typeof objectElem !== "undefined"){
+                        itemText = objectElem.description;
+                    }
+
+                    return (<ListItem button key={`key_list_item_${key}`}>
+                        {(typeof objectElem === "undefined" ) ? 
+                            "" : 
+                            <ListItemAvatar>
+                                <ListItemIcon>
+                                    <img src={`/images/stix_object/${objectElem.link}`} width="32" height="32" />
+                                </ListItemIcon>
+                            </ListItemAvatar>}
+                        <ListItemText primary={itemText} />
+                    </ListItem>);
+                })}
+            </List>
+        </Col>
+    </Row>;
+}
+
+GetListObjectRefs.propTypes = {
+    listObjectRef: PropTypes.array.isRequired,
 };

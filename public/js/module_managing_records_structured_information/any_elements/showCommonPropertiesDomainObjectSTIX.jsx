@@ -204,7 +204,7 @@ const useStyles = makeStyles({
 }*/
 
 export default function ShowCommonPropertiesDomainObjectSTIX(props) {
-    let { reportInfo } = props.commonData;
+    let { reportInfo } = props;
 
     let getExternalReferences = () => {
         // *** для теста START ***
@@ -246,7 +246,7 @@ export default function ShowCommonPropertiesDomainObjectSTIX(props) {
                     }    
                 }
 
-                return (<Grid container direction="row">
+                return (<Grid container direction="row" className="mb-2" key={`key_external_references_${key}`}>
                     <Grid item md={12}>
                         <CreateExternalReferencesCard item={item} listHashes={listHashes}/>
                     </Grid>
@@ -293,7 +293,7 @@ export default function ShowCommonPropertiesDomainObjectSTIX(props) {
                     }    
                 }
 
-                return (<Grid container direction="row">
+                return (<Grid container direction="row" className="mb-2" key={`key_granular_mark_${key}`}>
                     <Grid item md={12}>
                         <CreateGranularMarkings item={item} listSelectors={listSelectors}/>
                     </Grid>
@@ -301,12 +301,10 @@ export default function ShowCommonPropertiesDomainObjectSTIX(props) {
             });
         };
 
-        return (
-            <Grid container direction="row">
-                <Grid item md={4}><span className="text-muted">дополнительные, {"\"гранулярные метки\""}</span>:</Grid>
-                <Grid item md={8}>{granularMarkings()}</Grid>
-            </Grid>
-        );
+        return (<Grid container direction="row">
+            <Grid item md={4}><span className="text-muted">дополнительные, {"\"гранулярные метки\""}</span>:</Grid>
+            <Grid item md={8}>{granularMarkings()}</Grid>
+        </Grid>);
     };
     let getExtensions = () => {
         reportInfo.extensions = { "test element": "budbuufbduf fndufbud ufbdgufgur", "test element 1": "bvbibevi484negfgrgiurg" };
@@ -325,11 +323,6 @@ export default function ShowCommonPropertiesDomainObjectSTIX(props) {
             <Grid item md={8}><ul>{listExtensions}</ul></Grid>
         </Grid>);
     };
-
-    /*<Grid container direction="row">
-            <Grid item md={6}></Grid>
-            <Grid item md={6}></Grid>
-            </Grid>*/
 
     return (<Grid container>
         <Grid container direction="row">
@@ -386,7 +379,7 @@ export default function ShowCommonPropertiesDomainObjectSTIX(props) {
 }
 
 ShowCommonPropertiesDomainObjectSTIX.propTypes = {
-    commonData: PropTypes.object.isRequired,
+    reportInfo: PropTypes.object.isRequired,
 }; 
 
 function CreateExternalReferencesCard(props){
