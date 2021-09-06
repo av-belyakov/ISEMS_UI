@@ -127,7 +127,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                 <Col md={12} className="text-center"><strong>{reportInfo.name}</strong></Col>
                             </Row>
                             <Row>
-                                <Col md={12} className="text-center">ID:"<i>{reportInfo.id}</i>"</Col>
+                                <Col md={12} className="text-center">{`ID:"<i>${reportInfo.id}</i>"`}</Col>
                             </Row>
                             <Row className="mt-2">
                                 <Col md={5}>

@@ -10,6 +10,7 @@ exports.analysisSIP = require("./analysisSip");
 
 //управление структуированной информацией о компьютерных событиях 
 exports.managementRecordsStructInfo = require("./managementRecordsStructInfo/index");
+exports.managementRecordsStructInfoPageInformationReport = require("./managementRecordsStructInfo/pageInformationReportSTIX");
 
 //сетевые взаимодействия
 exports.networkInteraction = require("./networkInteraction/index");

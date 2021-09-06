@@ -23,6 +23,10 @@ module.exports = function (app) {
             access: "menuSettings.security_event_management.status",
             handler: pages.managementRecordsStructInfo,
         },
+        "/security_event_management_page_information_report": {
+            access: "menuSettings.security_event_management.status",
+            handler: pages.managementRecordsStructInfoPageInformationReport,
+        },
         "/network_interaction": {
             access: "menuSettings.network_interaction.status",
             handler: pages.networkInteraction,

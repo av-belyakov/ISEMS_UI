@@ -1,44 +1,36 @@
 "use strict";
 
-const async = require("async");
-
 const globalObject = require("../../../configure/globalObject");
 const writeLogFile = require("../../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
 
 /**
- * Модуль формирующий основную страницу для модуля управления структурированной информацией
+ * Модуль формирующий страницу содержащую информацию об STIX объекте типа Report
  * 
  * @param {*} req
  * @param {*} res
  * @param {*} objHeader
  */
 module.exports = function (req, res, objHeader) {
-    async.parallel({
-        permissions: (callback) => {
-            checkAccessRightsPage(req, (err, result) => {
-                if (err) callback(err);
-                else callback(null, result);
-            });
-        }
-    }, (err, result) => {
+    checkAccessRightsPage(req, (err, result) => {
         if (err) {
             writeLogFile("error", err.toString());
             res.render("menu/man_records_struct_info", {
                 header: objHeader,
                 userPermissions: {},
-                mainInformation: {},
+                mainInformation: {
+                    reportId: "",
+                },
             });
 
             return;
         }
 
-        let userPermissions = result.permissions.group_settings;
-        let readStatus = userPermissions.management_security_event_management.status;
+        let readStatus = result.group_settings.management_security_event_management.status;
 
         if (readStatus === false) return res.render("403");
 
-        res.render("menu/man_records_struct_info/index", {
+        res.render("menu/man_records_struct_info/information_report_stix", {
             header: objHeader,
             listItems: {
                 connectionModules: {
@@ -47,7 +39,10 @@ module.exports = function (req, res, objHeader) {
                         "managingRecordsStructuredInformationAboutComputerThreats",
                         "connectionEstablished")
                 },
-                userPermissions: userPermissions.management_security_event_management.element_settings,
+                userPermissions: result.group_settings.management_security_event_management.element_settings,
+                mainInformation: {
+                    reportId: req.id,
+                },
             },
         });
     });
