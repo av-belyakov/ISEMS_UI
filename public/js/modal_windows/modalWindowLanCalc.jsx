@@ -1,7 +1,8 @@
 "use strict";
 
 import React from "react";
-import {  Badge, Button, Col, Row, InputGroup, Form, FormControl, Modal } from "react-bootstrap";
+import { Badge, Button, Col, Row, Form, FormControl, Modal } from "react-bootstrap";
+import InputGroup from "react-bootstrap/InputGroup";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers.js";
@@ -135,50 +136,46 @@ export default class ModalWindowLanCalc extends React.Component {
     }
 
     render(){       
-        return (
-            <Modal
-                id="modal_create_task_filter"
-                size="lg"
-                show={this.props.show} 
-                onHide={this.windowClose}
-                aria-labelledby="example-modal-sizes-title-lg" >
-                <Modal.Header closeButton>
-                    <Modal.Title id="example-modal-sizes-title-lg">
-                        <h5>Сетевой калькулятор</h5>
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row>
-                        <Col md={2}>{this.createListMask.call(this)}</Col>
-                        <Col sm={10}>
-                            <InputGroup className="mb-3">
-                                <FormControl
-                                    size="sm"
-                                    onChange={this.handlerInput}
-                                    isValid={this.state.inputFieldIsValid}
-                                    isInvalid={this.state.inputFieldIsInvalid} 
-                                    placeholder="ip адрес" />
-                                <InputGroup.Append>
-                                    <Button 
-                                        size="sm" 
-                                        variant="outline-secondary"
-                                        onClick={this.handlerClickButton}
-                                        disabled={this.state.buttonDisabled} >
-                                    рассчитать
-                                    </Button>
-                                </InputGroup.Append>
-                            </InputGroup>
-                        </Col>
-                    </Row>
-                    {this.createCalculationResult.call(this)}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="outline-secondary" onClick={this.windowClose} size="sm">
-                        закрыть
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        );
+        return (<Modal
+            id="modal_create_task_filter"
+            size="lg"
+            show={this.props.show} 
+            onHide={this.windowClose}
+            aria-labelledby="example-modal-sizes-title-lg" >
+            <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-lg">
+                    <h5>Сетевой калькулятор</h5>
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Row>
+                    <Col md={2}>{this.createListMask.call(this)}</Col>
+                    <Col sm={10}>
+                        <InputGroup className="mb-3">
+                            <FormControl
+                                size="sm"
+                                onChange={this.handlerInput}
+                                isValid={this.state.inputFieldIsValid}
+                                isInvalid={this.state.inputFieldIsInvalid} 
+                                placeholder="ip адрес" />
+                            <Button 
+                                size="sm" 
+                                variant="outline-secondary"
+                                onClick={this.handlerClickButton}
+                                disabled={this.state.buttonDisabled} >
+                                рассчитать
+                            </Button>
+                        </InputGroup>
+                    </Col>
+                </Row>
+                {this.createCalculationResult.call(this)}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="outline-secondary" onClick={this.windowClose} size="sm">
+                    закрыть
+                </Button>
+            </Modal.Footer>
+        </Modal>);
     }
 }
 

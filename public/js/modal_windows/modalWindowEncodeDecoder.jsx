@@ -1,7 +1,7 @@
 "use strict";
 
 import React from "react";
-import {  Button, Col, Row, Form, Modal } from "react-bootstrap";
+import { Button, Col, Row, Form, Modal } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import utf8 from "utf8";

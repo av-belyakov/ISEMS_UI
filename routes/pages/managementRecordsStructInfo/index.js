@@ -5,6 +5,7 @@ const async = require("async");
 const globalObject = require("../../../configure/globalObject");
 const writeLogFile = require("../../../libs/writeLogFile");
 const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage");
+const informationForPageManagementGroups = require("../../../libs/management_settings/informationForPageManagementGroups");
 
 /**
  * Модуль формирующий основную страницу для модуля управления структурированной информацией
@@ -17,6 +18,12 @@ module.exports = function (req, res, objHeader) {
     async.parallel({
         permissions: (callback) => {
             checkAccessRightsPage(req, (err, result) => {
+                if (err) callback(err);
+                else callback(null, result);
+            });
+        },
+        groupList: (callback) => {
+            informationForPageManagementGroups((err, result) => {
                 if (err) callback(err);
                 else callback(null, result);
             });
@@ -48,6 +55,7 @@ module.exports = function (req, res, objHeader) {
                         "connectionEstablished")
                 },
                 userPermissions: userPermissions.management_security_event_management.element_settings,
+                groupList: result.groupList,
             },
         });
     });

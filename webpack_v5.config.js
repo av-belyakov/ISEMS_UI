@@ -28,7 +28,6 @@ module.exports = {
             "bootstrapNotify",
             "bootstrapToggle",
             "datatablesNetBs",
-            "reactCustomizeTokenInput",
             "select2",
             "md5js",
             "moment",
@@ -40,6 +39,7 @@ module.exports = {
             "react-scrollbar",
             "react-beautiful-dnd",
             "react-router-dom",
+            "react-customize-token-input",
         ],
         authPage: "./authPage.js",
         mainPage: "./mainPage.js",
@@ -109,7 +109,6 @@ module.exports = {
             "bootstrapNotify": "bootstrap-notify/bootstrap-notify.min.js",
             "bootstrapToggle": "bootstrap-toggle/js/bootstrap-toggle.min.js",
             "datatablesNetBs": "datatables.net-bs/js/dataTables.bootstrap.min.js",
-            "reactCustomizeTokenInput": "react-customize-token-input/lib/index.js",
             "material-ui-lab": "@material-ui/lab",
             "material-ui-core": "@material-ui/core",
             "material-ui-pickers": "@material-ui/pickers",
@@ -125,6 +124,7 @@ module.exports = {
             "react-scrollbar": "react-scrollbar",
             "react-beautiful-dnd":"react-beautiful-dnd",
             "react-router-dom": "react-router-dom",
+            "react-customize-token-input": "react-customize-token-input/lib/index.js",
         }
     },
 

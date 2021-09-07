@@ -8,12 +8,14 @@ import {
     AccordionDetails,
     Typography, 
     Grid,
+    Link,
     List,
     ListItem,
     ListItemAvatar,
     ListItemIcon,
     ListItemText,
     ListSubheader,
+    TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -44,6 +46,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handleSave = this.handleSave.bind(this);
         this.modalClose = this.modalClose.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.handlePublished = this.handlePublished.bind(this);
+        this.handlerOnChangeDescription = this.handlerOnChangeDescription.bind(this);
 
         this.handlerEvents = this.handlerEvents.call(this);
     }
@@ -70,7 +74,24 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.modalClose();
     }
 
-    handleSave(){}
+    handleSave(){
+
+        console.log("func 'handleSave', START...");
+
+    }
+
+    handlePublished(){
+
+        console.log("func 'handlePublished', START...");
+
+    }
+
+    handlerOnChangeDescription(data){
+
+        console.log("func 'handlerOnChangeDescription', START...");
+        console.log(data.target.value);
+
+    }
 
     modalClose(){
         this.props.onHide();
@@ -96,6 +117,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     <Modal.Body />
                     <Modal.Footer>
                         <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>закрыть</Button>
+                        <Button variant="outline-primary" size="sm" onClick={this.handleSave}>сохранить</Button>
                     </Modal.Footer>
                 </Modal>
             );
@@ -104,17 +126,23 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         let reportInfo = this.state.reportInfo[0];
         let published = () => {
             if(Date.parse(reportInfo.published) <= 0){
-                return <span className="text-dark">доклад не опубликован</span>;
+                return (<Col md={6} className="text-right">
+                    <Link href="#" onClick={this.handlePublished} color="inherit">
+                        <Typography variant="overline" display="block" gutterBottom>опубликовать</Typography>
+                    </Link>
+                </Col>);
             }
 
-            return <i>{helpers.convertDateFromString(reportInfo.published, { monthDescription: "long", dayDescription: "numeric" })}</i>;
+            return (<Col md={6} className="text-right">
+                {helpers.convertDateFromString(reportInfo.published, { monthDescription: "long", dayDescription: "numeric" })}
+            </Col>);
         };
 
         return (
             <Modal
                 show={this.props.show}
                 onHide={this.modalClose}
-                dialogClassName="modal-70w"
+                dialogClassName="modal-90w"
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter" >
                 <Modal.Header closeButton>
@@ -124,12 +152,59 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     <Row>
                         <Col md={12} className="pl-3 pr-3">
                             <Row>
-                                <Col md={12} className="text-center"><strong>{reportInfo.name}</strong></Col>
+                                <Col md={12} className="text-center"><h4><strong>{reportInfo.name}</strong></h4></Col>
                             </Row>
                             <Row>
-                                <Col md={12} className="text-center">{`ID:"<i>${reportInfo.id}</i>"`}</Col>
+                                <Col md={12} className="text-center">ID:<i>{`"${reportInfo.id}`}</i></Col>
                             </Row>
-                            <Row className="mt-2">
+                            <Row>
+                                <Col md={7}>
+                                    <Row className="mt-4">
+                                        <Col md={12} className="text-muted">Дата и время:</Col>
+                                    </Row>              
+                                    <Row>
+                                        <Col md={6}><span className="text-muted">создания</span></Col>
+                                        <Col md={6} className="text-right">
+                                            {helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={6}>
+                                            <span className="text-muted">последнего обновления</span>
+                                        </Col>
+                                        <Col md={6} className="text-right">
+                                            {helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={6}><span className="text-muted">публикации</span></Col>
+                                        {published()}
+                                    </Row>
+                                    <Row className="mt-4">
+                                        <Col md={6} className="text-muted">Доступность для непривилегированных групп:</Col>
+                                        <Col md={6} className="text-right">group list {JSON.stringify(this.props.groupList)}</Col>
+                                    </Row>           
+                                    <Row>
+                                        <Col md={12} className="mt-3">
+                                            <TextField
+                                                id="outlined-multiline-static"
+                                                label="Подробное описание"
+                                                multiline
+                                                rows={4}
+                                                fullWidth
+                                                onChange={this.handlerOnChangeDescription}
+                                                defaultValue={reportInfo.description}
+                                                variant="outlined"/>
+                                        </Col>  
+                                    </Row>
+                                </Col>
+                                <Col md={5}>
+                                    <Row>
+                                        <Col md={12} className="text-center"><strong>История изменений</strong></Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                            <Row className="mt-4">
                                 <Col md={5}>
                                     <Row>
                                         <Col md={12} className="ml-4">Дата и время:</Col>
@@ -168,6 +243,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>закрыть</Button>
+                    <Button variant="outline-primary" size="sm" onClick={this.handleSave}>сохранить</Button>
                 </Modal.Footer>
             </Modal>
         );
@@ -179,6 +255,7 @@ ModalWindowShowInformationReportSTIX.propTypes = {
     onHide: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
     showReportId: PropTypes.string.isRequired,
+    groupList: PropTypes.object.isRequired,
 };
 
 function CreateAccordion(props){
@@ -304,6 +381,11 @@ function GetListObjectRefs(props){
         </Col>
     </Row>;
 }
+
+/**
+ * window.open("/security_event_management_page_information_report?id="+elemId, "_blank").focus();
+ * Это нужно добавить для обратных ссылок на REport со стороны объектов STIX связанных с основным обектом Report
+ */
 
 GetListObjectRefs.propTypes = {
     listObjectRef: PropTypes.array.isRequired,

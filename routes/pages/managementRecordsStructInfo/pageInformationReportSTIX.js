@@ -6,6 +6,7 @@ const checkAccessRightsPage = require("../../../libs/check/checkAccessRightsPage
 
 /**
  * Модуль формирующий страницу содержащую информацию об STIX объекте типа Report
+ * доступ к которому осуществляется через ОБРАТНЫЕ ссылки других объектов STIX
  * 
  * @param {*} req
  * @param {*} res

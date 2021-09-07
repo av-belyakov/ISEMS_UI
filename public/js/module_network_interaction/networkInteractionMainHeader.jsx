@@ -155,9 +155,9 @@ class CreatePageManagingNetworkInteractions extends React.Component {
             for (let source in objCopy.listSources) {
                 if (+data.options.sourceID === +source) {
                     objCopy.listSources[source].appVersion = data.options.appVersion,
-                        objCopy.listSources[source].appReleaseDate = data.options.appReleaseDate,
+                    objCopy.listSources[source].appReleaseDate = data.options.appReleaseDate,
 
-                        this.setState(objCopy);
+                    this.setState(objCopy);
 
                     break;
                 }

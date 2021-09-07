@@ -123,8 +123,6 @@ export default class CreateMainTableForReport extends React.Component {
 
     handlerTableOnClick(elem, elemId){
         this.props.handlerShowModalWindowInformationReport(elemId);
-
-        window.open("/security_event_management_page_information_report?id="+elemId, "_blank").focus();
     }
 
     getChipForGroups(elemId){
