@@ -40,23 +40,40 @@ module.exports = function (req, res, objHeader) {
             return;
         }
 
-        let userPermissions = result.permissions.group_settings;
-        let readStatus = userPermissions.management_security_event_management.status;
+        try{
+            let userPermissions = result.permissions.group_settings;
+            let readStatus = userPermissions.management_security_event_management.status;
 
-        if (readStatus === false) return res.render("403");
+            if (readStatus === false) return res.render("403");
 
-        res.render("menu/man_records_struct_info/index", {
-            header: objHeader,
-            listItems: {
-                connectionModules: {
-                    moduleMRSICT: globalObject.getData(
-                        "descriptionAPI",
-                        "managingRecordsStructuredInformationAboutComputerThreats",
-                        "connectionEstablished")
+            res.render("menu/man_records_struct_info/index", {
+                header: objHeader,
+                listItems: {
+                    connectionModules: {
+                        moduleMRSICT: globalObject.getData(
+                            "descriptionAPI",
+                            "managingRecordsStructuredInformationAboutComputerThreats",
+                            "connectionEstablished")
+                    },
+                    userPermissions: userPermissions.management_security_event_management.element_settings,
+                    groupList: Object.keys(result.groupList).sort((a, b) => a < b).map((gn) => {
+                        return {
+                            groupName: gn,
+                            dateRegister: result.groupList[gn].date_register,
+                            create: result.groupList[gn].elements.management_security_event_management.element_settings.create.status,
+                            editingInformation: result.groupList[gn].elements.management_security_event_management.element_settings.editing_information.status,
+                            privilegedGroup: result.groupList[gn].elements.management_security_event_management.element_settings.privileged_group.status,
+                        };
+                    }),
                 },
-                userPermissions: userPermissions.management_security_event_management.element_settings,
-                groupList: result.groupList,
-            },
-        });
+            });
+        } catch(err) {
+            writeLogFile("error", err.toString());
+            res.render("menu/man_records_struct_info", {
+                header: objHeader,
+                userPermissions: {},
+                mainInformation: {},
+            });
+        }
     });
 };

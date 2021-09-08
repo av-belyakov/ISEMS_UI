@@ -563,14 +563,15 @@ export default class CreateBodySearchTask extends React.Component {
         return (
             <React.Fragment>
                 <Card className="mb-2" body>
-                    <Form.Group as={Row}>
-                        <Form.Group as={Col}>
+                    {/*<Form>*/}
+                    <Row>
+                        <Col md={2}>
                             <Form.Control onChange={this.handlerChosenSource} as="select" size="sm">
                                 <option value={0}>источник</option>
                                 {this.getListSource()}
                             </Form.Control>
-                        </Form.Group>
-                        <Form.Group as={Col}>
+                        </Col>
+                        <Col md={2}>
                             <Form.Control onChange={this.handlerChosenStatus} name="list_status_filtration" as="select" size="sm">
                                 <option value="">статус фильтрации</option>
                                 <option value="wait">готовится к выполнению</option>
@@ -579,8 +580,8 @@ export default class CreateBodySearchTask extends React.Component {
                                 <option value="complete">завершена успешно</option>
                                 <option value="stop">остановлена пользователем</option>
                             </Form.Control>
-                        </Form.Group>
-                        <Form.Group as={Col}>
+                        </Col>
+                        <Col md={2}>
                             <Form.Control onChange={this.handlerChosenStatus} name="list_status_download" as="select" size="sm">
                                 <option value="">статус выгрузки файлов</option>
                                 <option value="wait">готовится к выполнению</option>
@@ -590,42 +591,52 @@ export default class CreateBodySearchTask extends React.Component {
                                 <option value="complete">завершена успешно</option>
                                 <option value="stop">остановлена пользователем</option>
                             </Form.Control>
-                        </Form.Group>
-                        <Form.Group as={Col} className="mt-1 ml-3">
-                            <Form validated>
-                                <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="task_checkbox"/>
-                                <small className="ml-1">задача</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen} 
-                                    id="r_task_complete" 
-                                    value="true" 
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_task_complete" 
-                                    disabled={this.state.disabledRadioChosenTask} />
-                                <small className="ml-1">закрыта</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen}  
-                                    id="r_task_not_complete" 
-                                    value="false" 
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_task_complete"
-                                    defaultChecked
-                                    disabled={this.state.disabledRadioChosenTask} />
-                                <small className="ml-1">открыта</small>
-                            </Form>
-                        </Form.Group>
-                    </Form.Group>
-                    <Form.Group as={Row}>
+                        </Col>
+                        <Col md={6} className="mt-1">
+                            <Row>
+                                
+                                <Form validated>
+                                    <Form.Group as={Col}>
+                                        <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="task_checkbox"/>
+                                        <small className="ml-1">задача</small>
+                                    </Form.Group>
+                                    <Form.Group as={Col}>
+                                        <Form.Check 
+                                            type="radio"
+                                            onClick={this.handlerRadioChosen} 
+                                            id="r_task_complete" 
+                                            value="true" 
+                                            label="" 
+                                            className="mt-1 ml-3" 
+                                            name="chose_task_complete" 
+                                            disabled={this.state.disabledRadioChosenTask} />
+                                        <small className="ml-1">закрыта</small>
+                                    </Form.Group>
+                                    <Form.Group as={Col}>
+                                        <Form.Check 
+                                            type="radio"
+                                            onClick={this.handlerRadioChosen}  
+                                            id="r_task_not_complete" 
+                                            value="false" 
+                                            label="" 
+                                            className="mt-1 ml-3" 
+                                            name="chose_task_complete"
+                                            defaultChecked
+                                            disabled={this.state.disabledRadioChosenTask} />
+                                        <small className="ml-1">открыта</small>
+                                    </Form.Group>
+                                </Form>
+                                
+                            </Row>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Form.Group as={Col} className="text-left mt-1">
-                            <Form.Group as={Row} className="ml-1 mt-n1">
+                            <Row className="ml-1 mt-n1">
                                 <Form.Check className="mt-n2" type="checkbox" onClick={this.handlerCheckbox} name="files_found" />
                                 <small className="ml-1 mt-n2">файлы найдены</small>
-                            </Form.Group>
-                            <Form.Group as={Row} className="ml-1 mt-n1">
+                            </Row>
+                            <Row className="ml-1 mt-n1">
                                 <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="file_uploaded_check"/>
                                 <small className="ml-1">выгрузка выполнялась</small>
                                 <Form.Check 
@@ -649,8 +660,8 @@ export default class CreateBodySearchTask extends React.Component {
                                     defaultChecked
                                     disabled={this.state.disabledRadioUploadedFile} />
                                 <small className="ml-1">нет</small>
-                            </Form.Group>
-                            <Form.Group as={Row} className="ml-1 mt-n2">
+                            </Row>
+                            <Row className="ml-1 mt-n2">
                                 <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="all_file_uploaded_check"/>
                                 <small className="ml-1">все файлы выгружены</small>
                                 <Form.Check 
@@ -674,11 +685,11 @@ export default class CreateBodySearchTask extends React.Component {
                                     defaultChecked
                                     disabled={this.state.disabledRadioUploadedAllFile} />
                                 <small className="ml-1">нет</small>
-                            </Form.Group>
+                            </Row>
                         </Form.Group>
                         <Form.Group as={Col} className="text-left">
                             <small>найдено файлов</small>
-                            <Form.Group as={Row}>
+                            <Row>
                                 <Form.Group as={Col}>
                                     <Form.Control 
                                         onChange={this.handlerCountAndSizeFiles} 
@@ -699,11 +710,11 @@ export default class CreateBodySearchTask extends React.Component {
                                         size="sm" 
                                         placeholder="max" />
                                 </Form.Group>
-                            </Form.Group>
+                            </Row>
                         </Form.Group>
                         <Form.Group as={Col} className="text-left">
                             <small>общий размер найденных файлов</small>
-                            <Form.Group as={Row}>
+                            <Row>
                                 <Form.Group as={Col}>
                                     <Form.Control 
                                         onChange={this.handlerCountAndSizeFiles} 
@@ -724,10 +735,10 @@ export default class CreateBodySearchTask extends React.Component {
                                         size="sm" 
                                         placeholder="max" />
                                 </Form.Group>
-                            </Form.Group>
+                            </Row>
                         </Form.Group>    
-                    </Form.Group>                    
-                    <Form.Group as={Row} className="mt-n3">
+                    </Row>                
+                    <Row className="mt-n3">
                         <Col md={5} className="mt-2">
                             <CreateDateTimePicker 
                                 currentDateTimeStart={this.state.searchParameters.ifo.dt.s}
@@ -754,7 +765,7 @@ export default class CreateBodySearchTask extends React.Component {
                             </Form.Group>
                         </Col>
                         <Col md={1} className="text-right">
-                            <Row className=" mt-n2">
+                            <Row className="mt-n2">
                                 <Col>
                                     <a href="#" 
                                         id="elem_helper"
@@ -777,7 +788,8 @@ export default class CreateBodySearchTask extends React.Component {
                                 </Col>
                             </Row>
                         </Col>
-                    </Form.Group>
+                    </Row>
+                    {/*</Form>*/}
                 </Card>
             </React.Fragment>
         );

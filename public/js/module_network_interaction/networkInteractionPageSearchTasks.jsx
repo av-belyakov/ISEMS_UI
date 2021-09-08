@@ -455,7 +455,6 @@ class CreatePageSearchTasks extends React.Component {
                         <Form>
                             <Form.Check 
                                 className="mt-1"
-                                custom 
                                 onChange={this.changeCheckboxMarked.bind(this, item.tid)}
                                 type="checkbox" 
                                 id={`checkbox-${item.tid}`}
@@ -577,14 +576,12 @@ class CreatePageSearchTasks extends React.Component {
         return (
             <React.Fragment>
                 <Row className="pt-3">
-                    <Col md={1}></Col>
-                    <Col md={10}>
+                    <Col md={12}>
                         <CreateBodySearchTask 
                             socketIo={this.props.socketIo} 
                             listSources={this.props.listItems.listSources}
                             handlerButtonSearch={this.handlerButtonSearch} />
                     </Col>
-                    <Col md={1}></Col>
                 </Row>
                 <Row>
                     <Col md={12}>

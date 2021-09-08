@@ -22,6 +22,9 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
+import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
+import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
+import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
 import ShowCommonPropertiesDomainObjectSTIX from "../module_managing_records_structured_information/any_elements/showCommonPropertiesDomainObjectSTIX.jsx";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +44,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.state = {
             reportInfo: {},
             availableForGroups: [],
+            listGroupAccessToReport: [],
+            currentGroupAccessToReport: "select_group",
         };
 
         this.handleSave = this.handleSave.bind(this);
@@ -48,6 +53,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handleClose = this.handleClose.bind(this);
         this.handlePublished = this.handlePublished.bind(this);
         this.handlerOnChangeDescription = this.handlerOnChangeDescription.bind(this);
+        this.handlerManagingAccessToReport = this.handlerManagingAccessToReport.bind(this);
+        this.handlerOnChangeAccessGroupToReport = this.handlerOnChangeAccessGroupToReport.bind(this);
+        this.handlerOutsideSpecificationAdditionalName = this.handlerOutsideSpecificationAdditionalName.bind(this);
+        this.handlerDeleteChipFromListGroupAccessToReport = this.handlerDeleteChipFromListGroupAccessToReport.bind(this);
 
         this.handlerEvents = this.handlerEvents.call(this);
     }
@@ -91,6 +100,60 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         console.log("func 'handlerOnChangeDescription', START...");
         console.log(data.target.value);
 
+    }
+
+    handlerOnChangeAccessGroupToReport(data){
+        let listGroupAccessToReport = this.state.listGroupAccessToReport;
+        for(let item of listGroupAccessToReport){
+            if((data.target.value === item) || (data.target.value === "select_group")){
+                return;
+            }
+        }
+
+        listGroupAccessToReport.push(data.target.value);
+        this.setState({ listGroupAccessToReport: listGroupAccessToReport });
+    }
+
+    handlerDeleteChipFromListGroupAccessToReport(groupName){
+        let newListGroup = this.state.listGroupAccessToReport.filter((item) => {
+            return groupName !== item;
+        });
+
+        this.setState({ listGroupAccessToReport: newListGroup });
+    }
+
+    handlerOutsideSpecificationAdditionalName(data){
+        let reportInfo = _.cloneDeep(this.state.reportInfo);
+        reportInfo.outside_specification.additional_name = data.target.value;
+
+        this.setState({ reportInfo: reportInfo });
+    }
+
+    handlerManagingAccessToReport(){
+        if(!this.props.userPermissions.privileged_group.status){
+            return;
+        }
+
+        return (<React.Fragment>
+            <Row className="mt-4">
+                <Col md={12} className="text-muted text-left">Доступность для непривилегированных групп:</Col>
+            </Row>
+            <Row className="mt-2">
+                <Col md={6}>
+                отправить запрос на поиск в БД UI какой группе разрешен доступ к данному Докладу
+                    <CreateChipList
+                        variant="outlined"
+                        chipData={this.state.listGroupAccessToReport}
+                        handleDelete={this.handlerDeleteChipFromListGroupAccessToReport} />
+                </Col>
+                <Col md={6} className="pt-1">
+                    <CreateListUnprivilegedGroups 
+                        groupList={this.props.groupList}
+                        currentGroup={this.state.currentGroupAccessToReport}
+                        handlerChosen={this.handlerOnChangeAccessGroupToReport} />
+                </Col>
+            </Row>
+        </React.Fragment>);
     }
 
     modalClose(){
@@ -180,10 +243,12 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                         <Col md={6}><span className="text-muted">публикации</span></Col>
                                         {published()}
                                     </Row>
-                                    <Row className="mt-4">
-                                        <Col md={6} className="text-muted">Доступность для непривилегированных групп:</Col>
-                                        <Col md={6} className="text-right">group list {JSON.stringify(this.props.groupList)}</Col>
-                                    </Row>           
+                                    {this.handlerManagingAccessToReport()}
+                                    {/**
+                                     * 
+                                     * отправить запрос на поиск в БД UI какой группе разрешен доступ к данному Докладу!!!!
+                                     * 
+                                     */}
                                     <Row>
                                         <Col md={12} className="mt-3">
                                             <TextField
@@ -197,40 +262,55 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                                 variant="outlined"/>
                                         </Col>  
                                     </Row>
+                                    <Row className="mt-2">
+                                        <Col md={12}>
+                                            <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1:</span>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={12}>
+                                            <span className="pl-4">
+                                                <MainTextField
+                                                    uniqName={"additional_name_not_stix_specifications"}
+                                                    variant={"standard"}
+                                                    label={"дополнительное наименование"}
+                                                    value={(()=>{
+                                                        if((reportInfo.outside_specification === null) || (typeof reportInfo.outside_specification === "undefined")){
+                                                            return "";
+                                                        }
+
+                                                        if((reportInfo.outside_specification.additional_name === null) || (typeof reportInfo.outside_specification.additional_name === "undefined")){
+                                                            return "";
+                                                        }
+
+                                                        return reportInfo.outside_specification.additional_name;
+                                                    })()}
+                                                    fullWidth={true}
+                                                    onChange={this.handlerOutsideSpecificationAdditionalName}
+                                                />
+                                            </span>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={12}>
+                                            <span className="pl-4">
+                                            принятое решение по компьютерной угрозе (сделать список решений): {reportInfo.outside_specification.decisions_made_computer_threat}
+                                            </span>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={12}>
+                                            <span className="pl-4">
+                                                тип компьютерной угрозы (сделать список типов угроз): {reportInfo.outside_specification.computer_threat_type}
+                                            </span>
+                                        </Col>
+                                    </Row>
                                 </Col>
                                 <Col md={5}>
                                     <Row>
                                         <Col md={12} className="text-center"><strong>История изменений</strong></Col>
                                     </Row>
                                 </Col>
-                            </Row>
-                            <Row className="mt-4">
-                                <Col md={5}>
-                                    <Row>
-                                        <Col md={12} className="ml-4">Дата и время:</Col>
-                                    </Row>                    
-                                    <Row>
-                                        <Col md={12}><span className="text-muted">создания</span> - <i>{helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}</i>,</Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md={12}><span className="text-muted">последнего обновления</span> - <i>{helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}</i>,</Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md={12}><span className="text-muted">публикации</span> - {published()}.</Col>
-                                    </Row>
-                                </Col>
-                                <Col md={7} className="text-center">
-                                    здесь будем выводить группы для которых открыт доступ к этому Докладу и
-                                    элементы упрвления доступом групп к данному Докладу
-                                    <br/>
-                                    {JSON.stringify(this.state.availableForGroups)}
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={12} className="ml-4 mt-2">Подробное описание:</Col>
-                            </Row>
-                            <Row>
-                                <Col md={12}><p><i>{reportInfo.description}</i></p></Col>
                             </Row>
                             <CreateAccordion reportInfo={reportInfo} />
                             <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
@@ -255,55 +335,16 @@ ModalWindowShowInformationReportSTIX.propTypes = {
     onHide: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
     showReportId: PropTypes.string.isRequired,
-    groupList: PropTypes.object.isRequired,
+    groupList: PropTypes.array.isRequired,
+    userPermissions: PropTypes.object.isRequired,
 };
 
 function CreateAccordion(props){
     const classes = useStyles();
-    let { reportInfo } = props,
-        outsideSpecification = reportInfo.outside_specification;
-
-    let additionalName = () => {
-        if(outsideSpecification.additional_name.length === 0){
-            return <span className="text-dark">не определено</span>;
-        }
-
-        return <i>{outsideSpecification.additional_name}</i>;
-    };
-    let decisionsMadeComputerThreat = () => {
-    /**
-     * 
-     * 
-     * Здесь надо транслировать наименование типа принимаемых решений на русский язык
-     * для этого нужно сделать обработку запроса списков на backend
-     * запрос нужно сделать при формировании страницы  REPORT
-    */
-
-        if(outsideSpecification.decisions_made_computer_threat.length === 0){
-            return <span className="text-secondary">решение не принималось</span>;
-        }
-
-        return <i>{outsideSpecification.decisions_made_computer_threat}</i>;
-    };
-    let computerThreatType = () => {
-    /**
-     * 
-     * 
-     * 
-     * Здесь надо транслировать наименование компьютерной атаки на русский язык
-     * для этого нужно сделать обработку запроса списков на backend 
-     * запрос нужно сделать при формировании страницы  REPORT
-     * */
-
-        if(outsideSpecification.computer_threat_type.length === 0){
-            return <span className="text-secondary">не определен</span>;
-        }
-
-        return <i>{outsideSpecification.computer_threat_type}</i>;
-    };
-
+    let { reportInfo } = props;
+        
     return (<Grid container>
-        <Accordion>
+        {/*<Accordion>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel-add-info-not-stix"
@@ -326,7 +367,7 @@ function CreateAccordion(props){
                     </Grid>
                 </Grid>
             </AccordionDetails>
-        </Accordion>
+        </Accordion>*/}
         <Accordion>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}

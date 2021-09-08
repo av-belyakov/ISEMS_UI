@@ -186,6 +186,7 @@ export default class CreatePageReport extends React.Component {
                     onHide={this.handlerCloseModalWindowInformationReport}
                     showReportId={this.state.showReportId}
                     groupList={this.props.receivedData.groupList}
+                    userPermissions={this.props.receivedData.userPermissions}
                     socketIo={this.props.socketIo} />
             </React.Fragment>
         );
