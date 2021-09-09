@@ -59,6 +59,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handlerDeleteChipFromListGroupAccessToReport = this.handlerDeleteChipFromListGroupAccessToReport.bind(this);
 
         this.handlerEvents = this.handlerEvents.call(this);
+        this.requestEmitter = this.requestEmitter.call(this);
     }
 
     handlerEvents(){
@@ -69,15 +70,45 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             //console.log(`sections: ${data.section}`);
             //console.log(data.information.additional_parameters);
 
-            if(data.section === "list of groups that are allowed access"){
-                this.setState({ availableForGroups: data.information.additional_parameters });
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
             }
 
-            if(data.section === "send search request, get report for id"){
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
+
+            switch(data.section){
+            case "list of groups that are allowed access":
+                this.setState({ availableForGroups: data.information.additional_parameters });
+                break;
+
+            case "send search request, get report for id":
+                if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                    break;
+                }
+
                 this.setState({ reportInfo: data.information.additional_parameters.transmitted_data });
+                break;
+
+            case "list of groups to which the report is available":
+
+                console.log(`func 'handlerEvents', section:${data.section}`);
+                console.log(data.information.additional_parameters.list_groups_which_report_available);
+
+                if(!Array.isArray(data.information.additional_parameters.list_groups_which_report_available)){
+                    break;
+                }
+
+                this.setState({ listGroupAccessToReport: data.information.additional_parameters.list_groups_which_report_available.map((item) => {
+                    return { data: item.group_name, title: `Пользователь: ${item.user_name}, Время: ${helpers.getDate(item.date_time)}` };
+                })});
+                break;
             }
         }); 
     }
+
+    requestEmitter(){}
 
     handleClose(){
         this.modalClose();
@@ -102,24 +133,40 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     }
 
+    //обработчик выбора группы из списка непривилегированных групп 
     handlerOnChangeAccessGroupToReport(data){
-        let listGroupAccessToReport = this.state.listGroupAccessToReport;
+        let listGroupAccessToReport = this.state.listGroupAccessToReport,
+            groupName = data.target.value;
         for(let item of listGroupAccessToReport){
-            if((data.target.value === item) || (data.target.value === "select_group")){
+            if((groupName === item.data) || (groupName === "select_group")){
                 return;
             }
         }
 
-        listGroupAccessToReport.push(data.target.value);
+        listGroupAccessToReport.push({ data: groupName, title: `Пользователь: текущий, Время: ${helpers.getDate(+new Date)}` });
         this.setState({ listGroupAccessToReport: listGroupAccessToReport });
+
+        if(this.state.reportInfo.length !== 1){
+            return;
+        }
+
+        this.props.socketIo.emit("isems-mrsi ui request: allow the group to access the report", { arguments: {
+            reportId: this.state.reportInfo[0].id,
+            unprivilegedGroup: groupName,
+        }});
     }
 
     handlerDeleteChipFromListGroupAccessToReport(groupName){
         let newListGroup = this.state.listGroupAccessToReport.filter((item) => {
-            return groupName !== item;
+            return groupName !== item.data;
         });
 
         this.setState({ listGroupAccessToReport: newListGroup });
+        
+        this.props.socketIo.emit("isems-mrsi ui request: forbid the group to access the report", { arguments: {
+            reportId: this.state.reportInfo[0].id,
+            unprivilegedGroup: groupName,
+        }});
     }
 
     handlerOutsideSpecificationAdditionalName(data){
@@ -140,7 +187,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             </Row>
             <Row className="mt-2">
                 <Col md={6}>
-                отправить запрос на поиск в БД UI какой группе разрешен доступ к данному Докладу
                     <CreateChipList
                         variant="outlined"
                         chipData={this.state.listGroupAccessToReport}
@@ -162,6 +208,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.setState({
             reportInfo: {},
             availableForGroups: [],
+            listGroupAccessToReport: [],
         });
     }
 

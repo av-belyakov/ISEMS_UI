@@ -35,37 +35,31 @@ class QueryProcessor {
      *      Model.findOne()
      */
     querySelect(mongooseModel, settingsQuery, callback) {
-            let { id = null, select = "", options = {}, query = {}, isMany = false } = settingsQuery;
+        let { id = null, select = "", options = {}, query = {}, isMany = false } = settingsQuery;
 
-            if (id !== null) {
-                mongooseModel.findById(id, select, options, (err, doc) => {
-                    if (err) callback(err);
-                    else callback(null, doc);
-                });
-            } else {
-                let commandFind = (isMany) ? "find" : "findOne";
+        if (id !== null) {
+            mongooseModel.findById(id, select, options, (err, doc) => {
+                if (err) callback(err);
+                else callback(null, doc);
+            });
+        } else {
+            let commandFind = (isMany) ? "find" : "findOne";
 
-                mongooseModel[commandFind](query, select, options, (err, docs) => {
-                    if (err) callback(err);
-                    else callback(null, docs);
-                });
-            }
+            mongooseModel[commandFind](query, select, options, (err, docs) => {
+                if (err) callback(err);
+                else callback(null, docs);
+            });
         }
-        /*
-                                models.modelSOARules.find(
-                                    {sid: 26900}, (err, document) => {
-                                        if(err) callbackParallel(err);
-                                        else callbackParallel(null, document);
-                                    });
-                            */
-        /**
-         * Создание новой модели документа на основе его схемы
-         * 
-         * @param {*} mongooseModel имя модели (таблица)
-         * @param {*} settingsQuery параметры запроса
-         *                          { document: {} }
-         * @param {*} callback функция обратного вызова возвращает error или null
-         */
+    }
+
+    /**
+     * Создание новой модели документа на основе его схемы
+     * 
+     * @param {*} mongooseModel имя модели (таблица)
+     * @param {*} settingsQuery параметры запроса
+     *                          { document: {} }
+     * @param {*} callback функция обратного вызова возвращает error или null
+     */
     queryCreate(mongooseModel, settingsQuery, callback) {
         new mongooseModel(settingsQuery.document).save(err => {
             if (err) callback(err);
@@ -84,7 +78,6 @@ class QueryProcessor {
         //mongooseModel.adminCommand( { setParameter: 1, transactionLifetimeLimitSeconds: 600 } );
         mongooseModel.insertMany(
             documents, { ordered: false },
-
             (err, doc) => {
                 if (err) callback(err);
                 else callback(null, doc);
@@ -98,13 +91,9 @@ class QueryProcessor {
                 if (err) callback(err);
                 else callback(null, doc);
             });
-            /*.then(res => {
-                // Prints "1 1 1"
-                console.log(res.insertedCount, res.modifiedCount, res.deletedCount);
-            })*/;
     }
     
-  /**
+    /**
      * Вставка и обновление элементов
      * 
      * @param {*} mongooseModel 
@@ -139,20 +128,19 @@ class QueryProcessor {
      * @param {*} documents (array|object) 
      * @param {*} callback 
      */
-
     queryUpdateBD(mongooseModel, mongooseDoc, callback) {
         mongooseDoc.forEach((item) => {
             mongooseModel.findByIdandUpdate(item._id, {
-                    $set: {
-                        classType: item.classType,
-                        msg: item.msg,
-                        body: item.body,
-                    }
-                }, { new: true },
-                (err, doc) => {
-                    if (err) callback(err);
-                    else callback(null, doc);
-                });
+                $set: {
+                    classType: item.classType,
+                    msg: item.msg,
+                    body: item.body,
+                }
+            }, { new: true },
+            (err, doc) => {
+                if (err) callback(err);
+                else callback(null, doc);
+            });
             console.log("~~~~~~~~~~~~~~~~~~~~~~~");
             /*.then((updatedItem) => {
                 if(!updatedItem) {
@@ -186,9 +174,6 @@ class QueryProcessor {
             });
     }
 
-
-
-
     /**
      * Обновление элементов коллекции
      * 
@@ -213,10 +198,10 @@ class QueryProcessor {
     queryUpdate(mongooseModel, settingsQuery, callback) {
         let {
             id = null,
-                select = "",
-                query = {},
-                update = {},
-                isMany = false
+            select = "",
+            query = {},
+            update = {},
+            isMany = false
         } = settingsQuery;
 
         if (id !== null) {
@@ -232,6 +217,20 @@ class QueryProcessor {
                 else callback(null);
             });
         }
+    }
+
+    /**
+     * Вставка или обновление элемента в массиве
+     * 
+     * @param {*} mongooseModel 
+     * @param {*} documents object 
+     * @param {*} callback 
+     */
+    queryCustomUpdateOne(mongooseModel, mongooseDoc, callback){
+        mongooseModel.updateOne(mongooseDoc,(err, doc) => {
+            if (err) callback(err);
+            else callback(null, doc);
+        });
     }
 
     /**

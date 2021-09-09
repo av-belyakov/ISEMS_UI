@@ -150,8 +150,8 @@ class MyEventEmitterConnAPI extends EventEmitter {
      */
     sendMessage(msg){
 
-        console.log("func 'sendMessage', START...");
-        console.log(msg);
+        //console.log("func 'sendMessage', START...");
+        //console.log(msg);
 
         this.connection.sendUTF(JSON.stringify(msg));
     }

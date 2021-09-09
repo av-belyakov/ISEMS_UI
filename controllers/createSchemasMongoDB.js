@@ -46,7 +46,15 @@ module.exports = function(cb) {
                 if (err) callback(err);
                 else callback(null);
             });
+        },
+        //создание модели-хранилища специальных параметров группы
+        (callback) => {
+            createStorageSpecialGroupParametersSchema(require("./models").modelStorageSpecialGroupParameters, (err) => {
+                if (err) callback(err);
+                else callback(null);
+            });
         }
+
         /*
         //создание модели для хранения информации о пользователе по ID passport
         (callback) => {
@@ -499,6 +507,18 @@ function createModelAdditionalInformation(modelAdditionalInformation, next) {
                 count_rules: 0
             }
         }).save();
+
+        next(null);
+    });
+}
+
+//создание модели-хранилища специальных параметров группы
+function createStorageSpecialGroupParametersSchema(modelStorageSpecialGroupParameters, next){
+    modelStorageSpecialGroupParameters.find({}, { _id: 1 }, (err, document) => {
+        if (err) return next(err);
+        if (document.length > 0) return next(null);
+
+        new modelStorageSpecialGroupParameters({}).save();
 
         next(null);
     });

@@ -56,5 +56,5 @@ module.exports.eventHandlingUserInterface = function(eventEmiterTimerTick, socke
             ОБРАБОТЧИК ДЕЙСТВИЙ, СВЯЗАННЫХ С УПРАВЛЕНИЕМ ДОКУМЕНТАМИ, СОДЕРЖАЩИМИ СТРУКТУРИРОВАННУЮ 
         ИНФОРМАЦИЯ О КОМПЬЮТЕРНЫХ УГРОЗАХ
      --- */
-    require("./route_handlers_socketio/handlers/handlerActionsDocContainingStructuredInformation").addHandlers(socketIo);
+    require("./route_handlers_socketio/handlersActionStructedInformation/").addHandlers(socketIo);
 };

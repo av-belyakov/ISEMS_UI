@@ -129,6 +129,7 @@ export default class CreatePageReport extends React.Component {
     handlerShowModalWindowInformationReport(elemId){
         //запрос информации об STIX объекте типа 'report' (доклад) по его ID
         this.props.socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: elemId });
+        this.props.socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: elemId });
 
         this.setState({ 
             showReportId: elemId,

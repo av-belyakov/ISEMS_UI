@@ -592,10 +592,9 @@ export default class CreateBodySearchTask extends React.Component {
                                 <option value="stop">остановлена пользователем</option>
                             </Form.Control>
                         </Col>
-                        <Col md={6} className="mt-1">
-                            <Row>
-                                
-                                <Form validated>
+                        <Col md={6} className="mt-1">    
+                            <Form validated>
+                                <Row>
                                     <Form.Group as={Col}>
                                         <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="task_checkbox"/>
                                         <small className="ml-1">задача</small>
@@ -625,9 +624,8 @@ export default class CreateBodySearchTask extends React.Component {
                                             disabled={this.state.disabledRadioChosenTask} />
                                         <small className="ml-1">открыта</small>
                                     </Form.Group>
-                                </Form>
-                                
-                            </Row>
+                                </Row>
+                            </Form>
                         </Col>
                     </Row>
                     <Row>

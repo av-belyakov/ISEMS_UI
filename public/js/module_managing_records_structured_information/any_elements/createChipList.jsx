@@ -1,5 +1,6 @@
 import React from "react";
 import Chip from "@material-ui/core/Chip";
+import Tooltip from "@material-ui/core/Tooltip";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
@@ -30,12 +31,14 @@ export default function CreateChipList(props) {
     }
 
     return chipData.map((item, num) => {
-        return <Chip
-            key={`key_chip_${item}_${num}`}
-            label={item}
-            onDelete={deleting.bind(null, item)}
-            variant={variant}
-            className={classes.chip} />;
+        return (<Tooltip title={item.title} key={`key_tooltip_chip_${num}`}>
+            <Chip
+                key={`key_chip_${item.data}_${num}`}
+                label={item.data}
+                onDelete={deleting.bind(null, item.data)}
+                variant={variant}
+                className={classes.chip} />
+        </Tooltip>);
     });
 }
 
