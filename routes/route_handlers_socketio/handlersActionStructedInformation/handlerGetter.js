@@ -286,9 +286,6 @@ module.exports.getListGroupsWhichReportAvailable = function(socketIo, data){
         section = "list of groups to which the report is available",
         reportId = data.arguments;
 
-    debug(`${funcName}, START...`);
-    debug(data);
-
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -320,19 +317,14 @@ module.exports.getListGroupsWhichReportAvailable = function(socketIo, data){
             }
             
             return new Promise((resolve, reject) => {
-
-                debug(`${funcName}, send request to data bases`);
-
-                mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
-                    query: { "list_objects_available_viewing": { "$elemMatch" : { object_id: reportId }}},
-                    select: { _id: 0, __v: 0 }
+                mongodbQueryProcessor.querySelect(models.modeStorageObjectsAvailableViewingUnprivilegedUsers, {
+                    query: { object_id: reportId },
+                    select: { _id: 0, __v: 0 },
+                    isMany: true,
                 }, (err, queryResult) => {
                     if(err) {
                         reject(err);
                     }
-
-                    debug(`${funcName}, DB RESULT`);
-                    debug(queryResult);
 
                     if(queryResult === null){
                         return;
@@ -344,7 +336,7 @@ module.exports.getListGroupsWhichReportAvailable = function(socketIo, data){
                         information: {
                             task_id: createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`),
                             section: section,
-                            additional_parameters: { list_groups_which_report_available: queryResult.list_objects_available_viewing },
+                            additional_parameters: { list_groups_which_report_available: queryResult},
                         },
                     });
 

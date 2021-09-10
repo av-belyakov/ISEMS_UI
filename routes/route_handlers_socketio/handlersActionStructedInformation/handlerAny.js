@@ -1,7 +1,5 @@
 "use strict";
 
-const debug = require("debug")("hadcsihsha");
-
 const models = require("../../../controllers/models");
 const MyError = require("../../../libs/helpers/myError");
 const showNotify = require("../../../libs/showNotify");
@@ -22,9 +20,6 @@ const checkUserAuthentication = require("../../../libs/check/checkUserAuthentica
  */
 module.exports.allowGroupAccessReport = function(socketIo, data){
     let funcName = " (func 'allowGroupAccessReport')";
-
-    debug(`${funcName}, START...`);
-    debug(data);
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
@@ -53,46 +48,44 @@ module.exports.allowGroupAccessReport = function(socketIo, data){
             });
         }).then((result) => {
             if(!result.isPrivilegedGroup){
+                throw new MyError("management auth", "Невозможно выполнить действие, группа пользователя является непривилегированной.");
+            }
+
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.querySelect(models.modeStorageObjectsAvailableViewingUnprivilegedUsers, {
+                    query: { 
+                        group_name: data.arguments.unprivilegedGroup,
+                        object_id: data.arguments.reportId,
+                    },
+                    select: { _id: 0, __v: 0 }
+                }, (err, queryResult) => {
+                    if(err) {
+                        reject(err);
+                    }
+
+                    result.isFoundObject = queryResult !== null;
+
+                    resolve(result);
+                });
+            });
+        }).then((result) => {
+            if(result.isFoundObject){
                 return;
             }
             
             return new Promise((resolve, reject) => {
-
-                debug(`${funcName}, send request to data bases`);
-
-                mongodbQueryProcessor.queryCustomUpdateOne(models.modelStorageSpecialGroupParameters, {
-                    "$addToSet": { "list_objects_available_viewing": {
-                        group_name: data.arguments.unprivilegedGroup,
-                        object_id: data.arguments.reportId,
-                        collection_name: "stix_objects",
-                        user_name: result.userName,
-                        date_time: +new Date,
-                    }}},(err/*, queryResult*/) => {
-                    if(err) reject(err);
+                mongodbQueryProcessor.queryCreate(models.modeStorageObjectsAvailableViewingUnprivilegedUsers, { document: {
+                    group_name: data.arguments.unprivilegedGroup,
+                    object_id: data.arguments.reportId,
+                    collection_name: "stix_objects",
+                    user_name: result.userName,
+                    date_time: +new Date,
+                }}, err => {
+                    if (err) reject(err);
                     else resolve();
-
-                    /*
-                    debug(`${funcName}, DB UPDATE ARRAY RESULT`);
-                    debug(queryResult);  
-                    
-                    mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {}, (err, queryResult) => {
-                        if(err) {
-                            reject(err);
-                        }
-    
-                        debug(`${funcName}, DB found RESULT`);
-                        debug(queryResult);
-
-                        resolve();
-                    });
-                    */
                 });
             });
         }).catch((err) => {
-
-            debug(`${funcName}, ERROR:`);
-            debug(err);
-
             if ((err.name === "management auth") || (err.name === "management MRSICT")) {
                 showNotify({
                     socketIo: socketIo,
@@ -120,9 +113,6 @@ module.exports.allowGroupAccessReport = function(socketIo, data){
 module.exports.forbidGroupAccessReport = function(socketIo, data){
     let funcName = " (func 'forbidGroupAccessReport')";
 
-    debug(`${funcName}, START...`);
-    debug(data);
-
     checkUserAuthentication(socketIo)
         .then((authData) => {
             //авторизован ли пользователь
@@ -150,27 +140,19 @@ module.exports.forbidGroupAccessReport = function(socketIo, data){
             });
         }).then((result) => {
             if(!result.isPrivilegedGroup){
-                return;
+                throw new MyError("management auth", "Невозможно выполнить действие, группа пользователя является непривилегированной.");
             }
             
             return new Promise((resolve, reject) => {
-
-                debug(`${funcName}, send request to data bases`);
-
-                mongodbQueryProcessor.queryCustomUpdateOne(models.modelStorageSpecialGroupParameters, {
-                    "$pull": { "list_objects_available_viewing": {
-                        group_name: data.arguments.unprivilegedGroup,
-                        object_id: data.arguments.reportId,
-                    }}},(err) => {
-                    if(err) reject(err);
+                mongodbQueryProcessor.queryDelete(models.modeStorageObjectsAvailableViewingUnprivilegedUsers, { query: {
+                    group_name: data.arguments.unprivilegedGroup,
+                    object_id: data.arguments.reportId,
+                }}, (err) => {
+                    if (err) reject(err);
                     else resolve();
                 });
             });
         }).catch((err) => {
-
-            debug(`${funcName}, ERROR:`);
-            debug(err);
-
             if ((err.name === "management auth") || (err.name === "management MRSICT")) {
                 showNotify({
                     socketIo: socketIo,
