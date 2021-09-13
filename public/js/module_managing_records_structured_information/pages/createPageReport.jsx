@@ -188,6 +188,8 @@ export default class CreatePageReport extends React.Component {
                     showReportId={this.state.showReportId}
                     groupList={this.props.receivedData.groupList}
                     userPermissions={this.props.receivedData.userPermissions}
+                    listTypesComputerThreat={this.props.listTypesComputerThreat}
+                    listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat}
                     socketIo={this.props.socketIo} />
             </React.Fragment>
         );
@@ -197,4 +199,6 @@ export default class CreatePageReport extends React.Component {
 CreatePageReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
     receivedData: PropTypes.object.isRequired,
+    listTypesComputerThreat: PropTypes.object.isRequired,
+    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
 };

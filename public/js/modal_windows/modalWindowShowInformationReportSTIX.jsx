@@ -24,6 +24,7 @@ import PropTypes from "prop-types";
 import { helpers } from "../common_helpers/helpers";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
+import CreateComputerThreat from "../module_managing_records_structured_information/any_elements/createComputerThreat.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
 import ShowCommonPropertiesDomainObjectSTIX from "../module_managing_records_structured_information/any_elements/showCommonPropertiesDomainObjectSTIX.jsx";
 
@@ -48,6 +49,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             currentGroupAccessToReport: "select_group",
         };
 
+        console.log(this.props.listTypesComputerThreat);
+        console.log(this.props.listTypesDecisionsMadeComputerThreat);
+
         this.handleSave = this.handleSave.bind(this);
         this.modalClose = this.modalClose.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -57,6 +61,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handlerOnChangeAccessGroupToReport = this.handlerOnChangeAccessGroupToReport.bind(this);
         this.handlerOutsideSpecificationAdditionalName = this.handlerOutsideSpecificationAdditionalName.bind(this);
         this.handlerDeleteChipFromListGroupAccessToReport = this.handlerDeleteChipFromListGroupAccessToReport.bind(this);
+        this.handlerChosenComputerThreatType = this.handlerChosenComputerThreatType.bind(this);
+        this.handlerChosenDecisionsMadeComputerThreat = this.handlerChosenDecisionsMadeComputerThreat.bind(this);
 
         this.handlerEvents = this.handlerEvents.call(this);
         this.requestEmitter = this.requestEmitter.call(this);
@@ -202,6 +208,14 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         </React.Fragment>);
     }
 
+    handlerChosenComputerThreatType(){
+
+    }
+
+    handlerChosenDecisionsMadeComputerThreat(){
+
+    }
+
     modalClose(){
         this.props.onHide();
 
@@ -309,7 +323,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                                 variant="outlined"/>
                                         </Col>  
                                     </Row>
-                                    <Row className="mt-2">
+                                    <Row className="mt-4">
                                         <Col md={12}>
                                             <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1:</span>
                                         </Col>
@@ -338,17 +352,27 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                             </span>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row className="mt-3">
                                         <Col md={12}>
                                             <span className="pl-4">
-                                            принятое решение по компьютерной угрозе (сделать список решений): {reportInfo.outside_specification.decisions_made_computer_threat}
+                                                <CreateComputerThreat
+                                                    list={this.props.listTypesDecisionsMadeComputerThreat}
+                                                    label="принятое решение по компьютерной угрозе"
+                                                    uniqId="decisions_made_computer_threat"
+                                                    currentItem={reportInfo.outside_specification.decisions_made_computer_threat}
+                                                    handlerChosen={this.handlerChosenDecisionsMadeComputerThreat} />
                                             </span>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row className="mt-3">
                                         <Col md={12}>
                                             <span className="pl-4">
-                                                тип компьютерной угрозы (сделать список типов угроз): {reportInfo.outside_specification.computer_threat_type}
+                                                <CreateComputerThreat
+                                                    list={this.props.listTypesComputerThreat}
+                                                    label="тип компьютерной угрозы"
+                                                    uniqId="computer_threat_type"
+                                                    currentItem={reportInfo.outside_specification.computer_threat_type}
+                                                    handlerChosen={this.handlerChosenComputerThreatType} />
                                             </span>
                                         </Col>
                                     </Row>
@@ -359,7 +383,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                     </Row>
                                 </Col>
                             </Row>
-                            <CreateAccordion reportInfo={reportInfo} />
+                            <Row className="mt-3">
+                                <Col md={12}>
+                                    <CreateAccordion reportInfo={reportInfo} />
+                                </Col>
+                            </Row>
                             <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
                         </Col>
                     </Row>
@@ -384,6 +412,8 @@ ModalWindowShowInformationReportSTIX.propTypes = {
     showReportId: PropTypes.string.isRequired,
     groupList: PropTypes.array.isRequired,
     userPermissions: PropTypes.object.isRequired,
+    listTypesComputerThreat: PropTypes.object.isRequired,
+    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
 };
 
 function CreateAccordion(props){

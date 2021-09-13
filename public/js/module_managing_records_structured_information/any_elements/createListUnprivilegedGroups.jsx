@@ -7,10 +7,8 @@ import PropTypes from "prop-types";
 export default function CreateListUnprivilegedGroups(props){
     let { groupList, currentGroup, handlerChosen } = props;
 
-
     console.log("func 'CreateListUnprivilegedGroups'");
     console.log(groupList);
-
 
     return (
         <Form.Group>

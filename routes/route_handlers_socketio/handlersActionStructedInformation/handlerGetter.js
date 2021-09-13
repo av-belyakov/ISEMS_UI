@@ -363,17 +363,182 @@ module.exports.getListGroupsWhichReportAvailable = function(socketIo, data){
 };
 
 /**
- * Обработчик запроса для получения количества найденной информации на странице 'доклады' (STIX тип 'reports')
+ * Обработчик запроса для получения списка типов компьютерых угроз
  * 
  * @param {*} socketIo - дескриптор websocket соединения
  * @param {*} data - данные 
  */
-module.exports.getListComputerThreat = function(socketIo, data){
-    let funcName = " (func 'getListComputerThreat')";
+module.exports.getListTypesComputerThreat = function(socketIo, data){
+    let funcName = " (func 'getListTypesComputerThreat')";
 
     debug(`${funcName}, START...`);
-    debug(data);
+    debug(data);    
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return authData.document.userName;
+        }).then((userName) => {
+            return new Promise((resolve, reject) => {
+                getSessionId("socketIo", socketIo, (err, sessionId) => {
+                    if(err){
+                        return reject(err);
+                    }
+
+                    resolve({ userName: userName, sessionId: sessionId });
+                });
+            });
+        }).then((result) => {            
+            return new Promise((resolve, reject) => {
+                process.nextTick(() => {
+                    if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                        return reject(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
+                    }
+
+                    let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
+                    if (conn !== null) {
+                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`);
+
+                        globalObject.setData("tasks", taskID, {
+                            eventName: "list types computer threat",
+                            eventForWidgets: true,
+                            userSessionID: result.sessionId,
+                            generationTime: +new Date(),
+                            socketId: socketIo.id,
+                        });
+
+                        conn.sendMessage({
+                            task_id: taskID,
+                            section: "handling search requests",
+                            user_name_generated_task: result.userName,
+                            request_details: {
+                                collection_name: "get list computer threat",
+                                paginate_parameters: {
+                                    max_part_size: 0,
+                                    current_part_number: 0,
+                                },
+                                sortable_field: "",
+                                search_parameters: { type_list: "types computer threat" },
+                            }, 
+                        });
+                    }
+
+                    resolve();
+                });
+            });
+        }).catch((err) => {
+            if ((err.name === "management auth") || (err.name === "management MRSICT")) {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
+};
+
 /**
+ * Обработчик запроса для получения списка типов принимаемых решений по компьютерным угрозам
+ * 
+ * @param {*} socketIo - дескриптор websocket соединения
+ * @param {*} data - данные 
+ */
+module.exports.getListTypesDecisionsMadeComputerThreat = function(socketIo, data){
+    let funcName = " (func 'getListTypesDecisionsMadeComputerThreat')";
+
+    debug(`${funcName}, START...`);
+    debug(data);    
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return authData.document.userName;
+        }).then((userName) => {
+            return new Promise((resolve, reject) => {
+                getSessionId("socketIo", socketIo, (err, sessionId) => {
+                    if(err){
+                        return reject(err);
+                    }
+
+                    resolve({ userName: userName, sessionId: sessionId });
+                });
+            });
+        }).then((result) => {            
+            return new Promise((resolve, reject) => {
+                process.nextTick(() => {
+                    if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                        return reject(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
+                    }
+
+                    let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
+                    if (conn !== null) {
+                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`);
+
+                        globalObject.setData("tasks", taskID, {
+                            eventName: "list types decisions made computer threat",
+                            eventForWidgets: true,
+                            userSessionID: result.sessionId,
+                            generationTime: +new Date(),
+                            socketId: socketIo.id,
+                        });
+
+                        conn.sendMessage({
+                            task_id: taskID,
+                            section: "handling search requests",
+                            user_name_generated_task: result.userName,
+                            request_details: {
+                                collection_name: "get list computer threat",
+                                paginate_parameters: {
+                                    max_part_size: 0,
+                                    current_part_number: 0,
+                                },
+                                sortable_field: "",
+                                search_parameters: { type_list: "types decisions made computer threat" },
+                            }, 
+                        });
+                    }
+
+                    resolve();
+                });
+            });
+        }).catch((err) => {
+            if ((err.name === "management auth") || (err.name === "management MRSICT")) {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
+};
+
+/**
+ * "isems-mrsi ui request: types decisions made computer threat": handlerGetter.getListTypesDecisionsMadeComputerThreat,
+        "isems-mrsi ui request: types computer threat": handlerGetter.getListTypesComputerThreat,
         7.1.  Структура и формат JSON документа, получаемого от графического пользовательского интерфейса ISEMS-UI и содержащего ЗАПРОС, для получения СПИСКА 
 id и названий относящихся, к заранее определенному в приложении, списку, 'типы принимаемых решений по компьютерным угрозам' (types decisions made 
 computer threat) или 'типы компьютерных угроз' (types computer threat).
@@ -421,4 +586,3 @@ computer threat) или 'типы компьютерных угроз' (types co
     }
 }
          */
-};

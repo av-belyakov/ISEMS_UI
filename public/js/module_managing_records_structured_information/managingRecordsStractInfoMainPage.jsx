@@ -64,39 +64,64 @@ function LeftElements(props){
     );
 }
 
+LeftElements.propTypes = {
+    list: PropTypes.array.isRequired,
+    handler: PropTypes.func.isRequired,
+};
+
 function ChildElements(props){
-    let url = new URL(window.location.href);
-    let name = url.searchParams.get("name");
-    
+    let url = new URL(window.location.href),
+        name = url.searchParams.get("name"),
+        { socketIo, receivedData, listTypesComputerThreat, listTypesDecisionsMadeComputerThreat } = props;
+
     switch(name){
     case "":
-        return <CreatePageReport socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageReport 
+            socketIo={socketIo} 
+            receivedData={receivedData}
+            listTypesComputerThreat={listTypesComputerThreat}
+            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat} />;
     case "reports":
-        return <CreatePageReport socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageReport 
+            socketIo={socketIo} 
+            receivedData={receivedData}
+            listTypesComputerThreat={listTypesComputerThreat}
+            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat} />;
     case "observed_data":
-        return <CreatePageObservedData socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageObservedData socketIo={socketIo} receivedData={receivedData}/>;
     case "malware":
-        return <CreatePageMalware socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageMalware socketIo={socketIo} receivedData={receivedData}/>;
     case "vulnerability":
-        return <CreatePageVulnerability socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageVulnerability socketIo={socketIo} receivedData={receivedData}/>;
     case "threat_actor":
-        return <CreatePageThreatActor socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageThreatActor socketIo={socketIo} receivedData={receivedData}/>;
     case "infrastructure":
-        return <CreatePageInfrastructure socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageInfrastructure socketIo={socketIo} receivedData={receivedData}/>;
     case "tools":
-        return <CreatePageTools socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageTools socketIo={socketIo} receivedData={receivedData}/>;
     case "statistic":
-        return <CreatePageStatistic socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageStatistic socketIo={socketIo} receivedData={receivedData}/>;
     case "change_log":
-        return <CreatePageChangeLog socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageChangeLog socketIo={socketIo} receivedData={receivedData}/>;
     case "final_documents":
-        return <CreatePageFinalDocuments socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageFinalDocuments socketIo={socketIo} receivedData={receivedData}/>;
     case "reporting_materials":
-        return <CreatePageReportingMaterials socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageReportingMaterials socketIo={socketIo} receivedData={receivedData}/>;
     default:
-        return <CreatePageReport socketIo={props.socketIo} receivedData={props.receivedData}/>;
+        return <CreatePageReport 
+            socketIo={socketIo} 
+            receivedData={receivedData}
+            listTypesComputerThreat={listTypesComputerThreat}
+            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat} />;
     }
 }
+
+ChildElements.propTypes = {
+    socketIo: PropTypes.object.isRequired, 
+    receivedData: PropTypes.object.isRequired,
+    listTypesComputerThreat: PropTypes.object.isRequired,
+    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
+};
 
 class CreateMainPage extends React.Component {
     constructor(props) {
@@ -104,6 +129,8 @@ class CreateMainPage extends React.Component {
 
         this.state = {
             "connectModuleMRSICT": this.connectModuleMRSICT.call(this),
+            "listTypesComputerThreat": {},
+            "listTypesDecisionsMadeComputerThreat": {},
         };
 
         this.menuItem = {
@@ -154,6 +181,7 @@ class CreateMainPage extends React.Component {
         };
 
         this.handlerEvents = this.handlerEvents.call(this);
+        this.requestEmitter = this.requestEmitter.call(this);
     }
 
     connectModuleMRSICT() {
@@ -164,6 +192,9 @@ class CreateMainPage extends React.Component {
         if (!this.state.connectModuleMRSICT) {
             return;
         }
+
+        this.props.socketIo.emit("isems-mrsi ui request: get list types decisions made computer threat", { arguments: {}});
+        this.props.socketIo.emit("isems-mrsi ui request: get list types computer threat", { arguments: {}});
     }
 
     handlerEvents() {
@@ -180,6 +211,33 @@ class CreateMainPage extends React.Component {
 
                     this.setState({ "connectModuleMRSICT": false });
                 }
+            }
+        });
+
+        //обработка события связанного с приемом списка групп которым разрешен доступ к данному докладу
+        this.props.socketIo.on("isems-mrsi response ui", (data) => {
+
+            //console.log("class 'CreateMainPage', func 'handlerEvents'");
+            //console.log(`sections: ${data.section}`);
+            //console.log(data.information.additional_parameters);
+
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
+            }
+
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
+
+            switch(data.section){
+            case "list types decisions made computer threat":
+                this.setState({ "listTypesDecisionsMadeComputerThreat": data.information.additional_parameters.list });
+
+                break;
+            case "list types computer threat":
+                this.setState({ "listTypesComputerThreat": data.information.additional_parameters.list });
+
+                break;
             }
         });
     }
@@ -217,10 +275,6 @@ class CreateMainPage extends React.Component {
     }
 
     createMainElements(){
-        /*if (!this.state.connectModuleMRSICT){
-            return this.showModuleConnectionError.call(this);
-        }*/
-
         let list = [];
         for(let item in this.menuItem){
             list.push(<Tooltip title={this.menuItem[item].title} key={`tooltip_menu_item_${this.menuItem[item].num}`}>
@@ -244,7 +298,11 @@ class CreateMainPage extends React.Component {
                     <Col md={10}>
                         {(!this.state.connectModuleMRSICT) ? 
                             this.showModuleConnectionError.call(this):  
-                            <ChildElements socketIo={this.props.socketIo} receivedData={this.props.receivedData} />}
+                            <ChildElements 
+                                socketIo={this.props.socketIo} 
+                                receivedData={this.props.receivedData} 
+                                listTypesComputerThreat={this.state.listTypesComputerThreat}
+                                listTypesDecisionsMadeComputerThreat={this.state.listTypesDecisionsMadeComputerThreat} />}
                     </Col>
                 </Row>
             </BrowserRouter>
