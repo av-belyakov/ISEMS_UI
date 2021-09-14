@@ -126,7 +126,13 @@ export default class CreateMainTableForReport extends React.Component {
     }
 
     getChipForGroups(elemId){
-        //тут нужно выполнить поиск в списке докладов доступных для групп и вывести результат сложив со значком administrator
+        /*
+        !!!!!
+
+        тут нужно выполнить поиск в списке докладов доступных для групп и вывести результат сложив со значком administrator
+        
+        !!!!!
+        */
 
         return <Chip avatar={<Avatar>A</Avatar>} label="Administrator" disabled/>;
     }
@@ -171,13 +177,13 @@ function CreateTable(props){
         handlerOnRowsPerPageChange,
         getChipForGroups,
     } = props;
-    const classes = useStyles();
-    const onPageChange = (elem, data) => {
-        handlerOnPageChange(data);
-    };
-    const onRowsPerPageChange = (data) => {
-        handlerOnRowsPerPageChange(data.target.value);
-    };
+    const classes = useStyles(),
+        onPageChange = (elem, data) => {
+            handlerOnPageChange(data);
+        },
+        onRowsPerPageChange = (data) => {
+            handlerOnRowsPerPageChange(data.target.value);
+        };
 
     if(listReports.length === 0){
         return <LinearProgress />;

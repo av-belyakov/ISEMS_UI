@@ -70,6 +70,13 @@ export default class CreateWidgetsPageReport extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
+
+            if((data.section === "doc type 'reports' status 'open'") || (data.section === "get count doc type 'reports' status 'published'")){
+                console.log(`func 'createWidgetsPageReport', section: '${data.section}'`);
+                console.log(`number document found: ${data.information.additional_parameters.number_documents_found}, is widget: ${data.eventForWidgets}`);                
+                console.log(data);
+            }
+
             if(!data.eventForWidgets){
                 return;
             }

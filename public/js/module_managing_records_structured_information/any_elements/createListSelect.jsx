@@ -5,9 +5,9 @@ import { TextField, MenuItem } from "@material-ui/core";
 //import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
-export default function CreateComputerThreat(props){
+export default function CreateListSelect(props){
 //    const classes = useStyles();
-    let { list, label, uniqId, currentItem, handlerChosen } = props;
+    let { list, label, uniqId, currentItem, handlerChosen, isNotDisabled } = props;
     let listKeys = Object.keys(list);
 
     return (
@@ -17,6 +17,7 @@ export default function CreateComputerThreat(props){
             label={label}
             value={currentItem}
             onChange={handlerChosen}
+            disabled={!isNotDisabled}
             //helperText="Please select your currency"
         >
             {listKeys.map((item) => (
@@ -28,10 +29,11 @@ export default function CreateComputerThreat(props){
     );
 }
 
-CreateComputerThreat.propTypes = {
+CreateListSelect.propTypes = {
     list: PropTypes.object.isRequired,
     label: PropTypes.string.isRequired,
     uniqId: PropTypes.string.isRequired,
     currentItem: PropTypes.string.isRequired,
     handlerChosen: PropTypes.func.isRequired,
+    isNotDisabled: PropTypes.bool,
 };
