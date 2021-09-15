@@ -1,6 +1,6 @@
 "use strict";
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { Form } from "react-bootstrap";
 import { 
     Accordion, 
@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +32,39 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         setExpanded(isExpanded ? panel : false);
     };
 
-    let { reportInfo, handlerElementConfidence, handlerElementDefanged, isNotDisabled } = props;
+    let { reportInfo, 
+        handlerElementConfidence, 
+        handlerElementDefanged, 
+        handlerElementLabels,
+        isNotDisabled } = props;
+
+    let getlabelsAdditionalTechnicalInformation = () => {
+        let listTmp = [];
+        if(reportInfo.labels !== null){
+            listTmp = reportInfo.labels;
+        }
+
+        const [labelsTokenInput, setValues] = useState(listTmp);
+        const handlerChange = useCallback((newTokenValues) => {
+            setValues(newTokenValues);
+
+            handlerElementLabels(newTokenValues);
+        },
+        [setValues]);
+
+        return (<React.Fragment>
+            <Grid container direction="row" className="pl-4 pt-2 pb-1">
+                <Grid item md={6}><span className="text-muted">набор терминов, используемых для описания данного объекта</span>:</Grid>
+                <Grid item md={6} className="text-right">
+                    <TokenInput
+                        style={{ height: "81px" }}
+                        tokenValues={labelsTokenInput}
+                        onTokenValuesChange={handlerChange}
+                    />
+                </Grid>    
+            </Grid>
+        </React.Fragment>);
+    };
 
     //дополнительные внешние ссылки
     let getExternalReferences = () => {
@@ -176,6 +209,8 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         return list;
     };
 
+    reportInfo.labels = ["ncjndndvnd", "vvvvnnnnc"];
+
     return (
         <React.Fragment>
             <Grid container direction="row">
@@ -216,13 +251,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                     <Grid item md={6} className="text-right"><i>{reportInfo.created_by_ref}</i></Grid>
                 </Grid> : ""}
 
-            {((typeof reportInfo.labels !== "undefined") && (reportInfo.labels !== null) && (reportInfo.labels.length !== 0)) ? 
-                <Grid container direction="row" className="pl-4">
-                    <Grid item md={6}><span className="text-muted">набор терминов, используемых для описания данного объекта</span>:</Grid>
-                    <Grid item md={6} className="text-right">{reportInfo.labels.map((item, key) => {
-                        return <span key={`span_labels_${key}`}><Chip variant="outlined" size="small" label={item} key={`labels_${key}`}/>&nbsp;</span>;
-                    })}</Grid>
-                </Grid> : "!!!!!сделать поле ввода набора терминов, используемых для описания данного объекта!!!!!!"}
+            {getlabelsAdditionalTechnicalInformation()}
 
             <Grid container direction="row" className="pl-4 pb-3">
                 <Grid item md={10}><span className="text-muted">определены ли данные содержащиеся в объекте</span>:</Grid>
@@ -288,5 +317,6 @@ CreateElementAdditionalTechnicalInformation.propTypes = {
     reportInfo: PropTypes.object.isRequired,
     handlerElementConfidence: PropTypes.func.isRequired,
     handlerElementDefanged: PropTypes.func.isRequired,
+    handlerElementLabels: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool,
 };

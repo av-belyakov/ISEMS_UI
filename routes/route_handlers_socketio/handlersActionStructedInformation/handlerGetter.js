@@ -537,6 +537,84 @@ module.exports.getListTypesDecisionsMadeComputerThreat = function(socketIo, data
 };
 
 /**
+ * Обработчик запроса для получения краткой информации о группах, которым доступен просмотр докладов с определенным набором ID
+ * 
+ * @param {*} socketIo - дескриптор websocket соединения
+ * @param {*} data - данные 
+ */
+module.exports.getShortInfoGroupsWhichReportAvailable = function(socketIo, data){
+    let funcName = " (func 'getShortInfoGroupsWhichReportAvailable')",
+        section = "short information about groups which report available";
+
+    //debug(`${funcName}, START...`);
+    //debug(data);    
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return;
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                getSessionId("socketIo", socketIo, (err, sessionId) => {
+                    if(err) reject(err);
+                    resolve(sessionId);
+                });
+            });
+        }).then((sessionId) => {
+            return new Promise((resolve, reject) => {
+                mongodbQueryProcessor.querySelect(models.modeStorageObjectsAvailableViewingUnprivilegedUsers, {
+                    query: { object_id: { "$in": data.arguments } },
+                    select: { _id: 0, __v: 0 },
+                    isMany: true,
+                }, (err, queryResult) => {
+                    if(err) {
+                        reject(err);
+                    }
+
+                    //debug(`${funcName}, RECEIVED RESULT`);
+                    //debug(queryResult);
+
+                    if(queryResult === null){
+                        return;
+                    }
+
+                    helpersFunc.sendMessageByUserSocketIo(socketIo.id, "isems-mrsi response ui", { 
+                        section: section,
+                        eventForWidgets: false,
+                        information: {
+                            task_id: createUniqID.getMD5(`sid_${sessionId}_${(+new Date).toString(16)}_short_info_groups_which_report_available`),
+                            section: section,
+                            additional_parameters: queryResult,
+                        },
+                    });
+
+                    resolve();
+                });
+            });
+        }).catch((err) => {
+            if ((err.name === "management auth") || (err.name === "management MRSICT")) {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
+};
+
+/**
  * "isems-mrsi ui request: types decisions made computer threat": handlerGetter.getListTypesDecisionsMadeComputerThreat,
         "isems-mrsi ui request: types computer threat": handlerGetter.getListTypesComputerThreat,
         7.1.  Структура и формат JSON документа, получаемого от графического пользовательского интерфейса ISEMS-UI и содержащего ЗАПРОС, для получения СПИСКА 

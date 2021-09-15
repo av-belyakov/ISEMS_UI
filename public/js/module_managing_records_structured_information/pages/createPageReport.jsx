@@ -94,10 +94,6 @@ export default class CreatePageReport extends React.Component {
             },
         };
 
-        console.log("------ данные с сервера полученные при загрузки страницы ------");
-        console.log(this.props.receivedData);
-        console.log("---------------------------------------------------------------");
-
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
@@ -430,24 +430,25 @@ export default class CreateBodySearchTask extends React.Component {
             nw: { any: [], src: [], dst: [] },
         };
         let objCopy = Object.assign({}, this.state.searchParameters);
+        
         data.forEach((item) => {
-            if(item.value.includes("src_")){
-                let { err: err, type: t, value: v } = this.checkInput(item.value.substr((item.value.indexOf("src_")) + 4));
+            if(item.includes("src_")){
+                let { err: err, type: t, value: v } = this.checkInput(item.substr((item.indexOf("src_")) + 4));
                 if(err === null){
                     nf[t].src.push(v);
 
                     this.fieldChange(nf[t].src, "");
                 }
 
-            } else if(item.value.includes("dst_")){
-                let { err: err, type: t, value: v } = this.checkInput(item.value.substr((item.value.indexOf("dst_")) + 4));
+            } else if(item.includes("dst_")){
+                let { err: err, type: t, value: v } = this.checkInput(item.substr((item.indexOf("dst_")) + 4));
                 if(err === null){
                     nf[t].dst.push(v);
 
                     this.fieldChange(nf[t].dst, "");
                 }
             } else {
-                let { err: err, type: t, value: v } = this.checkInput(item.value);
+                let { err: err, type: t, value: v } = this.checkInput(item);
                 if(err === null){
                     nf[t].any.push(v);
 
@@ -480,7 +481,7 @@ export default class CreateBodySearchTask extends React.Component {
         }
     }
 
-    checkInput(value){   
+    checkInput(value){ 
         if(value.includes(".")){
             if(value.includes("/")){
                 if(helpers.checkInputValidation({
@@ -744,12 +745,7 @@ export default class CreateBodySearchTask extends React.Component {
                             <CreateProtocolList handlerChosen={this.handlerChosenProtocolList} />
                         </Col>
                         <Col md={4}>
-                            <Form.Group as={Row} className="ml-2">
-                                <TokenInput
-                                    tokenValues={[]}
-                                    onTokenValuesChange={()=>{}}
-                                />
-                            </Form.Group>
+                            <GetlabelsAdditionalTechnicalInformation handlerFieldInput={this.handlerFieldInput} />
                         </Col>
                         <Col md={1} className="text-right">
                             <Row className="mt-n2">
@@ -788,453 +784,23 @@ CreateBodySearchTask.propTypes = {
     handlerButtonSearch: PropTypes.func.isRequired,
 };
 
-/**
- 
- <React.Fragment>
-                <Card className="mb-2" body>
-                    <Row>
-                        <Col md={2}>
-                            <Form.Control onChange={this.handlerChosenSource} as="select" size="sm">
-                                <option value={0}>источник</option>
-                                {this.getListSource()}
-                            </Form.Control>
-                        </Col>
-                        <Col md={2}>
-                            <Form.Control onChange={this.handlerChosenStatus} name="list_status_filtration" as="select" size="sm">
-                                <option value="">статус фильтрации</option>
-                                <option value="wait">готовится к выполнению</option>
-                                <option value="refused">oтклонена</option>
-                                <option value="execute">выполняется</option>
-                                <option value="complete">завершена успешно</option>
-                                <option value="stop">остановлена пользователем</option>
-                            </Form.Control>
-                        </Col>
-                        <Col md={2}>
-                            <Form.Control onChange={this.handlerChosenStatus} name="list_status_download" as="select" size="sm">
-                                <option value="">статус выгрузки файлов</option>
-                                <option value="wait">готовится к выполнению</option>
-                                <option value="refused">oтклонена</option>
-                                <option value="execute">выполняется</option>
-                                <option value="not executed">не выполнялась</option>
-                                <option value="complete">завершена успешно</option>
-                                <option value="stop">остановлена пользователем</option>
-                            </Form.Control>
-                        </Col>
-                        <Col md={6} className="mt-1">    
-                            <Form validated>
-                                <Form.Group as={Col}>
-                                    <Form.Check 
-                                        type="checkbox" 
-                                        onClick={this.handlerCheckbox}
-                                        //label="задача" 
-                                        name="task_checkbox"/>
-                                    <small className="ml-1">задача</small>
-                                </Form.Group>
-                                <Form.Group as={Col}>
-                                    <Form.Check 
-                                        type="radio"
-                                        onClick={this.handlerRadioChosen} 
-                                        id="r_task_complete" 
-                                        value="true" 
-                                        //label="закрыта" 
-                                        //className="mt-1 ml-3" 
-                                        name="chose_task_complete" 
-                                        disabled={this.state.disabledRadioChosenTask} />
-                                    <small className="ml-1">закрыта</small>
-                                </Form.Group>
-                                <Form.Group as={Col}>
-                                    <Form.Check 
-                                        type="radio"
-                                        onClick={this.handlerRadioChosen}  
-                                        id="r_task_not_complete" 
-                                        value="false" 
-                                        //label="открыта" 
-                                        //className="mt-1 ml-3" 
-                                        name="chose_task_complete"
-                                        defaultChecked
-                                        disabled={this.state.disabledRadioChosenTask} />
-                                    <small className="ml-1">открыта</small>
-                                </Form.Group>
-                            </Form>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Form.Group as={Col} className="text-left mt-1">
-                            <Row className="ml-1 mt-n1">
-                                <Form.Check className="mt-n2" type="checkbox" onClick={this.handlerCheckbox} name="files_found" />
-                                <small className="ml-1 mt-n2">файлы найдены</small>
-                            </Row>
-                            <Row className="ml-1 mt-n1">
-                                <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="file_uploaded_check"/>
-                                <small className="ml-1">выгрузка выполнялась</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen} 
-                                    id="r_upload_file" 
-                                    value="true"
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_uploaded_file" 
-                                    disabled={this.state.disabledRadioUploadedFile} />
-                                <small className="ml-1">да</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen} 
-                                    id="r_not_upload_file" 
-                                    value="false" 
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_uploaded_file"
-                                    defaultChecked
-                                    disabled={this.state.disabledRadioUploadedFile} />
-                                <small className="ml-1">нет</small>
-                            </Row>
-                            <Row className="ml-1 mt-n2">
-                                <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="all_file_uploaded_check"/>
-                                <small className="ml-1">все файлы выгружены</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen} 
-                                    id="r_upload_all_file" 
-                                    value="true" 
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_uploaded_all_file" 
-                                    disabled={this.state.disabledRadioUploadedAllFile} />
-                                <small className="ml-1">да</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen} 
-                                    id="r_not_upload_all_file" 
-                                    value="false" 
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_uploaded_all_file"
-                                    defaultChecked
-                                    disabled={this.state.disabledRadioUploadedAllFile} />
-                                <small className="ml-1">нет</small>
-                            </Row>
-                        </Form.Group>
-                        <Form.Group as={Col} className="text-left">
-                            <small>найдено файлов</small>
-                            <Row>
-                                <Form.Group as={Col}>
-                                    <Form.Control 
-                                        onChange={this.handlerCountAndSizeFiles} 
-                                        isValid={this.state.inputFieldMinCfIsValid}
-                                        isInvalid={this.state.inputFieldMinCfIsInvalid} 
-                                        name="min_count_files" 
-                                        type="input" 
-                                        size="sm" 
-                                        placeholder="min" />
-                                </Form.Group>
-                                <Form.Group as={Col}>
-                                    <Form.Control 
-                                        onChange={this.handlerCountAndSizeFiles} 
-                                        isValid={this.state.inputFieldMaxCfIsValid}
-                                        isInvalid={this.state.inputFieldMaxCfIsInvalid}
-                                        name="max_count_files" 
-                                        type="input" 
-                                        size="sm" 
-                                        placeholder="max" />
-                                </Form.Group>
-                            </Row>
-                        </Form.Group>
-                        <Form.Group as={Col} className="text-left">
-                            <small>общий размер найденных файлов</small>
-                            <Row>
-                                <Form.Group as={Col}>
-                                    <Form.Control 
-                                        onChange={this.handlerCountAndSizeFiles} 
-                                        isValid={this.state.inputFieldMinSfIsValid}
-                                        isInvalid={this.state.inputFieldMinSfIsInvalid}
-                                        name="min_size_files" 
-                                        type="input" 
-                                        size="sm" 
-                                        placeholder="min" />
-                                </Form.Group>
-                                <Form.Group as={Col}>
-                                    <Form.Control 
-                                        onChange={this.handlerCountAndSizeFiles} 
-                                        isValid={this.state.inputFieldMaxSfIsValid}
-                                        isInvalid={this.state.inputFieldMaxSfIsInvalid}
-                                        name="max_size_files" 
-                                        type="input" 
-                                        size="sm" 
-                                        placeholder="max" />
-                                </Form.Group>
-                            </Row>
-                        </Form.Group>    
-                    </Row>                
-                    <Row className="mt-n3">
-                        <Col md={5} className="mt-2">
-                            <CreateDateTimePicker 
-                                currentDateTimeStart={this.state.searchParameters.ifo.dt.s}
-                                currentDateTimeEnd={this.state.searchParameters.ifo.dt.e}
-                                handlerChangeDateTimeStart={this.handlerChangeStartDate}
-                                handlerChangeDateTimeEnd={this.handlerChangeEndDate} />
-                        </Col>
-                        <Col md={2} className="text-right">
-                            <small className="mr-1">сет. протокол</small>
-                            <CreateProtocolList handlerChosen={this.handlerChosenProtocolList} />
-                        </Col>
-                        <Col md={4}>
-                            <Form.Group as={Row} className="ml-2">
-                                <TokenInput
-                                    tokenValues={[]}
-                                    onTokenValuesChange={()=>{}}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={1} className="text-right">
-                            <Row className="mt-n2">
-                                <Col>
-                                    <a href="#" 
-                                        id="elem_helper"
-                                        data-toggle="tooltip" 
-                                        data-placement="top" 
-                                        title="Для указания направления ip адреса, сетевого порта или подсети, добавте src_ или dst_. Если нужно указать направление в обе стороны, ничего не пишется.">
-                                        <img className="clickable_icon" width="20" height="20" src="../images/icons8-help-28.png" alt=""></img>
-                                    </a>
-                                </Col>
-                            </Row>
-                            <Row className="text-right mt-2">
-                                <Col>
-                                    <Button 
-                                        size="sm" 
-                                        onClick={this.handlerButtonSearch} 
-                                        disabled={this.state.disabledButtonSearch}
-                                        variant="outline-primary">
-                                        поиск
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>
-                </Card>
-            </React.Fragment>
- */
+function GetlabelsAdditionalTechnicalInformation(props){
+    let listTmp = [];
+    let { handlerFieldInput } = props;
+    const [labelsTokenInput, setValues] = useState(listTmp);
+    const handlerChange = useCallback((newTokenValues) => {
+        setValues(newTokenValues);
 
-/**
-<React.Fragment>
-                <Card className="mb-2" body>
-                    <Row>
-                        <Col md={2}>
-                            <Form.Control onChange={this.handlerChosenSource} as="select" size="sm">
-                                <option value={0}>источник</option>
-                                {this.getListSource()}
-                            </Form.Control>
-                        </Col>
-                        <Col md={2}>
-                            <Form.Control onChange={this.handlerChosenStatus} name="list_status_filtration" as="select" size="sm">
-                                <option value="">статус фильтрации</option>
-                                <option value="wait">готовится к выполнению</option>
-                                <option value="refused">oтклонена</option>
-                                <option value="execute">выполняется</option>
-                                <option value="complete">завершена успешно</option>
-                                <option value="stop">остановлена пользователем</option>
-                            </Form.Control>
-                        </Col>
-                        <Col md={2}>
-                            <Form.Control onChange={this.handlerChosenStatus} name="list_status_download" as="select" size="sm">
-                                <option value="">статус выгрузки файлов</option>
-                                <option value="wait">готовится к выполнению</option>
-                                <option value="refused">oтклонена</option>
-                                <option value="execute">выполняется</option>
-                                <option value="not executed">не выполнялась</option>
-                                <option value="complete">завершена успешно</option>
-                                <option value="stop">остановлена пользователем</option>
-                            </Form.Control>
-                        </Col>
-                        <Col md={6} className="mt-1">    
-                            <Form validated>
-                                <Row>
-                                    <Form.Group as={Col}>
-                                        <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="task_checkbox"/>
-                                        <small className="ml-1">задача</small>
-                                    </Form.Group>
-                                    <Form.Group as={Col}>
-                                        <Form.Check 
-                                            type="radio"
-                                            onClick={this.handlerRadioChosen} 
-                                            id="r_task_complete" 
-                                            value="true" 
-                                            label="" 
-                                            className="mt-1 ml-3" 
-                                            name="chose_task_complete" 
-                                            disabled={this.state.disabledRadioChosenTask} />
-                                        <small className="ml-1">закрыта</small>
-                                    </Form.Group>
-                                    <Form.Group as={Col}>
-                                        <Form.Check 
-                                            type="radio"
-                                            onClick={this.handlerRadioChosen}  
-                                            id="r_task_not_complete" 
-                                            value="false" 
-                                            label="" 
-                                            className="mt-1 ml-3" 
-                                            name="chose_task_complete"
-                                            defaultChecked
-                                            disabled={this.state.disabledRadioChosenTask} />
-                                        <small className="ml-1">открыта</small>
-                                    </Form.Group>
-                                </Row>
-                            </Form>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Form.Group as={Col} className="text-left mt-1">
-                            <Row className="ml-1 mt-n1">
-                                <Form.Check className="mt-n2" type="checkbox" onClick={this.handlerCheckbox} name="files_found" />
-                                <small className="ml-1 mt-n2">файлы найдены</small>
-                            </Row>
-                            <Row className="ml-1 mt-n1">
-                                <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="file_uploaded_check"/>
-                                <small className="ml-1">выгрузка выполнялась</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen} 
-                                    id="r_upload_file" 
-                                    value="true"
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_uploaded_file" 
-                                    disabled={this.state.disabledRadioUploadedFile} />
-                                <small className="ml-1">да</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen} 
-                                    id="r_not_upload_file" 
-                                    value="false" 
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_uploaded_file"
-                                    defaultChecked
-                                    disabled={this.state.disabledRadioUploadedFile} />
-                                <small className="ml-1">нет</small>
-                            </Row>
-                            <Row className="ml-1 mt-n2">
-                                <Form.Check type="checkbox" onClick={this.handlerCheckbox} name="all_file_uploaded_check"/>
-                                <small className="ml-1">все файлы выгружены</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen} 
-                                    id="r_upload_all_file" 
-                                    value="true" 
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_uploaded_all_file" 
-                                    disabled={this.state.disabledRadioUploadedAllFile} />
-                                <small className="ml-1">да</small>
-                                <Form.Check 
-                                    type="radio"
-                                    onClick={this.handlerRadioChosen} 
-                                    id="r_not_upload_all_file" 
-                                    value="false" 
-                                    label="" 
-                                    className="mt-1 ml-3" 
-                                    name="chose_uploaded_all_file"
-                                    defaultChecked
-                                    disabled={this.state.disabledRadioUploadedAllFile} />
-                                <small className="ml-1">нет</small>
-                            </Row>
-                        </Form.Group>
-                        <Form.Group as={Col} className="text-left">
-                            <small>найдено файлов</small>
-                            <Row>
-                                <Form.Group as={Col}>
-                                    <Form.Control 
-                                        onChange={this.handlerCountAndSizeFiles} 
-                                        isValid={this.state.inputFieldMinCfIsValid}
-                                        isInvalid={this.state.inputFieldMinCfIsInvalid} 
-                                        name="min_count_files" 
-                                        type="input" 
-                                        size="sm" 
-                                        placeholder="min" />
-                                </Form.Group>
-                                <Form.Group as={Col}>
-                                    <Form.Control 
-                                        onChange={this.handlerCountAndSizeFiles} 
-                                        isValid={this.state.inputFieldMaxCfIsValid}
-                                        isInvalid={this.state.inputFieldMaxCfIsInvalid}
-                                        name="max_count_files" 
-                                        type="input" 
-                                        size="sm" 
-                                        placeholder="max" />
-                                </Form.Group>
-                            </Row>
-                        </Form.Group>
-                        <Form.Group as={Col} className="text-left">
-                            <small>общий размер найденных файлов</small>
-                            <Row>
-                                <Form.Group as={Col}>
-                                    <Form.Control 
-                                        onChange={this.handlerCountAndSizeFiles} 
-                                        isValid={this.state.inputFieldMinSfIsValid}
-                                        isInvalid={this.state.inputFieldMinSfIsInvalid}
-                                        name="min_size_files" 
-                                        type="input" 
-                                        size="sm" 
-                                        placeholder="min" />
-                                </Form.Group>
-                                <Form.Group as={Col}>
-                                    <Form.Control 
-                                        onChange={this.handlerCountAndSizeFiles} 
-                                        isValid={this.state.inputFieldMaxSfIsValid}
-                                        isInvalid={this.state.inputFieldMaxSfIsInvalid}
-                                        name="max_size_files" 
-                                        type="input" 
-                                        size="sm" 
-                                        placeholder="max" />
-                                </Form.Group>
-                            </Row>
-                        </Form.Group>    
-                    </Row>                
-                    <Row className="mt-n3">
-                        <Col md={5} className="mt-2">
-                            <CreateDateTimePicker 
-                                currentDateTimeStart={this.state.searchParameters.ifo.dt.s}
-                                currentDateTimeEnd={this.state.searchParameters.ifo.dt.e}
-                                handlerChangeDateTimeStart={this.handlerChangeStartDate}
-                                handlerChangeDateTimeEnd={this.handlerChangeEndDate} />
-                        </Col>
-                        <Col md={2} className="text-right">
-                            <small className="mr-1">сет. протокол</small>
-                            <CreateProtocolList handlerChosen={this.handlerChosenProtocolList} />
-                        </Col>
-                        <Col md={4}>
-                            <Form.Group as={Row} className="ml-2">
-                                <TokenInput
-                                    tokenValues={[]}
-                                    onTokenValuesChange={()=>{}}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={1} className="text-right">
-                            <Row className="mt-n2">
-                                <Col>
-                                    <a href="#" 
-                                        id="elem_helper"
-                                        data-toggle="tooltip" 
-                                        data-placement="top" 
-                                        title="Для указания направления ip адреса, сетевого порта или подсети, добавте src_ или dst_. Если нужно указать направление в обе стороны, ничего не пишется.">
-                                        <img className="clickable_icon" width="20" height="20" src="../images/icons8-help-28.png" alt=""></img>
-                                    </a>
-                                </Col>
-                            </Row>
-                            <Row className="text-right mt-2">
-                                <Col>
-                                    <Button 
-                                        size="sm" 
-                                        onClick={this.handlerButtonSearch} 
-                                        disabled={this.state.disabledButtonSearch}
-                                        variant="outline-primary">
-                                        поиск
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>
-                </Card>
-            </React.Fragment>
- */
+        handlerFieldInput(newTokenValues);
+    },
+    [setValues]);
+
+    return (<TokenInput
+        style={{ height: "81px" }}
+        tokenValues={labelsTokenInput}
+        onTokenValuesChange={handlerChange} />);
+}
+
+GetlabelsAdditionalTechnicalInformation.propTypes = {
+    handlerFieldInput: PropTypes.func.isRequired,
+};

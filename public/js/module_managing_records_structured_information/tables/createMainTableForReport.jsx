@@ -50,6 +50,7 @@ export default class CreateMainTableForReport extends React.Component {
 
         this.state = {
             listReports: [],
+            listGroupsWhichReportAvailable: [],
             countSearchReports: 0,
             numCurrentPagePagination: 0,
             countShowReportsPerPage: 10,
@@ -87,16 +88,41 @@ export default class CreateMainTableForReport extends React.Component {
                     return;
                 }
 
-                let listReportsTmp = [];
+                let listReportsTmp = [],
+                    listIdReport = [];
                 for(let item of this.state.listReports){
                     listReportsTmp.push(item);
                 }
 
                 for(let item of data.information.additional_parameters.transmitted_data){
                     listReportsTmp.push(item);
+                    listIdReport.push(item.id);
                 }
 
+                this.props.socketIo.emit("isems-mrsi ui request: get short information about groups which report available", { arguments: listIdReport });
+
                 this.setState({ listReports: listReportsTmp });
+            }
+
+            if(data.section === "short information about groups which report available"){
+                if((typeof data.information === "undefined") || (data.information === null)){
+                    return;
+                }
+
+                if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
+                    return;
+                }
+
+                let tmp = [];
+                for(let item of this.state.listGroupsWhichReportAvailable){
+                    tmp.push(item);
+                }
+
+                for(let item of data.information.additional_parameters){
+                    tmp.push(item);
+                }
+
+                this.setState({ listGroupsWhichReportAvailable: tmp });
             }
         });
     }
@@ -126,15 +152,23 @@ export default class CreateMainTableForReport extends React.Component {
     }
 
     getChipForGroups(elemId){
-        /*
-        !!!!!
+        let listTmp = [];
+        for(let item of this.state.listGroupsWhichReportAvailable){
+            if(elemId === item.object_id){
+                listTmp.push(<Chip 
+                    size="small"
+                    avatar={<Avatar>{item.group_name.slice(0, 1).toUpperCase()}</Avatar>} 
+                    label={item.group_name}
+                    className="mr-1"  
+                    key={`key_${item.group_name}`}
+                    disabled />);
+            }
+        }
 
-        тут нужно выполнить поиск в списке докладов доступных для групп и вывести результат сложив со значком administrator
-        
-        !!!!!
-        */
-
-        return <Chip avatar={<Avatar>A</Avatar>} label="Administrator" disabled/>;
+        return (<React.Fragment>
+            <Chip  size="small" avatar={<Avatar>A</Avatar>} label="administrator" className="mr-1" key="key_administrator" disabled/>
+            {listTmp}
+        </React.Fragment>);
     }
 
     showDocumentCount(){
