@@ -6,13 +6,23 @@ import {
     Accordion, 
     AccordionSummary, 
     AccordionDetails,
-    Chip,
+    Button,
+    Dialog,
+    Paper,
     Typography, 
     Grid,
+    Link,
+    Icon,
+    IconButton,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from "@material-ui/core";
+import DeleteOutline from "@material-ui/icons/DeleteOutline";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import TokenInput from "react-customize-token-input";
+import { indigo, lightGreen, blue, lime, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,6 +32,11 @@ const useStyles = makeStyles((theme) => ({
     heading: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
+    },
+    customPaper: {
+        color: theme.palette.getContrastText(lime[50]),
+        backgroundColor: lime[50],
+        margin: theme.spacing(1),
     },
 }));
 
@@ -33,10 +48,20 @@ export default function CreateElementAdditionalTechnicalInformation(props){
     };
 
     let { reportInfo, 
+        objectId,
         handlerElementConfidence, 
         handlerElementDefanged, 
         handlerElementLabels,
+        handlerDeleteItemExternalReferences,
         isNotDisabled } = props;
+
+
+    let handlerElConf = (data) => {
+            handlerElementConfidence({ data: data.target.value, objectId: objectId });
+        }, 
+        handlerElDef = (data) => {
+            handlerElementDefanged({ data: data.target.value, objectId: objectId }); 
+        };
 
     let getlabelsAdditionalTechnicalInformation = () => {
         let listTmp = [];
@@ -45,10 +70,10 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         }
 
         const [labelsTokenInput, setValues] = useState(listTmp);
-        const handlerChange = useCallback((newTokenValues) => {
+        const handlerChangeElementLabels = useCallback((newTokenValues) => {
             setValues(newTokenValues);
 
-            handlerElementLabels(newTokenValues);
+            handlerElementLabels({ listTokenValue: newTokenValues, objectId: objectId });
         },
         [setValues]);
 
@@ -59,7 +84,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                     <TokenInput
                         style={{ height: "81px" }}
                         tokenValues={labelsTokenInput}
-                        onTokenValuesChange={handlerChange}
+                        onTokenValuesChange={handlerChangeElementLabels}
                     />
                 </Grid>    
             </Grid>
@@ -73,55 +98,76 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         }
 
         let externalReferences = () => {
-            return reportInfo.external_references.map((item, key) => {
-                let listHashes = [],
-                    sourceName = "",
-                    externalId = "";
-        
-                if((typeof item.source_name !== "undefined") && (item.source_name !== null) && (item.source_name.length !== 0)){
-                    sourceName = item.source_name;
-                }
-        
-                if((typeof item.external_id !== "undefined") && (item.external_id !== null) && (item.external_id.length !== 0)){
-                    externalId = item.external_id;
-                }
-
-                if((item.hashes !== null) && (typeof item.hashes !== "undefined")){
-                    for(let k in item.hashes){
-                        listHashes.push(<li key={`hash_${item.hashes[k]}`}>{k}: {item.hashes[k]}</li>);
-                    }    
-                }
-
-                return (<React.Fragment key={`key_external_references_${key}_fragment`}>
-                    <Grid container direction="row" key={`key_external_references_${key}_1`}  className="pt-2">
-                        <Grid item md={12} className="text-center">{`${sourceName} (ID:${externalId})`}</Grid>
+            return (<React.Fragment>
+                <Grid container direction="row" key="key_external_references_link">
+                    <Grid item md={12} className="text-right pb-2">
+                        <Link
+                            component="button"
+                            variant="body2"
+                            onClick={() => {
+                                console.info("I'm a button.");
+                            }} >
+                        Button Link
+                        </Link>
                     </Grid>
+                </Grid>
+                {reportInfo.external_references.map((item, key) => {
+                    let listHashes = [],
+                        sourceName = "";
+        
+                    if((typeof item.source_name !== "undefined") && (item.source_name !== null) && (item.source_name.length !== 0)){
+                        sourceName = item.source_name;
+                    }
 
-                    {((typeof item.description === "undefined") || (item.description === null) || (item.description.length === 0) ? 
-                        "": 
-                        <Grid container direction="row" key={`key_external_references_${key}_2`}>
-                            <Grid item md={12}>
-                                <Typography variant="body2" component="p"><span className="text-muted">описание</span>: {item.description}</Typography>
-                            </Grid>
-                        </Grid>)}
+                    if((item.hashes !== null) && (typeof item.hashes !== "undefined")){
+                        for(let k in item.hashes){
+                            listHashes.push(<li key={`hash_${item.hashes[k]}`}>{k}: {item.hashes[k]}</li>);
+                        }    
+                    }
 
-                    {((typeof item.url === "undefined") ||  (item.url === null) || (item.url.length === 0) ? 
-                        "": 
-                        <Grid container direction="row" key={`key_external_references_${key}_3`}>
-                            <Grid item md={12}>
-                                <Typography variant="body2" component="p"><span className="text-muted">url</span>: <a href={item.url}>{item.url}</a></Typography>
+                    return (<Paper elevation={2} key={`key_external_references_${key}_fragment`} className={classes.customPaper}>
+                        <Grid container direction="row" key={`key_external_references_${key}_1`}  className="pt-2">
+                            <Grid item md={12} className="text-center pl-4 pr-4">
+                                <strong>{`${sourceName}`}</strong>
+                                <IconButton aria-label="delete" onClick={()=>{ handlerDeleteItemExternalReferences({ item: sourceName, objectId: objectId }); }}>
+                                    <DeleteOutline style={{ color: red[500] }} />
+                                </IconButton>
                             </Grid>
-                        </Grid>)}
+                        </Grid>
+                        {((typeof item.external_id === "undefined") || (item.external_id === null)) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_external_references_${key}_2`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <Typography variant="body2" component="p"><span className="text-muted">ID</span>: {item.external_id}</Typography>
+                                </Grid>
+                            </Grid>}
 
-                    {(listHashes.length !== 0) ? 
-                        <Grid container direction="row" key={`key_external_references_${key}_4`}>
-                            <Grid item md={12}>
-                                <span><span className="text-muted">хеш суммы</span>:<ol>{listHashes}</ol></span>
-                            </Grid>
-                        </Grid>: 
-                        ""}
-                </React.Fragment>);
-            });
+                        {((typeof item.description === "undefined") || (item.description === null) || (item.description.length === 0) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_external_references_${key}_3`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <Typography variant="body2" component="p"><span className="text-muted">описание</span>: {item.description}</Typography>
+                                </Grid>
+                            </Grid>)}
+
+                        {((typeof item.url === "undefined") ||  (item.url === null) || (item.url.length === 0) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_external_references_${key}_4`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <Typography variant="body2" component="p"><span className="text-muted">url</span>: <a href={item.url}>{item.url}</a></Typography>
+                                </Grid>
+                            </Grid>)}
+
+                        {(listHashes.length !== 0) ? 
+                            <Grid container direction="row" key={`key_external_references_${key}_5`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <span><span className="text-muted">хеш суммы</span>:<ol>{listHashes}</ol></span>
+                                </Grid>
+                            </Grid>: 
+                            ""}
+                    </Paper>);
+                })}
+            </React.Fragment>);
         };
 
         return (<Grid container direction="row">
@@ -209,7 +255,33 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         return list;
     };
 
-    reportInfo.labels = ["ncjndndvnd", "vvvvnnnnc"];
+    let ElemTmp = () => {
+        return (<Dialog onClose={() => {}} aria-labelledby="customized-dialog-title" open={true}>
+            <DialogTitle id="customized-dialog-title" onClose={() => {}}>
+      Modal title
+            </DialogTitle>
+            <DialogContent dividers>
+                <Typography gutterBottom>
+        Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
+        in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+                </Typography>
+                <Typography gutterBottom>
+        Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
+        lacus vel augue laoreet rutrum faucibus dolor auctor.
+                </Typography>
+                <Typography gutterBottom>
+        Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
+        scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
+        auctor fringilla.
+                </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus onClick={() => {}} color="primary">
+        Save changes
+                </Button>
+            </DialogActions>
+        </Dialog>);
+    };
 
     return (
         <React.Fragment>
@@ -236,7 +308,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                             disabled={!isNotDisabled}
                             as="select" 
                             size="sm" 
-                            onChange={handlerElementConfidence} 
+                            onChange={handlerElConf} 
                             defaultValue={reportInfo.confidence} 
                             id="dropdown_list_confidence" >
                             {listConfidence()}
@@ -251,7 +323,10 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                     <Grid item md={6} className="text-right"><i>{reportInfo.created_by_ref}</i></Grid>
                 </Grid> : ""}
 
-            {getlabelsAdditionalTechnicalInformation()}
+            {
+                //набор терминов для описание данного объекта
+                getlabelsAdditionalTechnicalInformation()
+            }
 
             <Grid container direction="row" className="pl-4 pb-3">
                 <Grid item md={10}><span className="text-muted">определены ли данные содержащиеся в объекте</span>:</Grid>
@@ -261,7 +336,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                             disabled={!isNotDisabled}
                             as="select" 
                             size="sm" 
-                            onChange={handlerElementDefanged} 
+                            onChange={handlerElDef} 
                             defaultValue={reportInfo.defanged} 
                             id="dropdown_list_defanged" >
                             <option key={"key_defanged_true"} value={true} >да</option>
@@ -309,14 +384,18 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                 <Grid item md={12} className="pt-1 pb-n2 text-right"><small>1 - чем больше тем увереннее</small></Grid>
             </Grid>
             <hr/>
+
+            {/*<ElemTmp />*/}
         </React.Fragment>
     );
 }
 
 CreateElementAdditionalTechnicalInformation.propTypes = {
     reportInfo: PropTypes.object.isRequired,
+    objectId: PropTypes.string.isRequired,
     handlerElementConfidence: PropTypes.func.isRequired,
     handlerElementDefanged: PropTypes.func.isRequired,
     handlerElementLabels: PropTypes.func.isRequired,
+    handlerDeleteItemExternalReferences: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool,
 };

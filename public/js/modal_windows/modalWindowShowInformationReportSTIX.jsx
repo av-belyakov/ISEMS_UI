@@ -240,24 +240,35 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     }
 
-    handlerElementConfidence(data){
+    handlerElementConfidence(obj){
 
         console.log("func 'handlerElementConfidence', START...");
-        console.log(data.target.value);
+        console.log(obj.data);
+        console.log(`ID: ${obj.objectId}`);
 
     }
 
-    handlerElementDefanged(data){
+    handlerElementDefanged(obj){
 
         console.log("func 'handlerElementDefanged', START...");
-        console.log(data.target.value);
+        console.log(obj.data);
+        console.log(`ID: ${obj.objectId}`);
 
     }
 
-    handlerElementLabels(data){
+    handlerElementLabels(obj){
 
         console.log("func 'handlerElementLabels', START...");
-        console.log(data);
+        console.log(obj.listTokenValue);
+        console.log(`ID: ${obj.objectId}`);
+
+    }
+
+    handlerDeleteItemExternalReferences(obj){
+
+        console.log("func 'handlerDeleteItemExternalReferences', START...");
+        console.log(obj.item);
+        console.log(`ID: ${obj.objectId}`);
 
     }
 
@@ -358,6 +369,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 show={this.props.show}
                 onHide={this.modalClose}
                 dialogClassName="modal-90w"
+                backdrop="static"
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter" >
                 <Modal.Header closeButton>
@@ -478,9 +490,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
                                     <CreateElementAdditionalTechnicalInformation 
                                         reportInfo={reportInfo}
+                                        objectId={this.props.showReportId}
                                         handlerElementConfidence={this.handlerElementConfidence.bind(this)}
                                         handlerElementDefanged={this.handlerElementDefanged.bind(this)}
                                         handlerElementLabels={this.handlerElementLabels.bind(this)}
+                                        handlerDeleteItemExternalReferences={this.handlerDeleteItemExternalReferences.bind(this)}
                                         isNotDisabled={this.props.userPermissions.editing_information.status} />
                                     
                                     <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
