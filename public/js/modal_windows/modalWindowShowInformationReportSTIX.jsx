@@ -1,12 +1,18 @@
 "use strict";
 
 import React from "react";
-import { Col, Button, Modal, Row } from "react-bootstrap";
+import { Col, Modal, Row } from "react-bootstrap";
 import { 
-    Accordion, 
-    AccordionSummary, 
-    AccordionDetails,
-    Chip,
+    AppBar,
+    Button,
+    Container,
+    Dialog,
+    DialogActions,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    Toolbar,
+    IconButton,
     Typography, 
     Grid,
     Link,
@@ -18,7 +24,8 @@ import {
     TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import CloseIcon from "@material-ui/icons/Close";
+import { indigo, lightGreen, lightBlue, teal, purple, blue, grey, lime, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
@@ -29,6 +36,19 @@ import CreateListUnprivilegedGroups from "../module_managing_records_structured_
 import CreateElementAdditionalTechnicalInformation from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformation.jsx";
 
 const useStyles = makeStyles((theme) => ({
+    appBar: {
+        position: "fixed",
+        color: theme.palette.getContrastText(teal[500]),
+        backgroundColor: teal[500],
+    },
+    buttonSave: {
+        color: theme.palette.getContrastText(teal[500]),
+        backgroundColor: teal[500],
+    },
+    title: {
+        marginLeft: theme.spacing(2),
+        flex: 1,
+    },
     root: {
         width: "100%",
     },
@@ -48,6 +68,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             availableForGroups: [],
             listGroupAccessToReport: [],
             currentGroupAccessToReport: "select_group",
+            showModalCreateNewElementAdditionalThechnicalInfo: false,
+            objectModalCreateNewElementAdditionalThechnicalInfo: {},
         };
 
         console.log(this.props.listTypesComputerThreat);
@@ -193,6 +215,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 <Col md={6}>
                     <CreateChipList
                         variant="outlined"
+                        style={{ color: purple[400], margin: "2px" }}
                         chipData={this.state.listGroupAccessToReport}
                         handleDelete={this.handlerDeleteChipFromListGroupAccessToReport} />
                 </Col>
@@ -205,6 +228,22 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 </Col>
             </Row>
         </React.Fragment>);
+    }
+
+    showModalCreateNewElementAdditionalThechnicalInfo(obj){
+
+        console.log("func 'showModalCreateNewElementAdditionalThechnicalInfo', START...");
+        console.log(obj);
+
+        //"new_elem_ati"
+        this.setState({
+            showModalCreateNewElementAdditionalThechnicalInfo: true,
+            objectModalCreateNewElementAdditionalThechnicalInfo: { 
+                section: "element_additional_thechnical_info", 
+                type: obj.modalType,
+                id: obj.objectId,
+            },
+        });
     }
 
     handleSave(){
@@ -284,23 +323,12 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     render() {
         if((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined")){
-            return (
-                <Modal
-                    show={this.props.show}
-                    onHide={this.modalClose}
-                    dialogClassName="modal-90w"
-                    size="lg"
-                    aria-labelledby="contained-modal-title-vcenter" >
-                    <Modal.Header closeButton>
-                        <Modal.Title id="contained-modal-title-vcenter">Доклад</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body />
-                    <Modal.Footer>
-                        <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>закрыть</Button>
-                        <Button variant="outline-primary" size="sm" onClick={this.handleSave}>сохранить</Button>
-                    </Modal.Footer>
-                </Modal>
-            );
+            return (<Dialog 
+                fullScreen 
+                open={this.props.show} 
+                onClose={this.modalClose} >
+                <CreateAppBar handlerDialogSave={this.handleSave} handelrDialogClose={this.modalClose} />
+            </Dialog>);
         }
 
         let reportInfo = this.state.listObjectInfo[this.props.showReportId];
@@ -364,156 +392,176 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         reportInfo.extensions = { "test element": "budbuufbduf fndufbud ufbdgufgur", "test element 1": "bvbibevi484negfgrgiurg" };
         // *** для теста "Любая дополнительная информация" END ***
 
-        return (
-            <Modal
-                show={this.props.show}
-                onHide={this.modalClose}
-                dialogClassName="modal-90w"
-                backdrop="static"
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter" >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Доклад</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row>
-                        <Col md={12} className="pl-3 pr-3">
-                            <Row>
-                                <Col md={12} className="text-center"><h4><strong>{reportInfo.name}</strong></h4></Col>
-                            </Row>
+        return (<React.Fragment>
+            <Dialog 
+                fullScreen 
+                open={this.props.show} 
+                onClose={this.modalClose} 
+            //TransitionComponent={Transition}
+            >
+                <CreateAppBar handlerDialogSave={this.handleSave} handelrDialogClose={this.modalClose} />
+               
+                <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "60px" }}>
+                    <Col md={12} className="pl-3 pr-3">
+                        <Row className="pt-3">
+                            <Col md={12} className="text-center"><h4><strong>{reportInfo.name}</strong></h4></Col>
+                        </Row>
 
-                            <Row>
-                                <Col md={12} className="text-center">ID:<i>{reportInfo.id}</i></Col>
-                            </Row>
+                        <Row>
+                            <Col md={12} className="text-center">ID:<i>{reportInfo.id}</i></Col>
+                        </Row>
                             
-                            <Row>
-                                <Col md={7}>
-                                    <Row className="mt-4">
-                                        <Col md={12}><span className="text-muted">Дата и время</span>:</Col>
-                                    </Row>      
+                        <Row>
+                            <Col md={7}>
+                                <Row className="mt-4">
+                                    <Col md={12}><span className="text-muted">Дата и время</span>:</Col>
+                                </Row>      
 
-                                    <Row>
-                                        <Col md={6}><span className="text-muted pl-4">создания</span></Col>
-                                        <Col md={6} className="text-right">
-                                            {helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}
-                                        </Col>
-                                    </Row>
+                                <Row>
+                                    <Col md={6}><span className="text-muted pl-4">создания</span></Col>
+                                    <Col md={6} className="text-right">
+                                        {helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}
+                                    </Col>
+                                </Row>
 
-                                    <Row>
-                                        <Col md={6}>
-                                            <span className="text-muted pl-4">последнего обновления</span>
-                                        </Col>
-                                        <Col md={6} className="text-right">
-                                            {helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}
-                                        </Col>
-                                    </Row>
+                                <Row>
+                                    <Col md={6}>
+                                        <span className="text-muted pl-4">последнего обновления</span>
+                                    </Col>
+                                    <Col md={6} className="text-right">
+                                        {helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}
+                                    </Col>
+                                </Row>
 
-                                    <Row>
-                                        <Col md={6}><span className="text-muted pl-4">публикации</span></Col>
-                                        {published()}
-                                    </Row>
+                                <Row>
+                                    <Col md={6}><span className="text-muted pl-4">публикации</span></Col>
+                                    {published()}
+                                </Row>
 
-                                    {this.handlerManagingAccessToReport()}
+                                {this.handlerManagingAccessToReport()}
                                     
-                                    <Row>
-                                        <Col md={12} className="mt-3">
-                                            <TextField
-                                                id="outlined-multiline-static"
-                                                label="Подробное описание"
-                                                multiline
-                                                rows={4}
-                                                fullWidth
-                                                onChange={this.handlerOnChangeDescription}
-                                                defaultValue={reportInfo.description}
-                                                variant="outlined"/>
-                                        </Col>  
-                                    </Row>
+                                <Row>
+                                    <Col md={12} className="mt-3">
+                                        <TextField
+                                            id="outlined-multiline-static"
+                                            label="Подробное описание"
+                                            multiline
+                                            rows={4}
+                                            fullWidth
+                                            onChange={this.handlerOnChangeDescription}
+                                            defaultValue={reportInfo.description}
+                                            variant="outlined"/>
+                                    </Col>  
+                                </Row>
 
-                                    <Row className="mt-4">
-                                        <Col md={12}>
-                                            <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
-                                        </Col>
-                                    </Row>
+                                <Row className="mt-4">
+                                    <Col md={12}>
+                                        <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
+                                    </Col>
+                                </Row>
 
-                                    <Row className="mt-3">
-                                        <Col md={12}>
-                                            <span className="pl-4">
-                                                <MainTextField
-                                                    uniqName={"additional_name_not_stix_specifications"}
-                                                    variant={"standard"}
-                                                    label={"дополнительное наименование"}
-                                                    value={(()=>{
-                                                        if((reportInfo.outside_specification === null) || (typeof reportInfo.outside_specification === "undefined")){
-                                                            return "";
-                                                        }
+                                <Row className="mt-3">
+                                    <Col md={12}>
+                                        <span className="pl-4">
+                                            <MainTextField
+                                                uniqName={"additional_name_not_stix_specifications"}
+                                                variant={"standard"}
+                                                label={"дополнительное наименование"}
+                                                value={(()=>{
+                                                    if((reportInfo.outside_specification === null) || (typeof reportInfo.outside_specification === "undefined")){
+                                                        return "";
+                                                    }
 
-                                                        if((reportInfo.outside_specification.additional_name === null) || (typeof reportInfo.outside_specification.additional_name === "undefined")){
-                                                            return "";
-                                                        }
+                                                    if((reportInfo.outside_specification.additional_name === null) || (typeof reportInfo.outside_specification.additional_name === "undefined")){
+                                                        return "";
+                                                    }
 
-                                                        return reportInfo.outside_specification.additional_name;
-                                                    })()}
-                                                    fullWidth={true}
-                                                    onChange={this.handlerOutsideSpecificationAdditionalName}
-                                                />
-                                            </span>
-                                        </Col>
-                                    </Row>
+                                                    return reportInfo.outside_specification.additional_name;
+                                                })()}
+                                                fullWidth={true}
+                                                onChange={this.handlerOutsideSpecificationAdditionalName}
+                                            />
+                                        </span>
+                                    </Col>
+                                </Row>
 
-                                    <Row className="mt-3">
-                                        <Col md={12}>
-                                            <span className="pl-4">
-                                                <CreateListSelect
-                                                    list={this.props.listTypesDecisionsMadeComputerThreat}
-                                                    label="принятое решение по компьютерной угрозе"
-                                                    uniqId="decisions_made_computer_threat"
-                                                    currentItem={reportInfo.outside_specification.decisions_made_computer_threat}
-                                                    handlerChosen={this.handlerChosenDecisionsMadeComputerThreat}
-                                                    isNotDisabled={this.props.userPermissions.editing_information.status} />
-                                            </span>
-                                        </Col>
-                                    </Row>
+                                <Row className="mt-3">
+                                    <Col md={12}>
+                                        <span className="pl-4">
+                                            <CreateListSelect
+                                                list={this.props.listTypesDecisionsMadeComputerThreat}
+                                                label="принятое решение по компьютерной угрозе"
+                                                uniqId="decisions_made_computer_threat"
+                                                currentItem={reportInfo.outside_specification.decisions_made_computer_threat}
+                                                handlerChosen={this.handlerChosenDecisionsMadeComputerThreat}
+                                                isNotDisabled={this.props.userPermissions.editing_information.status} />
+                                        </span>
+                                    </Col>
+                                </Row>
 
-                                    <Row className="mt-3 mb-4">
-                                        <Col md={12}>
-                                            <span className="pl-4">
-                                                <CreateListSelect
-                                                    list={this.props.listTypesComputerThreat}
-                                                    label="тип компьютерной угрозы"
-                                                    uniqId="computer_threat_type"
-                                                    currentItem={reportInfo.outside_specification.computer_threat_type}
-                                                    handlerChosen={this.handlerChosenComputerThreatType}
-                                                    isNotDisabled={this.props.userPermissions.editing_information.status} />
-                                            </span>
-                                        </Col>
-                                    </Row>
+                                <Row className="mt-3 mb-4">
+                                    <Col md={12}>
+                                        <span className="pl-4">
+                                            <CreateListSelect
+                                                list={this.props.listTypesComputerThreat}
+                                                label="тип компьютерной угрозы"
+                                                uniqId="computer_threat_type"
+                                                currentItem={reportInfo.outside_specification.computer_threat_type}
+                                                handlerChosen={this.handlerChosenComputerThreatType}
+                                                isNotDisabled={this.props.userPermissions.editing_information.status} />
+                                        </span>
+                                    </Col>
+                                </Row>
 
-                                    <CreateElementAdditionalTechnicalInformation 
-                                        reportInfo={reportInfo}
-                                        objectId={this.props.showReportId}
-                                        handlerElementConfidence={this.handlerElementConfidence.bind(this)}
-                                        handlerElementDefanged={this.handlerElementDefanged.bind(this)}
-                                        handlerElementLabels={this.handlerElementLabels.bind(this)}
-                                        handlerDeleteItemExternalReferences={this.handlerDeleteItemExternalReferences.bind(this)}
-                                        isNotDisabled={this.props.userPermissions.editing_information.status} />
+                                <CreateElementAdditionalTechnicalInformation 
+                                    reportInfo={reportInfo}
+                                    objectId={this.props.showReportId}
+                                    handlerElementConfidence={this.handlerElementConfidence.bind(this)}
+                                    handlerElementDefanged={this.handlerElementDefanged.bind(this)}
+                                    handlerElementLabels={this.handlerElementLabels.bind(this)}
+                                    handlerDeleteItemExternalReferences={this.handlerDeleteItemExternalReferences.bind(this)}
+                                    showModalCreateNewElementAdditionalThechnicalInfo={this.showModalCreateNewElementAdditionalThechnicalInfo.bind(this)}
+                                    isNotDisabled={this.props.userPermissions.editing_information.status} />
                                     
-                                    <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
-                                </Col>
-                                <Col md={5}>
-                                    <Row>
-                                        <Col md={12} className="text-center"><strong>История изменений</strong></Col>
-                                    </Row>
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>закрыть</Button>
-                    <Button variant="outline-primary" size="sm" onClick={this.handleSave}>сохранить</Button>
-                </Modal.Footer>
-            </Modal>
-        );
+                                <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
+                            </Col>
+                            <Col md={5}>
+                                <Row>
+                                    <Col md={12} className="text-center"><strong>История изменений</strong></Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Col>
+                </Container>
+            </Dialog>
+
+            <Dialog
+                aria-labelledby="form-dialog-element-additional-thechnical-info" 
+                open={this.state.showModalCreateNewElementAdditionalThechnicalInfo} 
+                onClose={()=> { this.setState({ showModalCreateNewElementAdditionalThechnicalInfo: false }); }}>
+                <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {JSON.stringify(this.state.objectModalCreateNewElementAdditionalThechnicalInfo)}
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Email Address"
+                        type="email"
+                        fullWidth />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => { console.log("handler button cancel"); }} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={() => { console.log("handler button Subscribe"); }} color="primary">
+                        Subscribe
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </React.Fragment>);
     }
 }
 
@@ -526,6 +574,28 @@ ModalWindowShowInformationReportSTIX.propTypes = {
     userPermissions: PropTypes.object.isRequired,
     listTypesComputerThreat: PropTypes.object.isRequired,
     listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
+};
+
+function CreateAppBar(props){
+    const classes = useStyles();
+    const { handlerDialogSave, handelrDialogClose } = props;
+    
+    return (<AppBar className={classes.appBar}>
+        <Toolbar>
+            <IconButton edge="start" color="inherit" onClick={handelrDialogClose} aria-label="close">
+                <CloseIcon />
+            </IconButton>
+            <Typography variant="h6" className={classes.title}>
+                Доклад
+            </Typography>
+            <Button size="small" className={classes.buttonSave} onClick={handlerDialogSave}>сохранить</Button>
+        </Toolbar>
+    </AppBar>);
+}
+
+CreateAppBar.propTypes = {
+    handlerDialogSave: PropTypes.func.isRequired,
+    handelrDialogClose: PropTypes.func.isRequired,
 };
 
 function GetListObjectRefs(props){
