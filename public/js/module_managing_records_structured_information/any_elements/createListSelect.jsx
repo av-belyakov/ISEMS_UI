@@ -14,6 +14,7 @@ export default function CreateListSelect(props){
         <TextField
             id={`select-computer-threat_${uniqId}`}
             select
+            fullWidth
             label={label}
             value={currentItem}
             onChange={handlerChosen}

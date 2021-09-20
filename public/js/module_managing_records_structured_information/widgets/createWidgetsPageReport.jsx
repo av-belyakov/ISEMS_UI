@@ -81,6 +81,10 @@ export default class CreateWidgetsPageReport extends React.Component {
                 return;
             }
 
+            let successfullyImplementedComputerThreat = 0,
+                unsuccessfullyComputerThreat = 0,
+                falsePositive = 0;
+
             switch(data.section){
             case "doc type 'reports' status 'open'":
                 this.setState({ 
@@ -103,34 +107,41 @@ export default class CreateWidgetsPageReport extends React.Component {
                 return;
         
             case "get count doc statuses decisions made computer threats":
+
+                console.log(`func ______'createWidgetsPageReport'______, section: '${data.section}'`);
+                console.log(data);
+
                 for(let key in data.information.additional_parameters.list_computer_threat){
                     switch(key){
                     case "successfully implemented computer threat":
-                        this.setState({
-                            successfullyImplementedComputerThreat: { 
-                                num: data.information.additional_parameters.list_computer_threat[key], 
-                                show: true, 
-                            }});
+                        successfullyImplementedComputerThreat = data.information.additional_parameters.list_computer_threat[key];
                         break;
 
                     case "unsuccessfully computer threat":
-                        this.setState({
-                            computerThreatNotSuccessful: { 
-                                num: data.information.additional_parameters.list_computer_threat[key], 
-                                show: true, 
-                            }});
+                        unsuccessfullyComputerThreat = data.information.additional_parameters.list_computer_threat[key];
                         break;
 
                     case "false positive":
-                        this.setState({
-                            unconfirmedComputerThreat: { 
-                                num: data.information.additional_parameters.list_computer_threat[key], 
-                                show: true, 
-                            }});
+                        falsePositive = data.information.additional_parameters.list_computer_threat[key];
                         break;
 
                     }
                 }
+
+                this.setState({
+                    successfullyImplementedComputerThreat: { 
+                        num: successfullyImplementedComputerThreat, 
+                        show: true, 
+                    },
+                    computerThreatNotSuccessful: { 
+                        num: unsuccessfullyComputerThreat, 
+                        show: true, 
+                    },
+                    unconfirmedComputerThreat: { 
+                        num: falsePositive, 
+                        show: true, 
+                    }
+                });
 
                 return;
             }

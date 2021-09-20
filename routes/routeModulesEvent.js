@@ -19,53 +19,6 @@ module.exports.modulesEventGenerator = function(socketIo) {
 
     //модуль ISEMS-MRSICT
     eventsModuleManagingRecordsStructuredInfo(socketIo);
-
-    /*setInterval(() => {
-        helpersFunc.sendBroadcastSocketIo("module NI API", {
-            "type": "filtrationProcessing",
-            "options": {
-                sourceID: 1000,
-                name: "Test Source 1",
-                taskID: "fc88a37bd7044b3ed817e5c3b0b8aeb2375ca502",
-                taskIDModuleNI: "6418bd7715cf12b5e47c849a1caf6a03",
-                status: "stop",
-                parameters: {
-                    numDirectoryFiltration: 5,
-                    numAllFiles: 234,
-                    numProcessedFiles: 132,
-                    numProcessedFilesError: 0,
-                    numFindFiles: 120,
-                    sizeAllFiles: 14837872,
-                    sizeFindFiles: 544232,
-                },
-            },
-        });
-    }, 15000);
-
-    setInterval(() => {
-        helpersFunc.sendBroadcastSocketIo("module NI API", {
-            "type": "downloadProcessing",
-            "options": {
-                sourceID: 1000,
-                name: "Test Source 1",
-                taskID: "fc88a37bd7044b3ed817e5c3b0b8aeb2375ca502",
-                taskIDModuleNI: "6418bd7715cf12b5e47c849a1caf6a03",
-                status: "refused",
-                parameters: {
-                    numberFilesTotal: 235, //общее количество скачиваемых файлов
-                    numberFilesDownloaded: 22, //количество успешно скаченных файлов
-                    numberFilesDownloadedError: 45, //количество файлов скаченных с ошибкой
-                    dfi: { //DetailedFileInformation — подробная информация о скачиваемом файле
-                        fileName: "", //название файла
-                        fullSizeByte: 55553332, //полный размер файла в байтах
-                        acceptedSizeByte: 3244, //скаченный размер файла в байтах
-                        acceptedSizePercent: 5454, //скаченный размер файла в процентах
-                    }
-                },
-            },
-        });
-    }, 16000);
-    */
 };
 
 function eventsModuleNetworkInteraction(socketIo) {
@@ -83,12 +36,6 @@ function eventsModuleNetworkInteraction(socketIo) {
                 },
             });
 
-            /*
-            Запрашиваем ВЕСЬ список источников которые есть в базе
-            данных модуля сетевого взаимодействия, что бы получить 
-            актуальный список и в том числе статусы сетевых 
-            соединений источников
-            */
             setTimeout(() => {
                 connection.sendMessage({
                     msgType: "command",
@@ -118,23 +65,11 @@ function eventsModuleNetworkInteraction(socketIo) {
 
             globalObject.setData("descriptionAPI", "networkInteraction", "previousConnectionStatus", false);
         }).on("information source control", (msg) => {
-            /*debug("----- information source control -----");
-            debug(msg);
-            debug("--------------------------------------");*/
-
             require("./handlers_msg_module_network_interaction/handlerMsgSources")(msg, socketIo);
         }).on("command source control", ( /*msg*/ ) => {
-            //debug("----- command source control ------");
-            //debug(msg);
-            //debug("------------------------------------------");
-
             //обрабатываем запрос ISEMS-NIH на получение актуального списка источников
             require("./handlers_msg_module_network_interaction/handlerMsgGetNewSourceList")();
         }).on("information filtration control", (msg) => {
-            //debug("----- information filtration control -----");
-            //debug(msg);
-            //debug("------------------------------------------");
-
             if (msg.options.s === "complete" || msg.options.s === "stop") {
                 debug("----- information filtration control -----");
                 debug(msg);
@@ -169,10 +104,6 @@ function eventsModuleNetworkInteraction(socketIo) {
                 debug("---------------------------------------");*/
 
         }).on("information download control", (msg) => {
-            /*debug("----- information download control -----");
-            debug(msg);
-            debug("----------------------------------------");*/
-
             let sourceInfo = globalObject.getData("sources", msg.options.id);
             if (sourceInfo === null) {
                 return;
@@ -205,9 +136,6 @@ function eventsModuleNetworkInteraction(socketIo) {
             //debug(msg);
             //debug("----------------------------------------");
         }).on("information search control", (msg) => {
-            //debug("====== information search control =====");
-            //debug(JSON.stringify(msg));
-
             //получили всю информацию о задаче по ее ID
             if (msg.instruction === "processing get all information by task ID") {
                 let data = {
@@ -277,11 +205,6 @@ function eventsModuleNetworkInteraction(socketIo) {
             }
 
             if (msg.instruction === "processing get common analytics information about task ID") {
-                //debug("RECEIVED processing get common analytics information about task ID");
-                //debug("-----------------");
-                //debug(msg.options);
-                //debug("-----------------");
-
                 let data = {
                     "type": "commonAnalyticsInformationAboutTaskID",
                     "options": msg.options,
@@ -308,21 +231,13 @@ function eventsModuleNetworkInteraction(socketIo) {
 
             if (msg.instruction === "mark an task as completed") {
                 if (msg.options.ss) {
-                    //                    debug("received message SUCCESS mark task complete");
-                    //                    debug(msg);
-
                     helpersFunc.sendBroadcastSocketIo("module NI API", {
                         "type": "successMarkTaskAsCompleted",
                         "options": { "taskID": msg.options.tid },
                     });
                 }
             }
-
-            debug("=======================================");
         }).on("user notification", (notify) => {
-            //            debug("---- RECEIVED user notification ----");
-            //            debug(notify);
-
             showNotify({
                 socketIo: socketIo,
                 type: notify.options.n.t,
@@ -332,10 +247,6 @@ function eventsModuleNetworkInteraction(socketIo) {
             //записываем сообщение в БД
             require("./handlers_msg_module_network_interaction/handlerMsgNotification")(notify);
         }).on("error", (err) => {
-            //            debug("ERROR MESSAGE");
-            //            debug(err);
-
-
             if (!globalObject.getData("descriptionAPI", "networkInteraction", "previousConnectionStatus")) {
                 return;
             }
@@ -367,13 +278,6 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
         }).on("document message", (msg) => {
             debug("--- DOCUMENT MESSAGE from module ISEMS-MRSICT ---");
             debug(msg);
-
-            /**
-         * не всем пользователем можно показывать весь результат
-         * например, только привилегерованным пользователям можно показать весь список 
-         * Хотя возможно будет правильней на этапе формирования запроса позаботится о защите информации
-         * от непревелигированных пользователей
-         */
 
             if(!msg.is_successful){
                 return;

@@ -1,10 +1,11 @@
 "use strict";
 
 import React from "react";
-import { Col, Modal, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { 
     AppBar,
     Button,
+    Breadcrumbs,
     Container,
     Dialog,
     DialogActions,
@@ -25,7 +26,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
-import { indigo, lightGreen, lightBlue, teal, purple, blue, grey, lime, red } from "@material-ui/core/colors";
+import { teal, purple } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
@@ -146,7 +147,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 }
 
                 this.setState({ listGroupAccessToReport: data.information.additional_parameters.list_groups_which_report_available.map((item) => {
-                    return { data: item.group_name, title: `Пользователь: ${item.user_name}, Время: ${helpers.getDate(item.date_time)}` };
+                    return { 
+                        group: item.group_name,
+                        time: helpers.getDate(item.date_time),
+                        userName: item.user_name,
+                        title: `Пользователь: ${item.user_name}, Время: ${helpers.getDate(item.date_time)}` };
                 })});
                 break;
             }
@@ -164,12 +169,17 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         let listGroupAccessToReport = this.state.listGroupAccessToReport,
             groupName = data.target.value;
         for(let item of listGroupAccessToReport){
-            if((groupName === item.data) || (groupName === "select_group")){
+            if((groupName === item.group) || (groupName === "select_group")){
                 return;
             }
         }
 
-        listGroupAccessToReport.push({ data: groupName, title: `Пользователь: текущий, Время: ${helpers.getDate(+new Date)}` });
+        listGroupAccessToReport.push({ 
+            time: helpers.getDate(+new Date),
+            userName: "текущий пользователь",
+            group: groupName, 
+            title: `Пользователь: текущий, Время: ${helpers.getDate(+new Date)}` 
+        });
         this.setState({ listGroupAccessToReport: listGroupAccessToReport });
 
         if(this.state.reportInfo.length !== 1){
@@ -184,7 +194,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     handlerDeleteChipFromListGroupAccessToReport(groupName){
         let newListGroup = this.state.listGroupAccessToReport.filter((item) => {
-            return groupName !== item.data;
+            return groupName !== item.group;
         });
 
         this.setState({ listGroupAccessToReport: newListGroup });
@@ -322,12 +332,19 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     render() {
+
+        console.log("||||| class 'ModalWindowShowInformationReportSTIX' |||||");
+        console.log(this.state.listGroupAccessToReport);
+
         if((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined")){
             return (<Dialog 
                 fullScreen 
                 open={this.props.show} 
                 onClose={this.modalClose} >
-                <CreateAppBar handlerDialogSave={this.handleSave} handelrDialogClose={this.modalClose} />
+                <CreateAppBar 
+                    reportId=""
+                    handlerDialogSave={this.handleSave} 
+                    handelrDialogClose={this.modalClose} />
             </Dialog>);
         }
 
@@ -335,7 +352,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         let published = () => {
             if(Date.parse(reportInfo.published) <= 0){
                 return (<Col md={6} className="text-right">
-                    <Link href="#" onClick={this.handlePublished} color="inherit">
+                    <Link href="#" onClick={this.handlePublished} color="error">
                         <Typography variant="overline" display="block" gutterBottom>опубликовать</Typography>
                     </Link>
                 </Col>);
@@ -396,24 +413,49 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             <Dialog 
                 fullScreen 
                 open={this.props.show} 
-                onClose={this.modalClose} 
-            //TransitionComponent={Transition}
-            >
-                <CreateAppBar handlerDialogSave={this.handleSave} handelrDialogClose={this.modalClose} />
+                onClose={this.modalClose} >
+                <CreateAppBar 
+                    reportId={reportInfo.id}
+                    handlerDialogSave={this.handleSave} 
+                    handelrDialogClose={this.modalClose} />
                
                 <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "60px" }}>
                     <Col md={12} className="pl-3 pr-3">
-                        <Row className="pt-3">
-                            <Col md={12} className="text-center"><h4><strong>{reportInfo.name}</strong></h4></Col>
+                        <Row className="pt-2">
+                            <Col md={12}>
+                                <Breadcrumbs aria-label="breadcrumb">
+                                    <Link color="inherit" href="/" onClick={()=>{}}>
+                                         Material-UI
+                                    </Link>
+                                    <Link color="inherit" href="/getting-started/installation/" onClick={()=>{}}>
+                                        Core
+                                    </Link>
+                                    <Link
+                                        color="textPrimary"
+                                        href="/components/breadcrumbs/"
+                                        onClick={()=>{}}
+                                        aria-current="page"
+                                    >
+                                        Breadcrumb
+                                    </Link>
+                                    <Link color="inherit" href="/getting-started/installation/" onClick={()=>{}}>
+                                        ID STIX object
+                                    </Link>
+                                </Breadcrumbs>
+                            </Col>
                         </Row>
-
-                        <Row>
-                            <Col md={12} className="text-center">ID:<i>{reportInfo.id}</i></Col>
-                        </Row>
-                            
                         <Row>
                             <Col md={7}>
+                                <Row className="pt-3">
+                                    <Col md={12} className="text-center"><strong>Основная информация</strong></Col>
+                                </Row>
+
                                 <Row className="mt-4">
+                                    <Col md={6}><span className="text-muted">Наименование</span>:</Col>
+                                    <Col md={6} className="text-right">{reportInfo.name}</Col>
+                                </Row>
+
+                                <Row>
                                     <Col md={12}><span className="text-muted">Дата и время</span>:</Col>
                                 </Row>      
 
@@ -526,9 +568,26 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                 <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
                             </Col>
                             <Col md={5}>
-                                <Row>
+                                <Row className="pt-3">
                                     <Col md={12} className="text-center"><strong>История изменений</strong></Col>
                                 </Row>
+                                <br/>
+                                {this.state.listGroupAccessToReport.map((item, num) => {
+                                    return (<React.Fragment key={`key_list_group_access_report_${num}`}>
+                                        <Row className="pl-3 pr-3">
+                                            <Col md={6} className="text-muted">группа:</Col>
+                                            <Col md={6} className="">{item.group}</Col>
+                                        </Row>
+                                        <Row className="pl-3 pr-3">
+                                            <Col md={6} className="text-muted">добавлена:</Col>
+                                            <Col md={6} className="">{item.time}</Col>
+                                        </Row>
+                                        <Row className="pl-3 pr-3 mb-2">
+                                            <Col md={6} className="text-muted">пользователем:</Col>
+                                            <Col md={6} className="">{item.userName}</Col>
+                                        </Row>
+                                    </React.Fragment>);
+                                })}
                             </Col>
                         </Row>
                     </Col>
@@ -578,22 +637,21 @@ ModalWindowShowInformationReportSTIX.propTypes = {
 
 function CreateAppBar(props){
     const classes = useStyles();
-    const { handlerDialogSave, handelrDialogClose } = props;
+    const { reportId, handlerDialogSave, handelrDialogClose } = props;
     
     return (<AppBar className={classes.appBar}>
         <Toolbar>
             <IconButton edge="start" color="inherit" onClick={handelrDialogClose} aria-label="close">
                 <CloseIcon />
             </IconButton>
-            <Typography variant="h6" className={classes.title}>
-                Доклад
-            </Typography>
+            <Typography variant="h6" className={classes.title}>{reportId}</Typography>
             <Button size="small" className={classes.buttonSave} onClick={handlerDialogSave}>сохранить</Button>
         </Toolbar>
     </AppBar>);
 }
 
 CreateAppBar.propTypes = {
+    reportId: PropTypes.string.isRequired,
     handlerDialogSave: PropTypes.func.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
 };

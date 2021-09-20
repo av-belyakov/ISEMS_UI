@@ -16,9 +16,9 @@ export default function CreateChipList(props) {
     return chipData.map((item, num) => {
         return (<Tooltip title={item.title} key={`key_tooltip_chip_${num}`}>
             <Chip
-                key={`key_chip_${item.data}_${num}`}
-                label={item.data}
-                onDelete={deleting.bind(null, item.data)}
+                key={`key_chip_${item.group}_${num}`}
+                label={item.group}
+                onDelete={deleting.bind(null, item.group)}
                 variant={variant}
                 style={style} />
         </Tooltip>);
