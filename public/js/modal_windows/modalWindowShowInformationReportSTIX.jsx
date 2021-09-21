@@ -8,25 +8,17 @@ import {
     Breadcrumbs,
     Container,
     Dialog,
-    DialogActions,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
     Toolbar,
     IconButton,
-    Typography, 
+    Typography,
+    Tooltip,
     Grid,
     Link,
-    List,
-    ListItem,
-    ListItemAvatar,
-    ListItemIcon,
-    ListItemText,
     TextField,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
-import { teal, purple } from "@material-ui/core/colors";
+import { teal, purple, grey } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
@@ -34,6 +26,7 @@ import { MainTextField } from "../module_managing_records_structured_information
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
 import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
+import DialogElementAdditionalThechnicalInfo from "../modal_windows/modalWindowDialogElementAdditionalThechnicalInfo.jsx";
 import CreateElementAdditionalTechnicalInformation from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformation.jsx";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +34,13 @@ const useStyles = makeStyles((theme) => ({
         position: "fixed",
         color: theme.palette.getContrastText(teal[500]),
         backgroundColor: teal[500],
+    },
+    appBreadcrumbs: {
+        position: "fixed",
+        top: "60px",
+        color: theme.palette.getContrastText(grey[50]),
+        backgroundColor: grey[50],
+        paddingLeft: theme.spacing(4),
     },
     buttonSave: {
         color: theme.palette.getContrastText(teal[500]),
@@ -63,14 +63,15 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     constructor(props){
         super(props);
 
+        console.log(`|||||||||| this.props.showReportId: ${this.props.showReportId} ||||||||||`);
+
         this.state = {
-            reportInfo: {},
             listObjectInfo: {},
             availableForGroups: [],
             listGroupAccessToReport: [],
             currentGroupAccessToReport: "select_group",
-            showModalCreateNewElementAdditionalThechnicalInfo: false,
-            objectModalCreateNewElementAdditionalThechnicalInfo: {},
+            showDialogElementAdditionalThechnicalInfo: false,
+            objectDialogElementAdditionalThechnicalInfo: {},
         };
 
         console.log(this.props.listTypesComputerThreat);
@@ -127,21 +128,20 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     return;
                 }
 
+                console.log("__--__ send search request, get report for id");
+                console.log(data.information.additional_parameters.transmitted_data);
+
                 reportInfo = data.information.additional_parameters.transmitted_data[0];
                 listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
                 listObjectInfoTmp[reportInfo.id] = reportInfo;
 
                 this.setState({ 
-                    reportInfo: data.information.additional_parameters.transmitted_data,
+                    //reportInfo: data.information.additional_parameters.transmitted_data,
                     listObjectInfo: listObjectInfoTmp,
                 });
                 break;
 
             case "list of groups to which the report is available":
-
-                console.log(`func 'handlerEvents', section:${data.section}`);
-                console.log(data.information.additional_parameters.list_groups_which_report_available);
-
                 if(!Array.isArray(data.information.additional_parameters.list_groups_which_report_available)){
                     break;
                 }
@@ -218,7 +218,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         }
 
         return (<React.Fragment>
-            <Row className="mt-4">
+            <Row className="mt-3">
                 <Col md={12} className="text-muted text-left">Доступность для непривилегированных групп</Col>
             </Row>
             <Row className="mt-2">
@@ -240,20 +240,23 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         </React.Fragment>);
     }
 
-    showModalCreateNewElementAdditionalThechnicalInfo(obj){
+    showDialogElementAdditionalThechnicalInfo(obj){
 
-        console.log("func 'showModalCreateNewElementAdditionalThechnicalInfo', START...");
+        console.log("func 'showDialogElementAdditionalThechnicalInfo', START...");
         console.log(obj);
 
-        //"new_elem_ati"
         this.setState({
-            showModalCreateNewElementAdditionalThechnicalInfo: true,
-            objectModalCreateNewElementAdditionalThechnicalInfo: { 
-                section: "element_additional_thechnical_info", 
-                type: obj.modalType,
-                id: obj.objectId,
+            showDialogElementAdditionalThechnicalInfo: true,
+            objectDialogElementAdditionalThechnicalInfo: { 
+                type: obj.type,
+                modalType: obj.modalType, 
+                objectId: obj.objectId,
             },
         });
+    }
+
+    closeDialogElementAdditionalThechnicalInfo(){
+        this.setState({ showDialogElementAdditionalThechnicalInfo: false });
     }
 
     handleSave(){
@@ -313,11 +316,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     }
 
-    handlerDeleteItemExternalReferences(obj){
+    handlerDeleteElementAdditionalTechnicalInformation(obj){
 
-        console.log("func 'handlerDeleteItemExternalReferences', START...");
-        console.log(obj.item);
-        console.log(`ID: ${obj.objectId}`);
+        console.log("func 'handlerDeleteElementAdditionalTechnicalInformation', START...");
+        console.log(obj);
 
     }
 
@@ -333,8 +335,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     render() {
 
-        console.log("||||| class 'ModalWindowShowInformationReportSTIX' |||||");
-        console.log(this.state.listGroupAccessToReport);
+        //console.log("||||| class 'ModalWindowShowInformationReportSTIX' |||||");
+        //console.log(this.state.listGroupAccessToReport);
+        //console.log(`this.state.currentShowId = ${this.state.currentShowId}`);
+        //console.log(`showReportId ==== ${this.props.showReportId}`);
 
         if((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined")){
             return (<Dialog 
@@ -414,36 +418,16 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 fullScreen 
                 open={this.props.show} 
                 onClose={this.modalClose} >
+
                 <CreateAppBar 
                     reportId={reportInfo.id}
                     handlerDialogSave={this.handleSave} 
                     handelrDialogClose={this.modalClose} />
-               
-                <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "60px" }}>
+
+                <CreateBreadcrumbsObjects />
+
+                <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
                     <Col md={12} className="pl-3 pr-3">
-                        <Row className="pt-2">
-                            <Col md={12}>
-                                <Breadcrumbs aria-label="breadcrumb">
-                                    <Link color="inherit" href="/" onClick={()=>{}}>
-                                         Material-UI
-                                    </Link>
-                                    <Link color="inherit" href="/getting-started/installation/" onClick={()=>{}}>
-                                        Core
-                                    </Link>
-                                    <Link
-                                        color="textPrimary"
-                                        href="/components/breadcrumbs/"
-                                        onClick={()=>{}}
-                                        aria-current="page"
-                                    >
-                                        Breadcrumb
-                                    </Link>
-                                    <Link color="inherit" href="/getting-started/installation/" onClick={()=>{}}>
-                                        ID STIX object
-                                    </Link>
-                                </Breadcrumbs>
-                            </Col>
-                        </Row>
                         <Row>
                             <Col md={7}>
                                 <Row className="pt-3">
@@ -496,7 +480,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                     </Col>  
                                 </Row>
 
-                                <Row className="mt-4">
+                                <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
+
+                                <Row className="mt-1">
                                     <Col md={12}>
                                         <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
                                     </Col>
@@ -561,11 +547,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                     handlerElementConfidence={this.handlerElementConfidence.bind(this)}
                                     handlerElementDefanged={this.handlerElementDefanged.bind(this)}
                                     handlerElementLabels={this.handlerElementLabels.bind(this)}
-                                    handlerDeleteItemExternalReferences={this.handlerDeleteItemExternalReferences.bind(this)}
-                                    showModalCreateNewElementAdditionalThechnicalInfo={this.showModalCreateNewElementAdditionalThechnicalInfo.bind(this)}
+                                    handlerElementDelete={this.handlerDeleteElementAdditionalTechnicalInformation.bind(this)}
+                                    showDialogElementAdditionalThechnicalInfo={this.showDialogElementAdditionalThechnicalInfo.bind(this)}
                                     isNotDisabled={this.props.userPermissions.editing_information.status} />
                                     
-                                <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
                             </Col>
                             <Col md={5}>
                                 <Row className="pt-3">
@@ -594,32 +579,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 </Container>
             </Dialog>
 
-            <Dialog
-                aria-labelledby="form-dialog-element-additional-thechnical-info" 
-                open={this.state.showModalCreateNewElementAdditionalThechnicalInfo} 
-                onClose={()=> { this.setState({ showModalCreateNewElementAdditionalThechnicalInfo: false }); }}>
-                <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {JSON.stringify(this.state.objectModalCreateNewElementAdditionalThechnicalInfo)}
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Email Address"
-                        type="email"
-                        fullWidth />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => { console.log("handler button cancel"); }} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={() => { console.log("handler button Subscribe"); }} color="primary">
-                        Subscribe
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <DialogElementAdditionalThechnicalInfo 
+                show={this.state.showDialogElementAdditionalThechnicalInfo}
+                onHide={this.closeDialogElementAdditionalThechnicalInfo.bind(this)}
+                objInfo={this.state.objectDialogElementAdditionalThechnicalInfo} />
+
         </React.Fragment>);
     }
 }
@@ -656,38 +620,64 @@ CreateAppBar.propTypes = {
     handelrDialogClose: PropTypes.func.isRequired,
 };
 
+function CreateBreadcrumbsObjects(props){
+    const classes = useStyles();
+
+    return (<AppBar className={classes.appBreadcrumbs}>
+        <Breadcrumbs aria-label="breadcrumb">
+            <Link color="inherit" href="/" onClick={()=>{}}>
+            report--94e4d99f-67aa-4bcd-bbf3-b2c1c320aad7
+            </Link>
+            <Link color="inherit" href="/getting-started/installation/" onClick={()=>{}}>
+            grouping--94e4d99f-67aa-4bcd-bbf3-b2c1c320eef1
+            </Link>
+            <Link
+                color="textPrimary"
+                href="/components/breadcrumbs/"
+                onClick={()=>{}}
+                aria-current="page"
+            >
+            tool--94e4d99f-67aa-4bcd-bbf3-bbbabtt213a
+            </Link>
+            <Link color="inherit" href="/getting-started/installation/" onClick={()=>{}}>
+                                        ID STIX object
+            </Link>
+        </Breadcrumbs>
+    </AppBar>);
+}
+
+CreateBreadcrumbsObjects.propTypes = {
+
+};
+
 function GetListObjectRefs(props){
     let { listObjectRef } = props;
 
     return (<React.Fragment>
-        <Grid container direction="row">
+        <Grid container direction="row" className="mt-4">
             <Grid item md={12}><span className="text-muted">Идентификаторы объектов связанных с Докладом</span></Grid>
         </Grid>
 
-        <Grid container direction="row">
-            <Grid item md={12}>
-                <List component="nav" dense >
-                    {listObjectRef.map((item, key) => {
-                        let itemText = <i>{item}</i>;
-                        let type = item.split("--");
-                        let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+        <Grid container direction="row" className="pb-2">
+            <Grid item md={12} className="text-right">
+                {listObjectRef.map((item, key) => {
+                    let type = item.split("--");
+                    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
                     
-                        if(typeof objectElem !== "undefined"){
-                            itemText = objectElem.description;
-                        }
+                    if(typeof objectElem === "undefined" ){
+                        return "";
+                    }
 
-                        return (<ListItem button key={`key_list_item_${key}`}>
-                            {(typeof objectElem === "undefined" ) ? 
-                                "" : 
-                                <ListItemAvatar>
-                                    <ListItemIcon>
-                                        <img src={`/images/stix_object/${objectElem.link}`} width="32" height="32" />
-                                    </ListItemIcon>
-                                </ListItemAvatar>}
-                            <ListItemText primary={itemText} />
-                        </ListItem>);
-                    })}
-                </List>
+                    return (<Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
+                        <IconButton onClick={()=>{}}>
+                            <img 
+                                key={`key_object_ref_type_${key}`} 
+                                src={`/images/stix_object/${objectElem.link}`} 
+                                width="35" 
+                                height="35" />
+                        </IconButton>
+                    </Tooltip>);
+                })}
             </Grid>
         </Grid>
     </React.Fragment>);
