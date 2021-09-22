@@ -16,6 +16,7 @@ module.exports = {
     entry: {
         vendors: [
             "utf8",
+            "uuid",
             "react",
             "reactDom",
             "lodash",
@@ -101,6 +102,7 @@ module.exports = {
         extensions: [".js", "jsx", ".css"],
         alias: {
             "utf8": "utf8/utf8.js",
+            "uuid": "uuid",
             "react": "react",
             "reactDom": "react-dom",
             "lodash": "lodash",

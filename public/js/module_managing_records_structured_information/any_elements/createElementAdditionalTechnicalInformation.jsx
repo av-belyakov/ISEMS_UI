@@ -109,7 +109,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                     <Grid item md={12} className="text-right pb-2">
                         <Link href="#" onClick={()=>{ 
                             showDialogElementAdditionalThechnicalInfo({ 
-                                type: "new",
+                                actionType: "new",
                                 modalType: "external_references", 
                                 objectId: objectId }); 
                         }} color="textPrimary">
@@ -142,7 +142,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                                 </IconButton>
                                 <IconButton aria-label="edit" onClick={()=>{ 
                                     showDialogElementAdditionalThechnicalInfo({ 
-                                        type: "edit",
+                                        actionType: "edit",
                                         modalType: "external_references", 
                                         objectId: objectId }); }}>
                                     <IconEdit style={{ color: blue[400] }} />
@@ -204,7 +204,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                     <Grid item md={12} className="text-right pb-2">
                         <Link href="#" onClick={()=>{ 
                             showDialogElementAdditionalThechnicalInfo({ 
-                                type: "new",
+                                actionType: "new",
                                 modalType: "granular_markings", 
                                 objectId: objectId }); 
                         }} color="inherit">
@@ -237,7 +237,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                                 </IconButton>
                                 <IconButton aria-label="edit" onClick={()=>{ 
                                     showDialogElementAdditionalThechnicalInfo({ 
-                                        type: "edit",
+                                        actionType: "edit",
                                         modalType: "granular_markings", 
                                         objectId: objectId }); }}>
                                     <IconEdit style={{ color: blue[400] }} />
@@ -293,7 +293,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                 <Grid item md={12} className="text-right pb-2">
                     <Link href="#" onClick={()=>{ 
                         showDialogElementAdditionalThechnicalInfo({ 
-                            type: "new",
+                            actionType: "new",
                             modalType: "extensions", 
                             objectId: objectId }); 
                     }} color="inherit">

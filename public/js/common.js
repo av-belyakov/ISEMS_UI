@@ -28,6 +28,7 @@ require("select2");
 require("react-circle");
 
 require("utf8");
+require("uuid");
 require("quoted-printable");
 
 //require('moment-with-locales');

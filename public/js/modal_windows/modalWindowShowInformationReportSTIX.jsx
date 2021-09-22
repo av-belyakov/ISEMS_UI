@@ -19,6 +19,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import { teal, purple, grey } from "@material-ui/core/colors";
+import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
@@ -66,6 +67,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         console.log(`|||||||||| this.props.showReportId: ${this.props.showReportId} ||||||||||`);
 
         this.state = {
+            uuidValue: "",
             listObjectInfo: {},
             availableForGroups: [],
             listGroupAccessToReport: [],
@@ -246,9 +248,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         console.log(obj);
 
         this.setState({
+            uuidValue: uuidv4(),
             showDialogElementAdditionalThechnicalInfo: true,
             objectDialogElementAdditionalThechnicalInfo: { 
-                type: obj.type,
+                actionType: obj.actionType,
                 modalType: obj.modalType, 
                 objectId: obj.objectId,
             },
@@ -582,7 +585,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             <DialogElementAdditionalThechnicalInfo 
                 show={this.state.showDialogElementAdditionalThechnicalInfo}
                 onHide={this.closeDialogElementAdditionalThechnicalInfo.bind(this)}
-                objInfo={this.state.objectDialogElementAdditionalThechnicalInfo} />
+                objInfo={this.state.objectDialogElementAdditionalThechnicalInfo}
+                uuidValue={this.state.uuidValue} />
 
         </React.Fragment>);
     }
