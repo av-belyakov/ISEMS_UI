@@ -242,15 +242,15 @@ class CreateMainFields extends React.Component {
             <React.Fragment>
                 <Row>
                     <Col sm="3" className="text-center">
-                        <Badge variant="dark">ip адрес</Badge>
+                        <Badge bg="info">ip адрес</Badge>
                     </Col>
                     <Col sm="1" className="text-danger text-center">&laquo;ИЛИ&raquo;</Col>
                     <Col sm="3" className="text-center">
-                        <Badge variant="dark">сеть</Badge>
+                        <Badge bg="info">сеть</Badge>
                     </Col>
                     <Col sm="1" className="text-danger text-center">&laquo;И&raquo;</Col>
                     <Col sm="4" className="text-center">
-                        <Badge  variant="dark">сетевой порт</Badge>
+                        <Badge  bg="info">сетевой порт</Badge>
                     </Col>
                 </Row>
                 <Row>
@@ -315,10 +315,12 @@ class CreateMainFields extends React.Component {
                 </Row>
                 <Row className="mt-3">
                     <Col className="text-center" sm="4">
-                        <Form inline>
-                            <Form.Check onClick={this.checkRadioInput} custom type="radio" disabled={disabled} id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
-                            <Form.Check onClick={this.checkRadioInput} custom type="radio" disabled={disabled} id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
-                            <Form.Check onClick={this.checkRadioInput} custom type="radio" disabled={disabled} id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
+                        <Form>
+                            <Row>
+                                <Form.Check onClick={this.checkRadioInput} type="radio" disabled={disabled} id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
+                                <Form.Check onClick={this.checkRadioInput} type="radio" disabled={disabled} id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
+                                <Form.Check onClick={this.checkRadioInput} type="radio" disabled={disabled} id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
+                            </Row>
                         </Form>
                     </Col>
                     <Col sm="8">
@@ -332,11 +334,8 @@ class CreateMainFields extends React.Component {
                                 isValid={this.state.inputFieldIsValid}
                                 isInvalid={this.state.inputFieldIsInvalid} 
                                 placeholder="введите ip адрес, подсеть или сетевой порт" />
-                            <InputGroup.Append>
-                                <Button onClick={this.addPortNetworkIP} variant="outline-secondary">
-                                    добавить
-                                </Button>
-                            </InputGroup.Append>
+
+                            <Button size="sm" onClick={this.addPortNetworkIP} variant="outline-secondary">добавить</Button>
                         </InputGroup>
                     </Col>
                 </Row>

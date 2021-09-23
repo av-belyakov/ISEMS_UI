@@ -27,7 +27,7 @@ import { MainTextField } from "../module_managing_records_structured_information
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
 import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
-import DialogElementAdditionalThechnicalInfo from "../modal_windows/modalWindowDialogElementAdditionalThechnicalInfo.jsx";
+import DialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 import CreateElementAdditionalTechnicalInformation from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformation.jsx";
 
 const useStyles = makeStyles((theme) => ({
@@ -582,7 +582,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 </Container>
             </Dialog>
 
-            <DialogElementAdditionalThechnicalInfo 
+            <DialogElementAdditionalThechnicalInformation 
                 show={this.state.showDialogElementAdditionalThechnicalInfo}
                 onHide={this.closeDialogElementAdditionalThechnicalInfo.bind(this)}
                 objInfo={this.state.objectDialogElementAdditionalThechnicalInfo}

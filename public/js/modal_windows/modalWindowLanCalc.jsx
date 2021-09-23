@@ -116,17 +116,17 @@ export default class ModalWindowLanCalc extends React.Component {
             <Row>
                 <Col md={12}>
                     <Row>
-                        <Col md={2} className="text-right"><Badge variant="primary">ipaddress</Badge></Col>
+                        <Col md={2} className="text-right"><Badge  bg="info">ipaddress</Badge></Col>
                         <Col md={2} className="text-left"><small>{this.state.ipaddr}</small></Col>
                         <Col md={8} className="text-left"><small>{this.state.ipaddressConvertObject.addressInteger}</small></Col>
                     </Row>
                     <Row>
-                        <Col md={2} className="text-right"><Badge variant="dark">network</Badge></Col>
+                        <Col md={2} className="text-right"><Badge  bg="info">network</Badge></Col>
                         <Col md={2} className="text-left"><small>{this.state.ipaddressConvertObject.netaddressDotQuad}</small></Col>
                         <Col md={8} className="text-left"><small>{this.state.ipaddressConvertObject.netaddressInteger}</small></Col>
                     </Row>
                     <Row>
-                        <Col md={2} className="text-right"><Badge variant="dark">broadcast</Badge></Col>
+                        <Col md={2} className="text-right"><Badge  bg="info">broadcast</Badge></Col>
                         <Col md={2} className="text-left"><small>{this.state.ipaddressConvertObject.netbcastDotQuad}</small></Col>
                         <Col md={8} className="text-left"><small>{this.state.ipaddressConvertObject.netbcastInteger}</small></Col>
                     </Row>

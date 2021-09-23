@@ -107,7 +107,7 @@ export default class CreateBodyDynamics extends React.Component {
                         <Col md={3} className="text-muted text-right">
                             <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.filtration[pf].sourceID}</strong></i></small></Col></Row>
                             <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.filtration[pf].name}</strong></i></small></Col></Row>
-                            <Row className="mb-n2"><Col><small>действие: </small><Badge variant="dark">фильтрация файлов</Badge></Col></Row>
+                            <Row className="mb-n2"><Col><small>действие: </small><Badge bg="secondary">фильтрация файлов</Badge></Col></Row>
                         </Col>
                         <Col md={9}>
                             <Card 
@@ -130,7 +130,7 @@ export default class CreateBodyDynamics extends React.Component {
                     <Col md={3} className="text-muted text-right">
                         <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.filtration[pf].sourceID}</strong></i></small></Col></Row>
                         <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.filtration[pf].name}</strong></i></small></Col></Row>
-                        <Row className="mb-n2"><Col><small>действие: </small><Badge variant="dark">фильтрация файлов</Badge></Col></Row>
+                        <Row className="mb-n2"><Col><small>действие: </small><Badge bg="secondary">фильтрация файлов</Badge></Col></Row>
                     </Col>
                     <Col md={9}>
                         <Card 
@@ -183,7 +183,7 @@ export default class CreateBodyDynamics extends React.Component {
                         <Col md={3} className="text-muted text-right">
                             <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.download[pf].sourceID}</strong></i></small></Col></Row>
                             <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.download[pf].name}</strong></i></small></Col></Row>
-                            <Row className="mb-n2"><Col><small>действие: </small><Badge variant="info">загрузка файлов</Badge></Col></Row>
+                            <Row className="mb-n2"><Col><small>действие: </small><Badge bg="info">загрузка файлов</Badge></Col></Row>
                         </Col>
                         <Col md={9}>
                             <Card 
@@ -208,7 +208,7 @@ export default class CreateBodyDynamics extends React.Component {
                     <Col md={3} className="text-muted text-right">
                         <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.download[pf].sourceID}</strong></i></small></Col></Row>
                         <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.download[pf].name}</strong></i></small></Col></Row>
-                        <Row className="mb-n2"><Col><small>действие: </small><Badge variant="info">загрузка файлов</Badge></Col></Row>
+                        <Row className="mb-n2"><Col><small>действие: </small><Badge bg="info">загрузка файлов</Badge></Col></Row>
                     </Col>
                     <Col md={9}>
                         <Card 

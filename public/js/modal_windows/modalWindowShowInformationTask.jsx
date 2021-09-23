@@ -304,15 +304,15 @@ export default class ModalWindowShowInformationTask extends React.Component {
             <React.Fragment>
                 <Row>
                     <Col sm="3" className="text-center">
-                        <Badge variant="dark">ip адрес</Badge>
+                        <Badge  bg="info">ip адрес</Badge>
                     </Col>
                     <Col sm="2" className="text-danger text-center">&laquo;<small>ИЛИ</small>&raquo;</Col>
                     <Col sm="3" className="text-center">
-                        <Badge variant="dark">сеть</Badge>
+                        <Badge  bg="info">сеть</Badge>
                     </Col>
                     <Col sm="1" className="text-danger text-center">&laquo;<small>И</small>&raquo;</Col>
                     <Col sm="3" className="text-center">
-                        <Badge variant="dark">сетевой порт</Badge>
+                        <Badge  bg="info">сетевой порт</Badge>
                     </Col>
                 </Row>
                 <Row>
