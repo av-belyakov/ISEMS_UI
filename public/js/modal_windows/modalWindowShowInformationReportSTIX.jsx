@@ -64,7 +64,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     constructor(props){
         super(props);
 
-        console.log(`|||||||||| this.props.showReportId: ${this.props.showReportId} ||||||||||`);
+        //        console.log(`|||||||||| this.props.showReportId: ${this.props.showReportId} ||||||||||`);
 
         this.state = {
             uuidValue: "",
@@ -76,10 +76,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             objectDialogElementAdditionalThechnicalInfo: {},
         };
 
-        console.log(this.props.listTypesComputerThreat);
-        console.log(this.props.listTypesDecisionsMadeComputerThreat);
-        console.log("class 'ModalWindowShowInformationReportSTIX', userPermissions");
-        console.log(this.props.userPermissions);
+        //        console.log(this.props.listTypesComputerThreat);
+        //        console.log(this.props.listTypesDecisionsMadeComputerThreat);
+        //        console.log("class 'ModalWindowShowInformationReportSTIX', userPermissions");
+        //        console.log(this.props.userPermissions);
 
         this.handleSave = this.handleSave.bind(this);
         this.modalClose = this.modalClose.bind(this);

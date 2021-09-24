@@ -67,12 +67,6 @@ export default class CreateMainTableForReport extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
-
-            if(data.section === "send search request, table page report" || data.section === "send search request, count found elem, table page report"){
-                console.log("func 'createMainTableForReport' isems-mrsi response ui");
-                console.log(data);    
-            }
-
             if(data.section === "send search request, count found elem, table page report"){
                 if(!data.information.is_successful){
                     return;
@@ -141,14 +135,14 @@ export default class CreateMainTableForReport extends React.Component {
 
     handlerOnPageChange(numCurrentPagePagination){
         if(numCurrentPagePagination > this.state.numCurrentPagePagination){
-            console.log("___func 'handlerOnPageChange', --->>>");
+            //console.log("___func 'handlerOnPageChange', --->>>");
 
             if(((30 * numCurrentPagePagination) < this.state.countSearchReports) && (this.state.listReports.length < this.state.countSearchReports)){
                 this.props.handlerRequestNextPageOfTable(numCurrentPagePagination+1);
             }
-        } else {
-            console.log("func 'handlerOnPageChange', <<<");
-        }
+        }// else {
+        //    console.log("func 'handlerOnPageChange', <<<");
+        //}
 
         this.setState({ numCurrentPagePagination: numCurrentPagePagination });
     }

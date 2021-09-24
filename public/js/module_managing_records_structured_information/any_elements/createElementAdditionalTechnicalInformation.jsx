@@ -20,7 +20,7 @@ import IconEdit from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import TokenInput from "react-customize-token-input";
-import { indigo, lightGreen, blue, grey, green, lime, red } from "@material-ui/core/colors";
+import { blue, grey, green, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({

@@ -1,7 +1,6 @@
 "use strict";
 
-import React, { useState } from "react";
-import { Col, Row } from "react-bootstrap";
+import React, { useState, useCallback } from "react";
 import { 
     Button,
     Dialog,
@@ -15,20 +14,34 @@ import {
     TextField,
     FormControl,
     InputLabel,
-    Typography
+    IconButton,
+    Typography,
+    
 } from "@material-ui/core";
+import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
+import { red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
     formControlTypeHashRE: {
-        //        margin: theme.spacing(1),
         minWidth: 120,
     },
 //    selectEmpty: {
 //        marginTop: theme.spacing(2),
 //    },
 }));
+
+const listHashType = [ 
+    { type: "MD5", description: "MD5" },
+    { type: "SHA-1", description: "SHA-1" },
+    { type: "SHA256", description: "SHA-2 (256)" },
+    { type: "SHA384", description: "SHA-2 (384)" },
+    { type: "SHA512", description: "SHA-2 (512)" },
+    { type: "SHA-3", description: "SHA-3" },
+    { type: "RIPEMD", description: "RIPEMD" },
+    { type: "Base64", description: "Base64" },
+];
 
 export default function DialogElementAdditionalThechnicalInformation(props){
     let { show, onHide, objInfo, uuidValue } = props;
@@ -145,6 +158,30 @@ function CreateNewExternalReferences(props){
         handlerSourceName,
         handlerDescription,
         handlerURL } = props;
+    let [ selectItemHash, setSelectItemHash ] = useState(""),
+        [ inputHash, setInputHash ] = useState(""),
+        [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true),
+        [ listHashes, setListHashes ] = useState([]);
+    const handlerAddNewHash = () => {
+            setListHashes(listHashes.concat([{ type: selectItemHash, description: inputHash }]));
+
+            console.log(listHashes);
+        },
+        handlerDelItemHash = (num) => {
+            console.log("func 'handlerDelItemHash'");
+            console.log(num);
+
+            /**
+             * 
+             * СДЕЛАТЬ удаление, чего то не работает!
+             * 
+             */
+
+            listHashes = listHashes.splice(num, 1);
+            setListHashes(listHashes);
+        };
+
+    console.log(`listHashes isArray = '${Array.isArray(listHashes)}'`);
 
     return (<React.Fragment>
         <Grid container direction="row">
@@ -185,37 +222,65 @@ function CreateNewExternalReferences(props){
                 />
             </Grid>
         </Grid>
-        <Grid container direction="row">
+        <Grid container direction="row" key="key_input_hash_field">
             <Grid item md={2}>
                 <FormControl className={classes.formControlTypeHashRE}>
                     <InputLabel id="label-hash-type-change">тип хеша</InputLabel>
                     <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={""}
+                        labelId="chose-hash-select-label"
+                        id="chose-hash-select-label"
+                        value={selectItemHash}
                         fullWidth={true}
-                        onChange={()=>{}}
-                    >
-                        <MenuItem value="MD5">MD5</MenuItem>
-                        <MenuItem value="SHA-1">SHA-1</MenuItem>
-                        <MenuItem value="SHA256">SHA-2 (256)</MenuItem>
-                        <MenuItem value="SHA384">SHA-2 (384)</MenuItem>
-                        <MenuItem value="SHA512">SHA-2 (256)</MenuItem>
-                        <MenuItem value="SHA-3">SHA-3</MenuItem>
-                        <MenuItem value="RIPEMD">RIPEMD</MenuItem>
-                        <MenuItem value="Base64">Base64</MenuItem>
+                        onChange={(elem) => {
+                            let vt = elem.target.value;
+                            setSelectItemHash(vt);
+                            
+                            if((vt.length > 0) && (inputHash.length > 0)){
+                                setButtonAddHashIsDisabled(false);
+                            } else {
+                                setButtonAddHashIsDisabled(true);
+                            }
+                        }}>
+                        {listHashType.map((elem, num)=>{
+                            return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
+                        })}
                     </Select>
                 </FormControl>
             </Grid>
-            <Grid item md={10}>
+            <Grid item md={8}>
                 <TextField
                     id="external-references-hash"
                     label="хеш-сумма"
-                    fullWidth={true}
-                    onChange={()=>{}}
+                    fullWidth
+                    value={inputHash}
+                    onChange={(elem) => {
+                        let vt = elem.target.value;
+                        setInputHash(vt);
+                        
+                        if((selectItemHash.length > 0) && (vt.length > 0)){
+                            setButtonAddHashIsDisabled(false);
+                        } else {
+                            setButtonAddHashIsDisabled(true);
+                        }
+                    }}
                 />
             </Grid>
+            <Grid item md={2} className="text-right pt-2">
+                <Button onClick={handlerAddNewHash} disabled={buttonAddHashIsDisabled}>добавить хеш</Button>
+            </Grid>
         </Grid>
+        {(listHashes.length === 0) 
+            ? "" 
+            : <Grid container direction="row"><ol>
+                {listHashes.map((elem, numHash) => {
+                    return (<li key={`key_item_hash_${numHash}`}>
+                        {`${elem.type}: ${elem.description}`}
+                        <IconButton aria-label="delete-hash" onClick={() => handlerDelItemHash.call(null, numHash)}>
+                            <IconDeleteOutline style={{ color: red[400] }} />
+                        </IconButton>
+                    </li>);
+                })}
+            </ol></Grid> }
     </React.Fragment>);
 }
 

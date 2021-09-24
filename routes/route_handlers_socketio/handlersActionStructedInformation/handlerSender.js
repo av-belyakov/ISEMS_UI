@@ -90,8 +90,8 @@ module.exports.sendSearchRequestPageReport = function(socketIo, data){
                     try {
                         let dataReq = localHelpersFunc.getRequestPattern(data);
 
-                        debug("------- sendSearchRequestPageReport -----");
-                        debug(dataReq);
+                        //debug("------- sendSearchRequestPageReport -----");
+                        //debug(dataReq);
 
                         if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
                             return reject(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
@@ -217,8 +217,8 @@ module.exports.sendSearchRequestCountFoundElemPageReport = function(socketIo, da
                         let dataReq = localHelpersFunc.getRequestPattern(data);
                         dataReq.paginate_parameters = { max_part_size: 0, current_part_number: 0 };
     
-                        debug("------- sendSearchRequestCountFoundElemPageReport -----");
-                        debug(dataReq);
+                        //debug("------- sendSearchRequestCountFoundElemPageReport -----");
+                        //debug(dataReq);
 
                         if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
                             return reject(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
