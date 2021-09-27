@@ -44,13 +44,14 @@ const listHashType = [
 ];
 
 export default function DialogElementAdditionalThechnicalInformation(props){
-    let { show, onHide, objInfo, uuidValue } = props;
+    let { show, onHide, objInfo, uuidValue, handlerExternalReferencesButtonSave } = props;
     const listTitle = {
         "external_references": "Управление внешними ссылками",
         "granular_markings": "Управление \"гранулярными метками\"",
         "extensions": "Управление дополнительной информацией",
     };
-    let [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
+    let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
+        [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
         [ valueER, setValueER ] = useState({
             source_name: "",
             description: "",
@@ -63,8 +64,10 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         valueERTmp.source_name = obj.target.value;
         if(obj.target.value.length > 0){
             setValuesIsInvalideSourceNameER(false);
+            setButtonSaveIsDisabled(false);
         } else {
             setValuesIsInvalideSourceNameER(true);
+            setButtonSaveIsDisabled(true);
         }
         
         setValueER(valueERTmp);
@@ -84,10 +87,17 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         setValueER(valueERTmp);
     };
 
+    const handlerHashesExternalReferences = (hashes) => {
+        let valueERTmp = _.cloneDeep(valueER);
+        valueERTmp.hashes = hashes;
+        
+        setValueER(valueERTmp);
+    };
+
     const switchTypeElement = ()=>{
 
-        console.log("func 'switchTypeElement', START...");
-        console.log(`actionType:${objInfo.actionType}, modalType: ${objInfo.modalType}`);
+        //        console.log("func 'switchTypeElement', START...");
+        //        console.log(`actionType:${objInfo.actionType}, modalType: ${objInfo.modalType}`);
 
         if(objInfo.actionType === "new"){
             switch(objInfo.modalType){
@@ -98,6 +108,7 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                     handlerSourceName={handlerSourceNameExternalReferences}
                     handlerDescription={handlerDescriptionExternalReferences}
                     handlerURL={handlerURLExternalReferences}
+                    handlerHashList={handlerHashesExternalReferences}
                 />;
 
             case "granular_markings":
@@ -139,7 +150,12 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         <DialogContent>{switchTypeElement()}</DialogContent>
         <DialogActions>
             <Button onClick={onHide} color="primary">закрыть</Button>
-            <Button onClick={() => { console.log("handler button Subscribe"); }} color="primary">сохранить</Button>
+            <Button 
+                disabled={buttonSaveIsDisabled}
+                onClick={() => { handlerExternalReferencesButtonSave(valueER); }} 
+                color="primary">
+                сохранить
+            </Button>
         </DialogActions>
     </Dialog>);
 }
@@ -149,6 +165,7 @@ DialogElementAdditionalThechnicalInformation.propTypes = {
     onHide: PropTypes.func.isRequired,
     objInfo: PropTypes.object.isRequired,
     uuidValue: PropTypes.string.isRequired,
+    handlerExternalReferencesButtonSave: PropTypes.func.isRequired,
 };
 
 function CreateNewExternalReferences(props){
@@ -157,31 +174,29 @@ function CreateNewExternalReferences(props){
         sourceNameIsInvalid, 
         handlerSourceName,
         handlerDescription,
-        handlerURL } = props;
+        handlerURL,
+        handlerHashList } = props;
     let [ selectItemHash, setSelectItemHash ] = useState(""),
         [ inputHash, setInputHash ] = useState(""),
         [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true),
         [ listHashes, setListHashes ] = useState([]);
     const handlerAddNewHash = () => {
-            setListHashes(listHashes.concat([{ type: selectItemHash, description: inputHash }]));
 
-            console.log(listHashes);
+            console.log("func 'handlerAddNewHash'");
+
+            setListHashes(listHashes.concat([{ type: selectItemHash, description: inputHash }]));
+            handlerHashList(listHashes);
+            setInputHash("");
+            setSelectItemHash("");
         },
         handlerDelItemHash = (num) => {
-            console.log("func 'handlerDelItemHash'");
-            console.log(num);
+            let tmp = listHashes.slice();
+            tmp.splice(num, 1);
+            listHashes = tmp;
 
-            /**
-             * 
-             * СДЕЛАТЬ удаление, чего то не работает!
-             * 
-             */
-
-            listHashes = listHashes.splice(num, 1);
             setListHashes(listHashes);
+            handlerHashList(listHashes);
         };
-
-    console.log(`listHashes isArray = '${Array.isArray(listHashes)}'`);
 
     return (<React.Fragment>
         <Grid container direction="row">
@@ -287,6 +302,7 @@ function CreateNewExternalReferences(props){
 CreateNewExternalReferences.propTypes = {
     externalId: PropTypes.string.isRequired,
     handlerURL: PropTypes.func.isRequired,
+    handlerHashList: PropTypes.func.isRequired,
     handlerSourceName: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired,
     sourceNameIsInvalid: PropTypes.bool.isRequired,

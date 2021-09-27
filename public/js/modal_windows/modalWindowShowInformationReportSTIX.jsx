@@ -92,6 +92,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handlerDeleteChipFromListGroupAccessToReport = this.handlerDeleteChipFromListGroupAccessToReport.bind(this);
         this.handlerChosenComputerThreatType = this.handlerChosenComputerThreatType.bind(this);
         this.handlerChosenDecisionsMadeComputerThreat = this.handlerChosenDecisionsMadeComputerThreat.bind(this);
+        this.handlerExternalReferencesButtonSave = this.handlerExternalReferencesButtonSave.bind(this);
 
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
@@ -322,6 +323,13 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     handlerDeleteElementAdditionalTechnicalInformation(obj){
 
         console.log("func 'handlerDeleteElementAdditionalTechnicalInformation', START...");
+        console.log(obj);
+
+    }
+
+    handlerExternalReferencesButtonSave(obj){
+
+        console.log("func 'handlerExternalReferencesButtonSave', START...");
         console.log(obj);
 
     }
@@ -586,7 +594,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 show={this.state.showDialogElementAdditionalThechnicalInfo}
                 onHide={this.closeDialogElementAdditionalThechnicalInfo.bind(this)}
                 objInfo={this.state.objectDialogElementAdditionalThechnicalInfo}
-                uuidValue={this.state.uuidValue} />
+                uuidValue={this.state.uuidValue}
+                handlerExternalReferencesButtonSave={this.handlerExternalReferencesButtonSave} />
 
         </React.Fragment>);
     }
