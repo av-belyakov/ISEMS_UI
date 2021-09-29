@@ -705,11 +705,6 @@ class CreatePageOrganizationAndSources extends React.Component {
                             listFieldActivity={this.props.listFieldActivity}
                             listShortEntity={this.state.listShortEntity} />
                     </Tab>
-                    { /* <Tab eventKey="editElement" title="редактирование сущностей"> 
-                        <CreateBody  
-                            listShortEntity={this.state.listShortEntity}
-                        socketIo={this.props.socketIo}  /> 
-                        </Tab> */ }
                 </Tabs>
                 <ModalWindowSourceInfo 
                     show={this.state.modalWindowSourceInfo}

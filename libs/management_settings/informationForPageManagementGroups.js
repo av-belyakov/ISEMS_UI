@@ -43,8 +43,16 @@ module.exports = function(cb) {
             });
         });
     }).then((objGroup) => {
+
+        console.log("func 'informationForPageManagementGroups'");
+        console.log(objGroup);
+
         cb(null, objGroup);
     }).catch((err) => {
+
+        console.log("func 'informationForPageManagementGroups'");
+        console.log(err);
+
         cb(err);
     });
 };

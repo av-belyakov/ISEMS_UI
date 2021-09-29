@@ -147,46 +147,49 @@ class CreateBodySource extends React.Component {
         super(props);
     }
 
+
     render(){
         return (
             <Form validated={false}>
-                <InputGroup className="mb-3">
-                    <InputGroup.Prepend>
-                        <InputGroup.Text>Источник</InputGroup.Text>
-                    </InputGroup.Prepend>
-                    <FormControl 
-                        id="source_id" 
-                        onChange={this.props.handlerInput.bind(this, "source")}
-                        isValid={this.props.storageInput.sourceID.isValid}
-                        isInvalid={this.props.storageInput.sourceID.isInvalid}
-                        placeholder="цифровой идентификатор" />
-                    <FormControl 
-                        id="source_short_name" 
-                        onChange={this.props.handlerInput.bind(this, "source")}
-                        isValid={this.props.storageInput.shortName.isValid}
-                        isInvalid={this.props.storageInput.shortName.isInvalid}
-                        placeholder="краткое название (анг. алфавит)" />               
-                </InputGroup>
-                <InputGroup className="mb-3">
-                    <InputGroup.Prepend>
-                        <InputGroup.Text>Сетевые настройки</InputGroup.Text>
-                    </InputGroup.Prepend>
-                    <FormControl 
-                        id="source_ip" 
-                        onChange={this.props.handlerInput.bind(this, "source")}
-                        isValid={this.props.storageInput.ipAddress.isValid}
-                        isInvalid={this.props.storageInput.ipAddress.isInvalid}
-                        placeholder="ip адрес" />
-                    <FormControl 
-                        id="source_port" 
-                        onChange={this.props.handlerInput.bind(this, "source")}
-                        isValid={this.props.storageInput.port.isValid}
-                        isInvalid={this.props.storageInput.port.isInvalid}
-                        placeholder="сетевой порт" />
-                </InputGroup>
-                <Form.Row>
+                <Row className="mt-2">
                     <Form.Group as={Col}>
-                        <Form.Label>Архитектура</Form.Label>
+                        <FormControl 
+                            id="source_id" 
+                            onChange={this.props.handlerInput.bind(this, "source")}
+                            isValid={this.props.storageInput.sourceID.isValid}
+                            isInvalid={this.props.storageInput.sourceID.isInvalid}
+                            placeholder="цифровой идентификатор источника" />
+                    </Form.Group>
+                    <Form.Group as={Col}>
+                        <FormControl 
+                            id="source_short_name" 
+                            onChange={this.props.handlerInput.bind(this, "source")}
+                            isValid={this.props.storageInput.shortName.isValid}
+                            isInvalid={this.props.storageInput.shortName.isInvalid}
+                            placeholder="краткое название источника (анг. алфавит)" />              
+                    </Form.Group>
+                </Row>
+                <Row className="mt-2">
+                    <Col md={8}>
+                        <FormControl 
+                            id="source_ip" 
+                            onChange={this.props.handlerInput.bind(this, "source")}
+                            isValid={this.props.storageInput.ipAddress.isValid}
+                            isInvalid={this.props.storageInput.ipAddress.isInvalid}
+                            placeholder="ip адрес" />
+                    </Col>
+                    <Col md={4}>
+                        <FormControl 
+                            id="source_port" 
+                            onChange={this.props.handlerInput.bind(this, "source")}
+                            isValid={this.props.storageInput.port.isValid}
+                            isInvalid={this.props.storageInput.port.isInvalid}
+                            placeholder="сетевой порт" />
+                    </Col>
+                </Row>
+                <Row className="mt-2">
+                    <Col md={6}>
+                        <Form.Label>архитектура</Form.Label>
                         <Form.Control 
                             onChange={this.props.handlerInput.bind(this, "source")}
                             isValid={this.props.storageInput.architecture.isValid}
@@ -198,9 +201,9 @@ class CreateBodySource extends React.Component {
                             <option value="client">клиент</option>
                             <option value="server">сервер</option>
                         </Form.Control>
-                    </Form.Group>
-                    <Form.Group as={Col}>
-                        <Form.Label>Параллельные задачи фильтрации</Form.Label>
+                    </Col>
+                    <Col md={6}>
+                        <Form.Label>параллельные задачи фильтрации</Form.Label>
                         <Form.Control 
                             onChange={this.props.handlerInput.bind(this, "source")}
                             isValid={this.props.storageInput.maxSimultaneousProc.isValid}
@@ -218,11 +221,11 @@ class CreateBodySource extends React.Component {
                                 return list;
                             })()}
                         </Form.Control>
-                    </Form.Group>
-                </Form.Row>
-                <Form.Row>
-                    <Form.Group as={Col} lg={3}>
-                        <Form.Label>Тип сетевого канала</Form.Label>
+                    </Col>
+                </Row>
+                <Row className="mt-2">
+                    <Col lg={3}>
+                        <Form.Label>тип сетевого канала</Form.Label>
                         <Form.Control 
                             onChange={this.props.handlerInput.bind(this, "source")}
                             isValid={this.props.storageInput.networkChannel.isValid}
@@ -236,13 +239,13 @@ class CreateBodySource extends React.Component {
                             <option value="vlan + pppoe">vlan + pppoe</option>
                             <option value="pppoe + vlan">pppoe + vlan</option>
                         </Form.Control>
-                    </Form.Group>
-                    <Form.Group as={Col} lg={9}>
-                        <Form.Label>Идентификационный токен</Form.Label>
+                    </Col>
+                    <Col lg={9}>
+                        <Form.Label>идентификационный токен</Form.Label>
                         <Form.Control id="source_token" type="text" readOnly defaultValue={this.props.storageInput.token.value} />
-                    </Form.Group>
-                </Form.Row>
-                <Row>
+                    </Col>
+                </Row>
+                <Row className="mt-2">
                     <Col lg={4}>
                         <Form.Check 
                             onChange={this.props.handlerInput.bind(this, "source")}
@@ -261,13 +264,11 @@ class CreateBodySource extends React.Component {
                                 isValid={this.props.storageInput.directoriesNetworkTraffic.isValid}
                                 isInvalid={this.props.storageInput.directoriesNetworkTraffic.isInvalid}
                                 placeholder="полный путь до директории с файлами" />
-                            <InputGroup.Append>
-                                <Button onClick={this.props.addNewFolder} variant="outline-secondary">применить</Button>
-                            </InputGroup.Append>
+                            <Button onClick={this.props.addNewFolder} variant="outline-secondary">применить</Button>
                         </InputGroup>
                     </Col>
                 </Row>
-                <Row>
+                <Row className="mt-2">
                     <Col lg={4}></Col>
                     <Col lg={8}>
                         <ListFolder 
@@ -275,16 +276,18 @@ class CreateBodySource extends React.Component {
                             directoriesNetworkTraffic={this.props.storageInput.directoriesNetworkTraffic.value} />
                     </Col>
                 </Row>
-                <Form.Group>
-                    <Form.Label>Примечание</Form.Label>
-                    <Form.Control 
-                        onChange={this.props.handlerInput.bind(this, "source")}
-                        isValid={this.props.storageInput.description.isValid}
-                        isInvalid={this.props.storageInput.description.isInvalid}
-                        id="source_description" 
-                        as="textarea" 
-                        rows="3" />
-                </Form.Group>
+                <Row className="mt-2">
+                    <Col md={12}>
+                        <Form.Label>Примечание</Form.Label>
+                        <Form.Control 
+                            onChange={this.props.handlerInput.bind(this, "source")}
+                            isValid={this.props.storageInput.description.isValid}
+                            isInvalid={this.props.storageInput.description.isInvalid}
+                            id="source_description" 
+                            as="textarea" 
+                            rows="3" />
+                    </Col>
+                </Row>
             </Form>
         );
     }
@@ -887,6 +890,7 @@ export default class ModalWindowAddEntity extends React.Component {
         return (
             <Modal
                 size="lg"
+                fullscreen
                 show={this.props.show} 
                 onHide={this.windowClose}
                 backdrop={"static"}

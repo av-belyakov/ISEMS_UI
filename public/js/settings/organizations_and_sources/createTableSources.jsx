@@ -23,8 +23,7 @@ export default class CreateTableSources extends React.Component {
     showIconChangeInfo(objInfo){
         if(this.props.userPermissions.management_sources.element_settings.edit.status){
             return (
-                <a 
-                    href="#" 
+                <a href="#" 
                     value="edit_source"
                     data-toggle="tooltip" 
                     data-placement="top" 
@@ -40,8 +39,7 @@ export default class CreateTableSources extends React.Component {
 
     showIconSourceReconnect(objInfo){
         return (
-            <a 
-                href="#" 
+            <a href="#" 
                 value="source_reconnect"
                 data-toggle="tooltip" 
                 data-placement="top" 
@@ -140,17 +138,16 @@ export default class CreateTableSources extends React.Component {
                     <td key={`td_${elem.sourceID}_${elem.sid}_rel_app`} className="text-center clicabe_cursor" onClick={this.showInfo.bind(this, {sid: elem.sid, sourceID: elem.sourceID})}>
                         {elem.releaseApp}
                     </td>
-                    <td key={`td_${elem.sourceID}_${elem.sid}_change_info`}>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_change_info`} className="pr-2">
                         {this.showIconChangeInfo({ sid: elem.sid, sourceID: elem.sourceID })}
                     </td>
-                    <td key={`td_${elem.sourceID}_${elem.sid}_recon_info`}>
+                    <td key={`td_${elem.sourceID}_${elem.sid}_recon_info`} className="pr-2">
                         {this.showIconSourceReconnect({ sid: elem.sid, sourceID: elem.sourceID })}
                     </td>
-                    <td key={`td_${elem.sourceID}_${elem.sid}_checkbox`} className="text-right">              
+                    <td key={`td_${elem.sourceID}_${elem.sid}_checkbox`} className="text-right pl-2 pr-2">              
                         <Form>
                             <Form.Check 
                                 className="mt-1"
-                                custom 
                                 onChange={this.props.changeCheckboxMarked.bind(this, elem.sourceID)}
                                 type="checkbox" 
                                 id={`checkbox-${elem.sourceID}`}

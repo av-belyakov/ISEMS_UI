@@ -194,7 +194,7 @@ export default class CreateBodyNewEntity extends React.Component {
         return (
             <Form.Group>
                 <Form.Label>Подразделение или филиал организации</Form.Label>
-                <Form.Control as="select" onChange={this.selectedDivision.bind(this)} id="select_list_division" custom>
+                <Form.Control as="select" onChange={this.selectedDivision.bind(this)} id="select_list_division">
                     <option value="all" key={"select_division_option_none"}>добавить подразделение</option>
                     {listOptions}
                 </Form.Control>
@@ -363,22 +363,22 @@ export default class CreateBodyNewEntity extends React.Component {
         let i = 0;
         let getTextBody = (listEmtity, textResult, parents) => {
             if((typeof listEmtity.id_organization !== "undefined") && (typeof listEmtity.id_division === "undefined")){
-                textResult.push(<div key={`org_l_${i}`}>Организация:&nbsp;<Badge variant="info">{listEmtity.name}</Badge></div>);
+                textResult.push(<div key={`org_l_${i}`}>Организация:&nbsp;<Badge bg="info">{listEmtity.name}</Badge></div>);
                 parents = "organization";
             }
 
             if(parents === "none") {
                 if((typeof listEmtity.id_division !== "undefined") && (typeof listEmtity.id_source === "undefined")){                
-                    textResult.push(<div key={`div_l_${i}`}>Подразделение или филиал:&nbsp;<Badge variant="info">{listEmtity.name}</Badge></div>);
+                    textResult.push(<div key={`div_l_${i}`}>Подразделение или филиал:&nbsp;<Badge bg="info">{listEmtity.name}</Badge></div>);
                 } 
     
                 if(typeof listEmtity.id_source !== "undefined"){
-                    textResult.push(<div key={`sour_l_${i}`}>Источник:&nbsp;<Badge variant="info">{listEmtity.source_id} - {listEmtity.short_name}</Badge></div>);
+                    textResult.push(<div key={`sour_l_${i}`}>Источник:&nbsp;<Badge bg="info">{listEmtity.source_id} - {listEmtity.short_name}</Badge></div>);
                 } 
             } else {
                 if((typeof listEmtity.id_division !== "undefined") && (typeof listEmtity.id_source === "undefined")){                
                     textResult.push(<div key={`div_l_${i}`}>
-                        &#8195;Подразделение или филиал:&nbsp;<Badge variant="dark">{listEmtity.name}</Badge>
+                        &#8195;Подразделение или филиал:&nbsp;<Badge bg="secondary">{listEmtity.name}</Badge>
                         &nbsp;<a onClick={this.delAddedElem.bind(this, listEmtity.id_division)} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
                     </div>);
                 } 
@@ -386,14 +386,14 @@ export default class CreateBodyNewEntity extends React.Component {
                 if(parents === "organization"){
                     if(typeof listEmtity.id_source !== "undefined"){
                         textResult.push(<div key={`sour_l_${i}`}>
-                            &#8195;&#8195;Источник:&nbsp;<Badge variant="dark">{listEmtity.source_id} - {listEmtity.short_name}</Badge>
+                            &#8195;&#8195;Источник:&nbsp;<Badge bg="secondary">{listEmtity.source_id} - {listEmtity.short_name}</Badge>
                             &nbsp;<a onClick={this.delAddedElem.bind(this, listEmtity.id_source)} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
                         </div>);
                     }
                 } else {
                     if(typeof listEmtity.id_source !== "undefined"){
                         textResult.push(<div key={`sour_l_${i}`}>
-                            &#8195;Источник:&nbsp;<Badge variant="dark">{listEmtity.source_id} - {listEmtity.short_name}</Badge>
+                            &#8195;Источник:&nbsp;<Badge bg="secondary">{listEmtity.source_id} - {listEmtity.short_name}</Badge>
                             &nbsp;<a onClick={this.delAddedElem.bind(this, listEmtity.id_source)} className="clickable_icon" href="#"><img src="./images/icons8-delete-16.png"></img></a>
                         </div>);
                     }
@@ -556,7 +556,7 @@ export default class CreateBodyNewEntity extends React.Component {
                         </Form>
                     </div>
                 </div>
-                <div className="row">
+                <div className="row mt-2">
                     <div className="col-md-12 text-right">
                         <Button size="sm" variant="outline-primary" onClick={this.handelrButtonAdd}>Новая сущность</Button>
                     </div>
@@ -567,7 +567,7 @@ export default class CreateBodyNewEntity extends React.Component {
                         {this.resultBody()}
                     </div>
                 </div>
-                <div className="row">
+                <div className="row mt-2">
                     <div className="col-md-12 text-right">
                         <ButtonSaveNewEntity 
                             handler={this.sendInfoNewEntity} 

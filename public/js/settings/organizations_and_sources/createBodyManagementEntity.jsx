@@ -42,46 +42,48 @@ class ShowEntityInformation extends React.Component {
                 if(a.source_id < b.source_id) return -1;
             });
 
-            return (
-                <Card border="dark" key={`key_division_${num}`}>
-                    <Accordion.Toggle className="p-2 alert-secondary text-dark" as={Card.Header} eventKey={num}>{item.divisionName}</Accordion.Toggle>
-                    <Accordion.Collapse eventKey={num++}>
-                        <Card.Body>
-                            <Row>
-                                <Col>
-                                    <Form.Control 
-                                        type="text" 
-                                        onChange={this.props.handlerInputChange} 
-                                        value={item.divisionName} 
-                                        isValid={item.divisionNameIsValid}
-                                        isInvalid={item.divisionNameIsInvalid}
-                                        id={`division_name:${item.id}`} />
-                                </Col>
-                                <Col>
-                                    <Form.Control 
-                                        as="textarea" 
-                                        onChange={this.props.handlerInputChange} 
-                                        value={item.physicalAddress} 
-                                        isValid={item.physicalAddressIsValid}
-                                        isInvalid={item.physicalAddressIsInvalid}
-                                        id={`physical_address:${item.id}`} />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}><Form.Control as="textarea" onChange={this.props.handlerInputChange} value={item.description} id={`description:${item.id}`}></Form.Control></Col>
-                                <Col md={2} className="text-left">источники:</Col>
-                                <Col md={4} className="text-left"><ul>{item.listSource.map((item) => <li key={`li_source_${item.source_id}_${item.short_name}`}>{`${item.source_id} ${item.short_name}`}</li>)}</ul></Col>
-                            </Row>
-                            <Row>
-                                <Col className="text-right">
-                                    <Button variant="outline-success" onClick={this.handlerSaveButton.bind(this, "division", item.id)} size="sm">сохранить</Button>&nbsp;
-                                    <Button variant="outline-danger" onClick={this.handlerDeleteButton.bind(this, "division", item.id)} size="sm">удалить</Button>
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                    </Accordion.Collapse>
-                </Card>
-            );
+            return (<Accordion>
+                <Accordion.Item>
+                    <Accordion.Header className="p-2 alert-secondary text-dark" as="h5" eventKey={num}>{item.divisionName}</Accordion.Header>
+                    <Accordion.Body>
+                        <Card border="dark" key={`key_division_${num}`}>
+                            <Card.Body>
+                                <Row>
+                                    <Col>
+                                        <Form.Control 
+                                            type="text" 
+                                            onChange={this.props.handlerInputChange} 
+                                            value={item.divisionName} 
+                                            isValid={item.divisionNameIsValid}
+                                            isInvalid={item.divisionNameIsInvalid}
+                                            id={`division_name:${item.id}`} />
+                                    </Col>
+                                    <Col>
+                                        <Form.Control 
+                                            as="textarea" 
+                                            onChange={this.props.handlerInputChange} 
+                                            value={item.physicalAddress} 
+                                            isValid={item.physicalAddressIsValid}
+                                            isInvalid={item.physicalAddressIsInvalid}
+                                            id={`physical_address:${item.id}`} />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md={6}><Form.Control as="textarea" onChange={this.props.handlerInputChange} value={item.description} id={`description:${item.id}`}></Form.Control></Col>
+                                    <Col md={2} className="text-left">источники:</Col>
+                                    <Col md={4} className="text-left"><ul>{item.listSource.map((item) => <li key={`li_source_${item.source_id}_${item.short_name}`}>{`${item.source_id} ${item.short_name}`}</li>)}</ul></Col>
+                                </Row>
+                                <Row>
+                                    <Col className="text-right">
+                                        <Button variant="outline-success" onClick={this.handlerSaveButton.bind(this, "division", item.id)} size="sm">сохранить</Button>&nbsp;
+                                        <Button variant="outline-danger" onClick={this.handlerDeleteButton.bind(this, "division", item.id)} size="sm">удалить</Button>
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </Card>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>);
         });
     }
 

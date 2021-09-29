@@ -100,7 +100,7 @@ function changeUserPassword(data, socketIo, callback) {
             });
         }).then(() => {
             return new Promise((resolve, reject) => {
-                require("../../libs/helpers/getSessionId")("socketIo", socketIo, (err, sessionId) => {
+                require("../../../libs/helpers/getSessionId")("socketIo", socketIo, (err, sessionId) => {
                     if (err) reject(err);
                     else resolve(sessionId);
                 });
