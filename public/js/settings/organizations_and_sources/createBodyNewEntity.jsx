@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Badge, Card, Col, Form, Row } from "react-bootstrap";
+import { Button, Badge, Card, Col, Container, Form, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import ModalWindowAddEntity from "../../modal_windows/modalWindowAddEntity.jsx";
@@ -427,19 +427,16 @@ export default class CreateBodyNewEntity extends React.Component {
                 delForID = item.id_source;
             }
 
-            return (
-                <React.Fragment key={`toast_id_${num++}`}>
-                    <Card>
-                        <blockquote className="text-left blockquote mb-0 card-body">
-                            {getTextBody(item, [], "none")}
-                            <footer>
-                                <br/><Button onClick={this.delAddedElem.bind(this, delForID)} size="sm" variant="outline-danger">удалить</Button>
-                            </footer>
-                        </blockquote>
-                    </Card>
-                    <br/>
-                </React.Fragment>
-            );
+            return (<React.Fragment key={`toast_id_${num++}`}>
+                <Card className="mt-2">
+                    <blockquote className="text-left blockquote mb-0 card-body">
+                        {getTextBody(item, [], "none")}
+                        <footer>
+                            <br/><Button onClick={this.delAddedElem.bind(this, delForID)} size="sm" variant="outline-danger">удалить</Button>
+                        </footer>
+                    </blockquote>
+                </Card>
+            </React.Fragment>);
         });
     }
 
@@ -541,50 +538,46 @@ export default class CreateBodyNewEntity extends React.Component {
     }
 
     render(){
-        return (
-            <React.Fragment>
-                <br/>
-                <div className="row">
-                    <div className="col-md-12 text-left">
+        return (<React.Fragment>
+            <Container>
+                <Row className="mt-2">
+                    <Col md={12} className="text-left">
                         <Form>
                             <Row>
-                                <Col>{this.createListElementOrganization()}</Col>
+                                <Col className="pt-2">{this.createListElementOrganization()}</Col>
                             </Row>  
                             <Row>
-                                <Col>{this.createListElementDivision()}</Col>
+                                <Col className="pt-2">{this.createListElementDivision()}</Col>
                             </Row>
                         </Form>
-                    </div>
-                </div>
-                <div className="row mt-2">
-                    <div className="col-md-12 text-right">
-                        <Button size="sm" variant="outline-primary" onClick={this.handelrButtonAdd}>Новая сущность</Button>
-                    </div>
-                </div>
-                <br/>
-                <div className="row">
-                    <div className="col-md-12">
-                        {this.resultBody()}
-                    </div>
-                </div>
-                <div className="row mt-2">
-                    <div className="col-md-12 text-right">
+                    </Col>
+                </Row>
+                <Row className="mt-2">
+                    <Col md={{ span: 2, offset: 10 }} className="text-center">
+                        <Button size="sm" variant="outline-primary" onClick={this.handelrButtonAdd}>новая сущность</Button>
+                    </Col>
+                </Row>
+                <Row className="mt-3">
+                    <Col md={12}>{this.resultBody()}</Col>
+                </Row>
+                <Row>
+                    <Col md={12} className="mt-2">
                         <ButtonSaveNewEntity 
                             handler={this.sendInfoNewEntity} 
                             showButton={this.state.addedNewEntity} />
-                    </div>
-                </div>
+                    </Col>
+                </Row>
+            </Container>
 
-                <ModalWindowAddEntity 
-                    show={this.state.showModalWindow}
-                    onHide={this.closeModalWindow}
-                    userPermissions={this.props.userPermissions}
-                    settings={this.modalWindowSettings}
-                    parentDivisionID={this.state.chosenDivisionID}
-                    parentOrganizationID={this.state.chosenOrganizationID}
-                    handlerAddButton={this.handlerAddEntity} />
-            </React.Fragment>
-        );
+            <ModalWindowAddEntity 
+                show={this.state.showModalWindow}
+                onHide={this.closeModalWindow}
+                userPermissions={this.props.userPermissions}
+                settings={this.modalWindowSettings}
+                parentDivisionID={this.state.chosenDivisionID}
+                parentOrganizationID={this.state.chosenOrganizationID}
+                handlerAddButton={this.handlerAddEntity} />
+        </React.Fragment>);
     }
 }
 

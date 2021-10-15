@@ -267,7 +267,7 @@ class ModalWindowAddEdit extends React.Component {
                         </Form.Group>
                     </Form>
                     <ModalAlertDangerMessage show={this.state.alertShow} onClose={this.alertClose} message={alertMessage}>
-                            Ошибка при сохранении!
+                        Ошибка при сохранении!
                     </ModalAlertDangerMessage>
                 </Modal.Body>
                 <Modal.Footer>

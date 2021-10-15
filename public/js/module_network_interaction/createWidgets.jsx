@@ -89,17 +89,19 @@ export default class CreatingWidgets extends React.Component {
 
     render(){
         return (
-            <div className="row d-flex justify-content-center">
+            <div className="row d-flex justify-content-center text-center">
                 <Card className="ml-3 clicabe_cursor" border="success" style={{ width: "10rem" }} onClick={this.props.handlerShowModalWindowInfoConnectStatusSources}>
                     <small>источников</small>
                     <span className="my-n2 text-success">{this.props.widgets.numConnect}</span>
                     <small className="text-muted">подключено</small>
                 </Card>
+                &nbsp;
                 <Card className="ml-3 clicabe_cursor" border="danger" style={{ width: "10rem" }} onClick={this.props.handlerShowModalWindowInfoConnectStatusSources}>
                     <small>источников</small>
                     <span className="my-n2 text-danger">{this.props.widgets.numDisconnect}</span>
                     <small className="text-muted">не доступно</small>
                 </Card>
+                &nbsp;
                 <Card 
                     onClick={this.handlerClickOnWidgetProcessingTask}
                     className="ml-3 clicabe_cursor" 
@@ -109,6 +111,7 @@ export default class CreatingWidgets extends React.Component {
                     <span className="my-n2">{this.state.filtration.size}</span>
                     <small className="text-muted">выполняется</small>
                 </Card>
+                &nbsp;
                 <Card 
                     onClick={this.handlerClickOnWidgetNotDownloadTask}
                     className="ml-3 clicabe_cursor" 
@@ -118,6 +121,7 @@ export default class CreatingWidgets extends React.Component {
                     <span className="my-n2 text-info">{this.state.download.size} / {this.props.widgets.numTasksNotDownloadFiles}</span>
                     <small className="text-muted"> выполняется / доступна</small>
                 </Card>
+                &nbsp;
                 <Card 
                     onClick={this.handlerClickOnWidgetUnresolvedTask}
                     className="ml-3 clicabe_cursor" 
@@ -127,6 +131,7 @@ export default class CreatingWidgets extends React.Component {
                     <span className="my-n2 text-info">{this.props.widgets.numUnresolvedTask}</span>
                     <small className="text-muted">не рассмотренны</small>
                 </Card>
+                &nbsp;
                 <Card 
                     onClick={this.handlerClickOnWidgetTelemetryDeviation}
                     className="ml-3 clicabe_cursor" 

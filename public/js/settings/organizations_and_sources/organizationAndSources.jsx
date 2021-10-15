@@ -664,74 +664,71 @@ class CreatePageOrganizationAndSources extends React.Component {
     render(){
         let { countConnect, countDisconnect } = this.getCountConnectAndDisconnect();
 
-        return (
-            <React.Fragment>
-                <Tabs defaultActiveKey="sources" id="uncontrolled-tab-example">
-                    <Tab eventKey="sources" title="источники">
-                        <br/>
-                        <Row className="mb-2">
-                            <Col md={3} className="text-left text-muted">
+        return (<React.Fragment>
+            <Tabs defaultActiveKey="sources" id="uncontrolled-tab-example">
+                <Tab eventKey="sources" title="источники">
+                    <Row className="mt-4 mb-2">
+                        <Col md={3} className="text-left text-muted">
                                 всего источников: <i>{this.state.tableSourceList.length}</i>
-                            </Col>
-                            <Col md={7} className="text-center text-muted">
+                        </Col>
+                        <Col md={7} className="text-center text-muted">
                                 подключено <span className="text-success"><i>{countConnect}</i></span> / недоступно <span className="text-danger"><i>{countDisconnect}</i></span>
-                            </Col>
-                            <Col md={2} className="text-right">
-                                <Button 
-                                    variant="outline-danger" 
-                                    onClick={this.showModalWindowSourceDel}
-                                    disabled={this.isDisabledDelete.call(this, "sourceDel")}
-                                    size="sm">удалить</Button>
-                            </Col>
-                        </Row>
-                        <CreateTableSources 
-                            userPermissions={this.props.userPermissions}
-                            tableSourceList={this.state.tableSourceList}
-                            changeCheckboxMarked={this.changeCheckboxMarkedSourceDel}
-                            handlerShowInfoWindow={this.showModalWindowSourceInfo}
-                            handlerShowChangeInfo={this.showModalWindowChangeSource} 
-                            handlerSourceReconnect={this.handlerSourceReconnect} />
-                    </Tab>
-                    <Tab eventKey="organization" title="организации / подразделения">
-                        <CreateBodyManagementEntity
-                            socketIo={this.props.socketIo}
-                            listShortEntity={this.state.listShortEntity}
-                            listFieldActivity={this.props.listFieldActivity} />
-                    </Tab>
-                    <Tab eventKey="addElement" title="новая сущность">
-                        <CreateBodyNewEntity
-                            socketIo={this.props.socketIo} 
-                            userPermissions={this.props.userPermissions}
-                            listFieldActivity={this.props.listFieldActivity}
-                            listShortEntity={this.state.listShortEntity} />
-                    </Tab>
-                </Tabs>
-                <ModalWindowSourceInfo 
-                    show={this.state.modalWindowSourceInfo}
-                    onHide={this.closeModalWindowSourceInfo}
-                    socketIo={this.props.socketIo}
-                    settings={this.modalWindowSourceInfoSettings} />
-                <ModalWindowChangeSource                     
-                    show={this.state.modalWindowChangeSource}
-                    onHide={this.closeModalWindowChangeSource}
-                    settings={this.modalWindowSourceInfoSettings}
-                    isShowInfo={this.state.changeSourceInfoOutput} 
-                    addNewFolder={this.handlerNewFolder}
-                    handlerInput={this.handlerInput} 
-                    storageInput={this.state.sourceSettings}
-                    generatingNewToken={this.generatingNewToken}
-                    handelerFolderDelete={this.handelerFolderDelete}
-                    handlerSaveInformation={this.handlerSaveInformation} />
-                <ModalWindowConfirmMessage 
-                    show={this.state.modalWindowSourceDel}
-                    onHide={this.closeModalWindowSourceDel}
-                    msgBody={`Вы действительно хотите удалить ${(this.listSourceDelete.length > 1) ? "источники с номерами": "источник с номером"} ${this.listSourceDelete}?`}
-                    msgTitle={"Удаление"}
-                    nameDel={this.listSourceDelete.join()}
-                    handlerConfirm={this.handlerSourceDelete} />
+                        </Col>
+                        <Col md={2} className="text-center">
+                            <Button 
+                                variant="outline-danger" 
+                                onClick={this.showModalWindowSourceDel}
+                                disabled={this.isDisabledDelete.call(this, "sourceDel")}
+                                size="sm">удалить</Button>
+                        </Col>
+                    </Row>
+                    <CreateTableSources 
+                        userPermissions={this.props.userPermissions}
+                        tableSourceList={this.state.tableSourceList}
+                        changeCheckboxMarked={this.changeCheckboxMarkedSourceDel}
+                        handlerShowInfoWindow={this.showModalWindowSourceInfo}
+                        handlerShowChangeInfo={this.showModalWindowChangeSource} 
+                        handlerSourceReconnect={this.handlerSourceReconnect} />
+                </Tab>
+                <Tab eventKey="organization" title="организации / подразделения">
+                    <CreateBodyManagementEntity
+                        socketIo={this.props.socketIo}
+                        listShortEntity={this.state.listShortEntity}
+                        listFieldActivity={this.props.listFieldActivity} />
+                </Tab>
+                <Tab eventKey="addElement" title="новая сущность">
+                    <CreateBodyNewEntity
+                        socketIo={this.props.socketIo} 
+                        userPermissions={this.props.userPermissions}
+                        listFieldActivity={this.props.listFieldActivity}
+                        listShortEntity={this.state.listShortEntity} />
+                </Tab>
+            </Tabs>
                 
-            </React.Fragment>
-        );
+            <ModalWindowSourceInfo 
+                show={this.state.modalWindowSourceInfo}
+                onHide={this.closeModalWindowSourceInfo}
+                socketIo={this.props.socketIo}
+                settings={this.modalWindowSourceInfoSettings} />
+            <ModalWindowChangeSource                     
+                show={this.state.modalWindowChangeSource}
+                onHide={this.closeModalWindowChangeSource}
+                settings={this.modalWindowSourceInfoSettings}
+                isShowInfo={this.state.changeSourceInfoOutput} 
+                addNewFolder={this.handlerNewFolder}
+                handlerInput={this.handlerInput} 
+                storageInput={this.state.sourceSettings}
+                generatingNewToken={this.generatingNewToken}
+                handelerFolderDelete={this.handelerFolderDelete}
+                handlerSaveInformation={this.handlerSaveInformation} />
+            <ModalWindowConfirmMessage 
+                show={this.state.modalWindowSourceDel}
+                onHide={this.closeModalWindowSourceDel}
+                msgBody={`Вы действительно хотите удалить ${(this.listSourceDelete.length > 1) ? "источники с номерами": "источник с номером"} ${this.listSourceDelete}?`}
+                msgTitle={"Удаление"}
+                nameDel={this.listSourceDelete.join()}
+                handlerConfirm={this.handlerSourceDelete} />
+        </React.Fragment>);
     }
 }
 

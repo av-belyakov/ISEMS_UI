@@ -22,8 +22,6 @@ class ShowEntityInformation extends React.Component {
     }
 
     createDivisionCard(){
-        let num = 1;
-
         let isExist = (typeof this.props.resivedInfo.listDivision === "undefined");
         if(isExist || (this.props.resivedInfo.listDivision.length === 0)){
             return (<React.Fragment></React.Fragment>);
@@ -35,18 +33,18 @@ class ShowEntityInformation extends React.Component {
             if(a.divisionName < b.divisionName) return -1;
         });
 
-        return this.props.resivedInfo.listDivision.map((item) => {
+        return this.props.resivedInfo.listDivision.map((item, num) => {
             item.listSource.sort((a, b) => {
                 if(a.source_id > b.source_id) return 1;
                 if(a.source_id === b.source_id) return 0;
                 if(a.source_id < b.source_id) return -1;
             });
 
-            return (<Accordion>
-                <Accordion.Item>
-                    <Accordion.Header className="p-2 alert-secondary text-dark" as="h5" eventKey={num}>{item.divisionName}</Accordion.Header>
+            return (<Accordion key={`key_division_${num}`}>
+                <Accordion.Item eventKey={++num}>
+                    <Accordion.Header className="p-2 alert-secondary text-dark" as="h5" >{item.divisionName}</Accordion.Header>
                     <Accordion.Body>
-                        <Card border="dark" key={`key_division_${num}`}>
+                        <Card border="dark">
                             <Card.Body>
                                 <Row>
                                     <Col>
@@ -74,7 +72,7 @@ class ShowEntityInformation extends React.Component {
                                     <Col md={4} className="text-left"><ul>{item.listSource.map((item) => <li key={`li_source_${item.source_id}_${item.short_name}`}>{`${item.source_id} ${item.short_name}`}</li>)}</ul></Col>
                                 </Row>
                                 <Row>
-                                    <Col className="text-right">
+                                    <Col className="mt-2 text-right">
                                         <Button variant="outline-success" onClick={this.handlerSaveButton.bind(this, "division", item.id)} size="sm">сохранить</Button>&nbsp;
                                         <Button variant="outline-danger" onClick={this.handlerDeleteButton.bind(this, "division", item.id)} size="sm">удалить</Button>
                                     </Col>
@@ -95,11 +93,11 @@ class ShowEntityInformation extends React.Component {
         let list = this.props.listFieldActivity;
         let num = 1;
 
-        return (
-            <Accordion defaultActiveKey="0" style={{ width: "55rem" }}>
-                <Card border="info">
-                    <Accordion.Toggle className="p-3 alert-primary text-dark" as={Card.Header} eventKey="0">{this.props.resivedInfo.organizationName}</Accordion.Toggle>
-                    <Accordion.Collapse eventKey="0">
+        return (<Accordion defaultActiveKey="0" style={{ width: "55rem" }}>
+            <Accordion.Item eventKey="0">
+                <Accordion.Header>{this.props.resivedInfo.organizationName}</Accordion.Header>
+                <Accordion.Body>
+                    <Card border="info">
                         <Card.Body>
                             <Row>
                                 <Col>
@@ -130,17 +128,18 @@ class ShowEntityInformation extends React.Component {
                                 <Col></Col>
                             </Row>
                             <Row>
-                                <Col className="text-right">
+                                <Col className="mt-4 text-right">
                                     <Button variant="outline-success" onClick={this.handlerSaveButton.bind(this, "organization", this.props.resivedInfo.id)} size="sm">сохранить</Button>&nbsp;
                                     <Button variant="outline-danger" onClick={this.handlerDeleteButton.bind(this, "organization", this.props.resivedInfo.id)} size="sm">удалить</Button>
                                 </Col>
                             </Row>
                         </Card.Body>
-                    </Accordion.Collapse>
-                </Card>
-                {this.createDivisionCard()}
-            </Accordion>
-        );
+                    </Card>
+                </Accordion.Body>
+            </Accordion.Item>
+                
+            {this.createDivisionCard()}
+        </Accordion>);
     }
 
     render(){

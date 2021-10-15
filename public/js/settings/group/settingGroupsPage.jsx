@@ -125,7 +125,7 @@ class CreateCategoryValue extends React.Component {
 
             let groupObj = this.props.listOtherGroup[this.props.parameters.group][this.props.list[item].id];
             arrItems.push(
-                <div key={`div_${groupObj.keyID}`}>
+                <div key={`div_${groupObj.keyID}`} className="text-center">
                     <input
                         type="checkbox"
                         defaultChecked={groupObj.status}
@@ -313,11 +313,7 @@ class CreateBodyElement extends React.Component {
 
     createElement() {
         let { groupsName, listAdmin, listOtherGroup, handleCheckedItem } = this.props;
-
         let arrTmp = [];
-
-        console.log("func 'CreateBodyElement'");
-        console.log(listAdmin);
 
         for (let item in listAdmin.elements) {           
             let arrTd = groupsName.map(group => {
@@ -656,6 +652,7 @@ class CreateTable extends React.Component {
                             handleCheckedItem={this.handleCheckedItem} />
                     </tbody>
                 </Table>
+
                 <ModalWindowAddNewGroup
                     show={this.state.modalWindowAddShow}
                     onHide={this.handleClose}

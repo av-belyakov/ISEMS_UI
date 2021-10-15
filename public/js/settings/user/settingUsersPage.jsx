@@ -49,6 +49,7 @@ class HeadTable extends React.Component {
                     <th>Дата изменения</th>
                     <th className={"text-right"}>
                         <Button 
+                            className="pull-right"
                             size="sm"
                             variant="outline-primary" 
                             onClick={this.props.headerButtonAdd.bind(this, true, "")} 
@@ -80,6 +81,7 @@ class ButtonEdit extends React.Component {
         }
 
         return <Button 
+            className="pull-right"
             onClick={this.props.handler.bind(this, false, userSettings)}
             variant="outline-dark" 
             size="sm" 
@@ -106,6 +108,7 @@ class ButtonDelete extends React.Component {
         }
 
         return <Button 
+            className="pull-right"
             onClick={this.props.handler}
             variant="outline-danger" 
             size="sm" 
@@ -387,6 +390,7 @@ class CreateTable extends React.Component {
                         handlerButtonEdit={this.handlerModalAddOrEditShow}
                         handlerButtonDelete={this.handlerModalConfirmShow}/>
                 </Table>
+                
                 <ModalWindowAddEdit
                     socketIo={this.props.socketIo} 
                     show={this.state.modalAddOrEdit.show}

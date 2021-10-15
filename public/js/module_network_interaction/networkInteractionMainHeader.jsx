@@ -265,9 +265,9 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                     handlerShowModalWindowInfoConnectStatusSources={this.handlerShowModalWindowInfoConnectStatusSources} />
                 {this.showModuleConnectionError.call(this)}
                 <Row className="pt-4">
-                    <Col md={12} className="text-right">
+                    <Col md={12}>
                         <Button
-                            className="mx-1"
+                            className="mx-1 pull-right"
                             size="sm"
                             variant="outline-danger"
                             disabled={this.isDisabledFiltering.call(this)}
@@ -275,14 +275,14 @@ class CreatePageManagingNetworkInteractions extends React.Component {
                             фильтрация
                         </Button>
                         <Button
-                            className="mx-1"
+                            className="mx-1 pull-right"
                             size="sm"
                             variant="outline-dark"
                             onClick={this.handlerShowModalWindowLanCalc} >
                             сетевой калькулятор
                         </Button>
                         <Button
-                            className="mx-1"
+                            className="mx-1 pull-right"
                             size="sm"
                             variant="outline-dark"
                             onClick={this.handlerShowModalWindowEncodeDecoder} >
