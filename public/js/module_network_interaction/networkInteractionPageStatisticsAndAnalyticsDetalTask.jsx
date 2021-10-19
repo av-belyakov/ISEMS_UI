@@ -370,7 +370,7 @@ class CreatePageStatisticsAndAnalyticsDetalTask extends React.Component {
         if(this.state.commonAnalyticsInformationAboutTask.sourceID === 0){
             return (
                 <Row className="mt-4">
-                    <Col>
+                    <Col className="text-center">
                         <Spinner animation="border" role="status" variant="primary">
                             <span className="sr-only">Загрузка...</span>
                         </Spinner>

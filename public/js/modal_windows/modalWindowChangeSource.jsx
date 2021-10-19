@@ -217,16 +217,14 @@ export default class ModalWindowChangeSource extends React.Component {
         return (
             <Form validated={false}>
                 <InputGroup className="mb-3">
-                    <InputGroup.Prepend>
-                        <InputGroup.Text>Источник</InputGroup.Text>
-                    </InputGroup.Prepend>
-                    <FormControl 
+                    <InputGroup.Text>Источник</InputGroup.Text>
+                    <Form.Control 
                         id="source_id" 
                         onChange={this.props.handlerInput.bind(this)}
                         isValid={this.props.storageInput.sourceID.isValid}
                         isInvalid={this.props.storageInput.sourceID.isInvalid}
                         defaultValue={this.props.storageInput.sourceID.value} />
-                    <FormControl 
+                    <Form.Control 
                         id="source_short_name" 
                         onChange={this.props.handlerInput.bind(this)}
                         isValid={this.props.storageInput.shortName.isValid}
@@ -234,25 +232,23 @@ export default class ModalWindowChangeSource extends React.Component {
                         defaultValue={this.props.storageInput.shortName.value} />               
                 </InputGroup>
                 <InputGroup className="mb-3">
-                    <InputGroup.Prepend>
-                        <InputGroup.Text>Сетевые настройки</InputGroup.Text>
-                    </InputGroup.Prepend>
-                    <FormControl 
+                    <InputGroup.Text>Сетевые настройки</InputGroup.Text>
+                    <Form.Control 
                         id="source_ip" 
                         onChange={this.props.handlerInput.bind(this)}
                         isValid={this.props.storageInput.ipAddress.isValid}
                         isInvalid={this.props.storageInput.ipAddress.isInvalid}
                         defaultValue={this.props.storageInput.ipAddress.value} />
-                    <FormControl 
+                    <Form.Control 
                         id="source_port" 
                         onChange={this.props.handlerInput.bind(this)}
                         isValid={this.props.storageInput.port.isValid}
                         isInvalid={this.props.storageInput.port.isInvalid}
                         defaultValue={this.props.storageInput.port.value} />
                 </InputGroup>
-                <Form.Row>
+                <Form.Group as={Row}>
                     <Form.Group as={Col}>
-                        <Form.Label>Архитектура</Form.Label>
+                        <Form.Label>архитектура</Form.Label>
                         <Form.Control 
                             onChange={this.props.handlerInput.bind(this)}
                             id="source_architecture" 
@@ -263,7 +259,7 @@ export default class ModalWindowChangeSource extends React.Component {
                         </Form.Control>
                     </Form.Group>
                     <Form.Group as={Col}>
-                        <Form.Label>Параллельные задачи фильтрации</Form.Label>
+                        <Form.Label>параллельные задачи фильтрации</Form.Label>
                         <Form.Control 
                             onChange={this.props.handlerInput.bind(this)}
                             id="source_max_simultaneous_proc" 
@@ -280,10 +276,10 @@ export default class ModalWindowChangeSource extends React.Component {
                             }
                         </Form.Control>
                     </Form.Group>
-                </Form.Row>
-                <Form.Row>
-                    <Form.Group as={Col} lg={3}>
-                        <Form.Label>Тип сетевого канала</Form.Label>
+                </Form.Group>
+                <Row className="mt-3">
+                    <Col md={4}>
+                        <Form.Label>тип сетевого канала</Form.Label>
                         <Form.Control 
                             onChange={this.props.handlerInput.bind(this)}
                             id="source_network_channel"
@@ -293,19 +289,26 @@ export default class ModalWindowChangeSource extends React.Component {
                             <option value="pppoe">pppoe/ip</option>
                             <option value="vlan/pppoe">vlan/pppoe/ip</option>
                         </Form.Control>
-                    </Form.Group>
-                    <Form.Group as={Col} lg={9}>
-                        <Form.Label>Идентификационный токен</Form.Label>
-                        <InputGroup.Append>
-                            <Form.Control id="source_token" type="text" value={this.props.storageInput.token.value} readOnly />
-                            <Button onClick={this.props.generatingNewToken} variant="outline-primary">новый</Button>
-                        </InputGroup.Append>
-                    </Form.Group>
-                </Form.Row>
+                    </Col>
+                    <Col md={8}>
+                        <Form.Label>идентификационный токен</Form.Label>
+                        <InputGroup className="mb-3">
+                            <Form.Control
+                                placeholder={this.props.storageInput.token.value}
+                                readOnly
+                            />
+                            <Button
+                                onClick={this.props.generatingNewToken} 
+                                variant="outline-secondary"
+                                className="pt-2 pull-right">
+                                новый
+                            </Button>
+                        </InputGroup>
+                    </Col>
+                </Row>
                 <Row>
-                    <Col lg={4}>
+                    <Col lg={4} className="pt-2">
                         <Form.Check 
-                            custom
                             defaultChecked={this.props.storageInput.telemetry.value}
                             onChange={this.props.handlerInput.bind(this)}
                             type="switch"
@@ -314,15 +317,13 @@ export default class ModalWindowChangeSource extends React.Component {
                     </Col>
                     <Col lg={8}>
                         <InputGroup className="mb-3">
-                            <FormControl
+                            <Form.Control
                                 id="input_folder"
                                 onChange={this.props.handlerInput.bind(this)}
                                 isValid={this.props.storageInput.directoriesNetworkTraffic.isValid}
                                 isInvalid={this.props.storageInput.directoriesNetworkTraffic.isInvalid}
                                 placeholder="полный путь до директории с файлами" />
-                            <InputGroup.Append>
-                                <Button onClick={this.props.addNewFolder} variant="outline-secondary">применить</Button>
-                            </InputGroup.Append>
+                            <Button onClick={this.props.addNewFolder} variant="outline-secondary">применить</Button>
                         </InputGroup>
                     </Col>
                 </Row>
@@ -334,15 +335,19 @@ export default class ModalWindowChangeSource extends React.Component {
                             directoriesNetworkTraffic={this.props.storageInput.directoriesNetworkTraffic.value} />
                     </Col>
                 </Row>
-                <Form.Group>
-                    <Form.Label>Примечание</Form.Label>
-                    <Form.Control 
-                        onChange={this.props.handlerInput.bind(this)}
-                        defaultValue={this.props.storageInput.description.value}
-                        id="source_description" 
-                        as="textarea" 
-                        rows="3" />
-                </Form.Group>
+                <Row>
+                    <Col md={12}>
+                        <Form.Group>
+                            <Form.Label>Примечание</Form.Label>
+                            <Form.Control 
+                                onChange={this.props.handlerInput.bind(this)}
+                                defaultValue={this.props.storageInput.description.value}
+                                id="source_description" 
+                                as="textarea" 
+                                rows="3" />
+                        </Form.Group>
+                    </Col>
+                </Row>
             </Form>
         );
     }

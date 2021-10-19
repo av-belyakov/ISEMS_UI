@@ -192,31 +192,31 @@ export default class ModalWindowShowInformationTask extends React.Component {
                                     <Col md={8} className="text-muted">                                
                                         <Row className="mb-n2">
                                             <Col md={6}><small>всего файлов:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.nfmfp)}</strong> шт.</small></Col>
+                                            <Col md={6} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.nfmfp)}</strong> шт.</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={5}><small>общим размером:</small></Col>
-                                            <Col md={7} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sfmfp)}</strong> байт (<strong>{sfmfp.size}</strong> {sfmfp.name})</small></Col>
+                                            <Col md={7} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.sfmfp)}</strong> байт (<strong>{sfmfp.size}</strong> {sfmfp.name})</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов обработанно:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.mpf)}</strong> шт.</small></Col>
+                                            <Col md={6} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.mpf)}</strong> шт.</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов обработанно с ошибкой:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.nepf}</strong> шт.</small></Col>
+                                            <Col md={6} className="text-left"><small><strong>{this.state.filteringStatus.nepf}</strong> шт.</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={6}><small>файлов найдено:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.nffrf)}</strong> шт.</small></Col>
+                                            <Col md={6} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.nffrf)}</strong> шт.</small></Col>
                                         </Row>
                                         <Row className="mb-n2">
                                             <Col md={5}><small>общим размером:</small></Col>
-                                            <Col md={7} className="text-right"><small><strong>{numFormatter.format(this.state.filteringStatus.sffrf)}</strong> байт (<strong>{sffrf.size}</strong> {sffrf.name})</small></Col>
+                                            <Col md={7} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.sffrf)}</strong> байт (<strong>{sffrf.size}</strong> {sffrf.name})</small></Col>
                                         </Row>
                                         <Row>
                                             <Col md={6}><small>фильтруемых директорий:</small></Col>
-                                            <Col md={6} className="text-right"><small><strong>{this.state.filteringStatus.ndf}</strong> шт.</small></Col>
+                                            <Col md={6} className="text-left"><small><strong>{this.state.filteringStatus.ndf}</strong> шт.</small></Col>
                                         </Row>
                                     </Col>
                                     <Col md={4} className="mt-3 text-center">
@@ -334,7 +334,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                 animate={true} // Boolean: Animated/Static progress
                 animationDuration="1s" // String: Length of animation
                 responsive={false} // Boolean: Make SVG adapt to parent size
-                size="125" // String: Defines the size of the circle.
+                size="170" // String: Defines the size of the circle.
                 lineWidth="35" // String: Defines the thickness of the circle's stroke.
                 progressColor="rgb(76, 154, 255)" // String: Color of "progress" portion of circle.
                 bgColor="#ecedf0" // String: Color of "empty" portion of circle.
@@ -474,7 +474,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                 </Card>               
                 <Row className="text-muted mb-n2">
                     <Col md={2}><small>статус задачи: </small></Col>
-                    <Col md={10} className="text-center">{this.getStatusFiltering.call(this)}</Col>
+                    <Col md={10} className="text-right">{this.getStatusFiltering.call(this)}</Col>
                 </Row>
                 {this.getInformationProgressFiltration()}
                 {this.createPathDirFilterFiles.call(this)}
@@ -486,7 +486,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
                 {this.createUserDownloadTask.call(this)}
                 <Row className="text-muted mb-n2">
                     <Col md={2}><small>статус задачи: </small></Col>
-                    <Col md={10} className="text-center">{this.getStatusDownload.call(this)}</Col>
+                    <Col md={10} className="text-right">{this.getStatusDownload.call(this)}</Col>
                 </Row>
                 {this.getInformationProgressDownload.call(this)}
                 {this.createPathDirStorageFiles.call(this)}
@@ -513,28 +513,26 @@ export default class ModalWindowShowInformationTask extends React.Component {
     }
 
     render(){
-        return (
-            <Modal
-                size="lg"
-                show={this.props.show} 
-                onHide={this.props.onHide}
-                aria-labelledby="example-modal-sizes-title-lg" >
-                <Modal.Header closeButton>
-                    <Modal.Title id="example-modal-sizes-title-lg">
-                        <h5>Источник №{this.props.shortTaskInfo.sourceID} ({this.props.shortTaskInfo.sourceName})</h5>
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {this.createModalBody.call(this)}
-                </Modal.Body>
-                <Modal.Footer>
-                    {this.createButtonStop.call(this)}
-                    <Button variant="outline-secondary" onClick={this.props.onHide} size="sm">
+        return (<Modal
+            size="xl"
+            show={this.props.show} 
+            onHide={this.props.onHide}
+            aria-labelledby="example-modal-sizes-title-lg" >
+            <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-lg">
+                    <h5>Источник №{this.props.shortTaskInfo.sourceID} ({this.props.shortTaskInfo.sourceName})</h5>
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {this.createModalBody.call(this)}
+            </Modal.Body>
+            <Modal.Footer>
+                {this.createButtonStop.call(this)}
+                <Button variant="outline-secondary" onClick={this.props.onHide} size="sm">
                         закрыть
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        );
+                </Button>
+            </Modal.Footer>
+        </Modal>);
     }
 }
 

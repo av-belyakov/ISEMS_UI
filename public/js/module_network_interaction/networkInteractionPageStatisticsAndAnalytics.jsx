@@ -239,7 +239,7 @@ export default class CreatePageStatisticsAndAnalytics extends React.Component {
         if(this.state.showSpinner){
             return (
                 <Row className="pt-4">
-                    <Col md={12}>
+                    <Col md={12} className="text-center">
                         <Spinner animation="border" role="status" variant="primary">
                             <span className="sr-only text-muted">Загрузка...</span>
                         </Spinner>

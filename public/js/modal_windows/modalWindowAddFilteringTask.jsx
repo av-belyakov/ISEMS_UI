@@ -1,7 +1,7 @@
 "use strict";
 
 import React from "react";
-import {  Badge, Button, Col, Row, InputGroup, Form, FormControl, Modal } from "react-bootstrap";
+import {  Badge, Button, Col, Row, InputGroup, Form, Modal } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers.js";
@@ -20,18 +20,16 @@ class CreateProtocolList extends React.Component {
             {t:"udp", n:"udp"},
         ];
 
-        return (
-            <select 
-                disabled={this.props.isDisabled} 
-                defaultValue={this.props.networkProtocol}
-                className="custom-select custom-select-sm" 
-                onChange={this.props.handlerChosen} 
-                id="protocol_list">
-                {np.map((item) => {
-                    return <option key={`key_p_${item.t}`} value={item.t}>{item.n}</option>;
-                })}
-            </select>
-        );
+        return (<Form.Select
+            size="sm"
+            onChange={this.props.handlerChosen}
+            disabled={this.props.isDisabled} 
+            value={this.props.networkProtocol}
+            id="protocol_list">
+            {np.map((item) => {
+                return <option key={`key_p_${item.t}`} value={item.t}>{item.n}</option>;
+            })}            
+        </Form.Select>);
     }
 }
 
@@ -316,16 +314,14 @@ class CreateMainFields extends React.Component {
                 <Row className="mt-3">
                     <Col className="text-center" sm="4">
                         <Form>
-                            <Row>
-                                <Form.Check onClick={this.checkRadioInput} type="radio" disabled={disabled} id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
-                                <Form.Check onClick={this.checkRadioInput} type="radio" disabled={disabled} id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
-                                <Form.Check onClick={this.checkRadioInput} type="radio" disabled={disabled} id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
-                            </Row>
+                            <Form.Check inline onClick={this.checkRadioInput} type="radio" disabled={disabled} id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
+                            <Form.Check inline onClick={this.checkRadioInput} type="radio" disabled={disabled} id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
+                            <Form.Check inline onClick={this.checkRadioInput} type="radio" disabled={disabled} id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
                         </Form>
                     </Col>
                     <Col sm="8">
                         <InputGroup className="mb-3" size="sm">
-                            <FormControl
+                            <Form.Control
                                 id="input_ip_network_port"
                                 aria-describedby="basic-addon2"
                                 onChange={this.handlerInput}
@@ -334,7 +330,6 @@ class CreateMainFields extends React.Component {
                                 isValid={this.state.inputFieldIsValid}
                                 isInvalid={this.state.inputFieldIsInvalid} 
                                 placeholder="введите ip адрес, подсеть или сетевой порт" />
-
                             <Button size="sm" onClick={this.addPortNetworkIP} variant="outline-secondary">добавить</Button>
                         </InputGroup>
                     </Col>

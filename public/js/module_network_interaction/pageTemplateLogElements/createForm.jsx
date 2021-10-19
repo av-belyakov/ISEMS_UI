@@ -21,80 +21,76 @@ export default function CreateForm(props){
             return;
         }
 
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-left mt-2">
-                        <Typography variant="subtitle1" color="textSecondary">
+        return (<React.Fragment>
+            <Row>
+                <Col md={12} className="text-left mt-2">
+                    <Typography variant="subtitle1" color="textSecondary">
                         Опции для фильтрации файлов сетевого трафика.
-                        </Typography>
-                    </Col>
-                </Row>
-                <CreateInformationTimeFiltrationInterval
-                    minHour={props.parametersFiltration.dateTime.minHour}
-                    maxHour={props.parametersFiltration.dateTime.maxHour}
-                    timeTrigger={props.templateParameters.templateTime.timeTrigger} />                
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
+                    </Typography>
+                </Col>
+            </Row>
+            <CreateInformationTimeFiltrationInterval
+                minHour={props.parametersFiltration.dateTime.minHour}
+                maxHour={props.parametersFiltration.dateTime.maxHour}
+                timeTrigger={props.templateParameters.templateTime.timeTrigger} />                
+            <Row>
+                <Col md={4} className="text-right">
+                    <Typography variant="subtitle1" color="textSecondary">
                         сетевой протокол:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {(props.parametersFiltration.networkProtocol) ? "любой" : props.parametersFiltration.networkProtocol}
-                    </Col>
-                </Row>                
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
+                    </Typography>
+                </Col>
+                <Col md={8} className="text-left">
+                    {(props.parametersFiltration.networkProtocol) ? "любой" : props.parametersFiltration.networkProtocol}
+                </Col>
+            </Row>                
+            <Row>
+                <Col md={4} className="text-right">
+                    <Typography variant="subtitle1" color="textSecondary">
                         ip адреса:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        <CreateListNetworkParameters 
-                            type="ip"
-                            inputValue={props.parametersFiltration.inputs.inputValue} />
-                    </Col>
-                </Row>                
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
+                    </Typography>
+                </Col>
+                <Col md={8} className="text-left">
+                    <CreateListNetworkParameters 
+                        type="ip"
+                        inputValue={props.parametersFiltration.inputs.inputValue} />
+                </Col>
+            </Row>                
+            <Row>
+                <Col md={4} className="text-right">
+                    <Typography variant="subtitle1" color="textSecondary">
                         сети:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        <CreateListNetworkParameters 
-                            type="nw"
-                            inputValue={props.parametersFiltration.inputs.inputValue} />
-                    </Col>
-                </Row>       
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">
+                    </Typography>
+                </Col>
+                <Col md={8} className="text-left">
+                    <CreateListNetworkParameters 
+                        type="nw"
+                        inputValue={props.parametersFiltration.inputs.inputValue} />
+                </Col>
+            </Row>       
+            <Row>
+                <Col md={4} className="text-right">
+                    <Typography variant="subtitle1" color="textSecondary">
                         сетевые порты:
-                        </Typography>
-                    </Col>
-                    <Col md={8} className="text-left">
-                        <CreateListNetworkParameters 
-                            type="pt"
-                            inputValue={props.parametersFiltration.inputs.inputValue} />
-                    </Col>
-                </Row>
-            </React.Fragment>
-        );
+                    </Typography>
+                </Col>
+                <Col md={8} className="text-left">
+                    <CreateListNetworkParameters 
+                        type="pt"
+                        inputValue={props.parametersFiltration.inputs.inputValue} />
+                </Col>
+            </Row>
+        </React.Fragment>);
     };
 
     switch(props.numberSteppers){
     case 0:
-        return (
-            <Row>
-                <Col md={12} className="text-center">
-                    <CreateChangeTemplateType 
-                        templateType={props.templateParameters.templateType}
-                        handlerChangeTemplateType={props.handlerChangeTemplateType} />
-                </Col>
-            </Row>
-        );
+        return (<Row>
+            <Col md={12} className="text-center">
+                <CreateChangeTemplateType 
+                    templateType={props.templateParameters.templateType}
+                    handlerChangeTemplateType={props.handlerChangeTemplateType} />
+            </Col>
+        </Row>);
 
     case 1:
         return <CreateFormControlChangeTime
@@ -106,87 +102,81 @@ export default function CreateForm(props){
             handlerChangeTemplateTimeRadioType={props.handlerChangeTemplateTimeRadioType} />;
 
     case 2:
-        return (
-            <React.Fragment>
-                <Row className="pt-3">
-                    <Col md={5} className="text-left">
-                        <CreateSourceList 
-                            typeModal={"новая"}
-                            hiddenFields={false}
-                            listSources={props.listSources}
-                            currentSource={props.templateParameters.templeteChosedSource}
-                            handlerChosen={props.handlerChosenSource}
-                            swithCheckConnectionStatus={false} />        
-                    </Col>
-                    <Col md={7} className="mt-n1 text-left">
-                        <CreateChipSource 
-                            chipData={props.templateParameters.templateListSource} 
-                            handleDelete={props.handlerDeleteSource}/>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12} className="text-left mt-n2">
-                        <Typography variant="body2" color="textSecondary">
-                            {"* если в поле \"выберите источник\" не выбран ни один из источников, то тогда считается что шаблон распространяется на все источники"}
-                        </Typography>
-                    </Col>
-                </Row>
-            </React.Fragment>
-        );                           
+        return (<React.Fragment>
+            <Row className="pt-3">
+                <Col md={5} className="text-left">
+                    <CreateSourceList 
+                        typeModal={"новая"}
+                        hiddenFields={false}
+                        listSources={props.listSources}
+                        currentSource={props.templateParameters.templeteChosedSource}
+                        handlerChosen={props.handlerChosenSource}
+                        swithCheckConnectionStatus={false} />        
+                </Col>
+                <Col md={7} className="text-left mt-n2">
+                    <CreateChipSource 
+                        chipData={props.templateParameters.templateListSource} 
+                        handleDelete={props.handlerDeleteSource}/>
+                </Col>
+            </Row>
+            <Row>
+                <Col md={12} className="text-left mt-n2">
+                    <Typography variant="body2" color="textSecondary">
+                        {"* если в поле \"выберите источник\" не выбран ни один из источников, то тогда считается что шаблон распространяется на все источники"}
+                    </Typography>
+                </Col>
+            </Row>
+        </React.Fragment>);                           
 
     case 3:
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col sm="12" className="text-left">
-                        <CreateInformationTimeFiltrationInterval
-                            minHour={props.parametersFiltration.dateTime.minHour}
-                            maxHour={props.parametersFiltration.dateTime.maxHour}
-                            timeTrigger={props.templateParameters.templateTime.timeTrigger} />                
-                        <CreateRangeSlider 
-                            minHour={props.parametersFiltration.dateTime.minHour}
-                            maxHour={props.parametersFiltration.dateTime.maxHour}
-                            handlerChangeRangeSlider={props.handlerChangeRangeSlider} />
-                    </Col>
-                </Row>
-                <Row className="mt-2">
-                    <Col className="text-right" sm="2">
-                        <small className="text-muted">сетевой протокол</small>
-                        <CreateProtocolList 
-                            defaultNetworkProtocol={props.parametersFiltration.networkProtocol} 
-                            handlerChosen={props.handlerChosenNetworkProtocol} />
-                    </Col>
-                    <Col className="text-right mt-4" sm="3">
-                        <Form inline className="text-right">
-                            <Form.Check onClick={props.handlerCheckRadioInput} custom type="radio" id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
-                            <Form.Check onClick={props.handlerCheckRadioInput} custom type="radio" id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
-                            <Form.Check onClick={props.handlerCheckRadioInput} custom type="radio" id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
-                        </Form>
-                    </Col>
-                    <Col className="text-right" sm="7"> 
-                        <small className="text-muted">ip адрес, сеть или сетевой порт</small>
-                        <InputGroup size="sm">                           
-                            <FormControl
-                                id="input_ip_network_port"
-                                aria-describedby="basic-addon2"
-                                onChange={props.handlerInput}
-                                onKeyPress={props.handleKeyPress}
-                                isValid={props.parametersFiltration.inputs.inputFieldIsValid}
-                                isInvalid={props.parametersFiltration.inputs.inputFieldIsInvalid} 
-                                placeholder="введите ip адрес, подсеть или сетевой порт" />
-                            <InputGroup.Append>
-                                <Button onClick={props.handlerAddPortNetworkIP} variant="outline-secondary">
-                                    добавить
-                                </Button>
-                            </InputGroup.Append>
-                        </InputGroup>
-                    </Col>
-                </Row>
-                <CreateListInputValue 
-                    inputValue={props.parametersFiltration.inputs.inputValue}
-                    hendlerDeleteAddedElem={props.hendlerDeleteAddedElem} />
-            </React.Fragment>
-        );
+        return (<React.Fragment>
+            <Row>
+                <Col sm="12" className="text-left">
+                    <CreateInformationTimeFiltrationInterval
+                        minHour={props.parametersFiltration.dateTime.minHour}
+                        maxHour={props.parametersFiltration.dateTime.maxHour}
+                        timeTrigger={props.templateParameters.templateTime.timeTrigger} />                
+                    <CreateRangeSlider 
+                        minHour={props.parametersFiltration.dateTime.minHour}
+                        maxHour={props.parametersFiltration.dateTime.maxHour}
+                        handlerChangeRangeSlider={props.handlerChangeRangeSlider} />
+                </Col>
+            </Row>
+            <Row className="mt-2">
+                <Col className="text-right" sm="2">
+                    <small className="text-muted">сетевой протокол</small>
+                    <CreateProtocolList 
+                        defaultNetworkProtocol={props.parametersFiltration.networkProtocol} 
+                        handlerChosen={props.handlerChosenNetworkProtocol} />
+                </Col>
+                <Col className="text-right mt-4" sm="3">
+                    <Form className="text-right">
+                        <Form.Check inline onClick={props.handlerCheckRadioInput} type="radio" id="r_direction_any" value="any" label="any" className="mt-1 ml-3" name="choseNwType" defaultChecked />
+                        <Form.Check inline onClick={props.handlerCheckRadioInput} type="radio" id="r_direction_src" value="src" label="src" className="mt-1 ml-3" name="choseNwType" />
+                        <Form.Check inline onClick={props.handlerCheckRadioInput} type="radio" id="r_direction_dst" value="dst" label="dst" className="mt-1 ml-3" name="choseNwType" />
+                    </Form>
+                </Col>
+                <Col className="text-right" sm="7"> 
+                    <small className="text-muted">ip адрес, сеть или сетевой порт</small>
+                    <InputGroup size="sm">                           
+                        <Form.Control
+                            id="input_ip_network_port"
+                            aria-describedby="basic-addon2"
+                            onChange={props.handlerInput}
+                            onKeyPress={props.handleKeyPress}
+                            isValid={props.parametersFiltration.inputs.inputFieldIsValid}
+                            isInvalid={props.parametersFiltration.inputs.inputFieldIsInvalid} 
+                            placeholder="введите ip адрес, подсеть или сетевой порт" />
+                        <Button onClick={props.handlerAddPortNetworkIP} variant="outline-secondary">
+                            добавить
+                        </Button>
+                    </InputGroup>
+                </Col>
+            </Row>
+            <CreateListInputValue 
+                inputValue={props.parametersFiltration.inputs.inputValue}
+                hendlerDeleteAddedElem={props.hendlerDeleteAddedElem} />
+        </React.Fragment>);
 
     case 4: 
         for(let day in props.templateParameters.templateTime.listSelectedDays){
@@ -195,66 +185,64 @@ export default function CreateForm(props){
             }
         }
 
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">тип шаблона:</Typography>
-                    </Col>
-                    <Col md={8} className="text-left">{(props.templateParameters.templateType === "telemetry") ? "телеметрия": "фильтрация"}</Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">дни недели:</Typography>
-                    </Col>
-                    <Col md={8} className="text-left">{(()=>{
-                        let i = 0;
-                        let num = daysOfWeek.length;
-                        let comma = ", ";
+        return (<React.Fragment>
+            <Row>
+                <Col md={4} className="text-right">
+                    <Typography variant="subtitle1" color="textSecondary">тип шаблона:</Typography>
+                </Col>
+                <Col md={8} className="text-left">{(props.templateParameters.templateType === "telemetry") ? "телеметрия": "фильтрация"}</Col>
+            </Row>
+            <Row>
+                <Col md={4} className="text-right">
+                    <Typography variant="subtitle1" color="textSecondary">дни недели:</Typography>
+                </Col>
+                <Col md={8} className="text-left">{(()=>{
+                    let i = 0;
+                    let num = daysOfWeek.length;
+                    let comma = ", ";
                         
-                        return daysOfWeek.map((item) => {
-                            if(item === "суббота" || item === "воскресенье"){
-                                textColor = "text-danger";
-                            } else {
-                                textColor = "text-primary";
-                            }
+                    return daysOfWeek.map((item) => {
+                        if(item === "суббота" || item === "воскресенье"){
+                            textColor = "text-danger";
+                        } else {
+                            textColor = "text-primary";
+                        }
 
-                            return (num > ++i) ? <span key={`key_day_of_week_${item}`} className={textColor}>{item+comma}</span> : <span key={`key_day_of_week_${item}`} className={textColor}>{item}</span>;
+                        return (num > ++i) ? <span key={`key_day_of_week_${item}`} className={textColor}>{item+comma}</span> : <span key={`key_day_of_week_${item}`} className={textColor}>{item}</span>;
+                    });
+                })()}</Col>
+            </Row>
+            <Row>
+                <Col md={4} className="text-right">
+                    <Typography variant="subtitle1" color="textSecondary">время выполнения:</Typography>                        
+                </Col>
+                <Col md={8} className="text-left">
+                    {(() => {
+                        let hour = props.templateParameters.templateTime.timeTrigger.getHours();
+                        let minute = props.templateParameters.templateTime.timeTrigger.getMinutes();
+
+                        return ((hour < 10) ? "0"+hour : hour)+":"+((minute < 10) ? "0"+minute : minute);
+                    })()}
+                </Col>
+            </Row>
+            <Row>
+                <Col md={4} className="text-right">
+                    <Typography variant="subtitle1" color="textSecondary">список источников для выполнения:</Typography>                        
+                </Col>
+                <Col md={8} className="text-left">
+                    {(() => {
+                        if(props.templateParameters.templateListSource.length === 0){
+                            return "на всех источниках";
+                        }
+
+                        return props.templateParameters.templateListSource.map((item) => {
+                            return <Badge pill variant="secondary" className="mr-1" key={`key_sid_${item}`}>{item}</Badge>;
                         });
-                    })()}</Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">время выполнения:</Typography>                        
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {(() => {
-                            let hour = props.templateParameters.templateTime.timeTrigger.getHours();
-                            let minute = props.templateParameters.templateTime.timeTrigger.getMinutes();
-
-                            return ((hour < 10) ? "0"+hour : hour)+":"+((minute < 10) ? "0"+minute : minute);
-                        })()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={4} className="text-right">
-                        <Typography variant="subtitle1" color="textSecondary">список источников для выполнения:</Typography>                        
-                    </Col>
-                    <Col md={8} className="text-left">
-                        {(() => {
-                            if(props.templateParameters.templateListSource.length === 0){
-                                return "на всех источниках";
-                            }
-
-                            return props.templateParameters.templateListSource.map((item) => {
-                                return <Badge pill variant="secondary" className="mr-1" key={`key_sid_${item}`}>{item}</Badge>;
-                            });
-                        })()}
-                    </Col>
-                </Row>
-                {showParametersFiltration()}
-            </React.Fragment>
-        );
+                    })()}
+                </Col>
+            </Row>
+            {showParametersFiltration()}
+        </React.Fragment>);
 
     default:
         return <Row><Col md={12}>Ошибка!!!</Col></Row>;
@@ -288,17 +276,15 @@ function CreateProtocolList(props){
         {t:"udp", n:"udp"},
     ];
 
-    return (
-        <select 
-            defaultValue={props.defaultNetworkProtocol}
-            className="custom-select custom-select-sm" 
-            onChange={props.handlerChosen} 
-            id="protocol_list">
-            {np.map((item) => {
-                return <option key={`key_p_${item.t}`} value={item.t}>{item.n}</option>;
-            })}
-        </select>
-    );
+    return (<Form.Select
+        size="sm"
+        onChange={props.handlerChosen}
+        value={props.defaultNetworkProtocol}
+        id="protocol_list">
+        {np.map((item) => {
+            return <option key={`key_p_${item.t}`} value={item.t}>{item.n}</option>;
+        })}         
+    </Form.Select>);
 }
 
 CreateProtocolList.propTypes = {

@@ -97,30 +97,30 @@ export default class CreateBodyDynamics extends React.Component {
             }
 
             if((this.state.filtration[pf].status === "refused") || (this.state.filtration[pf].status === "stop")){
-                let msg = <small className="text-danger">задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</small>;
+                let msg = <small className="text-danger">задача отклонена, возможно не найдены файлы удовлетворяющие заданным параметрам</small>;
                 if(this.state.filtration[pf].status === "stop"){
-                    msg = <small className="text-success">задача успешно остановлена.</small>;
+                    msg = <small className="text-success">задача успешно остановлена</small>;
                 }
 
-                list.push(
-                    <Row key={`row_card_filter_${pf}`}>
-                        <Col md={3} className="text-muted text-right">
-                            <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.filtration[pf].sourceID}</strong></i></small></Col></Row>
-                            <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.filtration[pf].name}</strong></i></small></Col></Row>
-                            <Row className="mb-n2"><Col><small>действие: </small><Badge bg="secondary">фильтрация файлов</Badge></Col></Row>
-                        </Col>
-                        <Col md={9}>
-                            <Card 
-                                className="mb-3 clicabe_cursor text-muted" 
-                                key={`card_filter_${pf}`}
-                                onClick={this.showModalWindow.bind(this, objInfo)} >
+                list.push(<Row key={`row_card_filter_${pf}`}>
+                    <Col md={3} className="text-muted text-right">
+                        <Row className="mt-3 mt-2 mb-n2"><Col><small>источник: <i><strong>{this.state.filtration[pf].sourceID}</strong></i></small></Col></Row>
+                        <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.filtration[pf].name}</strong></i></small></Col></Row>
+                        <Row className="mb-n2"><Col><small>действие: </small><Badge bg="secondary">фильтрация файлов</Badge></Col></Row>
+                    </Col>
+                    <Col md={9}>
+                        <Card 
+                            className="clicabe_cursor text-muted" 
+                            key={`card_filter_${pf}`}
+                            onClick={this.showModalWindow.bind(this, objInfo)} >
+                            <Card.Body>
                                 <small className="mb-n2">{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
                                 <div className="pl-2 pr-2 mb-n2">{msg}</div>
                                 <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, (${sff.size} ${sff.name}) / всего: ${formatter.format(sizeAllFiles)} байт, (${saf.size} ${saf.name})`}</small>
-                            </Card>
-                        </Col>
-                    </Row>
-                );
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>);
 
                 continue;
             }            
@@ -128,18 +128,20 @@ export default class CreateBodyDynamics extends React.Component {
             list.push(
                 <Row key={`row_card_filter_${pf}`}>
                     <Col md={3} className="text-muted text-right">
-                        <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.filtration[pf].sourceID}</strong></i></small></Col></Row>
+                        <Row className="mt-3 mb-n2"><Col><small>источник: <i><strong>{this.state.filtration[pf].sourceID}</strong></i></small></Col></Row>
                         <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.filtration[pf].name}</strong></i></small></Col></Row>
                         <Row className="mb-n2"><Col><small>действие: </small><Badge bg="secondary">фильтрация файлов</Badge></Col></Row>
                     </Col>
                     <Col md={9}>
                         <Card 
-                            className="mb-3 clicabe_cursor text-muted" 
+                            className="clicabe_cursor text-muted" 
                             key={`card_filter_${pf}`}
                             onClick={this.showModalWindow.bind(this, objInfo)} >
-                            <small>{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
-                            {progress}
-                            <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, (${sff.size} ${sff.name}) / всего: ${formatter.format(sizeAllFiles)} байт, (${saf.size} ${saf.name})`}</small>
+                            <Card.Body>
+                                <small>{`файлов найдено / обработано / всего: ${numFindFiles} / ${numProcessedFiles} / ${numAllFiles}`}</small>
+                                {progress}
+                                <small>{`найдено: ${formatter.format(sizeFindFiles)} байт, (${sff.size} ${sff.name}) / всего: ${formatter.format(sizeAllFiles)} байт, (${saf.size} ${saf.name})`}</small>
+                            </Card.Body>
                         </Card>
                     </Col>
                 </Row>
@@ -173,28 +175,30 @@ export default class CreateBodyDynamics extends React.Component {
             }
 
             if((this.state.download[pf].status === "refused") || (this.state.download[pf].status === "stop")){
-                let msg = <small className="text-danger">задача отклонена. Возможно не найдены файлы удовлетворяющие заданным параметрам.</small>;
+                let msg = <small className="text-danger">задача отклонена, возможно не найдены файлы удовлетворяющие заданным параметрам</small>;
                 if(this.state.download[pf].status ===  "stop"){
-                    msg = <small className="text-success">задача успешно остановлена.</small>;
+                    msg = <small className="text-success">задача успешно остановлена</small>;
                 }
 
                 list.push(
                     <Row key={`row_card_filter_${pf}`}>
                         <Col md={3} className="text-muted text-right">
-                            <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.download[pf].sourceID}</strong></i></small></Col></Row>
+                            <Row className="mt-3 mb-n2"><Col><small>источник: <i><strong>{this.state.download[pf].sourceID}</strong></i></small></Col></Row>
                             <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.download[pf].name}</strong></i></small></Col></Row>
                             <Row className="mb-n2"><Col><small>действие: </small><Badge bg="info">загрузка файлов</Badge></Col></Row>
                         </Col>
                         <Col md={9}>
                             <Card 
-                                className="mb-3 clicabe_cursor text-muted" 
+                                className="clicabe_cursor text-muted" 
                                 key={`card_filter_${pf}`}
                                 onClick={this.showModalWindow.bind(this, objInfo)} >
-                                <small className="text-muted">
+                                <Card.Body>
+                                    <small className="text-muted">
                                     файлов загружено / с ошибкой / всего: 0 / 0 / 0
-                                </small>
-                                <div className="pl-2 pr-2 mb-n2">{msg}</div>
-                                <small>загружается файл: </small>
+                                    </small>
+                                    <div className="pl-2 pr-2 mb-n2">{msg}</div>
+                                    <small>загружается файл: </small>
+                                </Card.Body>
                             </Card>
                         </Col>
                     </Row>
@@ -206,20 +210,22 @@ export default class CreateBodyDynamics extends React.Component {
             list.push(
                 <Row key={`row_card_filter_${pf}`}>
                     <Col md={3} className="text-muted text-right">
-                        <Row className="mb-n2"><Col><small>источник: <i><strong>{this.state.download[pf].sourceID}</strong></i></small></Col></Row>
+                        <Row className="mt-3 mb-n2"><Col><small>источник: <i><strong>{this.state.download[pf].sourceID}</strong></i></small></Col></Row>
                         <Row className="mb-n2"><Col><small>название: <i><strong>{this.state.download[pf].name}</strong></i></small></Col></Row>
                         <Row className="mb-n2"><Col><small>действие: </small><Badge bg="info">загрузка файлов</Badge></Col></Row>
                     </Col>
                     <Col md={9}>
                         <Card 
-                            className="mb-3 clicabe_cursor text-muted" 
+                            className="clicabe_cursor text-muted" 
                             key={`card_filter_${pf}`}
                             onClick={this.showModalWindow.bind(this, objInfo)} >
-                            <small className="text-muted">
-                                {`файлов загружено / с ошибкой / всего: ${fd} / ${fde} / ${fdt}`}
-                            </small>
-                            {progress}
-                            <small>{`загружается файл: ${fileName}`}</small>
+                            <Card.Body>
+                                <small className="text-muted">
+                                    {`файлов загружено / с ошибкой / всего: ${fd} / ${fde} / ${fdt}`}
+                                </small>
+                                {progress}
+                                <small>{`загружается файл: ${fileName}`}</small>
+                            </Card.Body>
                         </Card>
                     </Col>
                 </Row>

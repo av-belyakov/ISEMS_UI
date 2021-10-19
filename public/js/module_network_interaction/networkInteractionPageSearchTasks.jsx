@@ -470,7 +470,7 @@ class CreatePageSearchTasks extends React.Component {
         if(this.state.showSpinner){
             return (
                 <Row className="pt-4">
-                    <Col md={12}>
+                    <Col md={12} className="text-center">
                         <Spinner animation="border" role="status" variant="primary">
                             <span className="sr-only text-muted">Загрузка...</span>
                         </Spinner>
@@ -484,7 +484,7 @@ class CreatePageSearchTasks extends React.Component {
                 <React.Fragment>
                     <Row className="pt-4">
                         <Col md={10} className="text-left text-muted">
-                        всего задач найдено: <i>{this.state.listTasksFound.tntf}</i>
+                            всего задач найдено: <i>{this.state.listTasksFound.tntf}</i>
                         </Col>
                         <Col md={2} className="text-right"></Col>
                     </Row>
@@ -573,43 +573,41 @@ class CreatePageSearchTasks extends React.Component {
             taskStringName = "выбранных задач";
         }
 
-        return (
-            <React.Fragment>
-                <Row className="pt-3">
-                    <Col md={12}>
-                        <CreateBodySearchTask 
-                            socketIo={this.props.socketIo} 
-                            listSources={this.props.listItems.listSources}
-                            handlerButtonSearch={this.handlerButtonSearch} />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12}>
-                        {this.createTableListDownloadFile.call(this)}
-                        {this.createPaginationMUI.call(this)}
-                    </Col>
-                </Row>
+        return (<React.Fragment>
+            <Row className="pt-3">
+                <Col md={12}>
+                    <CreateBodySearchTask 
+                        socketIo={this.props.socketIo} 
+                        listSources={this.props.listItems.listSources}
+                        handlerButtonSearch={this.handlerButtonSearch} />
+                </Col>
+            </Row>
+            <Row>
+                <Col md={12}>
+                    {this.createTableListDownloadFile.call(this)}
+                    {this.createPaginationMUI.call(this)}
+                </Col>
+            </Row>
 
-                <ModalWindowShowInformationTask 
-                    show={this.state.showModalWindowShowTaskInformation}
-                    onHide={this.handlerCloseModalWindowShowTaskInformation}
-                    socketIo={this.props.socketIo}
-                    shortTaskInfo={this.state.shortTaskInformation} />
-                <ModalWindowAddFilteringTask 
-                    show={this.state.showModalWindowFiltration}
-                    onHide={this.handlerCloseModalWindowFiltration}
-                    listSources={this.state.listSources}
-                    currentFilteringParameters={this.state.currentFilteringParameters}
-                    handlerButtonSubmit={this.handlerButtonSubmitWindowFilter} />
-                <ModalWindowConfirmMessage 
-                    show={this.state.showModalWindowDeleteTask}
-                    onHide={this.closeModalWindowTasksDelete}
-                    msgBody={`Вы действительно хотите удалить ${this.state.listCheckboxMarkedTasksDel.size} ${taskStringName}`}
-                    msgTitle={"Удаление"}
-                    nameDel={""}
-                    handlerConfirm={this.handlerTaskDelete} />
-            </React.Fragment>
-        );
+            <ModalWindowShowInformationTask 
+                show={this.state.showModalWindowShowTaskInformation}
+                onHide={this.handlerCloseModalWindowShowTaskInformation}
+                socketIo={this.props.socketIo}
+                shortTaskInfo={this.state.shortTaskInformation} />
+            <ModalWindowAddFilteringTask 
+                show={this.state.showModalWindowFiltration}
+                onHide={this.handlerCloseModalWindowFiltration}
+                listSources={this.state.listSources}
+                currentFilteringParameters={this.state.currentFilteringParameters}
+                handlerButtonSubmit={this.handlerButtonSubmitWindowFilter} />
+            <ModalWindowConfirmMessage 
+                show={this.state.showModalWindowDeleteTask}
+                onHide={this.closeModalWindowTasksDelete}
+                msgBody={`Вы действительно хотите удалить ${this.state.listCheckboxMarkedTasksDel.size} ${taskStringName}`}
+                msgTitle={"Удаление"}
+                nameDel={""}
+                handlerConfirm={this.handlerTaskDelete} />
+        </React.Fragment>);
     }
 }
 

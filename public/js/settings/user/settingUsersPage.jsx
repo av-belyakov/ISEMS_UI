@@ -186,7 +186,6 @@ class BodyTable extends React.Component {
                         accessRights={this.props.accessRights} 
                         handler={this.handlerShow} 
                         key={`button_edit_${key}`}/>
-                    &nbsp;&nbsp;
                     <ButtonDelete 
                         login={user.login} 
                         handler={this.props.handlerButtonDelete.bind(this, key, user.login)} 

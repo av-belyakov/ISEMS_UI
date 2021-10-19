@@ -766,18 +766,16 @@ class CreatePageTemplateLog extends React.Component {
             return;
         }
 
-        return (
-            <Row>
-                <Col md={12} className="text-left">
-                    <Button 
-                        size="sm"
-                        variant="outline-primary" 
-                        onClick={this.handlerButtonAddTask}>
+        return (<Row className="mb-2">
+            <Col md={12} className="text-left">
+                <Button 
+                    size="sm"
+                    variant="outline-primary" 
+                    onClick={this.handlerButtonAddTask}>
                             добавить шаблон
-                    </Button>
-                </Col>
-            </Row>
-        );
+                </Button>
+            </Col>
+        </Row>);
     }
 
     render(){
