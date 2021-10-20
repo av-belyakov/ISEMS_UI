@@ -321,17 +321,76 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     handlerDeleteElementAdditionalTechnicalInformation(obj){
+        let externalReferences = [];
 
         console.log("func 'handlerDeleteElementAdditionalTechnicalInformation', START...");
         console.log(obj);
 
+        console.log("============ 111");
+        console.log(this.state.listObjectInfo);
+
+        console.log("============ 222");
+        console.log(this.state.listObjectInfo[obj.objectId]);
+
+        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
+
+        if(obj.itemType === "external_references"){
+
+            console.log("func 'handlerDeleteElementAdditionalTechnicalInformation', START...");
+            console.log("external_references ----");
+
+            externalReferences = listObjectTmp[obj.objectId].external_references.filter((item) => item.source_name !== obj.item);
+
+            console.log("externalReferences");
+            console.log(externalReferences);
+
+            /*
+            delete listObjectTmp.extensions;
+            delete listObjectTmp.external_references;
+            
+            listObjectTmp.object_refs = [];
+            listObjectTmp.extensions = [];
+            */
+
+            listObjectTmp[obj.objectId].external_references = externalReferences;
+
+            console.log("|||||||||");
+            console.log(listObjectTmp[obj.objectId]);
+
+            console.log(listObjectTmp);
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
     }
 
     handlerExternalReferencesButtonSave(obj){
 
-        console.log("func 'handlerExternalReferencesButtonSave', START...");
-        console.log(obj);
 
+        console.log("func 'handlerExternalReferencesButtonSave', START...");
+        console.log("--------------------");
+        console.log(obj);
+        console.log("--------------------");
+        //let reportInfo = this.state.listObjectInfo[this.props.showReportId];
+        console.log("___________ searched element ___________");
+        console.log("------ BEFORE ------");
+        console.log(this.state.listObjectInfo[this.props.showReportId]);
+
+        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
+        listObjectTmp[this.props.showReportId].external_references.push({
+            external_id: this.state.uuidValue,
+            source_name: obj.source_name,
+            description: obj.description,
+            url: obj.url,
+            hashes: obj.hashes,
+        });
+
+        console.log("--------- AFTER --------");
+        console.log(listObjectTmp[this.props.showReportId].external_references);
+
+        this.setState({ 
+            listObjectInfo: listObjectTmp,
+            showDialogElementAdditionalThechnicalInfo: false,
+        });
     }
 
     modalClose(){
@@ -481,7 +540,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                     <Col md={12} className="mt-3">
                                         <TextField
                                             id="outlined-multiline-static"
-                                            label="Подробное описание"
+                                            label={"подробное описание"}
                                             multiline
                                             rows={4}
                                             fullWidth

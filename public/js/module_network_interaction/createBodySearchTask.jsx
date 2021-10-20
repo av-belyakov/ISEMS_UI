@@ -585,7 +585,7 @@ export default class CreateBodySearchTask extends React.Component {
                             <option value="stop">остановлена пользователем</option>
                         </Form.Control>
                     </Col>
-                    <Col md="auto" className="mt-1">    
+                    <Col md="auto" className="mt-1 text-end">    
                         <Form>
                             <Form.Check 
                                 inline
@@ -752,7 +752,7 @@ export default class CreateBodySearchTask extends React.Component {
                             handlerChangeDateTimeStart={this.handlerChangeStartDate}
                             handlerChangeDateTimeEnd={this.handlerChangeEndDate} />
                     </Col>
-                    <Col md={2} className="text-right">
+                    <Col md={2} className="text-end">
                         <Form>
                             <Form.Label>сетевой протокол</Form.Label>
                             <CreateProtocolList handlerChosen={this.handlerChosenProtocolList} />
@@ -761,7 +761,7 @@ export default class CreateBodySearchTask extends React.Component {
                     <Col md={4}>
                         <GetlabelsAdditionalTechnicalInformation handlerFieldInput={this.handlerFieldInput} />
                     </Col>
-                    <Col md={1} className="text-right">
+                    <Col md={1} className="text-end">
                         <Row className="mt-n2">
                             <Col>
                                 <OverlayTrigger
@@ -774,7 +774,7 @@ export default class CreateBodySearchTask extends React.Component {
                                 </OverlayTrigger>
                             </Col>
                         </Row>
-                        <Row className="text-right mt-2">
+                        <Row className="text-end mt-2">
                             <Col>
                                 <Button 
                                     size="sm" 

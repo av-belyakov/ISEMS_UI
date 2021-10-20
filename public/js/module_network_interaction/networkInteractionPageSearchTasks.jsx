@@ -498,7 +498,7 @@ class CreatePageSearchTasks extends React.Component {
                     <Col md={10} className="text-left text-muted">
                     всего задач найдено: <i>{this.state.listTasksFound.tntf}</i>
                     </Col>
-                    <Col md={2} className="text-right">
+                    <Col md={2} className="text-end">
                         <Button 
                             size="sm" 
                             variant="outline-danger"

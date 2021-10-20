@@ -10,6 +10,7 @@ import {
     CardHeader,
     CardContent,
     Typography, 
+    TextField,
     Grid,
     Link,
     IconButton,
@@ -46,12 +47,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateElementAdditionalTechnicalInformation(props){
-    const classes = useStyles();
-    const [expanded, setExpanded] = React.useState(false);
-    const handleChange = (panel) => (event, isExpanded) => {
-        setExpanded(isExpanded ? panel : false);
-    };
-
     let { reportInfo, 
         objectId,
         handlerElementConfidence, 
@@ -61,6 +56,20 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         showDialogElementAdditionalThechnicalInfo,
         isNotDisabled } = props;
 
+    let listTmpLabelsAdditionalTechnicalInformation = [];
+    
+    const classes = useStyles();
+    const [expanded, setExpanded] = React.useState(false);
+    const handleChange = (panel) => (event, isExpanded) => {
+        setExpanded(isExpanded ? panel : false);
+    };
+    const [labelsTokenInput, setLabelsTokenInput] = useState(listTmpLabelsAdditionalTechnicalInformation);
+    const handlerChangeElementLabels = useCallback((newTokenValues) => {
+        setLabelsTokenInput(newTokenValues);
+
+        handlerElementLabels({ listTokenValue: newTokenValues, objectId: objectId });
+    },
+    [setLabelsTokenInput, objectId, handlerElementLabels]);
 
     let handlerElConf = (data) => {
             handlerElementConfidence({ data: data.target.value, objectId: objectId });
@@ -69,29 +78,19 @@ export default function CreateElementAdditionalTechnicalInformation(props){
             handlerElementDefanged({ data: data.target.value, objectId: objectId }); 
         };
 
-    let getlabelsAdditionalTechnicalInformation = () => {
-        let listTmp = [];
-        if(reportInfo.labels !== null){
-            listTmp = reportInfo.labels;
-        }
+    if(reportInfo.labels !== null){
+        listTmpLabelsAdditionalTechnicalInformation = reportInfo.labels;
+    }
 
-        const [labelsTokenInput, setValues] = useState(listTmp);
-        const handlerChangeElementLabels = useCallback((newTokenValues) => {
-            setValues(newTokenValues);
-
-            handlerElementLabels({ listTokenValue: newTokenValues, objectId: objectId });
-        },
-        [setValues]);
-
+    let getLabelsAdditionalTechnicalInformation = () => {
         return (<React.Fragment>
-            <Grid container direction="row" className="pl-4 pt-2 pb-1">
+            <Grid container direction="row" className="mt-2 pl-4">
                 <Grid item md={6}><span className="text-muted">набор терминов, используемых для описания данного объекта</span>:</Grid>
                 <Grid item md={6} className="text-right">
                     <TokenInput
                         style={{ height: "81px" }}
                         tokenValues={labelsTokenInput}
-                        onTokenValuesChange={handlerChangeElementLabels}
-                    />
+                        onTokenValuesChange={handlerChangeElementLabels} />
                 </Grid>    
             </Grid>
         </React.Fragment>);
@@ -106,7 +105,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         let externalReferences = () => {
             return (<React.Fragment>
                 <Grid container direction="row" key="key_external_references_link">
-                    <Grid item md={12} className="text-right pb-2">
+                    <Grid item md={12} className="text-end pb-2">
                         <Link href="#" onClick={()=>{ 
                             showDialogElementAdditionalThechnicalInfo({ 
                                 actionType: "new",
@@ -201,7 +200,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         let granularMarkings = () => {
             return (<React.Fragment>
                 <Grid container direction="row" key="key_granular_markings_link">
-                    <Grid item md={12} className="text-right pb-2">
+                    <Grid item md={12} className="text-end pb-2">
                         <Link href="#" onClick={()=>{ 
                             showDialogElementAdditionalThechnicalInfo({ 
                                 actionType: "new",
@@ -290,7 +289,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
 
         return (<React.Fragment>
             <Grid container direction="row" key="key_extensions_link">
-                <Grid item md={12} className="text-right pb-2">
+                <Grid item md={12} className="text-end pb-2">
                     <Link href="#" onClick={()=>{ 
                         showDialogElementAdditionalThechnicalInfo({ 
                             actionType: "new",
@@ -327,18 +326,18 @@ export default function CreateElementAdditionalTechnicalInformation(props){
 
         <Grid container direction="row" className="mt-3 pl-4">
             <Grid item md={6}><span className="text-muted">версия спецификации STIX</span>:</Grid>
-            <Grid item md={6} className="text-right">{(reportInfo.spec_version.length === 0) ? <span className="text-dark">версия не определена</span> : <i>{reportInfo.spec_version}</i>}</Grid>
+            <Grid item md={6} className="text-end">{(reportInfo.spec_version.length === 0) ? <span className="text-dark">версия не определена</span> : <i>{reportInfo.spec_version}</i>}</Grid>
         </Grid>
             
         {((typeof reportInfo.lang !== "undefined") && (reportInfo.lang !== null) && (reportInfo.lang.length !== 0)) ? 
             <Grid container direction="row" className="pl-4">
                 <Grid item md={6}><span className="text-muted">текстовый код языка</span>:</Grid>
-                <Grid item md={6} className="text-right"><i>{reportInfo.lang.toUpperCase()}</i></Grid>
+                <Grid item md={6} className="text-end"><i>{reportInfo.lang.toUpperCase()}</i></Grid>
             </Grid> : ""}
 
         <Grid container direction="row" className="pl-4">
             <Grid item md={10}><span className="text-muted">уверенность создателя в правильности своих данных от 0 до 100</span>&sup1;:</Grid>
-            <Grid item md={2} className="text-right">
+            <Grid item md={2} className="text-end">
                 <Form.Group>
                     <Form.Control 
                         disabled={!isNotDisabled}
@@ -354,19 +353,21 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         </Grid>
 
         {((typeof reportInfo.created_by_ref !== "undefined") && (reportInfo.created_by_ref !== null) && (reportInfo.created_by_ref.length !== 0)) ? 
-            <Grid container direction="row" className="pl-4">
+            <Grid container direction="row" className="mt-1 pl-4">
                 <Grid item md={6}><span className="text-muted">идентификатор источника создавшего доклад</span>:</Grid>
-                <Grid item md={6} className="text-right"><i>{reportInfo.created_by_ref}</i></Grid>
+                <Grid item md={6}>
+                    <TextField size="small" defaultValue={reportInfo.created_by_ref} disabled fullWidth/>
+                </Grid>
             </Grid> : ""}
 
         {
             //набор терминов для описание данного объекта
-            getlabelsAdditionalTechnicalInformation()
+            getLabelsAdditionalTechnicalInformation()
         }
 
-        <Grid container direction="row" className="pl-4 pb-3">
+        <Grid container direction="row" className="pl-4 mt-1 mb-3">
             <Grid item md={10}><span className="text-muted">определены ли данные содержащиеся в объекте</span>:</Grid>
-            <Grid item md={2} className="text-right">
+            <Grid item md={2} className="text-end">
                 <Form.Group>
                     <Form.Control 
                         disabled={!isNotDisabled}

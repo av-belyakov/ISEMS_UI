@@ -18,7 +18,7 @@ import {
     Typography,
     
 } from "@material-ui/core";
-import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
+import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
@@ -88,6 +88,9 @@ export default function DialogElementAdditionalThechnicalInformation(props){
     };
 
     const handlerHashesExternalReferences = (hashes) => {
+        console.log("___ func 'handlerHashesExternalReferences', START...");
+        console.log(hashes);
+
         let valueERTmp = _.cloneDeep(valueER);
         valueERTmp.hashes = hashes;
         
@@ -152,7 +155,13 @@ export default function DialogElementAdditionalThechnicalInformation(props){
             <Button onClick={onHide} color="primary">закрыть</Button>
             <Button 
                 disabled={buttonSaveIsDisabled}
-                onClick={() => { handlerExternalReferencesButtonSave(valueER); }} 
+                onClick={() => { 
+                    
+                    console.log("--- Button 'SAVE' ----");
+                    console.log(valueER.hashes);
+
+                    handlerExternalReferencesButtonSave(valueER);
+                }} 
                 color="primary">
                 сохранить
             </Button>
@@ -184,17 +193,20 @@ function CreateNewExternalReferences(props){
 
             console.log("func 'handlerAddNewHash'");
 
-            setListHashes(listHashes.concat([{ type: selectItemHash, description: inputHash }]));
-            handlerHashList(listHashes);
+            let listHashesTmp = listHashes.concat([{ type: selectItemHash, description: inputHash }]);
+
+            setListHashes(listHashesTmp);
             setInputHash("");
             setSelectItemHash("");
+
+            handlerHashList(listHashesTmp);
         },
         handlerDelItemHash = (num) => {
             let tmp = listHashes.slice();
             tmp.splice(num, 1);
             listHashes = tmp;
-
             setListHashes(listHashes);
+            
             handlerHashList(listHashes);
         };
 
@@ -286,12 +298,12 @@ function CreateNewExternalReferences(props){
         </Grid>
         {(listHashes.length === 0) 
             ? "" 
-            : <Grid container direction="row"><ol>
+            : <Grid container direction="row" className="mt-3"><ol>
                 {listHashes.map((elem, numHash) => {
                     return (<li key={`key_item_hash_${numHash}`}>
-                        {`${elem.type}: ${elem.description}`}
+                        {`${elem.type}: ${elem.description}`}&nbsp;
                         <IconButton aria-label="delete-hash" onClick={() => handlerDelItemHash.call(null, numHash)}>
-                            <IconDeleteOutline style={{ color: red[400] }} />
+                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                         </IconButton>
                     </li>);
                 })}
