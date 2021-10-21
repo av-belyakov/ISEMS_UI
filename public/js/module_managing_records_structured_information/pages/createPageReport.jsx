@@ -157,7 +157,7 @@ export default class CreatePageReport extends React.Component {
                 <CreateWidgetsPageReport socketIo={this.props.socketIo}/>
 
                 <Row>
-                    <Col md={12} className="text-right pt-2">
+                    <Col md={12} className="text-end pt-2">
                         <CreateButtonNewReport 
                             buttonIsDisabled={this.isDisabledNewReport.call(this)}
                             handlerShowModalWindow={this.handlerShowModalWindowAddReport}/>

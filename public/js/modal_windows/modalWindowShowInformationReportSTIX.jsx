@@ -98,6 +98,61 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.requestEmitter.call(this);
     }
 
+    testWriteAdditionalInfoForListObjectInfo(){
+        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
+
+        console.log("func 'testWriteAdditionalInfoForListObjectInfo', START...");
+        console.log(listObjectTmp);
+
+        // *** для теста "Дополнительных внешних ссылок" START ***
+        listObjectTmp[this.props.showReportId].external_references = [
+            {
+                source_name: "external references 1",
+                description: "common description external references 1 to read people",
+                url: "html://external-references-example-1.net/watch?v=BSoHDCWze7E",
+                hashes: {"md5": "dvyw7f37fggug8fg88g84fg8877e7fe", "sha256": "bcu48gc7g7848f48g88g85g8rfgh8rh84h8h8r8rh8rh8r"},
+                external_id: "ex-ref--vueueuf8egfurggrg7gd7fe",
+            },
+            {
+                source_name: "external references 2",
+                description: "common description external references 2 to read people",
+                url: "html://external-references-example-2222.net/watch?v=BSoHDCWze7E",
+                hashes: {"md5": "dvyw7f37fggug8fg88g84fg8877e7fe", "sha128": "nbeiuu37fg7g4f7g84g8gd8fg8eg8egf8e", "sha256": "bcu48gc7g7848f48g88g85g8rfgh8rh84h8h8r8rh8rh8r"},
+                external_id: "ex-ref--beg77e7fd3f377gr7eg7efg7",
+            },
+            {
+                source_name: "external references 3",
+                url: "html://external-references-example-2222.net/watch?v=BSoHDCWze7E",
+                external_id: "ex-ref--cbscvsvcvdvucvduvduvcduvbduv",
+            },
+        ];
+        // *** для теста "Дополнительных внешних ссылок" END ***
+
+        // *** для теста "Дополниельные 'гранулярные метки'" START ***
+        listObjectTmp[this.props.showReportId].granular_markings = [
+            {
+                lang: "CH",
+                marking_ref: "marking--bubdu8eeugfuegfe8fefhefe",
+                selectors: ["selectors_suvnid_1", "selectors_cvbi_2"],
+            },
+            {
+                lang: "US",
+                marking_ref: "marking-- cscusuudbsfubdufbudbfueubue",
+            },
+            {
+                lang: "RU",
+                selectors: ["selectors-bdufbdubudfud", "selectors-sufuwu3fueuef", "selectors-dufveufueufuefu"],
+            },
+        ];
+        // *** для теста "Дополниельные 'гранулярные метки'" END ***
+
+        // *** для теста "Любая дополнительная информация" START ***
+        listObjectTmp[this.props.showReportId].extensions = { "test element": "budbuufbduf fndufbud ufbdgufgur", "test element 1": "bvbibevi484negfgrgiurg" };
+        // *** для теста "Любая дополнительная информация" END ***
+
+        this.setState({ listObjectInfo: listObjectTmp });
+    }
+
     handlerEvents(){
         //обработка события связанного с приемом списка групп которым разрешен доступ к данному докладу
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
@@ -142,6 +197,14 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     //reportInfo: data.information.additional_parameters.transmitted_data,
                     listObjectInfo: listObjectInfoTmp,
                 });
+
+                /** 
+         *              ВНИМАНИЕ!!!
+         * Функция testWriteAdditionalInfoForListObjectInfo осуществляет ДОПОЛНИТЕЛЬНОЕ наполнение ТЕСТОВОЙ информацией объекта
+         * listObjectInfo
+         *  */
+                this.testWriteAdditionalInfoForListObjectInfo.call(this);
+        
                 break;
 
             case "list of groups to which the report is available":
@@ -255,6 +318,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 actionType: obj.actionType,
                 modalType: obj.modalType, 
                 objectId: obj.objectId,
+                sourceName: obj.sourceName,
             },
         });
     }
@@ -322,42 +386,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     handlerDeleteElementAdditionalTechnicalInformation(obj){
         let externalReferences = [];
-
-        console.log("func 'handlerDeleteElementAdditionalTechnicalInformation', START...");
-        console.log(obj);
-
-        console.log("============ 111");
-        console.log(this.state.listObjectInfo);
-
-        console.log("============ 222");
-        console.log(this.state.listObjectInfo[obj.objectId]);
-
         let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
 
         if(obj.itemType === "external_references"){
-
-            console.log("func 'handlerDeleteElementAdditionalTechnicalInformation', START...");
-            console.log("external_references ----");
-
             externalReferences = listObjectTmp[obj.objectId].external_references.filter((item) => item.source_name !== obj.item);
-
-            console.log("externalReferences");
-            console.log(externalReferences);
-
-            /*
-            delete listObjectTmp.extensions;
-            delete listObjectTmp.external_references;
-            
-            listObjectTmp.object_refs = [];
-            listObjectTmp.extensions = [];
-            */
-
             listObjectTmp[obj.objectId].external_references = externalReferences;
-
-            console.log("|||||||||");
-            console.log(listObjectTmp[obj.objectId]);
-
-            console.log(listObjectTmp);
 
             this.setState({ listObjectInfo: listObjectTmp });
         }
@@ -365,27 +398,63 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     handlerExternalReferencesButtonSave(obj){
 
-
         console.log("func 'handlerExternalReferencesButtonSave', START...");
-        console.log("--------------------");
         console.log(obj);
-        console.log("--------------------");
-        //let reportInfo = this.state.listObjectInfo[this.props.showReportId];
-        console.log("___________ searched element ___________");
-        console.log("------ BEFORE ------");
-        console.log(this.state.listObjectInfo[this.props.showReportId]);
 
         let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
-        listObjectTmp[this.props.showReportId].external_references.push({
-            external_id: this.state.uuidValue,
-            source_name: obj.source_name,
-            description: obj.description,
-            url: obj.url,
-            hashes: obj.hashes,
-        });
 
-        console.log("--------- AFTER --------");
-        console.log(listObjectTmp[this.props.showReportId].external_references);
+        /**
+handlerExternalReferencesButtonSave({ 
+                        actionType: objInfo.actionType, 
+                        modalType: objInfo.modalType,
+                        value: value, 
+                    });
+ */
+        if(obj.modalType === "external_references"){
+            let objHashesTmp = {};        
+            obj.value.hashes.forEach((item)=>{
+                objHashesTmp[item.type] = item.description;
+            });
+            
+            let newExternalReferences = {
+                source_name: obj.value.source_name,
+                description: obj.value.description,
+                url: obj.value.url,
+                hashes: objHashesTmp,
+            };
+
+            if(obj.actionType === "new"){
+                newExternalReferences.external_id = this.state.uuidValue;
+                listObjectTmp[this.props.showReportId].external_references.push(newExternalReferences);
+            }
+
+            if(obj.actionType === "edit"){
+                for(let i = 0; i < listObjectTmp[this.props.showReportId].external_references; i++){
+                    if(listObjectTmp[this.props.showReportId].external_references[i].source_name === obj.value.source_name){
+                        
+                        console.log("func 'handlerExternalReferencesButtonSave' external_references, type: 'edit'");
+                        
+                        listObjectTmp[this.props.showReportId].external_references[i] = newExternalReferences;
+                    
+                        break;
+                    }
+                }
+            }
+        }
+
+        /*if(obj.modalType === "granular_markings"){
+            if(obj.actionType === "new"){
+
+            }
+
+            if(obj.actionType === "edit"){
+        
+            }
+        }
+
+        if(obj.modalType === "extensions" && obj.actionType === "new"){
+
+        }*/
 
         this.setState({ 
             listObjectInfo: listObjectTmp,
@@ -404,12 +473,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     render() {
-
-        //console.log("||||| class 'ModalWindowShowInformationReportSTIX' |||||");
-        //console.log(this.state.listGroupAccessToReport);
-        //console.log(`this.state.currentShowId = ${this.state.currentShowId}`);
-        //console.log(`showReportId ==== ${this.props.showReportId}`);
-
         if((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined")){
             return (<Dialog 
                 fullScreen 
@@ -436,52 +499,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 {helpers.convertDateFromString(reportInfo.published, { monthDescription: "long", dayDescription: "numeric" })}
             </Col>);
         };
-
-        // *** для теста "Дополнительных внешних ссылок" START ***
-        reportInfo.external_references = [
-            {
-                source_name: "external references 1",
-                description: "common description external references 1 to read people",
-                url: "html://external-references-example-1.net/watch?v=BSoHDCWze7E",
-                hashes: {"md5": "dvyw7f37fggug8fg88g84fg8877e7fe", "sha256": "bcu48gc7g7848f48g88g85g8rfgh8rh84h8h8r8rh8rh8r"},
-                external_id: "ex-ref--vueueuf8egfurggrg7gd7fe",
-            },
-            {
-                source_name: "external references 2",
-                description: "common description external references 2 to read people",
-                url: "html://external-references-example-2222.net/watch?v=BSoHDCWze7E",
-                hashes: {"md5": "dvyw7f37fggug8fg88g84fg8877e7fe", "sha128": "nbeiuu37fg7g4f7g84g8gd8fg8eg8egf8e", "sha256": "bcu48gc7g7848f48g88g85g8rfgh8rh84h8h8r8rh8rh8r"},
-                external_id: "ex-ref--beg77e7fd3f377gr7eg7efg7",
-            },
-            {
-                source_name: "external references 3",
-                url: "html://external-references-example-2222.net/watch?v=BSoHDCWze7E",
-                external_id: "ex-ref--cbscvsvcvdvucvduvduvcduvbduv",
-            },
-        ];
-        // *** для теста "Дополнительных внешних ссылок" END ***
-
-        // *** для теста "Дополниельные 'гранулярные метки'" START ***
-        reportInfo.granular_markings = [
-            {
-                lang: "CH",
-                marking_ref: "marking--bubdu8eeugfuegfe8fefhefe",
-                selectors: ["selectors_suvnid_1", "selectors_cvbi_2"],
-            },
-            {
-                lang: "US",
-                marking_ref: "marking-- cscusuudbsfubdufbudbfueubue",
-            },
-            {
-                lang: "RU",
-                selectors: ["selectors-bdufbdubudfud", "selectors-sufuwu3fueuef", "selectors-dufveufueufuefu"],
-            },
-        ];
-        // *** для теста "Дополниельные 'гранулярные метки'" END ***
-
-        // *** для теста "Любая дополнительная информация" START ***
-        reportInfo.extensions = { "test element": "budbuufbduf fndufbud ufbdgufgur", "test element 1": "bvbibevi484negfgrgiurg" };
-        // *** для теста "Любая дополнительная информация" END ***
 
         return (<React.Fragment>
             <Dialog 
@@ -583,33 +600,39 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                     </Col>
                                 </Row>
 
-                                <Row className="mt-3">
-                                    <Col md={12}>
-                                        <span className="pl-4">
-                                            <CreateListSelect
-                                                list={this.props.listTypesDecisionsMadeComputerThreat}
-                                                label="принятое решение по компьютерной угрозе"
-                                                uniqId="decisions_made_computer_threat"
-                                                currentItem={reportInfo.outside_specification.decisions_made_computer_threat}
-                                                handlerChosen={this.handlerChosenDecisionsMadeComputerThreat}
-                                                isNotDisabled={this.props.userPermissions.editing_information.status} />
-                                        </span>
-                                    </Col>
-                                </Row>
-
-                                <Row className="mt-3 mb-4">
-                                    <Col md={12}>
-                                        <span className="pl-4">
-                                            <CreateListSelect
-                                                list={this.props.listTypesComputerThreat}
-                                                label="тип компьютерной угрозы"
-                                                uniqId="computer_threat_type"
-                                                currentItem={reportInfo.outside_specification.computer_threat_type}
-                                                handlerChosen={this.handlerChosenComputerThreatType}
-                                                isNotDisabled={this.props.userPermissions.editing_information.status} />
-                                        </span>
-                                    </Col>
-                                </Row>
+                                {((reportInfo.outside_specification.decisions_made_computer_threat === null) || (typeof reportInfo.outside_specification.decisions_made_computer_threat === "undefined"))? 
+                                    "":
+                                    <Row className="mt-3">
+                                        <Col md={12}>
+                                            <span className="pl-4">
+                                                <CreateListSelect
+                                                    list={this.props.listTypesDecisionsMadeComputerThreat}
+                                                    label="принятое решение по компьютерной угрозе"
+                                                    uniqId="decisions_made_computer_threat"
+                                                    currentItem={reportInfo.outside_specification.decisions_made_computer_threat}
+                                                    handlerChosen={this.handlerChosenDecisionsMadeComputerThreat}
+                                                    isNotDisabled={this.props.userPermissions.editing_information.status} />
+                                            </span>
+                                        </Col>
+                                    </Row>
+                                }
+                                
+                                {((reportInfo.outside_specification.computer_threat_type === null) || (typeof reportInfo.outside_specification.computer_threat_type === "undefined"))? 
+                                    "":
+                                    <Row className="mt-3">
+                                        <Col md={12}>
+                                            <span className="pl-4">
+                                                <CreateListSelect
+                                                    list={this.props.listTypesComputerThreat}
+                                                    label="тип компьютерной угрозы"
+                                                    uniqId="computer_threat_type"
+                                                    currentItem={reportInfo.outside_specification.computer_threat_type}
+                                                    handlerChosen={this.handlerChosenComputerThreatType}
+                                                    isNotDisabled={this.props.userPermissions.editing_information.status} />
+                                            </span>
+                                        </Col>
+                                    </Row>
+                                }
 
                                 <CreateElementAdditionalTechnicalInformation 
                                     reportInfo={reportInfo}
@@ -654,6 +677,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 onHide={this.closeDialogElementAdditionalThechnicalInfo.bind(this)}
                 objInfo={this.state.objectDialogElementAdditionalThechnicalInfo}
                 uuidValue={this.state.uuidValue}
+                listObjectInfo={this.state.listObjectInfo}
                 handlerExternalReferencesButtonSave={this.handlerExternalReferencesButtonSave} />
 
         </React.Fragment>);

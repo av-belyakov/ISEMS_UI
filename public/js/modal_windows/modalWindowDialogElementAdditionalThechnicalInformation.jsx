@@ -44,12 +44,17 @@ const listHashType = [
 ];
 
 export default function DialogElementAdditionalThechnicalInformation(props){
-    let { show, onHide, objInfo, uuidValue, handlerExternalReferencesButtonSave } = props;
+    let { show, onHide, objInfo, uuidValue, listObjectInfo, handlerExternalReferencesButtonSave } = props;
     const listTitle = {
         "external_references": "Управление внешними ссылками",
         "granular_markings": "Управление \"гранулярными метками\"",
         "extensions": "Управление дополнительной информацией",
     };
+
+    console.log("func 'DialogElementAdditionalThechnicalInformation', START");
+    console.log(objInfo);
+
+    let isNewElemER = ((objInfo.actionType === "new") && (objInfo.modalType === "external_references"));
     let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
         [ valueER, setValueER ] = useState({
@@ -57,7 +62,29 @@ export default function DialogElementAdditionalThechnicalInformation(props){
             description: "",
             url: "",
             hashes: [],
+        }),
+        [ valueGM, setValueGM ] = useState({
+            //            source_name: "",
+            //            description: "",
+            //            url: "",
+            //            hashes: [],
+        }),
+        [ valueE, setValueE ] = useState({
+            //            source_name: "",
+            //            description: "",
+            //            url: "",
+            //            hashes: [],
         });
+
+
+    /* if(listObjectInfo[objInfo.objectId] !== null && typeof listObjectInfo[objInfo.objectId] !== "undefined"){
+        listObjectInfo[objInfo.objectId].external_references.forEach((item) => {
+            if(item.source_name === objInfo.sourceName){
+                setButtonSaveIsDisabled(false);
+                setValuesIsInvalideSourceNameER(false);
+            }
+        });
+    }  */
 
     const handlerSourceNameExternalReferences = (obj) => {
         let valueERTmp = _.cloneDeep(valueER);     
@@ -88,9 +115,6 @@ export default function DialogElementAdditionalThechnicalInformation(props){
     };
 
     const handlerHashesExternalReferences = (hashes) => {
-        console.log("___ func 'handlerHashesExternalReferences', START...");
-        console.log(hashes);
-
         let valueERTmp = _.cloneDeep(valueER);
         valueERTmp.hashes = hashes;
         
@@ -102,10 +126,34 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         //        console.log("func 'switchTypeElement', START...");
         //        console.log(`actionType:${objInfo.actionType}, modalType: ${objInfo.modalType}`);
 
-        if(objInfo.actionType === "new"){
+        switch(objInfo.modalType){
+        case "external_references":
+            return <ManagementExternalReferencesObject
+                actionType={objInfo.actionType}
+                sourceName={objInfo.sourceName}
+                externalId={uuidValue}
+                listObjectInfo={listObjectInfo[objInfo.objectId]}
+                sourceNameIsInvalid={valuesIsInvalideSourceNameER}
+                handlerSourceName={handlerSourceNameExternalReferences}
+                handlerDescription={handlerDescriptionExternalReferences}
+                handlerURL={handlerURLExternalReferences}
+                handlerHashList={handlerHashesExternalReferences}
+            />;
+
+        case "granular_markings":
+            return <ManagementGranularMarkingsObject
+                externalId={uuidValue} />;
+    
+        case "extensions":
+            return <ManagementExtensionsObject 
+                externalId={uuidValue} />;
+
+        }
+
+        /*if(objInfo.actionType === "new"){
             switch(objInfo.modalType){
             case "external_references":
-                return <CreateNewExternalReferences
+                return <ManagementExternalReferencesObject
                     externalId={uuidValue}
                     sourceNameIsInvalid={valuesIsInvalideSourceNameER}
                     handlerSourceName={handlerSourceNameExternalReferences}
@@ -134,7 +182,7 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                 return <EditGranularMarkings/>;
 
             }        
-        }
+        }*/
     
         return (<Grid container direction="row">
             <Grid item md={12}>
@@ -156,11 +204,41 @@ export default function DialogElementAdditionalThechnicalInformation(props){
             <Button 
                 disabled={buttonSaveIsDisabled}
                 onClick={() => { 
-                    
-                    console.log("--- Button 'SAVE' ----");
-                    console.log(valueER.hashes);
+                    let value = {};
 
-                    handlerExternalReferencesButtonSave(valueER);
+                    if(objInfo.actionType === "new"){
+                        switch(objInfo.modalType){
+                        case "external_references":
+                            value = valueER;
+
+                            break;
+                        case "granular_markings":
+                            value= valueGM;
+
+                            break;
+                        case "extensions":
+                            value = valueE;
+
+                            break;    
+                        }
+                    }
+
+                    if(objInfo.actionType === "edit"){
+                        switch(objInfo.modalType){
+                        case "external_references":
+
+                            break;
+                        case "granular_markings":
+
+                            break;
+                        }
+                    }
+
+                    handlerExternalReferencesButtonSave({ 
+                        actionType: objInfo.actionType, 
+                        modalType: objInfo.modalType,
+                        value: value, 
+                    });
                 }} 
                 color="primary">
                 сохранить
@@ -174,13 +252,17 @@ DialogElementAdditionalThechnicalInformation.propTypes = {
     onHide: PropTypes.func.isRequired,
     objInfo: PropTypes.object.isRequired,
     uuidValue: PropTypes.string.isRequired,
+    listObjectInfo: PropTypes.object.isRequired,
     handlerExternalReferencesButtonSave: PropTypes.func.isRequired,
 };
 
-function CreateNewExternalReferences(props){
+function ManagementExternalReferencesObject(props){
     const classes = useStyles();
     let { externalId, 
-        sourceNameIsInvalid, 
+        sourceNameIsInvalid,
+        actionType,
+        sourceName,
+        listObjectInfo, 
         handlerSourceName,
         handlerDescription,
         handlerURL,
@@ -210,18 +292,32 @@ function CreateNewExternalReferences(props){
             handlerHashList(listHashes);
         };
 
+    console.log("func 'ManagementExternalReferencesObject', START... =======");
+    console.log(`actionType: '${actionType}', sourceName: '${sourceName}'`);
+    console.log("OBJECT INFO");
+    console.log(listObjectInfo);
+    console.log("func 'ManagementExternalReferencesObject', END =======");
+
+    let eid = `external-reference--${externalId}`;
+    let erInfo = {};
+    listObjectInfo.external_references.forEach((item) => {
+        if(item.source_name === sourceName){
+            eid = item.external_id;
+            erInfo = item;
+        }
+    });
+
     return (<React.Fragment>
         <Grid container direction="row">
-            <Grid item md={12}>
-                <span className="text-muted">ID</span>: {`external-reference--${externalId}`}
-            </Grid>
+            <Grid item md={12}><span className="text-muted">ID</span>: {eid}</Grid>
         </Grid>
         <Grid container direction="row">
             <Grid item md={12}>
                 <TextField
                     id="external-references-source-name"
                     label="наименование"
-                    //defaultValue="Default Value"
+                    defaultValue={(typeof erInfo.source_name === "undefined")? "": erInfo.source_name}
+                    disabled={(typeof erInfo.source_name !== "undefined")}
                     error={sourceNameIsInvalid}
                     fullWidth={true}
                     helperText="обязательное для заполнения поле"
@@ -235,6 +331,7 @@ function CreateNewExternalReferences(props){
                     id="external-references-description"
                     label="описание"
                     fullWidth={true}
+                    defaultValue={(typeof erInfo.description === "undefined")? "": erInfo.description}
                     onChange={handlerDescription}
                 />
             </Grid>
@@ -245,6 +342,7 @@ function CreateNewExternalReferences(props){
                     id="external-references-url"
                     label="url"
                     fullWidth={true}
+                    defaultValue={(typeof erInfo.url === "undefined")? "": erInfo.url}
                     onChange={handlerURL}
                 />
             </Grid>
@@ -296,24 +394,29 @@ function CreateNewExternalReferences(props){
                 <Button onClick={handlerAddNewHash} disabled={buttonAddHashIsDisabled}>добавить хеш</Button>
             </Grid>
         </Grid>
-        {(listHashes.length === 0) 
-            ? "" 
-            : <Grid container direction="row" className="mt-3"><ol>
-                {listHashes.map((elem, numHash) => {
-                    return (<li key={`key_item_hash_${numHash}`}>
-                        {`${elem.type}: ${elem.description}`}&nbsp;
-                        <IconButton aria-label="delete-hash" onClick={() => handlerDelItemHash.call(null, numHash)}>
-                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                        </IconButton>
-                    </li>);
-                })}
-            </ol></Grid> }
+        {(listHashes.length === 0) ? 
+            "" : 
+            <Grid container direction="row" className="mt-3">
+                <ol>
+                    {listHashes.map((elem, numHash) => {
+                        return (<li key={`key_item_hash_${numHash}`}>
+                            {`${elem.type}: ${elem.description}`}&nbsp;
+                            <IconButton aria-label="delete-hash" onClick={() => handlerDelItemHash.call(null, numHash)}>
+                                <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                            </IconButton>
+                        </li>);
+                    })}
+                </ol>
+            </Grid> }
     </React.Fragment>);
 }
 
-CreateNewExternalReferences.propTypes = {
+ManagementExternalReferencesObject.propTypes = {
     externalId: PropTypes.string.isRequired,
+    actionType: PropTypes.string.isRequired,
+    sourceName: PropTypes.string.isRequired,
     handlerURL: PropTypes.func.isRequired,
+    listObjectInfo: PropTypes.object.isRequired,
     handlerHashList: PropTypes.func.isRequired,
     handlerSourceName: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired,
@@ -331,7 +434,7 @@ EditExternalReferences.propTypes = {
     
 };
 
-function CreateNewGranularMarkings(props){
+function ManagementGranularMarkingsObject(props){
     let { externalId } = props;
 
     return (<DialogContentText>
@@ -339,7 +442,7 @@ function CreateNewGranularMarkings(props){
     </DialogContentText>);
 }
 
-CreateNewGranularMarkings.propTypes = {
+ManagementGranularMarkingsObject.propTypes = {
     externalId: PropTypes.string.isRequired,
 };
 
@@ -353,7 +456,7 @@ EditGranularMarkings.propTypes = {
 
 };
 
-function CreateNewExtensions(props){
+function ManagementExtensionsObject(props){
     let { externalId } = props;
 
     return (<DialogContentText>
@@ -361,6 +464,6 @@ function CreateNewExtensions(props){
     </DialogContentText>);
 }
 
-CreateNewExtensions.propTypes = {
+ManagementExtensionsObject.propTypes = {
     externalId: PropTypes.string.isRequired,
 };

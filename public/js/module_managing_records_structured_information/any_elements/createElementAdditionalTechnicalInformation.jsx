@@ -98,107 +98,101 @@ export default function CreateElementAdditionalTechnicalInformation(props){
 
     //дополнительные внешние ссылки
     let getExternalReferences = () => {
-        if((typeof reportInfo.external_references === "undefined") || (reportInfo.external_references === null) || (reportInfo.external_references.length === 0)){
-            return;
-        }
-
-        let externalReferences = () => {
-            return (<React.Fragment>
+        return (<Grid container direction="row">
+            <Grid item md={12}>
                 <Grid container direction="row" key="key_external_references_link">
                     <Grid item md={12} className="text-end pb-2">
                         <Link href="#" onClick={()=>{ 
                             showDialogElementAdditionalThechnicalInfo({ 
                                 actionType: "new",
                                 modalType: "external_references", 
-                                objectId: objectId }); 
+                                objectId: objectId,
+                                sourceName: "",
+                            }); 
                         }} color="textPrimary">
                             <Typography variant="overline" display="block" gutterBottom>добавить новую внешнюю ссылку</Typography>
                         </Link>
                     </Grid>
                 </Grid>
-                {reportInfo.external_references.map((item, key) => {
-                    let listHashes = [],
-                        sourceName = "";
-        
-                    if((typeof item.source_name !== "undefined") && (item.source_name !== null) && (item.source_name.length !== 0)){
-                        sourceName = item.source_name;
-                    }
+                {((typeof reportInfo.external_references === "undefined") || (reportInfo.external_references === null) || (reportInfo.external_references.length === 0))?
+                    "":
+                    reportInfo.external_references.map((item, key) => {
+                        let listHashes = [],
+                            sourceName = "";
+    
+                        if((typeof item.source_name !== "undefined") && (item.source_name !== null) && (item.source_name.length !== 0)){
+                            sourceName = item.source_name;
+                        }
 
-                    if((item.hashes !== null) && (typeof item.hashes !== "undefined")){
-                        for(let k in item.hashes){
-                            listHashes.push(<li key={`hash_${item.hashes[k]}`}>{k}: {item.hashes[k]}</li>);
-                        }    
-                    }
+                        if((item.hashes !== null) && (typeof item.hashes !== "undefined")){
+                            for(let k in item.hashes){
+                                listHashes.push(<li key={`hash_${item.hashes[k]}`}>{k}: {item.hashes[k]}</li>);
+                            }    
+                        }
 
-                    return (<Card className={classes.customPaper} key={`key_external_references_${key}_fragment`}>
-                        <CardHeader 
-                            subheader={sourceName}
-                            action={<React.Fragment>
-                                <IconButton aria-label="delete" onClick={()=>{ 
-                                    handlerElementDelete({ itemType: "external_references", item: sourceName, objectId: objectId }); 
-                                }}>
-                                    <IconDeleteOutline style={{ color: red[400] }} />
-                                </IconButton>
-                                <IconButton aria-label="edit" onClick={()=>{ 
-                                    showDialogElementAdditionalThechnicalInfo({ 
-                                        actionType: "edit",
-                                        modalType: "external_references", 
-                                        objectId: objectId }); }}>
-                                    <IconEdit style={{ color: blue[400] }} />
-                                </IconButton>
-                            </React.Fragment>
-                            } />
-                        <CardContent>
-                            {((typeof item.external_id === "undefined") || (item.external_id === null)) ? 
-                                "": 
-                                <Grid container direction="row" key={`key_external_references_${key}_2`}>
-                                    <Grid item md={12} className="pl-4 pr-4">
-                                        <Typography variant="body2" component="p"><span className="text-muted">ID</span>: {item.external_id}</Typography>
-                                    </Grid>
-                                </Grid>}
+                        return (<Card className={classes.customPaper} key={`key_external_references_${key}_fragment`}>
+                            <CardHeader 
+                                subheader={sourceName}
+                                action={<React.Fragment>
+                                    <IconButton aria-label="delete" onClick={()=>{ 
+                                        handlerElementDelete({ itemType: "external_references", item: sourceName, objectId: objectId }); 
+                                    }}>
+                                        <IconDeleteOutline style={{ color: red[400] }} />
+                                    </IconButton>
+                                    <IconButton aria-label="edit" onClick={()=>{ 
+                                        showDialogElementAdditionalThechnicalInfo({ 
+                                            actionType: "edit",
+                                            modalType: "external_references", 
+                                            objectId: objectId,
+                                            sourceName: sourceName,
+                                        }); }}>
+                                        <IconEdit style={{ color: blue[400] }} />
+                                    </IconButton>
+                                </React.Fragment>
+                                } />
+                            <CardContent>
+                                {((typeof item.external_id === "undefined") || (item.external_id === null)) ? 
+                                    "": 
+                                    <Grid container direction="row" key={`key_external_references_${key}_2`}>
+                                        <Grid item md={12} className="pl-4 pr-4">
+                                            <Typography variant="body2" component="p"><span className="text-muted">ID</span>: {item.external_id}</Typography>
+                                        </Grid>
+                                    </Grid>}
 
-                            {((typeof item.description === "undefined") || (item.description === null) || (item.description.length === 0) ? 
-                                "": 
-                                <Grid container direction="row" key={`key_external_references_${key}_3`}>
-                                    <Grid item md={12} className="pl-4 pr-4">
-                                        <Typography variant="body2" component="p"><span className="text-muted">описание</span>: {item.description}</Typography>
-                                    </Grid>
-                                </Grid>)}
+                                {((typeof item.description === "undefined") || (item.description === null) || (item.description.length === 0) ? 
+                                    "": 
+                                    <Grid container direction="row" key={`key_external_references_${key}_3`}>
+                                        <Grid item md={12} className="pl-4 pr-4">
+                                            <Typography variant="body2" component="p"><span className="text-muted">описание</span>: {item.description}</Typography>
+                                        </Grid>
+                                    </Grid>)}
 
-                            {((typeof item.url === "undefined") ||  (item.url === null) || (item.url.length === 0) ? 
-                                "": 
-                                <Grid container direction="row" key={`key_external_references_${key}_4`}>
-                                    <Grid item md={12} className="pl-4 pr-4">
-                                        <Typography variant="body2" component="p"><span className="text-muted">url</span>: <a href={item.url}>{item.url}</a></Typography>
-                                    </Grid>
-                                </Grid>)}
+                                {((typeof item.url === "undefined") ||  (item.url === null) || (item.url.length === 0) ? 
+                                    "": 
+                                    <Grid container direction="row" key={`key_external_references_${key}_4`}>
+                                        <Grid item md={12} className="pl-4 pr-4">
+                                            <Typography variant="body2" component="p"><span className="text-muted">url</span>: <a href={item.url}>{item.url}</a></Typography>
+                                        </Grid>
+                                    </Grid>)}
 
-                            {(listHashes.length !== 0) ? 
-                                <Grid container direction="row" key={`key_external_references_${key}_5`}>
-                                    <Grid item md={12} className="pl-4 pr-4">
-                                        <span><span className="text-muted">хеш суммы</span>:<ol>{listHashes}</ol></span>
-                                    </Grid>
-                                </Grid>: 
-                                ""}
-                        </CardContent>
-                    </Card>);
-                })}
-            </React.Fragment>);
-        };
-
-        return (<Grid container direction="row">
-            <Grid item md={12}>{externalReferences()}</Grid>
+                                {(listHashes.length !== 0) ? 
+                                    <Grid container direction="row" key={`key_external_references_${key}_5`}>
+                                        <Grid item md={12} className="pl-4 pr-4">
+                                            <span><span className="text-muted">хеш суммы</span>:<ol>{listHashes}</ol></span>
+                                        </Grid>
+                                    </Grid>: 
+                                    ""}
+                            </CardContent>
+                        </Card>);
+                    })}
+            </Grid>
         </Grid>);
     };
 
     //дополнительные "гранулярные метки"
     let getGranularMarkings = () => {
-        if((typeof reportInfo.granular_markings === "undefined") || (reportInfo.granular_markings === null) || (reportInfo.granular_markings.length === 0)){
-            return;
-        }
-
-        let granularMarkings = () => {
-            return (<React.Fragment>
+        return (<Grid container direction="row">
+            <Grid item md={12}>
                 <Grid container direction="row" key="key_granular_markings_link">
                     <Grid item md={12} className="text-end pb-2">
                         <Link href="#" onClick={()=>{ 
@@ -211,70 +205,64 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                         </Link>
                     </Grid>
                 </Grid>
-                {reportInfo.granular_markings.map((item, key) => {
-                    let listSelectors = [],
-                        markingRef = "";
+                {((typeof reportInfo.granular_markings === "undefined") || (reportInfo.granular_markings === null) || (reportInfo.granular_markings.length === 0))?
+                    "":
+                    reportInfo.granular_markings.map((item, key) => {
+                        let listSelectors = [],
+                            markingRef = "";
 
-                    if((typeof item.marking_ref !== "undefined") && (item.marking_ref !== null) && (item.marking_ref.length !== 0)){
-                        markingRef = item.marking_ref;
-                    }
+                        if((typeof item.marking_ref !== "undefined") && (item.marking_ref !== null) && (item.marking_ref.length !== 0)){
+                            markingRef = item.marking_ref;
+                        }
 
-                    if((item.selectors !== null) && (typeof item.selectors !== "undefined")){
-                        for(let k in item.selectors){
-                            listSelectors.push(<li key={`hash_${item.selectors[k]}`}>{item.selectors[k]}</li>);
-                        }    
-                    }
+                        if((item.selectors !== null) && (typeof item.selectors !== "undefined")){
+                            for(let k in item.selectors){
+                                listSelectors.push(<li key={`hash_${item.selectors[k]}`}>{item.selectors[k]}</li>);
+                            }    
+                        }
 
-                    return (<Card className={classes.customPaper} key={`key_granular_markings_${key}_fragment`}>
-                        <CardHeader 
-                            subheader={markingRef}
-                            action={<React.Fragment>
-                                <IconButton aria-label="delete" onClick={()=>{ 
-                                    handlerElementDelete({ itemType: "granular_markings", item: markingRef, objectId: objectId }); 
-                                }}>
-                                    <IconDeleteOutline style={{ color: red[400] }} />
-                                </IconButton>
-                                <IconButton aria-label="edit" onClick={()=>{ 
-                                    showDialogElementAdditionalThechnicalInfo({ 
-                                        actionType: "edit",
-                                        modalType: "granular_markings", 
-                                        objectId: objectId }); }}>
-                                    <IconEdit style={{ color: blue[400] }} />
-                                </IconButton>
-                            </React.Fragment>
-                            } />
-                        <CardContent>
-                            {((typeof item.lang === "undefined") || (item.lang === null) || (item.lang.length === 0) ? 
-                                "": 
-                                <Grid container direction="row" key={`key_granular_mark_${key}_2`}>
-                                    <Grid item md={12}>
-                                        <Typography variant="body2" component="p"><span className="text-muted">текстовый код языка</span>: {item.lang}</Typography>
-                                    </Grid>
-                                </Grid>)}
+                        return (<Card className={classes.customPaper} key={`key_granular_markings_${key}_fragment`}>
+                            <CardHeader 
+                                subheader={markingRef}
+                                action={<React.Fragment>
+                                    <IconButton aria-label="delete" onClick={()=>{ 
+                                        handlerElementDelete({ itemType: "granular_markings", item: markingRef, objectId: objectId }); 
+                                    }}>
+                                        <IconDeleteOutline style={{ color: red[400] }} />
+                                    </IconButton>
+                                    <IconButton aria-label="edit" onClick={()=>{ 
+                                        showDialogElementAdditionalThechnicalInfo({ 
+                                            actionType: "edit",
+                                            modalType: "granular_markings", 
+                                            objectId: objectId }); }}>
+                                        <IconEdit style={{ color: blue[400] }} />
+                                    </IconButton>
+                                </React.Fragment>
+                                } />
+                            <CardContent>
+                                {((typeof item.lang === "undefined") || (item.lang === null) || (item.lang.length === 0) ? 
+                                    "": 
+                                    <Grid container direction="row" key={`key_granular_mark_${key}_2`}>
+                                        <Grid item md={12}>
+                                            <Typography variant="body2" component="p"><span className="text-muted">текстовый код языка</span>: {item.lang}</Typography>
+                                        </Grid>
+                                    </Grid>)}
 
-                            {(listSelectors.length !== 0) ? 
-                                <Grid container direction="row" key={`key_granular_mark_${key}_3`}>
-                                    <Grid item md={12}>
-                                        <span><span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство</span>:<ol>{listSelectors}</ol></span>
-                                    </Grid>
-                                </Grid> : ""}
-                        </CardContent>
-                    </Card>);
-                })}
-            </React.Fragment>);
-        };
-
-        return (<Grid container direction="row">
-            <Grid item md={12}>{granularMarkings()}</Grid>
+                                {(listSelectors.length !== 0) ? 
+                                    <Grid container direction="row" key={`key_granular_mark_${key}_3`}>
+                                        <Grid item md={12}>
+                                            <span><span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство</span>:<ol>{listSelectors}</ol></span>
+                                        </Grid>
+                                    </Grid> : ""}
+                            </CardContent>
+                        </Card>);
+                    })}
+            </Grid>
         </Grid>);
     };
 
     //любая дополнительная информация
     let getExtensions = () => {
-        if((typeof reportInfo.extensions === "undefined") && (reportInfo.extensions === null) && (reportInfo.extensions.length === 0)){
-            return;
-        }   
-
         let  listExtensions = [];
         for(let k in reportInfo.extensions){
             listExtensions.push(<li key={`extensions_${k}`}>
@@ -287,21 +275,19 @@ export default function CreateElementAdditionalTechnicalInformation(props){
             </li>);
         }
 
-        return (<React.Fragment>
-            <Grid container direction="row" key="key_extensions_link">
-                <Grid item md={12} className="text-end pb-2">
-                    <Link href="#" onClick={()=>{ 
-                        showDialogElementAdditionalThechnicalInfo({ 
-                            actionType: "new",
-                            modalType: "extensions", 
-                            objectId: objectId }); 
-                    }} color="inherit">
-                        <Typography variant="overline" display="block" gutterBottom>{"добавить любую дополнительную информацию"}</Typography>
-                    </Link>
-                </Grid>
-                <Grid item md={12}><ul>{listExtensions}</ul></Grid>
+        return (<Grid container direction="row" key="key_extensions_link">
+            <Grid item md={12} className="text-end pb-2">
+                <Link href="#" onClick={()=>{ 
+                    showDialogElementAdditionalThechnicalInfo({ 
+                        actionType: "new",
+                        modalType: "extensions", 
+                        objectId: objectId }); 
+                }} color="inherit">
+                    <Typography variant="overline" display="block" gutterBottom>{"добавить любую дополнительную информацию"}</Typography>
+                </Link>
             </Grid>
-        </React.Fragment>);
+            <Grid item md={12}><ul>{listExtensions}</ul></Grid>
+        </Grid>);
     };
 
     //уверенность создателя в правильности своих данных от 0 до 100
@@ -320,7 +306,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
     };
 
     return (<React.Fragment>
-        <Grid container direction="row">
+        <Grid container direction="row" className="mt-4">
             <Grid item md={12}><span className="text-muted">Дополнительная техническая информация</span></Grid>
         </Grid>
 
