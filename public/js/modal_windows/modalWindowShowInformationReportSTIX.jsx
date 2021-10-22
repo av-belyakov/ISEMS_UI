@@ -18,6 +18,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
+import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import { teal, purple, grey } from "@material-ui/core/colors";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
@@ -411,6 +412,11 @@ handlerExternalReferencesButtonSave({
                     });
  */
         if(obj.modalType === "external_references"){
+
+            console.log("=============");
+            console.log(obj.value);
+            console.log("=============");
+
             let objHashesTmp = {};        
             obj.value.hashes.forEach((item)=>{
                 objHashesTmp[item.type] = item.description;
@@ -774,6 +780,9 @@ function GetListObjectRefs(props){
                         </IconButton>
                     </Tooltip>);
                 })}
+                <IconButton edge="start" color="inherit" onClick={()=>{}} aria-label="add">
+                    <AddCircleOutlineOutlinedIcon/>
+                </IconButton>
             </Grid>
         </Grid>
     </React.Fragment>);

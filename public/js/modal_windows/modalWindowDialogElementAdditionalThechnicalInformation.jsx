@@ -51,8 +51,8 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         "extensions": "Управление дополнительной информацией",
     };
 
-    console.log("func 'DialogElementAdditionalThechnicalInformation', START");
-    console.log(objInfo);
+    //    console.log("func 'DialogElementAdditionalThechnicalInformation', START");
+    //  console.log(objInfo);
 
     let isNewElemER = ((objInfo.actionType === "new") && (objInfo.modalType === "external_references"));
     let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
@@ -75,16 +75,6 @@ export default function DialogElementAdditionalThechnicalInformation(props){
             //            url: "",
             //            hashes: [],
         });
-
-
-    /* if(listObjectInfo[objInfo.objectId] !== null && typeof listObjectInfo[objInfo.objectId] !== "undefined"){
-        listObjectInfo[objInfo.objectId].external_references.forEach((item) => {
-            if(item.source_name === objInfo.sourceName){
-                setButtonSaveIsDisabled(false);
-                setValuesIsInvalideSourceNameER(false);
-            }
-        });
-    }  */
 
     const handlerSourceNameExternalReferences = (obj) => {
         let valueERTmp = _.cloneDeep(valueER);     
@@ -121,13 +111,53 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         setValueER(valueERTmp);
     };
 
-    const switchTypeElement = ()=>{
+    const handlerProcessingDialogElements = (obj) => {
+
+        console.log("fucn 'handlerProcessingDialogElements'");
+        console.log(obj);
+
+        if(obj.type === "external_references"){
+            if((obj.value.sourceName !== null) && (typeof obj.value.sourceName !== "undefined") && (obj.value.sourceName.length > 0)){
+                /*let valueERTmp = _.cloneDeep(valueER);     
+                valueERTmp.source_name = obj.value.sourceName;
+                valueERTmp.description = obj.value.description;
+                valueERTmp.url = obj.value.url;
+                valueERTmp.hashes = obj.value.hashes;
+                setValueER(valueERTmp);*/
+                console.log("=====---==--==--");
+                //setButtonSaveIsDisabled(false);
+                setValuesIsInvalideSourceNameER(false);
+            }
+        }
+
+        /*if(obj.type === "granular_markings"){
+
+        }*/
+    };
+
+    const switchTypeElement = () => {
 
         //        console.log("func 'switchTypeElement', START...");
         //        console.log(`actionType:${objInfo.actionType}, modalType: ${objInfo.modalType}`);
 
         switch(objInfo.modalType){
         case "external_references":
+            /*if((listObjectInfo.external_references !== null) && (typeof listObjectInfo.external_references !== "undefined")){
+                listObjectInfo.external_references.forEach((item) => {
+                    if(item.source_name === objInfo.sourceName){
+                        let valueERTmp = _.cloneDeep(valueER);     
+                        valueERTmp.source_name = objInfo.sourceName;
+                        valueERTmp.description = objInfo.description;
+                        valueERTmp.url = objInfo.url;
+                        valueERTmp.hashes = objInfo.hashes;
+                        setValueER(valueERTmp);
+
+                        setButtonSaveIsDisabled(false);
+                        setValuesIsInvalideSourceNameER(false);
+                    }
+                });    
+            }*/
+
             return <ManagementExternalReferencesObject
                 actionType={objInfo.actionType}
                 sourceName={objInfo.sourceName}
@@ -138,6 +168,7 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                 handlerDescription={handlerDescriptionExternalReferences}
                 handlerURL={handlerURLExternalReferences}
                 handlerHashList={handlerHashesExternalReferences}
+                handlerProcessingDialogElements={handlerProcessingDialogElements}
             />;
 
         case "granular_markings":
@@ -266,11 +297,44 @@ function ManagementExternalReferencesObject(props){
         handlerSourceName,
         handlerDescription,
         handlerURL,
-        handlerHashList } = props;
+        handlerHashList,
+        handlerProcessingDialogElements } = props;
+
+    let eid = `external-reference--${externalId}`;
+    let erInfo = {};
+    listObjectInfo.external_references.forEach((item) => {
+        if(item.source_name === sourceName){
+            eid = item.external_id;
+            erInfo = item;
+        }
+    });
+
+    //включить кнопку 'save' TESTING
+    if((erInfo.source_name !== null) && (typeof erInfo.source_name !== "undefined") && (erInfo.source_name.length > 0)){
+        handlerProcessingDialogElements({ type: "external_references", value: { 
+            sourceName: erInfo.source_name,
+            //description: erInfo.description,
+            //url: erInfo.url,
+            //hashes: erInfo.hashes,
+        }});
+        //handlerDescription({ target: { value: erInfo.description } });
+    }
+
     let [ selectItemHash, setSelectItemHash ] = useState(""),
         [ inputHash, setInputHash ] = useState(""),
         [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true),
-        [ listHashes, setListHashes ] = useState([]);
+        [ listHashes, setListHashes ] = useState((()=>{
+            if((erInfo.hashes === null) || (typeof erInfo.hashes === "undefined")){
+                return [];
+            }
+
+            let listTmp = [];
+            for(let key in erInfo.hashes){
+                listTmp.push({ type: key, description: erInfo.hashes[key] });
+            }
+
+            return listTmp;
+        })());
     const handlerAddNewHash = () => {
 
             console.log("func 'handlerAddNewHash'");
@@ -292,20 +356,13 @@ function ManagementExternalReferencesObject(props){
             handlerHashList(listHashes);
         };
 
-    console.log("func 'ManagementExternalReferencesObject', START... =======");
+    /*console.log("func 'ManagementExternalReferencesObject', START... =======");
     console.log(`actionType: '${actionType}', sourceName: '${sourceName}'`);
     console.log("OBJECT INFO");
     console.log(listObjectInfo);
     console.log("func 'ManagementExternalReferencesObject', END =======");
-
-    let eid = `external-reference--${externalId}`;
-    let erInfo = {};
-    listObjectInfo.external_references.forEach((item) => {
-        if(item.source_name === sourceName){
-            eid = item.external_id;
-            erInfo = item;
-        }
-    });
+    console.log(`THIS IS external_references = ${sourceName}`);
+    console.log(erInfo);*/
 
     return (<React.Fragment>
         <Grid container direction="row">
@@ -421,6 +478,7 @@ ManagementExternalReferencesObject.propTypes = {
     handlerSourceName: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired,
     sourceNameIsInvalid: PropTypes.bool.isRequired,
+    handlerProcessingDialogElements: PropTypes.func.isRequired,
 };
 
 function EditExternalReferences(props){
