@@ -21,6 +21,7 @@ import {
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
+import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -57,6 +58,7 @@ export default function DialogElementAdditionalThechnicalInformation(props){
     let isNewElemER = ((objInfo.actionType === "new") && (objInfo.modalType === "external_references"));
     let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
+        [ valuesIsInvalidSelectorsGM, setValuesIsInvalidSelectorsGM ] = useState(true),
         [ valueER, setValueER ] = useState({
             source_name: "",
             description: "",
@@ -64,10 +66,9 @@ export default function DialogElementAdditionalThechnicalInformation(props){
             hashes: [],
         }),
         [ valueGM, setValueGM ] = useState({
-            //            source_name: "",
-            //            description: "",
-            //            url: "",
-            //            hashes: [],
+            lang: "",
+            marking_ref: "",
+            selectors: [], //jбязательное значение
         }),
         [ valueE, setValueE ] = useState({
             //            source_name: "",
@@ -75,6 +76,9 @@ export default function DialogElementAdditionalThechnicalInformation(props){
             //            url: "",
             //            hashes: [],
         });
+
+    console.log("func 'DialogElementAdditionalThechnicalInformation', START...");
+    console.log(listObjectInfo[objInfo.objectId]);
 
     const handlerSourceNameExternalReferences = (obj) => {
         let valueERTmp = _.cloneDeep(valueER);     
@@ -111,55 +115,22 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         setValueER(valueERTmp);
     };
 
-    const handlerProcessingDialogElements = (obj) => {
+    const handlerLangGranularMarkings = (obj) => {
 
-        console.log("fucn 'handlerProcessingDialogElements'");
-        console.log(obj);
+    };
 
-        if(obj.type === "external_references"){
-            if((obj.value.sourceName !== null) && (typeof obj.value.sourceName !== "undefined") && (obj.value.sourceName.length > 0)){
-                /*let valueERTmp = _.cloneDeep(valueER);     
-                valueERTmp.source_name = obj.value.sourceName;
-                valueERTmp.description = obj.value.description;
-                valueERTmp.url = obj.value.url;
-                valueERTmp.hashes = obj.value.hashes;
-                setValueER(valueERTmp);*/
-                console.log("=====---==--==--");
-                //setButtonSaveIsDisabled(false);
-                setValuesIsInvalideSourceNameER(false);
-            }
-        }
+    const handlerMarkingRefGranularMarkings = (obj) => {
 
-        /*if(obj.type === "granular_markings"){
+    };
 
-        }*/
+    const handlerSelectorsGranularMarkings = (obj) => {
+
     };
 
     const switchTypeElement = () => {
-
-        //        console.log("func 'switchTypeElement', START...");
-        //        console.log(`actionType:${objInfo.actionType}, modalType: ${objInfo.modalType}`);
-
         switch(objInfo.modalType){
         case "external_references":
-            /*if((listObjectInfo.external_references !== null) && (typeof listObjectInfo.external_references !== "undefined")){
-                listObjectInfo.external_references.forEach((item) => {
-                    if(item.source_name === objInfo.sourceName){
-                        let valueERTmp = _.cloneDeep(valueER);     
-                        valueERTmp.source_name = objInfo.sourceName;
-                        valueERTmp.description = objInfo.description;
-                        valueERTmp.url = objInfo.url;
-                        valueERTmp.hashes = objInfo.hashes;
-                        setValueER(valueERTmp);
-
-                        setButtonSaveIsDisabled(false);
-                        setValuesIsInvalideSourceNameER(false);
-                    }
-                });    
-            }*/
-
             return <ManagementExternalReferencesObject
-                actionType={objInfo.actionType}
                 sourceName={objInfo.sourceName}
                 externalId={uuidValue}
                 listObjectInfo={listObjectInfo[objInfo.objectId]}
@@ -168,13 +139,24 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                 handlerDescription={handlerDescriptionExternalReferences}
                 handlerURL={handlerURLExternalReferences}
                 handlerHashList={handlerHashesExternalReferences}
-                handlerProcessingDialogElements={handlerProcessingDialogElements}
             />;
 
         case "granular_markings":
             return <ManagementGranularMarkingsObject
-                externalId={uuidValue} />;
+                externalId={uuidValue}
+                selectorsIsInvalid={valuesIsInvalidSelectorsGM}
+                listObjectInfo={listObjectInfo[objInfo.objectId]}
+                handlerLang={handlerLangGranularMarkings}
+                handlerMarkingRef={handlerMarkingRefGranularMarkings}
+                handlerSelectors={handlerSelectorsGranularMarkings}
+            />;
     
+            /**
+ * lang: "",
+            marking_ref: "",
+            selectors: [],
+ */
+
         case "extensions":
             return <ManagementExtensionsObject 
                 externalId={uuidValue} />;
@@ -222,6 +204,20 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         </Grid>);
     };
 
+    let buttonIsDisabled = buttonSaveIsDisabled;
+
+    if(show && (objInfo.modalType === "external_references") && (objInfo.actionType === "edit")){
+        if((listObjectInfo[objInfo.objectId] !== null) && (typeof listObjectInfo[objInfo.objectId] !== "undefined")){
+            for(let i = 0; i < listObjectInfo[objInfo.objectId].external_references.length; i++){
+                if(listObjectInfo[objInfo.objectId].external_references[i].source_name === objInfo.sourceName){
+                    buttonIsDisabled = false;
+
+                    break;
+                }
+            }
+        }
+    }
+
     return (<Dialog
         aria-labelledby="form-dialog-element"
         fullWidth
@@ -233,36 +229,38 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         <DialogActions>
             <Button onClick={onHide} color="primary">закрыть</Button>
             <Button 
-                disabled={buttonSaveIsDisabled}
+                disabled={buttonIsDisabled}
                 onClick={() => { 
                     let value = {};
 
-                    if(objInfo.actionType === "new"){
-                        switch(objInfo.modalType){
-                        case "external_references":
+                    switch(objInfo.modalType){
+                    case "external_references":
+                        if(objInfo.actionType === "new"){
                             value = valueER;
 
                             break;
-                        case "granular_markings":
-                            value= valueGM;
-
-                            break;
-                        case "extensions":
-                            value = valueE;
-
-                            break;    
                         }
-                    }
 
-                    if(objInfo.actionType === "edit"){
-                        switch(objInfo.modalType){
-                        case "external_references":
-
-                            break;
-                        case "granular_markings":
-
-                            break;
+                        for(let i = 0; i < listObjectInfo[objInfo.objectId].external_references.length; i++){
+                            if(listObjectInfo[objInfo.objectId].external_references[i].source_name === objInfo.sourceName){    
+                                value.source_name = objInfo.sourceName;
+                                value.description = (valueER.description === "") ? listObjectInfo[objInfo.objectId].external_references[i].description: valueER.description;
+                                value.url = (valueER.url === "") ? listObjectInfo[objInfo.objectId].external_references[i].url: valueER.url;
+                                value.hashes = (valueER.hashes === "") ? listObjectInfo[objInfo.objectId].external_references[i].hashes: valueER.hashes;
+    
+                                break;
+                            }
                         }
+
+                        break;
+                    case "granular_markings":
+                        value= valueGM;
+
+                        break;
+                    case "extensions":
+                        value = valueE;
+
+                        break;    
                     }
 
                     handlerExternalReferencesButtonSave({ 
@@ -270,6 +268,9 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                         modalType: objInfo.modalType,
                         value: value, 
                     });
+
+                    setValuesIsInvalideSourceNameER(true);
+                    setButtonSaveIsDisabled(true);
                 }} 
                 color="primary">
                 сохранить
@@ -291,14 +292,12 @@ function ManagementExternalReferencesObject(props){
     const classes = useStyles();
     let { externalId, 
         sourceNameIsInvalid,
-        actionType,
         sourceName,
         listObjectInfo, 
         handlerSourceName,
         handlerDescription,
         handlerURL,
-        handlerHashList,
-        handlerProcessingDialogElements } = props;
+        handlerHashList } = props;
 
     let eid = `external-reference--${externalId}`;
     let erInfo = {};
@@ -308,17 +307,6 @@ function ManagementExternalReferencesObject(props){
             erInfo = item;
         }
     });
-
-    //включить кнопку 'save' TESTING
-    if((erInfo.source_name !== null) && (typeof erInfo.source_name !== "undefined") && (erInfo.source_name.length > 0)){
-        handlerProcessingDialogElements({ type: "external_references", value: { 
-            sourceName: erInfo.source_name,
-            //description: erInfo.description,
-            //url: erInfo.url,
-            //hashes: erInfo.hashes,
-        }});
-        //handlerDescription({ target: { value: erInfo.description } });
-    }
 
     let [ selectItemHash, setSelectItemHash ] = useState(""),
         [ inputHash, setInputHash ] = useState(""),
@@ -335,10 +323,8 @@ function ManagementExternalReferencesObject(props){
 
             return listTmp;
         })());
+
     const handlerAddNewHash = () => {
-
-            console.log("func 'handlerAddNewHash'");
-
             let listHashesTmp = listHashes.concat([{ type: selectItemHash, description: inputHash }]);
 
             setListHashes(listHashesTmp);
@@ -356,13 +342,7 @@ function ManagementExternalReferencesObject(props){
             handlerHashList(listHashes);
         };
 
-    /*console.log("func 'ManagementExternalReferencesObject', START... =======");
-    console.log(`actionType: '${actionType}', sourceName: '${sourceName}'`);
-    console.log("OBJECT INFO");
-    console.log(listObjectInfo);
-    console.log("func 'ManagementExternalReferencesObject', END =======");
-    console.log(`THIS IS external_references = ${sourceName}`);
-    console.log(erInfo);*/
+    let isInvalidSourceName = ((typeof erInfo.source_name === "undefined") || (erInfo.source_name === ""))? sourceNameIsInvalid: false;
 
     return (<React.Fragment>
         <Grid container direction="row">
@@ -375,7 +355,7 @@ function ManagementExternalReferencesObject(props){
                     label="наименование"
                     defaultValue={(typeof erInfo.source_name === "undefined")? "": erInfo.source_name}
                     disabled={(typeof erInfo.source_name !== "undefined")}
-                    error={sourceNameIsInvalid}
+                    error={isInvalidSourceName}
                     fullWidth={true}
                     helperText="обязательное для заполнения поле"
                     onChange={handlerSourceName}
@@ -470,7 +450,6 @@ function ManagementExternalReferencesObject(props){
 
 ManagementExternalReferencesObject.propTypes = {
     externalId: PropTypes.string.isRequired,
-    actionType: PropTypes.string.isRequired,
     sourceName: PropTypes.string.isRequired,
     handlerURL: PropTypes.func.isRequired,
     listObjectInfo: PropTypes.object.isRequired,
@@ -478,41 +457,58 @@ ManagementExternalReferencesObject.propTypes = {
     handlerSourceName: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired,
     sourceNameIsInvalid: PropTypes.bool.isRequired,
-    handlerProcessingDialogElements: PropTypes.func.isRequired,
-};
-
-function EditExternalReferences(props){
-
-    return (<DialogContentText>
-        {"func 'EditExternalReferences'"}
-    </DialogContentText>);
-}
-
-EditExternalReferences.propTypes = {
-    
 };
 
 function ManagementGranularMarkingsObject(props){
-    let { externalId } = props;
+    let { externalId,
+        selectorsIsInvalid,
+        listObjectInfo,
+        handlerLang,
+        handlerMarkingRef,
+        handlerSelectors } = props;
 
-    return (<DialogContentText>
-        {`func 'CreateNewGranularMarkings' ID:'${externalId}'`}
-    </DialogContentText>);
+    let gmid = `granular-markings--${uuidv4()}`;
+    let gmInfo = {};
+    listObjectInfo.granular_markings.forEach((item) => {
+        /*if(item.source_name === sourceName){
+                eid = item.external_id;
+                erInfo = item;
+            }*/
+    });
+
+    /**
+ * lang: "",
+            marking_ref: "",
+            selectors: [], //jбязательное значение
+ */
+
+    return (<React.Fragment>
+        <Grid container direction="row">
+            <Grid item md={12}><span className="text-muted">ID</span>: {gmid}</Grid>
+        </Grid>
+        <Grid container direction="row">
+            <Grid item md={12}>
+                <TextField
+                    id="granular-markings-lang"
+                    label="lang"
+                    fullWidth={true}
+                    //                    defaultValue={(typeof erInfo.url === "undefined")? "": erInfo.url}
+                    onChange={handlerLang   }
+                />
+            </Grid>
+        </Grid>
+    </React.Fragment>);
 }
 
 ManagementGranularMarkingsObject.propTypes = {
     externalId: PropTypes.string.isRequired,
+    selectorsIsInvalid: PropTypes.bool.isRequired,
+    listObjectInfo: PropTypes.object.isRequired,
+    handlerLang: PropTypes.func.isRequired,
+    handlerMarkingRef: PropTypes.func.isRequired,
+    handlerSelectors: PropTypes.func.isRequired,
 };
 
-function EditGranularMarkings(props){
-    return (<DialogContentText>
-        {"func 'EditGranularMarkings'"}
-    </DialogContentText>);
-}
-
-EditGranularMarkings.propTypes = {
-
-};
 
 function ManagementExtensionsObject(props){
     let { externalId } = props;

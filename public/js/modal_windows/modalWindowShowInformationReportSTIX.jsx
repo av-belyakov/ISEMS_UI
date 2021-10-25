@@ -139,6 +139,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             {
                 lang: "US",
                 marking_ref: "marking-- cscusuudbsfubdufbudbfueubue",
+                selectors: ["selectors-11", "selectors-22", "selectors-33"],
             },
             {
                 lang: "RU",
@@ -412,11 +413,6 @@ handlerExternalReferencesButtonSave({
                     });
  */
         if(obj.modalType === "external_references"){
-
-            console.log("=============");
-            console.log(obj.value);
-            console.log("=============");
-
             let objHashesTmp = {};        
             obj.value.hashes.forEach((item)=>{
                 objHashesTmp[item.type] = item.description;
@@ -435,11 +431,8 @@ handlerExternalReferencesButtonSave({
             }
 
             if(obj.actionType === "edit"){
-                for(let i = 0; i < listObjectTmp[this.props.showReportId].external_references; i++){
-                    if(listObjectTmp[this.props.showReportId].external_references[i].source_name === obj.value.source_name){
-                        
-                        console.log("func 'handlerExternalReferencesButtonSave' external_references, type: 'edit'");
-                        
+                for(let i = 0; i < listObjectTmp[this.props.showReportId].external_references.length; i++){
+                    if(listObjectTmp[this.props.showReportId].external_references[i].source_name === obj.value.source_name){                        
                         listObjectTmp[this.props.showReportId].external_references[i] = newExternalReferences;
                     
                         break;
@@ -648,8 +641,7 @@ handlerExternalReferencesButtonSave({
                                     handlerElementLabels={this.handlerElementLabels.bind(this)}
                                     handlerElementDelete={this.handlerDeleteElementAdditionalTechnicalInformation.bind(this)}
                                     showDialogElementAdditionalThechnicalInfo={this.showDialogElementAdditionalThechnicalInfo.bind(this)}
-                                    isNotDisabled={this.props.userPermissions.editing_information.status} />
-                                    
+                                    isNotDisabled={this.props.userPermissions.editing_information.status} />  
                             </Col>
                             <Col md={5}>
                                 <Row className="pt-3">
