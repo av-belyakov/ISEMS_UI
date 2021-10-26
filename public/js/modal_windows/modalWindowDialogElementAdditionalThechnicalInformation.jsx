@@ -55,10 +55,8 @@ export default function DialogElementAdditionalThechnicalInformation(props){
     //    console.log("func 'DialogElementAdditionalThechnicalInformation', START");
     //  console.log(objInfo);
 
-    let isNewElemER = ((objInfo.actionType === "new") && (objInfo.modalType === "external_references"));
     let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
-        [ valuesIsInvalidSelectorsGM, setValuesIsInvalidSelectorsGM ] = useState(true),
         [ valueER, setValueER ] = useState({
             source_name: "",
             description: "",
@@ -115,16 +113,50 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         setValueER(valueERTmp);
     };
 
-    const handlerLangGranularMarkings = (obj) => {
+    const handlerLangGranularMarkings = (orderNumber, obj) => {
+        console.log("func 'handlerLangGranularMarkings', START...");
+        console.log(orderNumber);
+        console.log(obj);
 
+        let valueGMTmp = _.cloneDeep(valueGM);
+        valueGMTmp.lang = obj.target.value;
+        
+        setValueGM(valueGMTmp);
     };
 
-    const handlerMarkingRefGranularMarkings = (obj) => {
+    const handlerMarkingRefGranularMarkings = (orderNumber, obj) => {
+        console.log("func 'handlerMarkingRefGranularMarkings', START...");
+        console.log(`obj.target.value = ${obj.target.value}, orderNumber: '${orderNumber}'`);
 
+        let valueGMTmp = _.cloneDeep(valueGM);
+        valueGMTmp.marking_ref = obj.target.value;
+        
+        setValueGM(valueGMTmp);
     };
 
-    const handlerSelectorsGranularMarkings = (obj) => {
+    const handlerSelectorsGranularMarkings = (list) => {
+        console.log("func 'handlerSelectorsGranularMarkings', START...");
+        console.log(list);
 
+        let valueGMTmp = _.cloneDeep(valueGM);
+        valueGMTmp.selectors = list;
+        
+        setValueGM(valueGMTmp);
+
+        if(list.length > 0){
+            setButtonSaveIsDisabled(false);
+        } else {
+
+            console.log("ttttttttttttttt");
+
+            /**
+             * 
+             * Нужно сделать  disabled кнопку SAVE при полном удалении selectors
+             * 
+             */
+
+            setButtonSaveIsDisabled(true);
+        }
     };
 
     const switchTypeElement = () => {
@@ -144,58 +176,18 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         case "granular_markings":
             return <ManagementGranularMarkingsObject
                 externalId={uuidValue}
-                selectorsIsInvalid={valuesIsInvalidSelectorsGM}
+                objInfo={objInfo}
                 listObjectInfo={listObjectInfo[objInfo.objectId]}
                 handlerLang={handlerLangGranularMarkings}
                 handlerMarkingRef={handlerMarkingRefGranularMarkings}
                 handlerSelectors={handlerSelectorsGranularMarkings}
             />;
-    
-            /**
- * lang: "",
-            marking_ref: "",
-            selectors: [],
- */
 
         case "extensions":
             return <ManagementExtensionsObject 
                 externalId={uuidValue} />;
 
         }
-
-        /*if(objInfo.actionType === "new"){
-            switch(objInfo.modalType){
-            case "external_references":
-                return <ManagementExternalReferencesObject
-                    externalId={uuidValue}
-                    sourceNameIsInvalid={valuesIsInvalideSourceNameER}
-                    handlerSourceName={handlerSourceNameExternalReferences}
-                    handlerDescription={handlerDescriptionExternalReferences}
-                    handlerURL={handlerURLExternalReferences}
-                    handlerHashList={handlerHashesExternalReferences}
-                />;
-
-            case "granular_markings":
-                return <CreateNewGranularMarkings
-                    externalId={uuidValue} />;
-    
-            case "extensions":
-                return <CreateNewExtensions 
-                    externalId={uuidValue} />;
-
-            }
-        }
-
-        if(objInfo.actionType === "edit"){
-            switch(objInfo.modalType){
-            case "external_references":
-                return <EditExternalReferences/>; 
-
-            case "granular_markings":
-                return <EditGranularMarkings/>;
-
-            }        
-        }*/
     
         return (<Grid container direction="row">
             <Grid item md={12}>
@@ -206,17 +198,51 @@ export default function DialogElementAdditionalThechnicalInformation(props){
 
     let buttonIsDisabled = buttonSaveIsDisabled;
 
-    if(show && (objInfo.modalType === "external_references") && (objInfo.actionType === "edit")){
-        if((listObjectInfo[objInfo.objectId] !== null) && (typeof listObjectInfo[objInfo.objectId] !== "undefined")){
-            for(let i = 0; i < listObjectInfo[objInfo.objectId].external_references.length; i++){
-                if(listObjectInfo[objInfo.objectId].external_references[i].source_name === objInfo.sourceName){
-                    buttonIsDisabled = false;
+    (() => {
+        if(!show || (objInfo.modalType !== "external_references") || (objInfo.actionType !== "edit")){
+            return;
+        }
 
-                    break;
-                }
+        if((listObjectInfo[objInfo.objectId] === null) || (typeof listObjectInfo[objInfo.objectId] === "undefined")){
+            return;
+        }
+
+        for(let i = 0; i < listObjectInfo[objInfo.objectId].external_references.length; i++){
+            if(listObjectInfo[objInfo.objectId].external_references[i].source_name === objInfo.sourceName){
+                buttonIsDisabled = false;
+
+                break;
             }
         }
-    }
+    })();
+
+    (() => {
+        if(!show || (objInfo.modalType !== "granular_markings") || (objInfo.actionType !== "edit")){
+            //console.log("((( ERROR 1");
+
+            return;
+        }
+
+        if((listObjectInfo[objInfo.objectId] === null) || (typeof listObjectInfo[objInfo.objectId] === "undefined")){
+            //console.log("((( ERROR 2");
+            
+            return;
+        }
+            
+        if(!Array.isArray(listObjectInfo[objInfo.objectId].granular_markings) || (typeof listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber] === "undefined")){
+            //console.log("((( ERROR 3");
+            
+            return;
+        }
+
+        if(listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].selectors.length <= 0){
+            //console.log("((( ERROR 4");
+            
+            return;
+        }
+                
+        buttonIsDisabled = false;  
+    })();
 
     return (<Dialog
         aria-labelledby="form-dialog-element"
@@ -246,7 +272,7 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                                 value.source_name = objInfo.sourceName;
                                 value.description = (valueER.description === "") ? listObjectInfo[objInfo.objectId].external_references[i].description: valueER.description;
                                 value.url = (valueER.url === "") ? listObjectInfo[objInfo.objectId].external_references[i].url: valueER.url;
-                                value.hashes = (valueER.hashes === "") ? listObjectInfo[objInfo.objectId].external_references[i].hashes: valueER.hashes;
+                                value.hashes = ((valueER.hashes === "") || (valueER.hashes.length === 0)) ? listObjectInfo[objInfo.objectId].external_references[i].hashes: valueER.hashes;
     
                                 break;
                             }
@@ -254,7 +280,19 @@ export default function DialogElementAdditionalThechnicalInformation(props){
 
                         break;
                     case "granular_markings":
-                        value= valueGM;
+                        if(objInfo.actionType === "new"){
+                            value = valueGM;
+                            value.orderNumber = objInfo.orderNumber;
+
+                            break;
+                        }
+
+                        if((listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber] !== null) && (typeof listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber] !== "undefined")){
+                            value.lang = (valueGM.lang === "") ? listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].lang: valueGM.lang;
+                            value.marking_ref = (valueGM.marking_ref === "") ? listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].marking_ref: valueGM.marking_ref;
+                            value.selectors = (valueGM.selectors.length === 0) ? listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].selectors: valueGM.selectors;
+                            value.orderNumber = objInfo.orderNumber;
+                        }
 
                         break;
                     case "extensions":
@@ -427,7 +465,7 @@ function ManagementExternalReferencesObject(props){
                     }}
                 />
             </Grid>
-            <Grid item md={2} className="text-right pt-2">
+            <Grid item md={2} className="text-end pt-2">
                 <Button onClick={handlerAddNewHash} disabled={buttonAddHashIsDisabled}>добавить хеш</Button>
             </Grid>
         </Grid>
@@ -461,52 +499,137 @@ ManagementExternalReferencesObject.propTypes = {
 
 function ManagementGranularMarkingsObject(props){
     let { externalId,
-        selectorsIsInvalid,
+        objInfo,
         listObjectInfo,
         handlerLang,
         handlerMarkingRef,
         handlerSelectors } = props;
 
-    let gmid = `granular-markings--${uuidv4()}`;
-    let gmInfo = {};
-    listObjectInfo.granular_markings.forEach((item) => {
-        /*if(item.source_name === sourceName){
-                eid = item.external_id;
-                erInfo = item;
-            }*/
-    });
+    let objGM = {};
+    if(objInfo.orderNumber !== -1){
+        if((listObjectInfo.granular_markings[objInfo.orderNumber] !== null) && (typeof listObjectInfo.granular_markings[objInfo.orderNumber] !== "undefined")){
+            objGM = listObjectInfo.granular_markings[objInfo.orderNumber];
+        }
+    }
 
-    /**
- * lang: "",
-            marking_ref: "",
-            selectors: [], //jбязательное значение
- */
+    let [ markingRef, setMarkingRef ] = useState(() => (typeof objGM.marking_ref === "undefined")? "": objGM.marking_ref),
+        [ lang, setLang ] = useState(() => (typeof objGM.lang === "undefined")? "": objGM.lang),
+        [ selectorInput, setSelectorInput ] = useState(""),
+        [ selectorsList, setSelectorsList ] = useState(() => ((typeof objGM.selectors === "undefined") || (!Array.isArray(objGM.selectors)))? []: objGM.selectors);
+
+    let buttonIsDisabled = (() => (selectorInput.length === 0))();
+
+    const pphandlerMarkingRef = (obj) => {
+        setMarkingRef(obj.target.value);
+
+        handlerMarkingRef.call(null, objInfo.orderNumber, { target: { value: markingRef }});
+    };
+
+    const pphandlerGenerateMarkingRef = () => {
+        let id = `granular-markings--${uuidv4()}`;
+        setMarkingRef(id);
+
+        handlerMarkingRef.call(null, objInfo.orderNumber, { target: { value: id }});
+    };
+
+    const pphandlerLang = (obj) => {
+        let langValue = (obj.target.value).toUpperCase();
+        setLang(langValue);
+
+        handlerLang.call(null, objInfo.orderNumber, { target: { value: langValue }});
+    };
+
+    const pphandlerAddSelectorsList = () => {
+        let selectorListTmp = selectorsList.slice();
+        selectorListTmp.push(selectorInput);
+        setSelectorsList(selectorListTmp);
+        setSelectorInput("");
+
+        handlerSelectors(selectorListTmp);
+    };
+
+    const pphandlerDelSelectorsList = (obj, num) => {
+        let selectorListTmp = selectorsList.slice();
+        selectorListTmp.splice(num, 1);
+        setSelectorsList(selectorListTmp);
+
+        handlerSelectors(selectorListTmp);
+    };
 
     return (<React.Fragment>
         <Grid container direction="row">
-            <Grid item md={12}><span className="text-muted">ID</span>: {gmid}</Grid>
+            <Grid item md={9}>
+                <TextField
+                    id="granular-markings-marking-ref"
+                    label="идентификатор объекта 'marking-definition'"
+                    fullWidth={true}
+                    value={markingRef}
+                    onChange={pphandlerMarkingRef}
+                />
+            </Grid>
+            <Grid item md={3} className="text-center pt-2">
+                <Button onClick={pphandlerGenerateMarkingRef}>сгенерировать</Button>
+            </Grid>
         </Grid>
         <Grid container direction="row">
             <Grid item md={12}>
                 <TextField
                     id="granular-markings-lang"
-                    label="lang"
+                    label="маркер языка"
                     fullWidth={true}
-                    //                    defaultValue={(typeof erInfo.url === "undefined")? "": erInfo.url}
-                    onChange={handlerLang   }
+                    value={lang}
+                    //defaultValue={(typeof objGM.lang === "undefined")? "": objGM.lang}
+                    onChange={pphandlerLang}
                 />
             </Grid>
         </Grid>
+        <Grid container direction="row" key="key_input_hash_field">
+            <Grid item md={6}>
+                <TextField
+                    id="external-references-hash"
+                    label="идентификатор селектора"
+                    fullWidth
+                    value={selectorInput}
+                    onChange={(obj) => setSelectorInput(obj.target.value)}
+                />
+            </Grid>
+            <Grid item md={3} className="text-center pt-2">
+                <Button onClick={() => setSelectorInput(`selector--${uuidv4()}`)} >
+                    сгенерировать
+                </Button>
+            </Grid>
+            <Grid item md={3} className="text-end pt-2">
+                <Button 
+                    onClick={pphandlerAddSelectorsList} 
+                    disabled={buttonIsDisabled} color="primary" >
+                        добавить селектор
+                </Button>
+            </Grid>
+        </Grid>
+        {(selectorsList.length === 0) ? 
+            "" : 
+            <Grid container direction="row" className="mt-3">
+                <ol>
+                    {selectorsList.map((elem, num) => {
+                        return (<li key={`key_item_selector_${num}`}>
+                            {elem}
+                            <IconButton aria-label="delete-selector" onClick={pphandlerDelSelectorsList.bind(null, num)} >
+                                <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                            </IconButton>
+                        </li>);
+                    })}
+                </ol>
+            </Grid> }
     </React.Fragment>);
 }
 
 ManagementGranularMarkingsObject.propTypes = {
+    objInfo: PropTypes.object.isRequired,
     externalId: PropTypes.string.isRequired,
-    selectorsIsInvalid: PropTypes.bool.isRequired,
-    listObjectInfo: PropTypes.object.isRequired,
     handlerLang: PropTypes.func.isRequired,
-    handlerMarkingRef: PropTypes.func.isRequired,
+    listObjectInfo: PropTypes.object.isRequired,
     handlerSelectors: PropTypes.func.isRequired,
+    handlerMarkingRef: PropTypes.func.isRequired,
 };
 
 

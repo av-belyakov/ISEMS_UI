@@ -321,6 +321,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 modalType: obj.modalType, 
                 objectId: obj.objectId,
                 sourceName: obj.sourceName,
+                orderNumber: obj.orderNumber,
             },
         });
     }
@@ -405,13 +406,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
         let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
 
-        /**
-handlerExternalReferencesButtonSave({ 
-                        actionType: objInfo.actionType, 
-                        modalType: objInfo.modalType,
-                        value: value, 
-                    });
- */
         if(obj.modalType === "external_references"){
             let objHashesTmp = {};        
             obj.value.hashes.forEach((item)=>{
@@ -441,17 +435,25 @@ handlerExternalReferencesButtonSave({
             }
         }
 
-        /*if(obj.modalType === "granular_markings"){
+        if(obj.modalType === "granular_markings"){
             if(obj.actionType === "new"){
-
+                listObjectTmp[this.props.showReportId].granular_markings.push({
+                    lang: obj.value.lang,
+                    marking_ref: obj.value.marking_ref,
+                    selectors: obj.value.selectors, 
+                });
             }
-
+            
             if(obj.actionType === "edit"){
-        
+                listObjectTmp[this.props.showReportId].granular_markings[obj.value.orderNumber] = {
+                    lang: obj.value.lang,
+                    marking_ref: obj.value.marking_ref,
+                    selectors: obj.value.selectors, 
+                };
             }
         }
 
-        if(obj.modalType === "extensions" && obj.actionType === "new"){
+        /*if(obj.modalType === "extensions" && obj.actionType === "new"){
 
         }*/
 

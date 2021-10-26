@@ -108,7 +108,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                                 modalType: "external_references", 
                                 objectId: objectId,
                                 sourceName: "",
-                            }); 
+                                orderNumber: -1 }); 
                         }} color="textPrimary">
                             <Typography variant="overline" display="block" gutterBottom>добавить новую внешнюю ссылку</Typography>
                         </Link>
@@ -145,7 +145,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                                             modalType: "external_references", 
                                             objectId: objectId,
                                             sourceName: sourceName,
-                                        }); }}>
+                                            orderNumber: key }); }}>
                                         <IconEdit style={{ color: blue[400] }} />
                                     </IconButton>
                                 </React.Fragment>
@@ -199,7 +199,8 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                             showDialogElementAdditionalThechnicalInfo({ 
                                 actionType: "new",
                                 modalType: "granular_markings", 
-                                objectId: objectId }); 
+                                objectId: objectId,
+                                orderNumber: -1 }); 
                         }} color="inherit">
                             <Typography variant="overline" display="block" gutterBottom>{"добавить новую \"гранулярную метку\""}</Typography>
                         </Link>
@@ -233,7 +234,8 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                                     <IconButton aria-label="edit" onClick={()=>{ 
                                         showDialogElementAdditionalThechnicalInfo({ 
                                             actionType: "edit",
-                                            modalType: "granular_markings", 
+                                            modalType: "granular_markings",
+                                            orderNumber: key,
                                             objectId: objectId }); }}>
                                         <IconEdit style={{ color: blue[400] }} />
                                     </IconButton>
@@ -281,7 +283,8 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                     showDialogElementAdditionalThechnicalInfo({ 
                         actionType: "new",
                         modalType: "extensions", 
-                        objectId: objectId }); 
+                        objectId: objectId,
+                        orderNumber: -1 }); 
                 }} color="inherit">
                     <Typography variant="overline" display="block" gutterBottom>{"добавить любую дополнительную информацию"}</Typography>
                 </Link>
