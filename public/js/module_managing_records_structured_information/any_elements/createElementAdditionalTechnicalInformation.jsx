@@ -227,7 +227,11 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                                 subheader={markingRef}
                                 action={<React.Fragment>
                                     <IconButton aria-label="delete" onClick={()=>{ 
-                                        handlerElementDelete({ itemType: "granular_markings", item: markingRef, objectId: objectId }); 
+                                        handlerElementDelete({ 
+                                            itemType: "granular_markings", 
+                                            item: markingRef,
+                                            orderNumber: key,
+                                            objectId: objectId }); 
                                     }}>
                                         <IconDeleteOutline style={{ color: red[400] }} />
                                     </IconButton>
@@ -270,7 +274,11 @@ export default function CreateElementAdditionalTechnicalInformation(props){
             listExtensions.push(<li key={`extensions_${k}`}>
                 {k} - {reportInfo.extensions[k]}
                 <IconButton aria-label="delete-extensions-item" onClick={()=>{ 
-                    handlerElementDelete({ itemType: "extensions", item: k, objectId: objectId }); 
+                    handlerElementDelete({ 
+                        itemType: "extensions", 
+                        item: k, 
+                        objectId: objectId,
+                        orderNumber: -1 }); 
                 }}>
                     <IconCloseOutlined style={{ color: red[400] }} />
                 </IconButton>
@@ -407,8 +415,8 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         </Accordion>
 
         <hr/>
-        <Grid container direction="row" >
-            <Grid item md={12} className="text-right"><small>1 - чем больше тем увереннее</small></Grid>
+        <Grid container direction="row" className="mb-2">
+            <Grid item md={12} className="text-end"><small>1 - чем больше тем увереннее</small></Grid>
         </Grid>
     </React.Fragment>);
 }

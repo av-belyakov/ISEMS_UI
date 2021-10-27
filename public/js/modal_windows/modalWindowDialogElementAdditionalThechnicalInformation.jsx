@@ -1,13 +1,12 @@
 "use strict";
 
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { 
     Button,
     Dialog,
     DialogActions,
     DialogTitle,
     DialogContent,
-    DialogContentText,
     Grid,
     Select,
     MenuItem,
@@ -45,38 +44,41 @@ const listHashType = [
 ];
 
 export default function DialogElementAdditionalThechnicalInformation(props){
-    let { show, onHide, objInfo, uuidValue, listObjectInfo, handlerExternalReferencesButtonSave } = props;
+    let { show, 
+        onHide, 
+        objInfo, 
+        uuidValue, 
+        listObjectInfo, 
+        handlerExternalReferencesButtonSave } = props;
+
     const listTitle = {
         "external_references": "Управление внешними ссылками",
         "granular_markings": "Управление \"гранулярными метками\"",
         "extensions": "Управление дополнительной информацией",
     };
 
-    //    console.log("func 'DialogElementAdditionalThechnicalInformation', START");
-    //  console.log(objInfo);
-
-    let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
-        [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
-        [ valueER, setValueER ] = useState({
+    let defaultValueER = {
             source_name: "",
             description: "",
             url: "",
             hashes: [],
-        }),
-        [ valueGM, setValueGM ] = useState({
+        },
+        defaultValueGM = {
             lang: "",
             marking_ref: "",
-            selectors: [], //jбязательное значение
-        }),
-        [ valueE, setValueE ] = useState({
-            //            source_name: "",
-            //            description: "",
-            //            url: "",
-            //            hashes: [],
-        });
+            selectors: [],
+        },
+        defaultValueE = {
+            name: "",
+            description: "",
+        };
 
-    console.log("func 'DialogElementAdditionalThechnicalInformation', START...");
-    console.log(listObjectInfo[objInfo.objectId]);
+    let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
+        [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
+        [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
+        [ valueER, setValueER ] = useState(defaultValueER),
+        [ valueGM, setValueGM ] = useState(defaultValueGM),
+        [ valueE, setValueE ] = useState(defaultValueE);
 
     const handlerSourceNameExternalReferences = (obj) => {
         let valueERTmp = _.cloneDeep(valueER);     
@@ -114,10 +116,6 @@ export default function DialogElementAdditionalThechnicalInformation(props){
     };
 
     const handlerLangGranularMarkings = (orderNumber, obj) => {
-        console.log("func 'handlerLangGranularMarkings', START...");
-        console.log(orderNumber);
-        console.log(obj);
-
         let valueGMTmp = _.cloneDeep(valueGM);
         valueGMTmp.lang = obj.target.value;
         
@@ -125,9 +123,6 @@ export default function DialogElementAdditionalThechnicalInformation(props){
     };
 
     const handlerMarkingRefGranularMarkings = (orderNumber, obj) => {
-        console.log("func 'handlerMarkingRefGranularMarkings', START...");
-        console.log(`obj.target.value = ${obj.target.value}, orderNumber: '${orderNumber}'`);
-
         let valueGMTmp = _.cloneDeep(valueGM);
         valueGMTmp.marking_ref = obj.target.value;
         
@@ -135,9 +130,6 @@ export default function DialogElementAdditionalThechnicalInformation(props){
     };
 
     const handlerSelectorsGranularMarkings = (list) => {
-        console.log("func 'handlerSelectorsGranularMarkings', START...");
-        console.log(list);
-
         let valueGMTmp = _.cloneDeep(valueGM);
         valueGMTmp.selectors = list;
         
@@ -146,17 +138,30 @@ export default function DialogElementAdditionalThechnicalInformation(props){
         if(list.length > 0){
             setButtonSaveIsDisabled(false);
         } else {
-
-            console.log("ttttttttttttttt");
-
-            /**
-             * 
-             * Нужно сделать  disabled кнопку SAVE при полном удалении selectors
-             * 
-             */
-
             setButtonSaveIsDisabled(true);
         }
+    };
+
+    const handlerNameExtensions = (obj) => {
+        let valueETmp = _.cloneDeep(valueE);
+        valueETmp.name = obj.target.value;
+        
+        setValueE(valueETmp);
+
+        if(obj.target.value.length > 0){
+            setValuesIsInvalideNameE(false);
+            setButtonSaveIsDisabled(false);
+        } else {
+            setValuesIsInvalideNameE(true);
+            setButtonSaveIsDisabled(true);
+        }
+    };
+    
+    const handlerDescriptionExtensions = (obj) => {
+        let valueETmp = _.cloneDeep(valueE);
+        valueETmp.description = obj.target.value;
+        
+        setValueE(valueETmp);
     };
 
     const switchTypeElement = () => {
@@ -175,7 +180,6 @@ export default function DialogElementAdditionalThechnicalInformation(props){
 
         case "granular_markings":
             return <ManagementGranularMarkingsObject
-                externalId={uuidValue}
                 objInfo={objInfo}
                 listObjectInfo={listObjectInfo[objInfo.objectId]}
                 handlerLang={handlerLangGranularMarkings}
@@ -185,7 +189,11 @@ export default function DialogElementAdditionalThechnicalInformation(props){
 
         case "extensions":
             return <ManagementExtensionsObject 
-                externalId={uuidValue} />;
+                externalId={uuidValue} 
+                nameIsInvalid={valuesIsInvalideNameE}
+                handlerName={handlerNameExtensions}
+                handlerDescription={handlerDescriptionExtensions}
+            />;
 
         }
     
@@ -218,26 +226,18 @@ export default function DialogElementAdditionalThechnicalInformation(props){
 
     (() => {
         if(!show || (objInfo.modalType !== "granular_markings") || (objInfo.actionType !== "edit")){
-            //console.log("((( ERROR 1");
-
             return;
         }
 
         if((listObjectInfo[objInfo.objectId] === null) || (typeof listObjectInfo[objInfo.objectId] === "undefined")){
-            //console.log("((( ERROR 2");
-            
             return;
         }
             
         if(!Array.isArray(listObjectInfo[objInfo.objectId].granular_markings) || (typeof listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber] === "undefined")){
-            //console.log("((( ERROR 3");
-            
             return;
         }
 
         if(listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].selectors.length <= 0){
-            //console.log("((( ERROR 4");
-            
             return;
         }
                 
@@ -260,20 +260,32 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                     let value = {};
 
                     switch(objInfo.modalType){
-                    case "external_references":
+                    case "external_references":                    
                         if(objInfo.actionType === "new"){
                             value = valueER;
+                            value.external_id = `external-reference--${uuidValue}`;
+
+                            setValueER(defaultValueER);
 
                             break;
                         }
 
                         for(let i = 0; i < listObjectInfo[objInfo.objectId].external_references.length; i++){
-                            if(listObjectInfo[objInfo.objectId].external_references[i].source_name === objInfo.sourceName){    
+                            if(listObjectInfo[objInfo.objectId].external_references[i].source_name === objInfo.sourceName){
                                 value.source_name = objInfo.sourceName;
-                                value.description = (valueER.description === "") ? listObjectInfo[objInfo.objectId].external_references[i].description: valueER.description;
-                                value.url = (valueER.url === "") ? listObjectInfo[objInfo.objectId].external_references[i].url: valueER.url;
-                                value.hashes = ((valueER.hashes === "") || (valueER.hashes.length === 0)) ? listObjectInfo[objInfo.objectId].external_references[i].hashes: valueER.hashes;
+                                value.description = ((valueER.description === "") && (typeof listObjectInfo[objInfo.objectId].external_references[i].description !== "undefined"))? 
+                                    listObjectInfo[objInfo.objectId].external_references[i].description: 
+                                    valueER.description;
+                                value.url = ((valueER.url === "") && (typeof listObjectInfo[objInfo.objectId].external_references[i].url !== "undefined"))? 
+                                    listObjectInfo[objInfo.objectId].external_references[i].url: 
+                                    valueER.url;
+                                value.hashes = ((valueER.hashes.length === 0) && (typeof listObjectInfo[objInfo.objectId].external_references[i].hashes !== "undefined"))? 
+                                    listObjectInfo[objInfo.objectId].external_references[i].hashes: 
+                                    valueER.hashes;
+                                value.external_id = listObjectInfo[objInfo.objectId].external_references[i].external_id;
     
+                                setValueER(defaultValueER);
+
                                 break;
                             }
                         }
@@ -284,19 +296,31 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                             value = valueGM;
                             value.orderNumber = objInfo.orderNumber;
 
+                            setValueGM(defaultValueGM);
+
                             break;
                         }
 
                         if((listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber] !== null) && (typeof listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber] !== "undefined")){
-                            value.lang = (valueGM.lang === "") ? listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].lang: valueGM.lang;
-                            value.marking_ref = (valueGM.marking_ref === "") ? listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].marking_ref: valueGM.marking_ref;
-                            value.selectors = (valueGM.selectors.length === 0) ? listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].selectors: valueGM.selectors;
+                            value.lang = ((valueGM.lang === "") && (typeof listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].lang !== "undefined"))? 
+                                listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].lang: 
+                                valueGM.lang;
+                            value.marking_ref = ((valueGM.marking_ref === "") && (typeof listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].marking_ref !== "undefined"))? 
+                                listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].marking_ref: 
+                                valueGM.marking_ref;
+                            value.selectors = ((valueGM.selectors.length === 0) && (typeof listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].selectors !== "undefined"))? 
+                                listObjectInfo[objInfo.objectId].granular_markings[objInfo.orderNumber].selectors: 
+                                valueGM.selectors;
                             value.orderNumber = objInfo.orderNumber;
                         }
+
+                        setValueGM(defaultValueGM);
 
                         break;
                     case "extensions":
                         value = valueE;
+
+                        setValueE(defaultValueE);
 
                         break;    
                     }
@@ -307,6 +331,7 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                         value: value, 
                     });
 
+                    setValuesIsInvalideNameE(true);
                     setValuesIsInvalideSourceNameER(true);
                     setButtonSaveIsDisabled(true);
                 }} 
@@ -498,8 +523,7 @@ ManagementExternalReferencesObject.propTypes = {
 };
 
 function ManagementGranularMarkingsObject(props){
-    let { externalId,
-        objInfo,
+    let { objInfo,
         listObjectInfo,
         handlerLang,
         handlerMarkingRef,
@@ -549,12 +573,18 @@ function ManagementGranularMarkingsObject(props){
     };
 
     const pphandlerDelSelectorsList = (obj, num) => {
+        if(selectorsList.length <= 1){
+            return;
+        }
+
         let selectorListTmp = selectorsList.slice();
         selectorListTmp.splice(num, 1);
         setSelectorsList(selectorListTmp);
 
         handlerSelectors(selectorListTmp);
     };
+
+    let buttonDelIsDisabled = (() => selectorsList.length <= 1)();
 
     return (<React.Fragment>
         <Grid container direction="row">
@@ -578,7 +608,6 @@ function ManagementGranularMarkingsObject(props){
                     label="маркер языка"
                     fullWidth={true}
                     value={lang}
-                    //defaultValue={(typeof objGM.lang === "undefined")? "": objGM.lang}
                     onChange={pphandlerLang}
                 />
             </Grid>
@@ -613,7 +642,10 @@ function ManagementGranularMarkingsObject(props){
                     {selectorsList.map((elem, num) => {
                         return (<li key={`key_item_selector_${num}`}>
                             {elem}
-                            <IconButton aria-label="delete-selector" onClick={pphandlerDelSelectorsList.bind(null, num)} >
+                            <IconButton 
+                                disabled={buttonDelIsDisabled}
+                                aria-label="delete-selector" 
+                                onClick={pphandlerDelSelectorsList.bind(null, num)} >
                                 <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                             </IconButton>
                         </li>);
@@ -625,7 +657,6 @@ function ManagementGranularMarkingsObject(props){
 
 ManagementGranularMarkingsObject.propTypes = {
     objInfo: PropTypes.object.isRequired,
-    externalId: PropTypes.string.isRequired,
     handlerLang: PropTypes.func.isRequired,
     listObjectInfo: PropTypes.object.isRequired,
     handlerSelectors: PropTypes.func.isRequired,
@@ -634,13 +665,60 @@ ManagementGranularMarkingsObject.propTypes = {
 
 
 function ManagementExtensionsObject(props){
-    let { externalId } = props;
+    let { nameIsInvalid,
+        handlerName,
+        handlerDescription } = props;
 
-    return (<DialogContentText>
-        {`func 'CreateNewExtensions' ID:'${externalId}'`}
-    </DialogContentText>);
+    let [ valueName, setValueName ] = useState(""),
+        [ valueDescription, setValueDescription ] = useState("");
+
+    const pphandlerName = (obj) => {
+        setValueName(obj.target.value);
+
+        handlerName(obj);
+    };
+
+    const pphandlerDescription = (obj) => {
+        setValueDescription(obj.target.value);
+
+        handlerDescription(obj);
+    };
+
+    return (<React.Fragment>
+        <Grid container direction="row">
+            <Grid item md={12}>
+                <TextField
+                    id="extensions-name"
+                    label="наименование"
+                    size="small"
+                    fullWidth={true}
+                    error={nameIsInvalid}
+                    value={valueName}
+                    onChange={pphandlerName}
+                    variant="outlined"
+                    helperText="обязательное для заполнения поле"
+                />
+            </Grid>
+        </Grid>
+        <Grid container direction="row" className="mt-3">
+            <Grid item md={12}>
+                <TextField
+                    id="extensions-description"
+                    label="подробное описание"
+                    multiline
+                    rows={3}
+                    fullWidth
+                    value={valueDescription}
+                    onChange={pphandlerDescription}
+                    variant="outlined"/>
+            </Grid>
+        </Grid>
+    </React.Fragment>);
 }
 
 ManagementExtensionsObject.propTypes = {
     externalId: PropTypes.string.isRequired,
+    handlerName: PropTypes.func.isRequired,
+    nameIsInvalid: PropTypes.bool.isRequired,
+    handlerDescription: PropTypes.func.isRequired,
 };

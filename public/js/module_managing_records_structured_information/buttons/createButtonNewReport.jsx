@@ -27,7 +27,7 @@ export function CreateButtonNewReport(props){
             startIcon={<AddIcon />}
             disabled={buttonIsDisabled}
             onClick={handlerShowModalWindow}>
-                создать новый доклад
+                новый доклад
         </Button>
     );
 }

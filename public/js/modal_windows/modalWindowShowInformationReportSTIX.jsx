@@ -274,7 +274,20 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     handlerOutsideSpecificationAdditionalName(data){
+
+        console.log("func 'handlerOutsideSpecificationAdditionalName', START");
+        console.log(data.target.value);
+
         let reportInfo = _.cloneDeep(this.state.reportInfo);
+
+        console.log(reportInfo);
+        /**
+         * 
+         * нет reportInfo!!!
+         * 
+         */
+        console.log(this.state.listObjectInfo);
+
         reportInfo.outside_specification.additional_name = data.target.value;
 
         this.setState({ reportInfo: reportInfo });
@@ -397,26 +410,43 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
             this.setState({ listObjectInfo: listObjectTmp });
         }
+
+        if(obj.itemType === "granular_markings"){
+            if(obj.orderNumber < 0){
+                return;
+            }
+
+            listObjectTmp[obj.objectId].granular_markings.splice(obj.orderNumber, 1);
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+
+        if(obj.itemType === "extensions"){
+            delete listObjectTmp[obj.objectId].extensions[obj.item];
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
     }
 
     handlerExternalReferencesButtonSave(obj){
-
-        console.log("func 'handlerExternalReferencesButtonSave', START...");
-        console.log(obj);
-
         let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
 
         if(obj.modalType === "external_references"){
-            let objHashesTmp = {};        
-            obj.value.hashes.forEach((item)=>{
-                objHashesTmp[item.type] = item.description;
-            });
+            let objHashesTmp = {};
+            if(Array.isArray(obj.value.hashes)){
+                obj.value.hashes.forEach((item) => {
+                    objHashesTmp[item.type] = item.description;
+                });
+            } else {
+                objHashesTmp = obj.value.hashes;
+            }
             
             let newExternalReferences = {
                 source_name: obj.value.source_name,
                 description: obj.value.description,
                 url: obj.value.url,
                 hashes: objHashesTmp,
+                external_id: obj.value.external_id,
             };
 
             if(obj.actionType === "new"){
@@ -443,7 +473,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     selectors: obj.value.selectors, 
                 });
             }
-            
+
             if(obj.actionType === "edit"){
                 listObjectTmp[this.props.showReportId].granular_markings[obj.value.orderNumber] = {
                     lang: obj.value.lang,
@@ -453,9 +483,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             }
         }
 
-        /*if(obj.modalType === "extensions" && obj.actionType === "new"){
-
-        }*/
+        if(obj.modalType === "extensions"){
+            listObjectTmp[this.props.showReportId].extensions[obj.value.name] = obj.value.description;
+        }
 
         this.setState({ 
             listObjectInfo: listObjectTmp,
