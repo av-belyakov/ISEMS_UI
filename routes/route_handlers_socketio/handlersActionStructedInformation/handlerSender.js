@@ -99,6 +99,13 @@ module.exports.sendSearchRequestPageReport = function(socketIo, data){
     
                         let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                         if (conn !== null) {
+
+                            /**
+                             * 
+                             * Не всегда получается уникальность taskID!!!
+                             * 
+                             */
+
                             let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`);
     
                             globalObject.setData("tasks", taskID, {

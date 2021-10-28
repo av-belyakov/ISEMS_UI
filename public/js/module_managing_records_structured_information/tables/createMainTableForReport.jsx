@@ -67,6 +67,10 @@ export default class CreateMainTableForReport extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
+
+            console.log("_===__===___====");
+            console.log(data);
+
             if(data.section === "send search request, count found elem, table page report"){
                 if(!data.information.is_successful){
                     return;
@@ -76,6 +80,16 @@ export default class CreateMainTableForReport extends React.Component {
             }
 
             if(data.section === "send search request, table page report"){
+
+                console.log("===== START ======");
+                console.log(data);
+                console.log("===== END =====");
+
+                /**
+ * Похоже дублирование объекта в backend, временами приходят события (через sockeio) где тип секции
+ * 'send search request, table page report', а поле 'information' содержит разное значение
+ */
+
                 if((typeof data.information === "undefined") || (data.information === null)){
                     return;
                 }

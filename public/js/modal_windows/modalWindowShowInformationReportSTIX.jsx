@@ -65,8 +65,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     constructor(props){
         super(props);
 
-        //        console.log(`|||||||||| this.props.showReportId: ${this.props.showReportId} ||||||||||`);
-
         this.state = {
             uuidValue: "",
             listObjectInfo: {},
@@ -76,11 +74,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             showDialogElementAdditionalThechnicalInfo: false,
             objectDialogElementAdditionalThechnicalInfo: {},
         };
-
-        //        console.log(this.props.listTypesComputerThreat);
-        //        console.log(this.props.listTypesDecisionsMadeComputerThreat);
-        //        console.log("class 'ModalWindowShowInformationReportSTIX', userPermissions");
-        //        console.log(this.props.userPermissions);
 
         this.handleSave = this.handleSave.bind(this);
         this.modalClose = this.modalClose.bind(this);
@@ -234,7 +227,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     //обработчик выбора группы из списка непривилегированных групп 
     handlerOnChangeAccessGroupToReport(data){
-        let listGroupAccessToReport = this.state.listGroupAccessToReport,
+        let listGroupAccessToReport = this.state.listGroupAccessToReport.slice(),
             groupName = data.target.value;
         for(let item of listGroupAccessToReport){
             if((groupName === item.group) || (groupName === "select_group")){
@@ -250,12 +243,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         });
         this.setState({ listGroupAccessToReport: listGroupAccessToReport });
 
-        if(this.state.reportInfo.length !== 1){
-            return;
-        }
-
         this.props.socketIo.emit("isems-mrsi ui request: allow the group to access the report", { arguments: {
-            reportId: this.state.reportInfo[0].id,
+            reportId: this.props.showReportId,
             unprivilegedGroup: groupName,
         }});
     }
@@ -264,33 +253,12 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         let newListGroup = this.state.listGroupAccessToReport.filter((item) => {
             return groupName !== item.group;
         });
-
         this.setState({ listGroupAccessToReport: newListGroup });
         
         this.props.socketIo.emit("isems-mrsi ui request: forbid the group to access the report", { arguments: {
-            reportId: this.state.reportInfo[0].id,
+            reportId: this.props.showReportId,
             unprivilegedGroup: groupName,
         }});
-    }
-
-    handlerOutsideSpecificationAdditionalName(data){
-
-        console.log("func 'handlerOutsideSpecificationAdditionalName', START");
-        console.log(data.target.value);
-
-        let reportInfo = _.cloneDeep(this.state.reportInfo);
-
-        console.log(reportInfo);
-        /**
-         * 
-         * нет reportInfo!!!
-         * 
-         */
-        console.log(this.state.listObjectInfo);
-
-        reportInfo.outside_specification.additional_name = data.target.value;
-
-        this.setState({ reportInfo: reportInfo });
     }
 
     handlerManagingAccessToReport(){
@@ -319,113 +287,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 </Col>
             </Row>
         </React.Fragment>);
-    }
-
-    showDialogElementAdditionalThechnicalInfo(obj){
-
-        console.log("func 'showDialogElementAdditionalThechnicalInfo', START...");
-        console.log(obj);
-
-        this.setState({
-            uuidValue: uuidv4(),
-            showDialogElementAdditionalThechnicalInfo: true,
-            objectDialogElementAdditionalThechnicalInfo: { 
-                actionType: obj.actionType,
-                modalType: obj.modalType, 
-                objectId: obj.objectId,
-                sourceName: obj.sourceName,
-                orderNumber: obj.orderNumber,
-            },
-        });
-    }
-
-    closeDialogElementAdditionalThechnicalInfo(){
-        this.setState({ showDialogElementAdditionalThechnicalInfo: false });
-    }
-
-    handleSave(){
-
-        console.log("func 'handleSave', START...");
-
-    }
-
-    handlePublished(){
-
-        console.log("func 'handlePublished', START...");
-
-    }
-
-    handlerOnChangeDescription(data){
-
-        console.log("func 'handlerOnChangeDescription', START...");
-        console.log(data.target.value);
-
-    }
-
-    handlerChosenComputerThreatType(data){
-
-        console.log("func 'handlerChosenComputerThreatType', START...");
-        console.log(data.target.value);
-
-    }
-
-    handlerChosenDecisionsMadeComputerThreat(data){
-        
-        console.log("func 'handlerChosenDecisionsMadeComputerThreat', START...");
-        console.log(data.target.value);
-
-    }
-
-    handlerElementConfidence(obj){
-
-        console.log("func 'handlerElementConfidence', START...");
-        console.log(obj.data);
-        console.log(`ID: ${obj.objectId}`);
-
-    }
-
-    handlerElementDefanged(obj){
-
-        console.log("func 'handlerElementDefanged', START...");
-        console.log(obj.data);
-        console.log(`ID: ${obj.objectId}`);
-
-    }
-
-    handlerElementLabels(obj){
-
-        console.log("func 'handlerElementLabels', START...");
-        console.log(obj.listTokenValue);
-        console.log(`ID: ${obj.objectId}`);
-
-    }
-
-    handlerDeleteElementAdditionalTechnicalInformation(obj){
-        let externalReferences = [];
-        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
-
-        if(obj.itemType === "external_references"){
-            externalReferences = listObjectTmp[obj.objectId].external_references.filter((item) => item.source_name !== obj.item);
-            listObjectTmp[obj.objectId].external_references = externalReferences;
-
-            this.setState({ listObjectInfo: listObjectTmp });
-        }
-
-        if(obj.itemType === "granular_markings"){
-            if(obj.orderNumber < 0){
-                return;
-            }
-
-            listObjectTmp[obj.objectId].granular_markings.splice(obj.orderNumber, 1);
-
-            this.setState({ listObjectInfo: listObjectTmp });
-        }
-
-        if(obj.itemType === "extensions"){
-            delete listObjectTmp[obj.objectId].extensions[obj.item];
-
-            this.setState({ listObjectInfo: listObjectTmp });
-        }
     }
 
     handlerExternalReferencesButtonSave(obj){
@@ -493,6 +354,146 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         });
     }
 
+    handlerDeleteElementAdditionalTechnicalInformation(obj){
+        let externalReferences = [];
+        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
+
+        if(obj.itemType === "external_references"){
+            externalReferences = listObjectTmp[obj.objectId].external_references.filter((item) => item.source_name !== obj.item);
+            listObjectTmp[obj.objectId].external_references = externalReferences;
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+
+        if(obj.itemType === "granular_markings"){
+            if(obj.orderNumber < 0){
+                return;
+            }
+
+            listObjectTmp[obj.objectId].granular_markings.splice(obj.orderNumber, 1);
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+
+        if(obj.itemType === "extensions"){
+            delete listObjectTmp[obj.objectId].extensions[obj.item];
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+    }
+
+    handlePublished(){
+
+        console.log("func 'handlePublished', START...");
+        console.log(`this.props.showReportId: ${this.props.showReportId}`);
+        console.log(this.state.listObjectInfo[this.props.showReportId]);
+
+        if((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined")){
+            return;
+        }
+
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+        listObjectInfoTmp[this.props.showReportId].published = helpers.getDate(+new Date);
+
+        this.setState({ listObjectInfo: listObjectInfoTmp });
+
+        console.log("==++==++==++==");
+        console.log(this.state.listObjectInfo[this.props.showReportId]);
+    }
+
+    handlerOutsideSpecificationAdditionalName(data){
+
+        console.log("func 'handlerOutsideSpecificationAdditionalName', START");
+        console.log(data.target.value);
+
+        /*
+        let reportInfo = _.cloneDeep(this.state.reportInfo);
+
+        console.log(reportInfo);
+        console.log(this.state.listObjectInfo);
+
+        reportInfo.outside_specification.additional_name = data.target.value;
+
+        this.setState({ reportInfo: reportInfo });*/
+    }
+
+
+    handlerOnChangeDescription(data){
+
+        console.log("func 'handlerOnChangeDescription', START...");
+        console.log(data.target.value);
+
+    }
+
+    handlerChosenComputerThreatType(data){
+
+        console.log("func 'handlerChosenComputerThreatType', START...");
+        console.log(data.target.value);
+
+    }
+    /**
+ * Сделать все обработчики
+ */
+
+    handlerChosenDecisionsMadeComputerThreat(data){
+        
+        console.log("func 'handlerChosenDecisionsMadeComputerThreat', START...");
+        console.log(data.target.value);
+
+    }
+
+    handlerElementConfidence(obj){
+
+        console.log("func 'handlerElementConfidence', START...");
+        console.log(obj.data);
+        console.log(`ID: ${obj.objectId}`);
+
+    }
+
+    handlerElementDefanged(obj){
+
+        console.log("func 'handlerElementDefanged', START...");
+        console.log(obj.data);
+        console.log(`ID: ${obj.objectId}`);
+
+    }
+
+    handlerElementLabels(obj){
+
+        console.log("func 'handlerElementLabels', START...");
+        console.log(obj.listTokenValue);
+        console.log(`ID: ${obj.objectId}`);
+
+    }
+
+    handleSave(){
+
+        console.log("func 'handleSave', START...");
+
+    }
+
+    showDialogElementAdditionalThechnicalInfo(obj){
+
+        console.log("func 'showDialogElementAdditionalThechnicalInfo', START...");
+        console.log(obj);
+
+        this.setState({
+            uuidValue: uuidv4(),
+            showDialogElementAdditionalThechnicalInfo: true,
+            objectDialogElementAdditionalThechnicalInfo: { 
+                actionType: obj.actionType,
+                modalType: obj.modalType, 
+                objectId: obj.objectId,
+                sourceName: obj.sourceName,
+                orderNumber: obj.orderNumber,
+            },
+        });
+    }
+
+    closeDialogElementAdditionalThechnicalInfo(){
+        this.setState({ showDialogElementAdditionalThechnicalInfo: false });
+    }
+
     modalClose(){
         this.props.onHide();
 
@@ -519,14 +520,14 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         let reportInfo = this.state.listObjectInfo[this.props.showReportId];
         let published = () => {
             if(Date.parse(reportInfo.published) <= 0){
-                return (<Col md={6} className="text-right">
+                return (<Col md={6} className="text-end">
                     <Link href="#" onClick={this.handlePublished} color="error">
                         <Typography variant="overline" display="block" gutterBottom>опубликовать</Typography>
                     </Link>
                 </Col>);
             }
 
-            return (<Col md={6} className="text-right">
+            return (<Col md={6} className="text-end">
                 {helpers.convertDateFromString(reportInfo.published, { monthDescription: "long", dayDescription: "numeric" })}
             </Col>);
         };
@@ -562,23 +563,25 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                 </Row>      
 
                                 <Row>
-                                    <Col md={6}><span className="text-muted pl-4">создания</span></Col>
-                                    <Col md={6} className="text-right">
+                                    <Col md={6}><span className="text-muted ml-4">создания</span></Col>
+                                    <Col md={6} className="text-end">
                                         {helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}
                                     </Col>
                                 </Row>
 
                                 <Row>
-                                    <Col md={6}>
-                                        <span className="text-muted pl-4">последнего обновления</span>
+                                    <Col md={6} className="pl-4">
+                                        <span className="text-muted">последнего обновления</span>
                                     </Col>
-                                    <Col md={6} className="text-right">
+                                    <Col md={6} className="text-end">
                                         {helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}
                                     </Col>
                                 </Row>
 
                                 <Row>
-                                    <Col md={6}><span className="text-muted pl-4">публикации</span></Col>
+                                    <Col md={6} className="pl-4">
+                                        <span className="text-muted">публикации</span>
+                                    </Col>
                                     {published()}
                                 </Row>
 
