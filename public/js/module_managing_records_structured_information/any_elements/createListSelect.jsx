@@ -6,7 +6,6 @@ import { TextField, MenuItem } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 export default function CreateListSelect(props){
-//    const classes = useStyles();
     let { list, label, uniqId, currentItem, handlerChosen, isNotDisabled } = props;
     let listKeys = Object.keys(list);
 
@@ -19,7 +18,6 @@ export default function CreateListSelect(props){
             value={currentItem}
             onChange={handlerChosen}
             disabled={!isNotDisabled}
-            //helperText="Please select your currency"
         >
             {listKeys.map((item) => (
                 <MenuItem key={list[item].ID} value={item}>

@@ -2,6 +2,7 @@
 
 const debug = require("debug")("hadcsihs");
 
+const uuid = require("uuid");
 const async = require("async");
 
 const models = require("../../../controllers/models");
@@ -99,14 +100,7 @@ module.exports.sendSearchRequestPageReport = function(socketIo, data){
     
                         let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                         if (conn !== null) {
-
-                            /**
-                             * 
-                             * Не всегда получается уникальность taskID!!!
-                             * 
-                             */
-
-                            let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`);
+                            let taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
     
                             globalObject.setData("tasks", taskID, {
                                 eventName: "send search request, table page report",

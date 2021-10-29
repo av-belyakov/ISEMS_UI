@@ -1,5 +1,6 @@
 "use strict";
 
+const { request } = require("express");
 const ss = require("socket.io-stream");
 
 /** 
@@ -12,6 +13,9 @@ const ss = require("socket.io-stream");
 module.exports.eventHandlingUserInterface = function(eventEmiterTimerTick, socketIo) {
     /* --- УПРАВЛЕНИЕ ПАРОЛЯМИ ПО УМОЛЧАНИЮ --- */
     require("./route_handlers_socketio/handlers/handlerChangePassword")(socketIo);
+
+    /* --- ОБРАБОТКА СЕРВИСНЫХ ЗАПРОСОВ --- */
+    require("./route_handlers_socketio/handlers/handlerServiceEvent").addHandlers(socketIo);
 
     /* --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ --- */
     require("./route_handlers_socketio/handlers/handlerActionsUsers").addHandlers(socketIo);

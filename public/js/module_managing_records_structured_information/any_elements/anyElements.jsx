@@ -27,7 +27,7 @@ export function MainTextField(props) {
         label={label} 
         variant={variant} 
         onChange={onChange} 
-        value={value}
+        defaultValue={value}
         fullWidth={fullWidth} />;
 }
 

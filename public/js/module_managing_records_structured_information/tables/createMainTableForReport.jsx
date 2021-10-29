@@ -80,16 +80,6 @@ export default class CreateMainTableForReport extends React.Component {
             }
 
             if(data.section === "send search request, table page report"){
-
-                console.log("===== START ======");
-                console.log(data);
-                console.log("===== END =====");
-
-                /**
- * Похоже дублирование объекта в backend, временами приходят события (через sockeio) где тип секции
- * 'send search request, table page report', а поле 'information' содержит разное значение
- */
-
                 if((typeof data.information === "undefined") || (data.information === null)){
                     return;
                 }

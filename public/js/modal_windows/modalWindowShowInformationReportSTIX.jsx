@@ -383,63 +383,73 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     handlePublished(){
-
-        console.log("func 'handlePublished', START...");
-        console.log(`this.props.showReportId: ${this.props.showReportId}`);
-        console.log(this.state.listObjectInfo[this.props.showReportId]);
+        let requestId = uuidv4();
 
         if((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined")){
             return;
         }
 
+        this.props.socketIo.once("service event: what time is it", (obj) => {
+            if(obj.id !== requestId){
+                return;
+            }
+
+            let dateNow = obj.date,
+                currentTimeZoneOffsetInHours = new Date(obj.date).getTimezoneOffset() / 60;
+
+            if(currentTimeZoneOffsetInHours < 0){
+                dateNow = +obj.date - ((currentTimeZoneOffsetInHours * -1) * 360000);
+            } else if(currentTimeZoneOffsetInHours > 0) {
+                dateNow = +obj.date + (currentTimeZoneOffsetInHours * 360000);
+            }
+
+            let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+            listObjectInfoTmp[this.props.showReportId].published = new Date(dateNow).toISOString();
+
+            this.setState({ listObjectInfo: listObjectInfoTmp });
+        });
+
+        this.props.socketIo.emit("service request: what time is it", { arguments: { id: requestId, dateType: "integer" }});
+    }
+
+    handlerOnChangeDescription(data){
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
-        listObjectInfoTmp[this.props.showReportId].published = helpers.getDate(+new Date);
+        listObjectInfoTmp[this.props.showReportId].description = data.target.value;
 
         this.setState({ listObjectInfo: listObjectInfoTmp });
-
-        console.log("==++==++==++==");
-        console.log(this.state.listObjectInfo[this.props.showReportId]);
     }
 
     handlerOutsideSpecificationAdditionalName(data){
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
-        console.log("func 'handlerOutsideSpecificationAdditionalName', START");
-        console.log(data.target.value);
+        if((listObjectInfoTmp[this.props.showReportId].outside_specification === null) || (typeof listObjectInfoTmp[this.props.showReportId].outside_specification === "undefined")){
+            listObjectInfoTmp[this.props.showReportId].outside_specification = {};
+        }
 
-        /*
-        let reportInfo = _.cloneDeep(this.state.reportInfo);
-
-        console.log(reportInfo);
-        console.log(this.state.listObjectInfo);
-
-        reportInfo.outside_specification.additional_name = data.target.value;
-
-        this.setState({ reportInfo: reportInfo });*/
+        listObjectInfoTmp[this.props.showReportId].outside_specification.additional_name = data.target.value;
+        this.setState({ listObjectInfo: listObjectInfoTmp });
     }
 
+    handlerChosenDecisionsMadeComputerThreat(data){
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
-    handlerOnChangeDescription(data){
+        if((listObjectInfoTmp[this.props.showReportId].outside_specification === null) || (typeof listObjectInfoTmp[this.props.showReportId].outside_specification === "undefined")){
+            listObjectInfoTmp[this.props.showReportId].outside_specification = {};
+        }
 
-        console.log("func 'handlerOnChangeDescription', START...");
-        console.log(data.target.value);
-
+        listObjectInfoTmp[this.props.showReportId].outside_specification.decisions_made_computer_threat = data.target.value;
+        this.setState({ listObjectInfo: listObjectInfoTmp });
     }
 
     handlerChosenComputerThreatType(data){
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
-        console.log("func 'handlerChosenComputerThreatType', START...");
-        console.log(data.target.value);
+        if((listObjectInfoTmp[this.props.showReportId].outside_specification === null) || (typeof listObjectInfoTmp[this.props.showReportId].outside_specification === "undefined")){
+            listObjectInfoTmp[this.props.showReportId].outside_specification = {};
+        }
 
-    }
-    /**
- * Сделать все обработчики
- */
-
-    handlerChosenDecisionsMadeComputerThreat(data){
-        
-        console.log("func 'handlerChosenDecisionsMadeComputerThreat', START...");
-        console.log(data.target.value);
-
+        listObjectInfoTmp[this.props.showReportId].outside_specification.computer_threat_type = data.target.value;
+        this.setState({ listObjectInfo: listObjectInfoTmp });
     }
 
     handlerElementConfidence(obj){
@@ -447,6 +457,16 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         console.log("func 'handlerElementConfidence', START...");
         console.log(obj.data);
         console.log(`ID: ${obj.objectId}`);
+
+
+        /**
+ * 
+ * Надо дописать некоторые обработчики касающиеся Дополнительная техническая информация
+ * например:
+ * - уверенность создателя в правильности своих данных от 0 до 100¹:
+ * - набор терминов, используемых для описания данного объекта:
+ * - определены ли данные содержащиеся в объекте:
+ */
 
     }
 
@@ -459,6 +479,13 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     handlerElementLabels(obj){
+
+
+        /**
+ * 
+ * набор терминов, используемых для описания данного объекта:
+ * 
+ */
 
         console.log("func 'handlerElementLabels', START...");
         console.log(obj.listTokenValue);
@@ -528,7 +555,15 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             }
 
             return (<Col md={6} className="text-end">
-                {helpers.convertDateFromString(reportInfo.published, { monthDescription: "long", dayDescription: "numeric" })}
+                {new Date(Date.parse(reportInfo.published)).toLocaleString("ru", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    timezone: "Europe/Moscow",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                })}
             </Col>);
         };
 
