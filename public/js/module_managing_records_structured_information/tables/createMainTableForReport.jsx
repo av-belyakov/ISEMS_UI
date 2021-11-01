@@ -67,10 +67,6 @@ export default class CreateMainTableForReport extends React.Component {
 
     handlerEvents(){
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
-
-            console.log("_===__===___====");
-            console.log(data);
-
             if(data.section === "send search request, count found elem, table page report"){
                 if(!data.information.is_successful){
                     return;

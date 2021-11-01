@@ -31,6 +31,8 @@ import CreateListUnprivilegedGroups from "../module_managing_records_structured_
 import DialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 import CreateElementAdditionalTechnicalInformation from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformation.jsx";
 
+import CreateModalWindowNewSTIXObject from "./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx";
+
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: "fixed",
@@ -70,7 +72,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             listObjectInfo: {},
             availableForGroups: [],
             listGroupAccessToReport: [],
+            secondBreadcrumbsObjectId: "",
             currentGroupAccessToReport: "select_group",
+            currentAdditionalIdSTIXObject: "",
             showDialogElementAdditionalThechnicalInfo: false,
             objectDialogElementAdditionalThechnicalInfo: {},
         };
@@ -81,11 +85,14 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handlePublished = this.handlePublished.bind(this);
         this.handlerOnChangeDescription = this.handlerOnChangeDescription.bind(this);
         this.handlerManagingAccessToReport = this.handlerManagingAccessToReport.bind(this);
+        this.handlerNewAdditionalSTIXObject = this.handlerNewAdditionalSTIXObject.bind(this);
         this.handlerOnChangeAccessGroupToReport = this.handlerOnChangeAccessGroupToReport.bind(this);
         this.handlerOutsideSpecificationAdditionalName = this.handlerOutsideSpecificationAdditionalName.bind(this);
+        this.handlerChangeCurrentAdditionalIdSTIXObject = this.handlerChangeCurrentAdditionalIdSTIXObject.bind(this);
         this.handlerDeleteChipFromListGroupAccessToReport = this.handlerDeleteChipFromListGroupAccessToReport.bind(this);
         this.handlerChosenComputerThreatType = this.handlerChosenComputerThreatType.bind(this);
         this.handlerChosenDecisionsMadeComputerThreat = this.handlerChosenDecisionsMadeComputerThreat.bind(this);
+        this.handlerChangeCurrentObjectIdBreadcrumbsObjects = this.handlerChangeCurrentObjectIdBreadcrumbsObjects.bind(this);
         this.handlerExternalReferencesButtonSave = this.handlerExternalReferencesButtonSave.bind(this);
 
         this.handlerEvents.call(this);
@@ -214,6 +221,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                         userName: item.user_name,
                         title: `Пользователь: ${item.user_name}, Время: ${helpers.getDate(item.date_time)}` };
                 })});
+
                 break;
             }
         }); 
@@ -223,6 +231,14 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     handleClose(){
         this.modalClose();
+    }
+
+    //обработчик выбора текущего объекта из общего пути объектов (строка вида "id--<uuid>/id--<uuid>/id--<uuid>")
+    handlerChangeCurrentObjectIdBreadcrumbsObjects(objectId){
+        console.log("func 'handlerChangeCurrentObjectIdBreadcrumbsObjects', START...");
+        console.log(`new ID: '${objectId}''`);
+
+        this.setState({ currentAdditionalIdSTIXObject: objectId });
     }
 
     //обработчик выбора группы из списка непривилегированных групп 
@@ -382,6 +398,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         }
     }
 
+    //пункт "дата и время публикации"
     handlePublished(){
         let requestId = uuidv4();
 
@@ -412,6 +429,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.props.socketIo.emit("service request: what time is it", { arguments: { id: requestId, dateType: "integer" }});
     }
 
+    //пункт "подробное описание"
     handlerOnChangeDescription(data){
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
         listObjectInfoTmp[this.props.showReportId].description = data.target.value;
@@ -419,6 +437,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.setState({ listObjectInfo: listObjectInfoTmp });
     }
 
+    //пункт "дополнительное наименование"
     handlerOutsideSpecificationAdditionalName(data){
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
@@ -430,6 +449,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.setState({ listObjectInfo: listObjectInfoTmp });
     }
 
+    //пункт "принятое решение по компьютерной угрозе"
     handlerChosenDecisionsMadeComputerThreat(data){
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
@@ -441,6 +461,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.setState({ listObjectInfo: listObjectInfoTmp });
     }
 
+    //пункт "тип компьютерной угрозы"
     handlerChosenComputerThreatType(data){
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
@@ -452,50 +473,59 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.setState({ listObjectInfo: listObjectInfoTmp });
     }
 
+    //пункт "уверенность создателя в правильности своих данных от 0 до 100"
     handlerElementConfidence(obj){
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
-        console.log("func 'handlerElementConfidence', START...");
-        console.log(obj.data);
-        console.log(`ID: ${obj.objectId}`);
+        if((listObjectInfoTmp[obj.objectId].confidence === null) || (typeof listObjectInfoTmp[obj.objectId].confidence === "undefined")){
+            listObjectInfoTmp[obj.objectId].confidence = {};
+        }
 
-
-        /**
- * 
- * Надо дописать некоторые обработчики касающиеся Дополнительная техническая информация
- * например:
- * - уверенность создателя в правильности своих данных от 0 до 100¹:
- * - набор терминов, используемых для описания данного объекта:
- * - определены ли данные содержащиеся в объекте:
- */
-
+        listObjectInfoTmp[obj.objectId].confidence = obj.data;
+        this.setState({ listObjectInfo: listObjectInfoTmp });
     }
 
-    handlerElementDefanged(obj){
-
-        console.log("func 'handlerElementDefanged', START...");
-        console.log(obj.data);
-        console.log(`ID: ${obj.objectId}`);
-
-    }
-
+    //пункт "набор терминов, используемых для описания данного объекта"
     handlerElementLabels(obj){
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
+        if((listObjectInfoTmp[obj.objectId].labels === null) || (typeof listObjectInfoTmp[obj.objectId].labels === "undefined")){
+            listObjectInfoTmp[obj.objectId].labels = {};
+        }
 
-        /**
- * 
- * набор терминов, используемых для описания данного объекта:
- * 
- */
+        listObjectInfoTmp[obj.objectId].labels = obj.listTokenValue;
+        this.setState({ listObjectInfo: listObjectInfoTmp });
+    }
 
-        console.log("func 'handlerElementLabels', START...");
-        console.log(obj.listTokenValue);
-        console.log(`ID: ${obj.objectId}`);
+    //пункт "определены ли данные содержащиеся в объекте"
+    handlerElementDefanged(obj){
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
+        if((listObjectInfoTmp[obj.objectId].defanged === null) || (typeof listObjectInfoTmp[obj.objectId].defanged === "undefined")){
+            listObjectInfoTmp[obj.objectId].defanged = {};
+        }
+
+        listObjectInfoTmp[obj.objectId].defanged = obj.data;
+        this.setState({ listObjectInfo: listObjectInfoTmp });
+    }
+
+    //изменяет выбранный, текущий, дополнительный STIX объект
+    handlerChangeCurrentAdditionalIdSTIXObject(currentObjectId){
+        console.log("func 'handlerChangeCurrentAdditionalIdSTIXObject', START...");
+        console.log(`change to new STIX object ---> ID: '${currentObjectId}'`);
+    }
+
+    //обрабатывает добавление новых объектов STIX или изменение информации о старых (при этом все равно происходит добавление объекта)
+    handlerNewAdditionalSTIXObject(newSTIXObject){
+        console.log("func 'handlerNewAdditionalSTIXObject', START...");
+        console.log("----- ______ NEW STIX OBJECT ______-----");
+        console.log(newSTIXObject);
     }
 
     handleSave(){
 
-        console.log("func 'handleSave', START...");
+        console.log("func 'handleSave', START...\n'BUTTON SAVE'");
+        console.log(this.state.listObjectInfo);
 
     }
 
@@ -567,6 +597,14 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             </Col>);
         };
 
+        //формирование модального окна для отображения других видов STIX объектов или модального окна, позволяющего добавить другие виды STIX объектов
+        if(this.state.currentAdditionalIdSTIXObject !== ""){
+            return <CreateAnyWodalWindowSTIXObject 
+                currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
+                handlerNewAdditionalSTIXObject={this.handlerNewAdditionalSTIXObject} />;
+        }
+
+        //формирование модального окна для STIX объекта типа 'Report'
         return (<React.Fragment>
             <Dialog 
                 fullScreen 
@@ -578,7 +616,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     handlerDialogSave={this.handleSave} 
                     handelrDialogClose={this.modalClose} />
 
-                <CreateBreadcrumbsObjects />
+                <CreateBreadcrumbsObjects 
+                    firstObjectId={this.props.showReportId}
+                    secondObjectId={this.state.secondBreadcrumbsObjectId}
+                    handlerChangeCurrentObjectId={this.handlerChangeCurrentObjectIdBreadcrumbsObjects} />
 
                 <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
                     <Col md={12} className="pl-3 pr-3">
@@ -636,7 +677,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                     </Col>  
                                 </Row>
 
-                                <GetListObjectRefs listObjectRef={reportInfo.object_refs} />
+                                <GetListObjectRefs
+                                    listObjectRef={reportInfo.object_refs} 
+                                    handlerChangeCurrentSTIXObject={this.handlerChangeCurrentAdditionalIdSTIXObject} />
 
                                 <Row className="mt-1">
                                     <Col md={12}>
@@ -784,10 +827,39 @@ CreateAppBar.propTypes = {
     handelrDialogClose: PropTypes.func.isRequired,
 };
 
+//путь до текущего объекта, почти самая верхняя строка
 function CreateBreadcrumbsObjects(props){
     const classes = useStyles();
+    const { firstObjectId, 
+        secondObjectId, 
+        handlerChangeCurrentObjectId } = props;
+        
+    console.log("func 'CreateBreadcrumbsObjects', START...");
+    console.log(`firstObjectId: '${firstObjectId}', secondObjectId: '${secondObjectId}'`);
+
 
     return (<AppBar className={classes.appBreadcrumbs}>
+        <Breadcrumbs aria-label="breadcrumb">
+            {(firstObjectId === "")? 
+                "": 
+                <Link
+                    color={(secondObjectId === "")? "textPrimary": "inherit"}
+                    href="#"
+                    onClick={handlerChangeCurrentObjectId.bind(null, firstObjectId)}>
+                    {firstObjectId}
+                </Link>}
+            {(secondObjectId === "")? 
+                "": 
+                <Link
+                    color="textPrimary"
+                    href="#"
+                    onClick={handlerChangeCurrentObjectId.bind(null, secondObjectId)}>
+                    {secondObjectId}
+                </Link>}
+        </Breadcrumbs>
+    </AppBar>);
+
+    /*return (<AppBar className={classes.appBreadcrumbs}>
         <Breadcrumbs aria-label="breadcrumb">
             <Link color="inherit" href="/" onClick={()=>{}}>
             report--94e4d99f-67aa-4bcd-bbf3-b2c1c320aad7
@@ -807,15 +879,30 @@ function CreateBreadcrumbsObjects(props){
                                         ID STIX object
             </Link>
         </Breadcrumbs>
-    </AppBar>);
+    </AppBar>);*/
 }
 
 CreateBreadcrumbsObjects.propTypes = {
-
+    firstObjectId: PropTypes.string.isRequired,
+    secondObjectId: PropTypes.string.isRequired,
+    handlerChangeCurrentObjectId: PropTypes.func.isRequired,
 };
 
+/**
+ID report: "report--90e4d82a-13dd-2cf1-b4da-ccc1c556ab13"
+object_ref объекта содержит ссылки на следующие объекты:
+    "tool--26ffb872-1dd9-446e-b6f5-fdfa455faa2"
+    "opinion--56ee12bd-6710-eff1-bb67-tt45266477a"
+    "indicator--67aab223b-7800-12fa-0234-eeab120bdf"
+    "campaign--83422c77-904c-4dc1-aff5-5c38f3a2c55c"
+    "relationship--f82356ae-fe6c-437c-9c24-6b64314ae68a"
+    
+    Нет ни одного объекта на который ссылается данный объект 
+ */
+
+
 function GetListObjectRefs(props){
-    let { listObjectRef } = props;
+    let { listObjectRef, handlerChangeCurrentSTIXObject } = props;
 
     return (<React.Fragment>
         <Grid container direction="row" className="mt-4">
@@ -833,7 +920,7 @@ function GetListObjectRefs(props){
                     }
 
                     return (<Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                        <IconButton onClick={()=>{}}>
+                        <IconButton onClick={handlerChangeCurrentSTIXObject.bind(null, item)}>
                             <img 
                                 key={`key_object_ref_type_${key}`} 
                                 src={`/images/stix_object/${objectElem.link}`} 
@@ -842,8 +929,10 @@ function GetListObjectRefs(props){
                         </IconButton>
                     </Tooltip>);
                 })}
-                <IconButton edge="start" color="inherit" onClick={()=>{}} aria-label="add">
-                    <AddCircleOutlineOutlinedIcon/>
+                <IconButton edge="start" color="inherit" onClick={handlerChangeCurrentSTIXObject.bind(null, "create-new-stix-object")} aria-label="add">
+                    <Tooltip title="добавить новый STIX объект">
+                        <AddCircleOutlineOutlinedIcon/>
+                    </Tooltip>
                 </IconButton>
             </Grid>
         </Grid>
@@ -852,4 +941,40 @@ function GetListObjectRefs(props){
 
 GetListObjectRefs.propTypes = {
     listObjectRef: PropTypes.array.isRequired,
+    handlerChangeCurrentSTIXObject: PropTypes.func.isRequired,
+};
+
+function CreateAnyWodalWindowSTIXObject(props){
+    let { firstObjectId,
+        secondObjectId,
+        currentAdditionalIdSTIXObject, 
+        handlerNewAdditionalSTIXObject } = props;
+
+    console.log("func 'CreateAnyWodalWindowSTIXObject', START...");
+    console.log(`currentAdditionalIdSTIXObject: ${currentAdditionalIdSTIXObject}`);
+
+    switch(currentAdditionalIdSTIXObject){
+    case "create-new-stix-object":
+        <CreateModalWindowNewSTIXObject
+        //modalShow={} //показывать дополнительное модальное окно (скорее всего должно быть или показывать модельное окно Report или модальное окно добавления STIX)
+            firstObjectId={firstObjectId}
+            secondObjectId={secondObjectId}
+            handlerDialogAdd={handlerNewAdditionalSTIXObject}
+        //handlerChangeCurrentObjectId: PropTypes.func.isRequired, 
+        />;
+
+        break;
+
+    case "":
+
+        break;
+    }
+//условие выбора и подключить различные модальные окна, отвечающие за различные типы SITX объектов или модальное окно формирующее новый STIX объект
+}
+
+CreateAnyWodalWindowSTIXObject.propTypes = {
+    firstObjectId: PropTypes.string.isRequired,
+    secondObjectId: PropTypes.string.isRequired,
+    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+    handlerNewAdditionalSTIXObject: PropTypes.func.isRequired,
 };

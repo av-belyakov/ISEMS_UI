@@ -272,8 +272,8 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         let  listExtensions = [];
         for(let k in reportInfo.extensions){
             listExtensions.push(<li key={`extensions_${k}`}>
-                {k} - {reportInfo.extensions[k]}
-                <IconButton aria-label="delete-extensions-item" onClick={()=>{ 
+                {k}: {reportInfo.extensions[k]}
+                <IconButton aria-label="delete-extensions-item" onClick={() => { 
                     handlerElementDelete({ 
                         itemType: "extensions", 
                         item: k, 
