@@ -8,6 +8,9 @@ import {
     Breadcrumbs,
     Container,
     Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Toolbar,
     IconButton,
     Typography,
@@ -31,7 +34,20 @@ import CreateListUnprivilegedGroups from "../module_managing_records_structured_
 import DialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 import CreateElementAdditionalTechnicalInformation from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformation.jsx";
 
+/*
 import CreateModalWindowNewSTIXObject from "./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx";
+import CreateModalWindowArtifactSTIXObject from "./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx";
+import CreateModalWindowDirectorySTIXObject from "./modal_window_stix_object/modalWindowDirectorySTIXObject.jsx";
+import CreateModalWindowFileSTIXObject from "./modal_window_stix_object/modalWindowFileSTIXObject.jsx";
+import CreateModalWindowMutexSTIXObject from "./modal_window_stix_object/modalWindowMutexSTIXObject.jsx";
+import CreateModalWindowProcessSTIXObject from "./modal_window_stix_object/modalWindowProcessSTIXObject.jsx";
+import CreateModalWindowSoftwareSTIXObject from "./modal_window_stix_object/modalWindowSoftwareSTIXObject.jsx";
+import CreateModalWindowURLSTIXObject from "./modal_window_stix_object/modalWindowURLSTIXObject.jsx";
+import CreateModalWindowWindowsRegistryKeySTIXObject from "./modal_window_stix_object/modalWindowWindowsRegistryKeySTIXObject.jsx";
+import CreateModalWindowX509CertificateSTIXObject from "./modal_window_stix_object/modalWindowX509CertificateSTIXObject.jsx";
+import CreateModalWindowAttackPatternSTIXObject from "./modal_window_stix_object/modalWindowAttackPatternSTIXObject.jsx";
+import CreateModalWindowToolSTIXObject from "./modal_window_stix_object/modalWindowToolSTIXObject.jsx";
+*/
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -75,6 +91,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             secondBreadcrumbsObjectId: "",
             currentGroupAccessToReport: "select_group",
             currentAdditionalIdSTIXObject: "",
+            showDialogElementAdditionalSTIXObject: false,
             showDialogElementAdditionalThechnicalInfo: false,
             objectDialogElementAdditionalThechnicalInfo: {},
         };
@@ -83,6 +100,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.modalClose = this.modalClose.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handlePublished = this.handlePublished.bind(this);
+        this.handelrDialogClose = this.handelrDialogClose.bind(this);
+        this.handlerDialogButton = this.handlerDialogButton.bind(this);
         this.handlerOnChangeDescription = this.handlerOnChangeDescription.bind(this);
         this.handlerManagingAccessToReport = this.handlerManagingAccessToReport.bind(this);
         this.handlerNewAdditionalSTIXObject = this.handlerNewAdditionalSTIXObject.bind(this);
@@ -513,6 +532,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     handlerChangeCurrentAdditionalIdSTIXObject(currentObjectId){
         console.log("func 'handlerChangeCurrentAdditionalIdSTIXObject', START...");
         console.log(`change to new STIX object ---> ID: '${currentObjectId}'`);
+
+        this.setState({ 
+            currentAdditionalIdSTIXObject: currentObjectId,
+            showDialogElementAdditionalSTIXObject: true 
+        });
     }
 
     //обрабатывает добавление новых объектов STIX или изменение информации о старых (при этом все равно происходит добавление объекта)
@@ -520,12 +544,24 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         console.log("func 'handlerNewAdditionalSTIXObject', START...");
         console.log("----- ______ NEW STIX OBJECT ______-----");
         console.log(newSTIXObject);
+
     }
 
     handleSave(){
 
         console.log("func 'handleSave', START...\n'BUTTON SAVE'");
         console.log(this.state.listObjectInfo);
+
+    }
+
+    handelrDialogClose(){
+        console.log("func 'handelrDialogClose', START...\n'BUTTON DIALOG CLOSE'");
+
+        this.setState({ showDialogElementAdditionalSTIXObject: false });
+    }
+
+    handlerDialogButton(){
+        console.log("func 'handlerDialogButton', START...\n'BUTTON DIALOG BUTTON'");
 
     }
 
@@ -567,10 +603,12 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 fullScreen 
                 open={this.props.show} 
                 onClose={this.modalClose} >
+
                 <CreateAppBar 
-                    reportId=""
-                    handlerDialogSave={this.handleSave} 
-                    handelrDialogClose={this.modalClose} />
+                    title=""
+                    nameDialogButton="сохранить"
+                    handelrDialogClose={this.modalClose}
+                    handlerDialogButton={this.handleSave} />
             </Dialog>);
         }
 
@@ -597,13 +635,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             </Col>);
         };
 
-        //формирование модального окна для отображения других видов STIX объектов или модального окна, позволяющего добавить другие виды STIX объектов
-        if(this.state.currentAdditionalIdSTIXObject !== ""){
-            return <CreateAnyWodalWindowSTIXObject 
-                currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
-                handlerNewAdditionalSTIXObject={this.handlerNewAdditionalSTIXObject} />;
-        }
-
         //формирование модального окна для STIX объекта типа 'Report'
         return (<React.Fragment>
             <Dialog 
@@ -612,14 +643,15 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 onClose={this.modalClose} >
 
                 <CreateAppBar 
-                    reportId={reportInfo.id}
-                    handlerDialogSave={this.handleSave} 
-                    handelrDialogClose={this.modalClose} />
+                    title={reportInfo.id}
+                    nameDialogButton="сохранить"
+                    handelrDialogClose={this.modalClose}
+                    handlerDialogButton={this.handleSave} />
 
-                <CreateBreadcrumbsObjects 
+                {/*<CreateBreadcrumbsObjects 
                     firstObjectId={this.props.showReportId}
                     secondObjectId={this.state.secondBreadcrumbsObjectId}
-                    handlerChangeCurrentObjectId={this.handlerChangeCurrentObjectIdBreadcrumbsObjects} />
+                    handlerChangeCurrentObjectId={this.handlerChangeCurrentObjectIdBreadcrumbsObjects} />*/}
 
                 <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
                     <Col md={12} className="pl-3 pr-3">
@@ -783,6 +815,14 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 </Container>
             </Dialog>
 
+            <CreateAnyWodalWindowSTIXObject
+                showDialogElement={this.state.showDialogElementAdditionalSTIXObject}
+                handelrDialogClose={this.handelrDialogClose}
+                handlerDialogButton={this.handlerDialogButton}
+                //handlerChangeCurrentObjectId={this.handlerChangeCurrentObjectIdBreadcrumbsObjects}
+                currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
+                handlerNewAdditionalSTIXObject={this.handlerNewAdditionalSTIXObject} />
+
             <DialogElementAdditionalThechnicalInformation 
                 show={this.state.showDialogElementAdditionalThechnicalInfo}
                 onHide={this.closeDialogElementAdditionalThechnicalInfo.bind(this)}
@@ -808,85 +848,26 @@ ModalWindowShowInformationReportSTIX.propTypes = {
 
 function CreateAppBar(props){
     const classes = useStyles();
-    const { reportId, handlerDialogSave, handelrDialogClose } = props;
+    const { title, nameDialogButton, handelrDialogClose, handlerDialogButton } = props;
     
     return (<AppBar className={classes.appBar}>
         <Toolbar>
             <IconButton edge="start" color="inherit" onClick={handelrDialogClose} aria-label="close">
                 <CloseIcon />
             </IconButton>
-            <Typography variant="h6" className={classes.title}>{reportId}</Typography>
-            <Button size="small" className={classes.buttonSave} onClick={handlerDialogSave}>сохранить</Button>
+            <Typography variant="h6" className={classes.title}>{title}</Typography>
+            <Button size="small" className={classes.buttonSave} onClick={handlerDialogButton}>{nameDialogButton}</Button>
         </Toolbar>
     </AppBar>);
 }
 
 CreateAppBar.propTypes = {
-    reportId: PropTypes.string.isRequired,
-    handlerDialogSave: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    nameDialogButton: PropTypes.string.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
+    handlerDialogButton: PropTypes.func.isRequired,
 };
 
-//путь до текущего объекта, почти самая верхняя строка
-function CreateBreadcrumbsObjects(props){
-    const classes = useStyles();
-    const { firstObjectId, 
-        secondObjectId, 
-        handlerChangeCurrentObjectId } = props;
-        
-    console.log("func 'CreateBreadcrumbsObjects', START...");
-    console.log(`firstObjectId: '${firstObjectId}', secondObjectId: '${secondObjectId}'`);
-
-
-    return (<AppBar className={classes.appBreadcrumbs}>
-        <Breadcrumbs aria-label="breadcrumb">
-            {(firstObjectId === "")? 
-                "": 
-                <Link
-                    color={(secondObjectId === "")? "textPrimary": "inherit"}
-                    href="#"
-                    onClick={handlerChangeCurrentObjectId.bind(null, firstObjectId)}>
-                    {firstObjectId}
-                </Link>}
-            {(secondObjectId === "")? 
-                "": 
-                <Link
-                    color="textPrimary"
-                    href="#"
-                    onClick={handlerChangeCurrentObjectId.bind(null, secondObjectId)}>
-                    {secondObjectId}
-                </Link>}
-        </Breadcrumbs>
-    </AppBar>);
-
-    /*return (<AppBar className={classes.appBreadcrumbs}>
-        <Breadcrumbs aria-label="breadcrumb">
-            <Link color="inherit" href="/" onClick={()=>{}}>
-            report--94e4d99f-67aa-4bcd-bbf3-b2c1c320aad7
-            </Link>
-            <Link color="inherit" href="/getting-started/installation/" onClick={()=>{}}>
-            grouping--94e4d99f-67aa-4bcd-bbf3-b2c1c320eef1
-            </Link>
-            <Link
-                color="textPrimary"
-                href="/components/breadcrumbs/"
-                onClick={()=>{}}
-                aria-current="page"
-            >
-            tool--94e4d99f-67aa-4bcd-bbf3-bbbabtt213a
-            </Link>
-            <Link color="inherit" href="/getting-started/installation/" onClick={()=>{}}>
-                                        ID STIX object
-            </Link>
-        </Breadcrumbs>
-    </AppBar>);*/
-}
-
-CreateBreadcrumbsObjects.propTypes = {
-    firstObjectId: PropTypes.string.isRequired,
-    secondObjectId: PropTypes.string.isRequired,
-    handlerChangeCurrentObjectId: PropTypes.func.isRequired,
-};
 
 /**
 ID report: "report--90e4d82a-13dd-2cf1-b4da-ccc1c556ab13"
@@ -945,36 +926,134 @@ GetListObjectRefs.propTypes = {
 };
 
 function CreateAnyWodalWindowSTIXObject(props){
-    let { firstObjectId,
-        secondObjectId,
+    let { showDialogElement,
+        handelrDialogClose,
+        handlerDialogButton,
         currentAdditionalIdSTIXObject, 
         handlerNewAdditionalSTIXObject } = props;
+
+    let idSTIXObject = currentAdditionalIdSTIXObject;
+    let type = currentAdditionalIdSTIXObject.split("--");
+    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+                
+    if(typeof objectElem !== "undefined" ){
+        idSTIXObject = type[0];
+        img = <img 
+            src={`/images/stix_object/${objectElem.link}`} 
+            width="35" 
+            height="35" />;
+    }
+    
+    let buttonName = (currentAdditionalIdSTIXObject === "create-new-stix-object")? "добавить": "сохранить",
+        titleName = (currentAdditionalIdSTIXObject === "create-new-stix-object")? 
+            "Создание нового объекта или добавление существующего": 
+            `${(typeof objectElem === "undefined")? "": objectElem.description} id: ${currentAdditionalIdSTIXObject}`,
+        img = (typeof objectElem === "undefined")? "": <img src={`/images/stix_object/${objectElem.link}`} width="35" height="35" />;
+
 
     console.log("func 'CreateAnyWodalWindowSTIXObject', START...");
     console.log(`currentAdditionalIdSTIXObject: ${currentAdditionalIdSTIXObject}`);
 
-    switch(currentAdditionalIdSTIXObject){
-    case "create-new-stix-object":
-        <CreateModalWindowNewSTIXObject
-        //modalShow={} //показывать дополнительное модальное окно (скорее всего должно быть или показывать модельное окно Report или модальное окно добавления STIX)
-            firstObjectId={firstObjectId}
-            secondObjectId={secondObjectId}
-            handlerDialogAdd={handlerNewAdditionalSTIXObject}
-        //handlerChangeCurrentObjectId: PropTypes.func.isRequired, 
-        />;
+    let listSTIXObject = {
+        /*"create-new-stix-object": <CreateModalWindowNewSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,
+        "artifact": <CreateModalWindowArtifactSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
+        "directory": <CreateModalWindowDirectorySTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
+        "file": <CreateModalWindowFileSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,					
+        "mutex": <CreateModalWindowMutexSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
+        "process": <CreateModalWindowProcessSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,			
+        "software": <CreateModalWindowSoftwareSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
+        "url": <CreateModalWindowURLSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
+        "windows-registry-key": <CreateModalWindowWindowsRegistryKeySTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,			
+        "x509-certificate": <CreateModalWindowX509CertificateSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,		
+        "attack-pattern": <CreateModalWindowAttackPatternSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,*/
+        "autonomous-system": "",
+        "campaign": "",		
+        "course-of-action": "",	
+        "domain-name": "",		
+        "email-addr": "",	
+        "email-message": "",	
+        "grouping": "",	
+        "identity": "",		
+        "incident": "",	
+        //"indicator": "",зависит от "observed-data"
+        "infrastructure": "",	
+        "intrusion-set": "",
+        "ipv4-addr": "",
+        "ipv6-addr": "",
+        "location": "",
+        "mac-addr": "",
+        "malware": "",
+        //"malware-analysis": "", напрямую относится к "malware"
+        "network-traffic": "",
+        "note": "",
+        "observed-data": "",
+        "opinion": "",
+        //"relationship": "", связующее звено между STIX объектами (отдельно не визуализируется)
+        "report": "",
+        "sighting": "",
+        "threat-actor": "",
+        "tool": { module: "CreateModalWindowToolSTIXObject", path: "./modal_window_stix_object/modalWindowToolSTIXObject.jsx" },
+        //"tool": <CreateModalWindowToolSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,
+        "user-account": "",
+        "vulnerability": ""
+    };
 
-        break;
+    let Module = async function(){
+        if((listSTIXObject[idSTIXObject] !== null) && (typeof listSTIXObject[idSTIXObject] !== "undefined")){
+            return;
+        }
+            
+        let obj = await import(listSTIXObject[idSTIXObject].path);
+        return obj.default;        
+    };
 
-    case "":
+    /**
+ *          !!!!!
+ * Можно попробовать использовать react-router для динамической подгрузки модулей 
+ *          !!!!!
+ */
 
-        break;
-    }
+    return (<Dialog 
+        fullWidth
+        maxWidth="xl"
+        scroll="paper"
+        open={showDialogElement} >
+        <DialogTitle>
+            {img} {titleName}
+        </DialogTitle>
+        <DialogContent>
+            {/*((listSTIXObject[idSTIXObject] === null) || (typeof listSTIXObject[idSTIXObject] === "undefined"))? 
+                "":
+    listSTIXObject[idSTIXObject]*/}
+            <Module handlerDialog={handlerNewAdditionalSTIXObject} />
+            {/*((listSTIXObject[idSTIXObject] === null) || (typeof listSTIXObject[idSTIXObject] === "undefined"))? 
+                "":
+                import(listSTIXObject[idSTIXObject].path)
+                    .then((obj) => {
+                        let Module = obj.default;
+
+                        return <Module handlerDialog={handlerNewAdditionalSTIXObject} />;
+                    })
+                    .catch((err) => { console.log(err); })*/}
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
+            <Button 
+                //disabled={buttonIsDisabled}
+                onClick={handlerDialogButton}
+                color="primary">
+                {buttonName}
+            </Button>
+        </DialogActions>
+    </Dialog>);
+    
 //условие выбора и подключить различные модальные окна, отвечающие за различные типы SITX объектов или модальное окно формирующее новый STIX объект
 }
 
 CreateAnyWodalWindowSTIXObject.propTypes = {
-    firstObjectId: PropTypes.string.isRequired,
-    secondObjectId: PropTypes.string.isRequired,
+    showDialogElement: PropTypes.bool.isRequired,
+    handelrDialogClose: PropTypes.func.isRequired,
+    handlerDialogButton: PropTypes.func.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handlerNewAdditionalSTIXObject: PropTypes.func.isRequired,
 };

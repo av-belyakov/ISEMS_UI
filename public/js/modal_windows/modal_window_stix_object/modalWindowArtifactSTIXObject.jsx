@@ -2,17 +2,17 @@
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { 
+/*import { 
     AppBar,
     Button,
     Container,
     Dialog,
     Toolbar,
     Typography,
-} from "@material-ui/core";
+} from "@material-ui/core";*/
 import { teal, grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
-import { v4 as uuidv4 } from "uuid";
+//import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,23 +45,18 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function CreateModalWindowNewSTIXObject(props){
+export default function CreateModalWindowArtifactSTIXObject(props){
     let { handlerDialog } = props;
 
     return (<React.Fragment>
         <Row className="mt-2">
             <Col md={12} className="pl-3 pr-3">
-            Добавление какого либо нового STIX объекта. При это можно как добавить новый STIX объект, так и выполнить поиск
-            уже существующих STIX объектов по их типам, времени создания, идентификатору и т.д.
+            Просмотр и редактирование STIX объекта типа Артефакт (Artifact СO STIX)
             </Col>
         </Row>
     </React.Fragment>);
 }
 
-CreateModalWindowNewSTIXObject.propTypes = {
-    //modalShow: PropTypes.bool.isRequired,
-    //firstObjectId: PropTypes.string.isRequired,
-    //secondObjectId: PropTypes.string.isRequired,
+CreateModalWindowArtifactSTIXObject.propTypes = {
     handlerDialog: PropTypes.func.isRequired,
-    //handlerChangeCurrentObjectId: PropTypes.func.isRequired,
 };
