@@ -288,25 +288,23 @@ class CreateMainPage extends React.Component {
             </Tooltip>);
         }
 
-        return (
-            <BrowserRouter>
-                <CssBaseline />
-                <Row>
-                    <Col md={2}>
-                        <LeftElements menuItem={this.menuItem} list={list} handler={this.getSelectedMenuItem}/>
-                    </Col>
-                    <Col md={10}>
-                        {(!this.state.connectModuleMRSICT) ? 
-                            this.showModuleConnectionError.call(this):  
-                            <ChildElements 
-                                socketIo={this.props.socketIo} 
-                                receivedData={this.props.receivedData} 
-                                listTypesComputerThreat={this.state.listTypesComputerThreat}
-                                listTypesDecisionsMadeComputerThreat={this.state.listTypesDecisionsMadeComputerThreat} />}
-                    </Col>
-                </Row>
-            </BrowserRouter>
-        );
+        return (<BrowserRouter>
+            <CssBaseline />
+            <Row>
+                <Col md={2}>
+                    <LeftElements menuItem={this.menuItem} list={list} handler={this.getSelectedMenuItem}/>
+                </Col>
+                <Col md={10}>
+                    {(!this.state.connectModuleMRSICT) ? 
+                        this.showModuleConnectionError.call(this):  
+                        <ChildElements 
+                            socketIo={this.props.socketIo} 
+                            receivedData={this.props.receivedData} 
+                            listTypesComputerThreat={this.state.listTypesComputerThreat}
+                            listTypesDecisionsMadeComputerThreat={this.state.listTypesDecisionsMadeComputerThreat} />}
+                </Col>
+            </Row>
+        </BrowserRouter>);
     }
 
     render() {

@@ -17,10 +17,6 @@ require("react-scrollbar");
 require("react-beautiful-dnd");
 require("react-customize-token-input");
 
-
-//!
-
-
 require("lodash");
 require("moment");
 require("select2");
@@ -31,9 +27,5 @@ require("utf8");
 require("uuid");
 require("quoted-printable");
 
-//require('moment-with-locales');
-
 global.socket = io.connect();
 global.ss = require("socket.io-stream");
-
-//import 'bootstrap.css';

@@ -78,7 +78,8 @@ module.exports = {
         filename: "[name].js",
 
         //применяется при сборке файлов через require.ensure
-        chunkFilename: "[id].js",
+        chunkFilename: "[name].bundle.js",
+        //chunkFilename: "[id].js",
 
         //экспорт каждой точки входа должен попадать в переменную с соответствующем именем
         library: "[name]"

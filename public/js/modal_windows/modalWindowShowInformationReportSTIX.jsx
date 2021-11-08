@@ -1,6 +1,6 @@
 "use strict";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
     AppBar,
@@ -34,20 +34,19 @@ import CreateListUnprivilegedGroups from "../module_managing_records_structured_
 import DialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 import CreateElementAdditionalTechnicalInformation from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformation.jsx";
 
-/*
-import CreateModalWindowNewSTIXObject from "./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx";
-import CreateModalWindowArtifactSTIXObject from "./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx";
-import CreateModalWindowDirectorySTIXObject from "./modal_window_stix_object/modalWindowDirectorySTIXObject.jsx";
-import CreateModalWindowFileSTIXObject from "./modal_window_stix_object/modalWindowFileSTIXObject.jsx";
-import CreateModalWindowMutexSTIXObject from "./modal_window_stix_object/modalWindowMutexSTIXObject.jsx";
-import CreateModalWindowProcessSTIXObject from "./modal_window_stix_object/modalWindowProcessSTIXObject.jsx";
-import CreateModalWindowSoftwareSTIXObject from "./modal_window_stix_object/modalWindowSoftwareSTIXObject.jsx";
-import CreateModalWindowURLSTIXObject from "./modal_window_stix_object/modalWindowURLSTIXObject.jsx";
-import CreateModalWindowWindowsRegistryKeySTIXObject from "./modal_window_stix_object/modalWindowWindowsRegistryKeySTIXObject.jsx";
-import CreateModalWindowX509CertificateSTIXObject from "./modal_window_stix_object/modalWindowX509CertificateSTIXObject.jsx";
-import CreateModalWindowAttackPatternSTIXObject from "./modal_window_stix_object/modalWindowAttackPatternSTIXObject.jsx";
-import CreateModalWindowToolSTIXObject from "./modal_window_stix_object/modalWindowToolSTIXObject.jsx";
-*/
+
+//import CreateModalWindowNewSTIXObject from "./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx";
+//import CreateModalWindowArtifactSTIXObject from "./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx";
+//import CreateModalWindowDirectorySTIXObject from "./modal_window_stix_object/modalWindowDirectorySTIXObject.jsx";
+//import CreateModalWindowFileSTIXObject from "./modal_window_stix_object/modalWindowFileSTIXObject.jsx";
+//import CreateModalWindowMutexSTIXObject from "./modal_window_stix_object/modalWindowMutexSTIXObject.jsx";
+//import CreateModalWindowProcessSTIXObject from "./modal_window_stix_object/modalWindowProcessSTIXObject.jsx";
+//import CreateModalWindowSoftwareSTIXObject from "./modal_window_stix_object/modalWindowSoftwareSTIXObject.jsx";
+//import CreateModalWindowURLSTIXObject from "./modal_window_stix_object/modalWindowURLSTIXObject.jsx";
+//import CreateModalWindowWindowsRegistryKeySTIXObject from "./modal_window_stix_object/modalWindowWindowsRegistryKeySTIXObject.jsx";
+//import CreateModalWindowX509CertificateSTIXObject from "./modal_window_stix_object/modalWindowX509CertificateSTIXObject.jsx";
+//import CreateModalWindowAttackPatternSTIXObject from "./modal_window_stix_object/modalWindowAttackPatternSTIXObject.jsx";
+//import CreateModalWindowToolSTIXObject from "./modal_window_stix_object/modalWindowToolSTIXObject.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -950,68 +949,134 @@ function CreateAnyWodalWindowSTIXObject(props){
             `${(typeof objectElem === "undefined")? "": objectElem.description} id: ${currentAdditionalIdSTIXObject}`,
         img = (typeof objectElem === "undefined")? "": <img src={`/images/stix_object/${objectElem.link}`} width="35" height="35" />;
 
+    let getMyModule = (name) => {
+        switch(name){
+        case "create-new-stix-object": 
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx")); 
 
-    console.log("func 'CreateAnyWodalWindowSTIXObject', START...");
-    console.log(`currentAdditionalIdSTIXObject: ${currentAdditionalIdSTIXObject}`);
+        case "artifact":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx")); 
+        
+        case "directory":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowDirectorySTIXObject.jsx")); 
+        
+        case "file":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowFileSTIXObject.jsx")); 
+        
+        case "mutex":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowMutexSTIXObject.jsx")); 
+        
+        case "process":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowProcessSTIXObject.jsx")); 
+        
+        case "software":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowSoftwareSTIXObject.jsx")); 
+        
+        case "url":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowURLSTIXObject.jsx")); 
+        
+        case "windows-registry-key":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowWindowsRegistryKeySTIXObject.jsx")); 
+        
+        case "x509-certificate":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowX509CertificateSTIXObject.jsx")); 
+        
+        case "attack-pattern":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowAttackPatternSTIXObject.jsx")); 
 
-    let listSTIXObject = {
-        /*"create-new-stix-object": <CreateModalWindowNewSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,
-        "artifact": <CreateModalWindowArtifactSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
-        "directory": <CreateModalWindowDirectorySTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
-        "file": <CreateModalWindowFileSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,					
-        "mutex": <CreateModalWindowMutexSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
-        "process": <CreateModalWindowProcessSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,			
-        "software": <CreateModalWindowSoftwareSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
-        "url": <CreateModalWindowURLSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,				
-        "windows-registry-key": <CreateModalWindowWindowsRegistryKeySTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,			
-        "x509-certificate": <CreateModalWindowX509CertificateSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,		
-        "attack-pattern": <CreateModalWindowAttackPatternSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,*/
-        "autonomous-system": "",
-        "campaign": "",		
-        "course-of-action": "",	
-        "domain-name": "",		
-        "email-addr": "",	
-        "email-message": "",	
-        "grouping": "",	
-        "identity": "",		
-        "incident": "",	
-        //"indicator": "",зависит от "observed-data"
-        "infrastructure": "",	
-        "intrusion-set": "",
-        "ipv4-addr": "",
-        "ipv6-addr": "",
-        "location": "",
-        "mac-addr": "",
-        "malware": "",
-        //"malware-analysis": "", напрямую относится к "malware"
-        "network-traffic": "",
-        "note": "",
-        "observed-data": "",
-        "opinion": "",
-        //"relationship": "", связующее звено между STIX объектами (отдельно не визуализируется)
-        "report": "",
-        "sighting": "",
-        "threat-actor": "",
-        "tool": { module: "CreateModalWindowToolSTIXObject", path: "./modal_window_stix_object/modalWindowToolSTIXObject.jsx" },
-        //"tool": <CreateModalWindowToolSTIXObject handlerDialog={handlerNewAdditionalSTIXObject} />,
-        "user-account": "",
-        "vulnerability": ""
-    };
+        case "autonomous-system":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowAutonomousSystemSTIXObject.jsx")); 
 
-    let Module = async function(){
-        if((listSTIXObject[idSTIXObject] !== null) && (typeof listSTIXObject[idSTIXObject] !== "undefined")){
-            return;
-        }
+        case "campaign":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowCampaignSTIXObject.jsx")); 
             
-        let obj = await import(listSTIXObject[idSTIXObject].path);
-        return obj.default;        
+        case "course-of-action":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowCourseOfActionSTIXObject.jsx")); 
+
+        case "domain-name":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowDomainNameSTIXObject.jsx")); 
+
+        case "email-addr":
+            //"email-message"
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowEmailAddrSTIXObject.jsx")); 
+
+        case "grouping":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowGroupingSTIXObject.jsx")); 
+
+        case "identity":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowIdentitySTIXObject.jsx")); 
+
+        case "incident":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowIncidentSTIXObject.jsx")); 
+
+        case "infrastructure":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowInfrastructureSTIXObject.jsx")); 
+
+        case "intrusion-set":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowIntrusionSetSTIXObject.jsx")); 
+
+        case "ipv4-addr":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowIPv4AddrSTIXObject.jsx")); 
+
+        case "ipv6-addr":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowIPv6AddrSTIXObject.jsx")); 
+
+        case "location":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowLocationSTIXObject.jsx")); 
+
+        case "mac-addr":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowMacAddrSTIXObject.jsx")); 
+
+        case "malware": 
+        //"malware-analysis": "", напрямую относится к "malware"
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowMalwareSTIXObject.jsx")); 
+
+        case "network-traffic":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowNetworkTrafficSTIXObject.jsx")); 
+
+        case "note":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowNoteSTIXObject.jsx")); 
+
+        case "observed-data":
+        //"indicator": "",зависит от "observed-data"
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowObservedDataSTIXObject.jsx")); 
+
+        case "opinion":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowOpinionSTIXObject.jsx")); 
+
+        case "threat-actor":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowThreatActorSTIXObject.jsx")); 
+
+        case "tool":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowToolSTIXObject.jsx")); 
+
+        case "user-account":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowUserAccountSTIXObject.jsx")); 
+
+        case "vulnerability":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowVulnerabilitySTIXObject.jsx")); 
+
+        case "indicator":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+
+        case "email-message":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+
+        case "malware-analysis":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+
+        case "relationship":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+
+        case "sighting":
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+            
+        }
+
+        return null;
     };
 
-    /**
- *          !!!!!
- * Можно попробовать использовать react-router для динамической подгрузки модулей 
- *          !!!!!
- */
+    let MyModule = getMyModule(idSTIXObject);
 
     return (<Dialog 
         fullWidth
@@ -1022,19 +1087,11 @@ function CreateAnyWodalWindowSTIXObject(props){
             {img} {titleName}
         </DialogTitle>
         <DialogContent>
-            {/*((listSTIXObject[idSTIXObject] === null) || (typeof listSTIXObject[idSTIXObject] === "undefined"))? 
-                "":
-    listSTIXObject[idSTIXObject]*/}
-            <Module handlerDialog={handlerNewAdditionalSTIXObject} />
-            {/*((listSTIXObject[idSTIXObject] === null) || (typeof listSTIXObject[idSTIXObject] === "undefined"))? 
-                "":
-                import(listSTIXObject[idSTIXObject].path)
-                    .then((obj) => {
-                        let Module = obj.default;
-
-                        return <Module handlerDialog={handlerNewAdditionalSTIXObject} />;
-                    })
-                    .catch((err) => { console.log(err); })*/}
+            <Suspense fallback={<div>Загрузка...</div>}>
+                {(MyModule)?
+                    <MyModule handlerDialog={handlerNewAdditionalSTIXObject} />:
+                    ""}
+            </Suspense>
         </DialogContent>
         <DialogActions>
             <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
@@ -1046,8 +1103,6 @@ function CreateAnyWodalWindowSTIXObject(props){
             </Button>
         </DialogActions>
     </Dialog>);
-    
-//условие выбора и подключить различные модальные окна, отвечающие за различные типы SITX объектов или модальное окно формирующее новый STIX объект
 }
 
 CreateAnyWodalWindowSTIXObject.propTypes = {
