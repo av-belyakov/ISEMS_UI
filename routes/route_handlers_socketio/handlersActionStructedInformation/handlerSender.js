@@ -60,7 +60,7 @@ module.exports.sendSearchRequestPageReport = function(socketIo, data){
                         }
 
                         let msg = {
-                            task_id: createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`),
+                            task_id: createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`),
                             section: "handling search requests",
                             additional_parameters: { number_documents_found: countElements },
                         };
@@ -201,7 +201,7 @@ module.exports.sendSearchRequestCountFoundElemPageReport = function(socketIo, da
                             section: section,
                             eventForWidgets: false,
                             information: {
-                                task_id: createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`),
+                                task_id: createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`),
                                 section: "handling search requests",
                                 additional_parameters: { number_documents_found: countElements },
                             },
@@ -227,7 +227,7 @@ module.exports.sendSearchRequestCountFoundElemPageReport = function(socketIo, da
     
                         let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                         if (conn !== null) {
-                            let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`);
+                            let taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
     
                             globalObject.setData("tasks", taskID, {
                                 eventName: section,
@@ -359,7 +359,7 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
         
                             let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                             if (conn !== null) {
-                                let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`);
+                                let taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
         
                                 globalObject.setData("tasks", taskID, {
                                     eventName: section,
@@ -401,7 +401,7 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
                             section: "list of groups that are allowed access",
                             eventForWidgets: false,
                             information: {
-                                task_id: createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`),
+                                task_id: createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`),
                                 section: "handling search requests",
                                 additional_parameters: listGroup,
                             },
@@ -416,7 +416,7 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
     
                     let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                     if (conn !== null) {
-                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}`);
+                        let taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
     
                         globalObject.setData("tasks", taskID, {
                             eventName: section,
@@ -438,6 +438,179 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
                 },
             ], (err) => {
                 if (err) throw(err);
+            });
+        }).catch((err) => {
+            if ((err.name === "management auth") || (err.name === "management MRSICT")) {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
+};
+
+/**
+ * Обработчик запроса для получения количества найденной информации на странице 'доклады' (STIX тип 'reports')
+ * 
+ * @param {*} socketIo - дескриптор websocket соединения
+ * @param {*} data - данные 
+ */
+module.exports.sendSearchRequestGetSTIXObjectForId = function(socketIo, data){
+    let funcName = " (func 'sendSearchRequestGetSTIXObjectForId')",
+        section = "isems-mrsi ui request: send search request, get STIX object for id",
+        searchRequestTmp = {
+            collection_name: "stix object",
+            paginate_parameters: {
+                max_part_size: 15,
+                current_part_number: 1,
+            },
+            sortable_field: "data_created",
+            search_parameters: {
+                documents_id: [ data.arguments.searchObjectId ],
+                documents_type: [],
+                created: {
+                    start: "0001-01-01T00:00:00.000+00:00",
+                    end: "0001-01-01T00:00:00.000+00:00",
+                },
+                modified: {
+                    start: "0001-01-01T00:00:00.000+00:00",
+                    end: "0001-01-01T00:00:00.000+00:00",
+                },
+                created_by_ref: "",
+                specific_search_fields: [],
+                outside_specification_search_fields: {
+                // принятые решения по компьютерной угрозе
+                    decisions_made_computer_threat: "",
+                    // тип компьютерной угрозы
+                    computer_threat_type: "",
+                },
+            },
+        };
+
+    /**
+ * arguments: { 
+            searchObjectId: currentObjectId,
+            parentObjectId: this.props.showReportId,
+        }
+ */
+
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return { 
+                userLogin: authData.document.userLogin, 
+                userName: authData.document.userName,
+                userGroup: authData.document.userGroup,
+                isPrivilegedGroup: authData.document.groupSettings.management_security_event_management.element_settings.privileged_group.status,
+            };
+        }).then((result) => {
+            return new Promise((resolve, reject) => {
+                getSessionId("socketIo", socketIo, (err, sid) => {
+                    if(err){
+                        return reject(err);
+                    }
+
+                    result.sessionId = sid;
+
+                    resolve(result);
+                });
+            });
+        }).then((result) => {
+            if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                throw(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection"),
+                taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
+
+            console.log(`func '${funcName}', isPrivilegedGroup: '${result.isPrivilegedGroup}'`);
+
+            if(!result.isPrivilegedGroup){
+            //не привилегированная группа
+                return new Promise((resolve, reject) => {
+                    if(data.arguments.parentObjectId === ""){
+                        resolve();
+                    }
+                
+                    //проверяем разрешен ли доступ группы к STIX объектам, родительским докладом которых является Доклад с id data.arguments.parentObjectId
+                    mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
+                        query: { group_name: result.userGroup, object_id: data.arguments.parentObjectId },
+                        select: { _id: 0, __v: 0 }
+                    }, (err, queryResult) => {
+                        if(err) {
+                            reject(err);
+                        }
+
+                        console.log(`func '${funcName}', queryResult: '${queryResult}'`);
+
+                        if(isNull(queryResult)){
+                        //доступ к докладу данной группе запрещен
+                            return resolve();
+                        }
+
+                        try {            
+                            if (conn === null) {
+                                resolve();
+                            }
+                            
+                            console.log(`func '${funcName}', user is NOT privileged, send new request ---->`);
+
+                            globalObject.setData("tasks", taskID, {
+                                eventName: section,
+                                eventForWidgets: false,
+                                userSessionID: result.sessionId,
+                                generationTime: +new Date(),
+                                socketId: socketIo.id,
+                            });
+    
+                            conn.sendMessage({
+                                task_id: taskID,
+                                section: "handling search requests",
+                                user_name_generated_task: result.userName,
+                                request_details: searchRequestTmp,
+                            });
+                        } catch(err){
+                            reject(err);
+                        }
+
+                        resolve();
+                    });
+                });
+            }
+
+            if (conn === null) {
+                return;
+            }
+
+            console.log(`func '${funcName}', user is privileged, send new request ---->`);
+
+            globalObject.setData("tasks", taskID, {
+                eventName: section,
+                eventForWidgets: false,
+                userSessionID: result.sessionId,
+                generationTime: +new Date(),
+                socketId: socketIo.id,
+            });
+
+            conn.sendMessage({
+                task_id: taskID,
+                section: "handling search requests",
+                user_name_generated_task: result.userName,
+                request_details: searchRequestTmp,
             });
         }).catch((err) => {
             if ((err.name === "management auth") || (err.name === "management MRSICT")) {

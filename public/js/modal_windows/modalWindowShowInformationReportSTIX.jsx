@@ -34,20 +34,6 @@ import CreateListUnprivilegedGroups from "../module_managing_records_structured_
 import DialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 import CreateElementAdditionalTechnicalInformation from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformation.jsx";
 
-
-//import CreateModalWindowNewSTIXObject from "./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx";
-//import CreateModalWindowArtifactSTIXObject from "./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx";
-//import CreateModalWindowDirectorySTIXObject from "./modal_window_stix_object/modalWindowDirectorySTIXObject.jsx";
-//import CreateModalWindowFileSTIXObject from "./modal_window_stix_object/modalWindowFileSTIXObject.jsx";
-//import CreateModalWindowMutexSTIXObject from "./modal_window_stix_object/modalWindowMutexSTIXObject.jsx";
-//import CreateModalWindowProcessSTIXObject from "./modal_window_stix_object/modalWindowProcessSTIXObject.jsx";
-//import CreateModalWindowSoftwareSTIXObject from "./modal_window_stix_object/modalWindowSoftwareSTIXObject.jsx";
-//import CreateModalWindowURLSTIXObject from "./modal_window_stix_object/modalWindowURLSTIXObject.jsx";
-//import CreateModalWindowWindowsRegistryKeySTIXObject from "./modal_window_stix_object/modalWindowWindowsRegistryKeySTIXObject.jsx";
-//import CreateModalWindowX509CertificateSTIXObject from "./modal_window_stix_object/modalWindowX509CertificateSTIXObject.jsx";
-//import CreateModalWindowAttackPatternSTIXObject from "./modal_window_stix_object/modalWindowAttackPatternSTIXObject.jsx";
-//import CreateModalWindowToolSTIXObject from "./modal_window_stix_object/modalWindowToolSTIXObject.jsx";
-
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: "fixed",
@@ -179,6 +165,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
             //console.log("class 'ModalWindowShowInformationReportSTIX', func 'handlerEvents'");
             //console.log(`sections: ${data.section}`);
+            //console.log(data);
             //console.log(data.information.additional_parameters);
 
             if((data.information === null) || (typeof data.information === "undefined")){
@@ -195,21 +182,29 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             switch(data.section){
             case "list of groups that are allowed access":
                 this.setState({ availableForGroups: data.information.additional_parameters });
+                
                 break;
-
             case "send search request, get report for id":
                 if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
                     break;
                 }
 
-                if(data.information.additional_parameters.transmitted_data.length !== 1){
-                    return;
+                if(data.information.additional_parameters.transmitted_data.length === 0){
+                    break;
                 }
 
-                console.log("__--__ send search request, get report for id");
-                console.log(data.information.additional_parameters.transmitted_data);
+                for(let obj of data.information.additional_parameters.transmitted_data){
+                    if(obj.type !== "report"){
+                        continue;
+                    }
 
-                reportInfo = data.information.additional_parameters.transmitted_data[0];
+                    reportInfo = obj;
+                }
+
+                if(Object.keys(reportInfo).length === 0){
+                    break;
+                }
+
                 listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
                 listObjectInfoTmp[reportInfo.id] = reportInfo;
 
@@ -218,15 +213,14 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     listObjectInfo: listObjectInfoTmp,
                 });
 
-                /** 
-         *              ВНИМАНИЕ!!!
-         * Функция testWriteAdditionalInfoForListObjectInfo осуществляет ДОПОЛНИТЕЛЬНОЕ наполнение ТЕСТОВОЙ информацией объекта
-         * listObjectInfo
-         *  */
+                /*
+                *              ВНИМАНИЕ только для тестов!!!
+                * Функция testWriteAdditionalInfoForListObjectInfo осуществляет ДОПОЛНИТЕЛЬНОЕ наполнение ТЕСТОВОЙ информацией объекта
+                * listObjectInfo
+                **/
                 this.testWriteAdditionalInfoForListObjectInfo.call(this);
         
                 break;
-
             case "list of groups to which the report is available":
                 if(!Array.isArray(data.information.additional_parameters.list_groups_which_report_available)){
                     break;
@@ -239,6 +233,30 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                         userName: item.user_name,
                         title: `Пользователь: ${item.user_name}, Время: ${helpers.getDate(item.date_time)}` };
                 })});
+
+                break;
+            case "isems-mrsi ui request: send search request, get STIX object for id":
+
+                console.log("__--__ send search request, get STIX object for id __--__");
+                console.log(data);    
+
+                if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                    break;
+                }
+
+                if(data.information.additional_parameters.transmitted_data.length === 0){
+                    break;
+                }
+
+                listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+                for(let obj of data.information.additional_parameters.transmitted_data){
+                    listObjectInfoTmp[obj.id] = obj;
+                }
+                this.setState({ listObjectInfo: listObjectInfoTmp });
+
+                console.log("|||||||");
+                console.log(listObjectInfoTmp);
+                console.log(":::::::::");
 
                 break;
             }
@@ -536,6 +554,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             currentAdditionalIdSTIXObject: currentObjectId,
             showDialogElementAdditionalSTIXObject: true 
         });
+
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+            searchObjectId: currentObjectId,
+            parentObjectId: this.props.showReportId,
+        }});
     }
 
     //обрабатывает добавление новых объектов STIX или изменение информации о старых (при этом все равно происходит добавление объекта)
@@ -551,12 +574,20 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         console.log("func 'handleSave', START...\n'BUTTON SAVE'");
         console.log(this.state.listObjectInfo);
 
+        /**
+         * при сохранении новой информации об объекте типа Доклад, нужно изменить дату в свойстве modified
+         * (new Date).toISOString() 
+         */
+
     }
 
     handelrDialogClose(){
         console.log("func 'handelrDialogClose', START...\n'BUTTON DIALOG CLOSE'");
 
-        this.setState({ showDialogElementAdditionalSTIXObject: false });
+        this.setState({ 
+            currentAdditionalIdSTIXObject: "",
+            showDialogElementAdditionalSTIXObject: false 
+        });
     }
 
     handlerDialogButton(){
@@ -815,11 +846,12 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             </Dialog>
 
             <CreateAnyWodalWindowSTIXObject
+                listObjectInfo={this.state.listObjectInfo}
                 showDialogElement={this.state.showDialogElementAdditionalSTIXObject}
+                currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
                 handelrDialogClose={this.handelrDialogClose}
                 handlerDialogButton={this.handlerDialogButton}
                 //handlerChangeCurrentObjectId={this.handlerChangeCurrentObjectIdBreadcrumbsObjects}
-                currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
                 handlerNewAdditionalSTIXObject={this.handlerNewAdditionalSTIXObject} />
 
             <DialogElementAdditionalThechnicalInformation 
@@ -867,20 +899,6 @@ CreateAppBar.propTypes = {
     handlerDialogButton: PropTypes.func.isRequired,
 };
 
-
-/**
-ID report: "report--90e4d82a-13dd-2cf1-b4da-ccc1c556ab13"
-object_ref объекта содержит ссылки на следующие объекты:
-    "tool--26ffb872-1dd9-446e-b6f5-fdfa455faa2"
-    "opinion--56ee12bd-6710-eff1-bb67-tt45266477a"
-    "indicator--67aab223b-7800-12fa-0234-eeab120bdf"
-    "campaign--83422c77-904c-4dc1-aff5-5c38f3a2c55c"
-    "relationship--f82356ae-fe6c-437c-9c24-6b64314ae68a"
-    
-    Нет ни одного объекта на который ссылается данный объект 
- */
-
-
 function GetListObjectRefs(props){
     let { listObjectRef, handlerChangeCurrentSTIXObject } = props;
 
@@ -924,11 +942,12 @@ GetListObjectRefs.propTypes = {
     handlerChangeCurrentSTIXObject: PropTypes.func.isRequired,
 };
 
-function CreateAnyWodalWindowSTIXObject(props){
-    let { showDialogElement,
+function CreateAnyWodalWindowSTIXObject(props){    
+    let { listObjectInfo,
+        showDialogElement,
+        currentAdditionalIdSTIXObject, 
         handelrDialogClose,
         handlerDialogButton,
-        currentAdditionalIdSTIXObject, 
         handlerNewAdditionalSTIXObject } = props;
 
     let idSTIXObject = currentAdditionalIdSTIXObject;
@@ -955,7 +974,7 @@ function CreateAnyWodalWindowSTIXObject(props){
             return React.lazy(() => import("./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx")); 
 
         case "artifact":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx")); 
+            return React.lazy(() => import("./modal_window_stix_object/modalWindowArtifactSTIXObject.jsx")); 
         
         case "directory":
             return React.lazy(() => import("./modal_window_stix_object/modalWindowDirectorySTIXObject.jsx")); 
@@ -1089,7 +1108,10 @@ function CreateAnyWodalWindowSTIXObject(props){
         <DialogContent>
             <Suspense fallback={<div>Загрузка...</div>}>
                 {(MyModule)?
-                    <MyModule handlerDialog={handlerNewAdditionalSTIXObject} />:
+                    <MyModule
+                        listObjectInfo={listObjectInfo}
+                        currentIdSTIXObject={currentAdditionalIdSTIXObject} 
+                        handlerDialog={handlerNewAdditionalSTIXObject} />:
                     ""}
             </Suspense>
         </DialogContent>
@@ -1106,9 +1128,10 @@ function CreateAnyWodalWindowSTIXObject(props){
 }
 
 CreateAnyWodalWindowSTIXObject.propTypes = {
+    listObjectInfo: PropTypes.object.isRequired,
     showDialogElement: PropTypes.bool.isRequired,
+    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
     handlerDialogButton: PropTypes.func.isRequired,
-    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handlerNewAdditionalSTIXObject: PropTypes.func.isRequired,
 };

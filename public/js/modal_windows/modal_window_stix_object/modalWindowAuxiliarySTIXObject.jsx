@@ -59,5 +59,7 @@ export default function CreateModalWindowAuxiliarySTIXObject(props){
 }
 
 CreateModalWindowAuxiliarySTIXObject.propTypes = {
+    listObjectInfo: PropTypes.object.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
     handlerDialog: PropTypes.func.isRequired,
 };

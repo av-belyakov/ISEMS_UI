@@ -46,17 +46,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateModalWindowIPv4AddrSTIXObject(props){
-    let { handlerDialog } = props;
+    let { listObjectInfo, currentIdSTIXObject, handlerDialog } = props;
+
+    if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
+        return (<React.Fragment>
+            <Row className="mt-2">
+                <Col md={12} className="pl-3 pr-3">
+            Просмотр и редактирование STIX объекта типа IP адрес версии 4 (IPv4 address CO STIX)
+                </Col>
+            </Row>
+        </React.Fragment>);
+    }
 
     return (<React.Fragment>
         <Row className="mt-2">
             <Col md={12} className="pl-3 pr-3">
-            Просмотр и редактирование STIX объекта типа IP адрес версии 4 (IPv4 address CO STIX)
+        Просмотр и редактирование STIX объекта типа IP адрес версии 4 (IPv4 address CO STIX)
             </Col>
+            <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
         </Row>
     </React.Fragment>);
 }
 
 CreateModalWindowIPv4AddrSTIXObject.propTypes = {
+    listObjectInfo: PropTypes.object.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
     handlerDialog: PropTypes.func.isRequired,
 };

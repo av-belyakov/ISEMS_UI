@@ -59,9 +59,7 @@ export default function CreateModalWindowNewSTIXObject(props){
 }
 
 CreateModalWindowNewSTIXObject.propTypes = {
-    //modalShow: PropTypes.bool.isRequired,
-    //firstObjectId: PropTypes.string.isRequired,
-    //secondObjectId: PropTypes.string.isRequired,
+    listObjectInfo: PropTypes.object.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
     handlerDialog: PropTypes.func.isRequired,
-    //handlerChangeCurrentObjectId: PropTypes.func.isRequired,
 };
