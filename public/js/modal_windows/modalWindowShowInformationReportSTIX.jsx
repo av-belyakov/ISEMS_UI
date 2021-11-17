@@ -85,6 +85,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.modalClose = this.modalClose.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handlePublished = this.handlePublished.bind(this);
+        this.handlerReportSave = this.handlerReportSave.bind(this);
         this.handelrDialogClose = this.handelrDialogClose.bind(this);
         this.handlerDialogButton = this.handlerDialogButton.bind(this);
         this.handlerOnChangeDescription = this.handlerOnChangeDescription.bind(this);
@@ -595,6 +596,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     }
 
+    handlerReportSave(){
+        console.log("func 'handlerReportSave', START... BUTTON SAVE");
+    }
+
     showDialogElementAdditionalThechnicalInfo(obj){
 
         console.log("func 'showDialogElementAdditionalThechnicalInfo', START...");
@@ -676,12 +681,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     title={reportInfo.id}
                     nameDialogButton="сохранить"
                     handelrDialogClose={this.modalClose}
-                    handlerDialogButton={this.handleSave} />
-
-                {/*<CreateBreadcrumbsObjects 
-                    firstObjectId={this.props.showReportId}
-                    secondObjectId={this.state.secondBreadcrumbsObjectId}
-                    handlerChangeCurrentObjectId={this.handlerChangeCurrentObjectIdBreadcrumbsObjects} />*/}
+                    handlerDialogButton={this.handlerReportSave} />
 
                 <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
                     <Col md={12} className="pl-3 pr-3">
@@ -971,124 +971,124 @@ function CreateAnyModalWindowSTIXObject(props){
     let getMyModule = (name) => {
         switch(name){
         case "create-new-stix-object": 
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowCreateNewSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx")); 
 
         case "artifact":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowArtifactSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentArtifactSTIXObject.jsx")); 
         
         case "directory":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowDirectorySTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentDirectorySTIXObject.jsx")); 
         
         case "file":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowFileSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentFileSTIXObject.jsx")); 
         
         case "mutex":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowMutexSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentMutexSTIXObject.jsx")); 
         
         case "process":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowProcessSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentProcessSTIXObject.jsx")); 
         
         case "software":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowSoftwareSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentSoftwareSTIXObject.jsx")); 
         
         case "url":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowURLSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentURLSTIXObject.jsx")); 
         
         case "windows-registry-key":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowWindowsRegistryKeySTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentWindowsRegistryKeySTIXObject.jsx")); 
         
         case "x509-certificate":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowX509CertificateSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentX509CertificateSTIXObject.jsx")); 
         
         case "attack-pattern":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowAttackPatternSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAttackPatternSTIXObject.jsx")); 
 
         case "autonomous-system":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowAutonomousSystemSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAutonomousSystemSTIXObject.jsx")); 
 
         case "campaign":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowCampaignSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentCampaignSTIXObject.jsx")); 
             
         case "course-of-action":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowCourseOfActionSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentCourseOfActionSTIXObject.jsx")); 
 
         case "domain-name":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowDomainNameSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentDomainNameSTIXObject.jsx")); 
 
         case "email-addr":
             //"email-message"
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowEmailAddrSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentEmailAddrSTIXObject.jsx")); 
 
         case "grouping":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowGroupingSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentGroupingSTIXObject.jsx")); 
 
         case "identity":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowIdentitySTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIdentitySTIXObject.jsx")); 
 
         case "incident":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowIncidentSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIncidentSTIXObject.jsx")); 
 
         case "infrastructure":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowInfrastructureSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentInfrastructureSTIXObject.jsx")); 
 
         case "intrusion-set":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowIntrusionSetSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIntrusionSetSTIXObject.jsx")); 
 
         case "ipv4-addr":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowIPv4AddrSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIPv4AddrSTIXObject.jsx")); 
 
         case "ipv6-addr":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowIPv6AddrSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIPv6AddrSTIXObject.jsx")); 
 
         case "location":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowLocationSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentLocationSTIXObject.jsx")); 
 
         case "mac-addr":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowMacAddrSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentMacAddrSTIXObject.jsx")); 
 
         case "malware": 
         //"malware-analysis": "", напрямую относится к "malware"
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowMalwareSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentMalwareSTIXObject.jsx")); 
 
         case "network-traffic":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowNetworkTrafficSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentNetworkTrafficSTIXObject.jsx")); 
 
         case "note":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowNoteSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentNoteSTIXObject.jsx")); 
 
         case "observed-data":
         //"indicator": "",зависит от "observed-data"
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowObservedDataSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentObservedDataSTIXObject.jsx")); 
 
         case "opinion":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowOpinionSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentOpinionSTIXObject.jsx")); 
 
         case "threat-actor":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowThreatActorSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentThreatActorSTIXObject.jsx")); 
 
         case "tool":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowToolSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentToolSTIXObject.jsx")); 
 
         case "user-account":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowUserAccountSTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentUserAccountSTIXObject.jsx")); 
 
         case "vulnerability":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowVulnerabilitySTIXObject.jsx")); 
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentVulnerabilitySTIXObject.jsx")); 
 
         case "indicator":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
 
         case "email-message":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
 
         case "malware-analysis":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
 
         case "relationship":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
 
         case "sighting":
-            return React.lazy(() => import("./modal_window_stix_object/modalWindowAuxiliarySTIXObject.jsx"));
+            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
             
         }
 
