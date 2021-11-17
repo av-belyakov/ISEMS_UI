@@ -365,13 +365,13 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
             if(obj.actionType === "new"){
                 newExternalReferences.external_id = this.state.uuidValue;
-                listObjectTmp[this.props.showReportId].external_references.push(newExternalReferences);
+                listObjectTmp[obj.objectId].external_references.push(newExternalReferences);
             }
 
             if(obj.actionType === "edit"){
-                for(let i = 0; i < listObjectTmp[this.props.showReportId].external_references.length; i++){
-                    if(listObjectTmp[this.props.showReportId].external_references[i].source_name === obj.value.source_name){                        
-                        listObjectTmp[this.props.showReportId].external_references[i] = newExternalReferences;
+                for(let i = 0; i < listObjectTmp[obj.objectId].external_references.length; i++){
+                    if(listObjectTmp[obj.objectId].external_references[i].source_name === obj.value.source_name){                        
+                        listObjectTmp[obj.objectId].external_references[i] = newExternalReferences;
                     
                         break;
                     }
@@ -381,7 +381,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
         if(obj.modalType === "granular_markings"){
             if(obj.actionType === "new"){
-                listObjectTmp[this.props.showReportId].granular_markings.push({
+                listObjectTmp[obj.objectId].granular_markings.push({
                     lang: obj.value.lang,
                     marking_ref: obj.value.marking_ref,
                     selectors: obj.value.selectors, 
@@ -389,7 +389,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             }
 
             if(obj.actionType === "edit"){
-                listObjectTmp[this.props.showReportId].granular_markings[obj.value.orderNumber] = {
+                listObjectTmp[obj.objectId].granular_markings[obj.value.orderNumber] = {
                     lang: obj.value.lang,
                     marking_ref: obj.value.marking_ref,
                     selectors: obj.value.selectors, 
@@ -398,7 +398,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         }
 
         if(obj.modalType === "extensions"){
-            listObjectTmp[this.props.showReportId].extensions[obj.value.name] = obj.value.description;
+            listObjectTmp[obj.objectId].extensions[obj.value.name] = obj.value.description;
         }
 
         this.setState({ 
@@ -953,7 +953,8 @@ function CreateAnyModalWindowSTIXObject(props){
     let idSTIXObject = currentAdditionalIdSTIXObject;
     let type = currentAdditionalIdSTIXObject.split("--");
     let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-                
+    //let [ currentSTIXObj, setCurrentSTIXObj ] = React.useState({ typeAction: "update", data: {} });
+
     if(typeof objectElem !== "undefined" ){
         idSTIXObject = type[0];
         img = <img 
@@ -1097,6 +1098,12 @@ function CreateAnyModalWindowSTIXObject(props){
 
     let MyModule = getMyModule(idSTIXObject);
 
+    const handlerDialogButtonSaveOrAdd = () => {
+        console.log("func 'handlerDialogButtonSaveOrAdd', START...");
+        console.log("===== Object 'currentSTIXObj' =====");
+        //console.log(currentSTIXObj);
+    };
+
     return (<Dialog 
         fullWidth
         maxWidth="xl"
@@ -1105,12 +1112,15 @@ function CreateAnyModalWindowSTIXObject(props){
         <DialogTitle>
             {img} {titleName}
         </DialogTitle>
+        {/*<Suspense fallback={<div>Загрузка...</div>}>*/}
         <DialogContent>
             <Suspense fallback={<div>Загрузка...</div>}>
                 {(MyModule)?
                     <MyModule
                         listObjectInfo={listObjectInfo}
                         currentIdSTIXObject={currentAdditionalIdSTIXObject} 
+                        //currentSTIXObj={currentSTIXObj}
+                        //setCurrentSTIXObj={setCurrentSTIXObj}
                         handlerDialog={handlerNewAdditionalSTIXObject} />:
                     ""}
             </Suspense>
@@ -1118,12 +1128,13 @@ function CreateAnyModalWindowSTIXObject(props){
         <DialogActions>
             <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
             <Button 
-                //disabled={buttonIsDisabled}
-                onClick={handlerDialogButton}
+                //disabled={(Object.keys(currentSTIXObj.data).length === 0)}
+                onClick={handlerDialogButtonSaveOrAdd}
                 color="primary">
                 {buttonName}
             </Button>
         </DialogActions>
+        {/*</Suspense>*/}
     </Dialog>);
 }
 

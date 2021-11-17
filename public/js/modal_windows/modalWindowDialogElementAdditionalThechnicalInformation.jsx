@@ -327,7 +327,8 @@ export default function DialogElementAdditionalThechnicalInformation(props){
                     handlerExternalReferencesButtonSave({ 
                         actionType: objInfo.actionType, 
                         modalType: objInfo.modalType,
-                        value: value, 
+                        value: value,
+                        objectId: objInfo.objectId,
                     });
 
                     setValuesIsInvalideNameE(true);

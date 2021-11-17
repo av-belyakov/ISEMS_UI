@@ -52,7 +52,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateDialogContentAttackPatternSTIXObject(props){
-    let { listObjectInfo, currentIdSTIXObject, handlerDialog } = props;
+    let { 
+        listObjectInfo, 
+        currentIdSTIXObject,
+        //currentSTIXObj,
+        //setCurrentSTIXObj,
+        handlerDialog, 
+    } = props;
+
+    console.log("func 'CreateDialogContentAttackPatternSTIXObject', START...");
+    //console.log(currentSTIXObj);
 
     let [ attackPatterElement, setAttackPatterElement ] = React.useState(listObjectInfo[currentIdSTIXObject]);
     let [ valueNameChain, setValueNameChain ] = React.useState("");
@@ -77,6 +86,18 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             valueAPTmp.kill_chain_phases.push({ kill_chain_name: valueNameChain, phase_name: valueNamePhases });
         
             setAttackPatterElement(valueAPTmp);
+
+            /*
+            let valueObjTmp = _.cloneDeep(currentSTIXObj);
+            if(!Array.isArray(valueObjTmp.data.kill_chain_phases)){
+                valueObjTmp.data.kill_chain_phases = [];
+            }
+
+            valueObjTmp.data.kill_chain_phases.push({ kill_chain_name: valueNameChain, phase_name: valueNamePhases });
+        
+            setCurrentSTIXObj(valueObjTmp);
+            */
+
             setInvalidNameChain(true);
             setInvalidNamePhases(true);
             setButtonAddNewKillChain(true);
@@ -120,6 +141,13 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             valueAPTmp.description = obj.target.value;
         
             setAttackPatterElement(valueAPTmp);
+
+            /*
+            let valueObjTmp = _.cloneDeep(currentSTIXObj);
+            valueObjTmp.data.description = obj.target.value;
+
+            setCurrentSTIXObj(valueObjTmp);
+            */
         },
         handlerTokenValuesChange = React.useCallback((newTokenValues) => {
             console.log("func 'handlerTokenValuesChange', START...");
@@ -129,11 +157,25 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             valueAPTmp.aliases = newTokenValues;
         
             setAttackPatterElement(valueAPTmp);
-        }, [ setAttackPatterElement, attackPatterElement ]),
+
+            /*
+            let valueObjTmp = _.cloneDeep(currentSTIXObj);
+            valueObjTmp.data.aliases = newTokenValues;
+            
+            setCurrentSTIXObj(valueObjTmp);
+            */
+        }, [ setAttackPatterElement, attackPatterElement/*, setCurrentSTIXObj, currentSTIXObj */]),
         handlerDeleteKillChain = (num) => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
             valueAPTmp.kill_chain_phases.splice(num, 1);
             setAttackPatterElement(valueAPTmp);
+
+            /*
+            let valueObjTmp = _.cloneDeep(currentSTIXObj);
+            valueObjTmp.data.kill_chain_phases.splice(num, 1);
+            
+            setCurrentSTIXObj(valueObjTmp);
+            */
         };
 
     if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
@@ -166,6 +208,8 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 CreateDialogContentAttackPatternSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
+    //currentSTIXObj: PropTypes.object.isRequired,
+    //setCurrentSTIXObj: PropTypes.func.isRequired,
     handlerDialog: PropTypes.func.isRequired,
 };
 
