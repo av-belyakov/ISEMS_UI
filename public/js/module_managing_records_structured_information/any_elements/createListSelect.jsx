@@ -15,7 +15,7 @@ export default function CreateListSelect(props){
             select
             fullWidth
             label={label}
-            value={currentItem}
+            value={(currentItem === "undefined")? "": currentItem}
             onChange={handlerChosen}
             disabled={!isNotDisabled}
         >

@@ -83,17 +83,15 @@ export default function CreateElementAdditionalTechnicalInformation(props){
     }
 
     let getLabelsAdditionalTechnicalInformation = () => {
-        return (<React.Fragment>
-            <Grid container direction="row" className="mt-2 pl-4">
-                <Grid item md={6}><span className="text-muted">набор терминов, используемых для описания данного объекта</span>:</Grid>
-                <Grid item md={6} className="text-right">
-                    <TokenInput
-                        style={{ height: "81px" }}
-                        tokenValues={labelsTokenInput}
-                        onTokenValuesChange={handlerChangeElementLabels} />
-                </Grid>    
-            </Grid>
-        </React.Fragment>);
+        return (<Grid container direction="row" className="mt-2 pl-4">
+            <Grid item md={6}><span className="text-muted">набор терминов, используемых для описания данного объекта</span>:</Grid>
+            <Grid item md={6} className="text-right">
+                <TokenInput
+                    style={{ height: "81px" }}
+                    tokenValues={labelsTokenInput}
+                    onTokenValuesChange={handlerChangeElementLabels} />
+            </Grid>    
+        </Grid>);
     };
 
     //дополнительные внешние ссылки

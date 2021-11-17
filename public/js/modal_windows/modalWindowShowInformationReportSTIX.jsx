@@ -845,7 +845,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 </Container>
             </Dialog>
 
-            <CreateAnyWodalWindowSTIXObject
+            <CreateAnyModalWindowSTIXObject
                 listObjectInfo={this.state.listObjectInfo}
                 showDialogElement={this.state.showDialogElementAdditionalSTIXObject}
                 currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
@@ -942,7 +942,7 @@ GetListObjectRefs.propTypes = {
     handlerChangeCurrentSTIXObject: PropTypes.func.isRequired,
 };
 
-function CreateAnyWodalWindowSTIXObject(props){    
+function CreateAnyModalWindowSTIXObject(props){    
     let { listObjectInfo,
         showDialogElement,
         currentAdditionalIdSTIXObject, 
@@ -1127,7 +1127,7 @@ function CreateAnyWodalWindowSTIXObject(props){
     </Dialog>);
 }
 
-CreateAnyWodalWindowSTIXObject.propTypes = {
+CreateAnyModalWindowSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
     showDialogElement: PropTypes.bool.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
