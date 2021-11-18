@@ -953,7 +953,8 @@ function CreateAnyModalWindowSTIXObject(props){
     let idSTIXObject = currentAdditionalIdSTIXObject;
     let type = currentAdditionalIdSTIXObject.split("--");
     let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-    //let [ currentSTIXObj, setCurrentSTIXObj ] = React.useState({ typeAction: "update", data: {} });
+    //let [ currentSTIXObj, setCurrentSTIXObj ] = React.useState({ actionType: "update", data: {} });
+    let [ currentSTIXObj, setCurrentSTIXObj ] = React.useState({});
 
     if(typeof objectElem !== "undefined" ){
         idSTIXObject = type[0];
@@ -1098,10 +1099,31 @@ function CreateAnyModalWindowSTIXObject(props){
 
     let MyModule = getMyModule(idSTIXObject);
 
-    const handlerDialogButtonSaveOrAdd = () => {
+    const handlerActionsModifyObject = ({ actionType = "update", data = null }) => {
+        console.log("func 'handlerActionsModifyObject', START");
+        console.group();
+        console.log("---- received ----");
+        console.log(data);
+        console.groupEnd();
+
+        if(actionType === "update"){
+            setCurrentSTIXObj(data);
+
+            return;
+        }
+
+    };
+
+    const handlerDialogButtonSaveOrAdd = (data) => {
         console.log("func 'handlerDialogButtonSaveOrAdd', START...");
-        console.log("===== Object 'currentSTIXObj' =====");
-        //console.log(currentSTIXObj);
+        console.group("__===___===__+++");
+        console.log(data);
+        console.groupEnd();
+
+        //dhеменно закоментирую что бы не проваливалась дальше
+        //        handlerNewAdditionalSTIXObject(data);
+
+        handelrDialogClose();
     };
 
     return (<Dialog 
@@ -1110,31 +1132,25 @@ function CreateAnyModalWindowSTIXObject(props){
         scroll="paper"
         open={showDialogElement} >
         <DialogTitle>
-            {img} {titleName}
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={11}>{img}&nbsp;<span className="pt-2">{titleName}</span></Grid>
+                <Grid item container md={1} justifyContent="flex-end">
+                    <IconButton edge="start" color="inherit" onClick={handelrDialogClose} aria-label="close">
+                        <CloseIcon />
+                    </IconButton>
+                </Grid>
+            </Grid> 
         </DialogTitle>
-        {/*<Suspense fallback={<div>Загрузка...</div>}>*/}
-        <DialogContent>
-            <Suspense fallback={<div>Загрузка...</div>}>
-                {(MyModule)?
-                    <MyModule
-                        listObjectInfo={listObjectInfo}
-                        currentIdSTIXObject={currentAdditionalIdSTIXObject} 
-                        //currentSTIXObj={currentSTIXObj}
-                        //setCurrentSTIXObj={setCurrentSTIXObj}
-                        handlerDialog={handlerNewAdditionalSTIXObject} />:
-                    ""}
-            </Suspense>
-        </DialogContent>
-        <DialogActions>
-            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
-            <Button 
-                //disabled={(Object.keys(currentSTIXObj.data).length === 0)}
-                onClick={handlerDialogButtonSaveOrAdd}
-                color="primary">
-                {buttonName}
-            </Button>
-        </DialogActions>
-        {/*</Suspense>*/}
+        <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22}}>Загрузка...</div>}>
+            {(MyModule)?
+                <MyModule
+                    listObjectInfo={listObjectInfo}
+                    currentIdSTIXObject={currentAdditionalIdSTIXObject} 
+                    handlerDialog={handlerDialogButtonSaveOrAdd}
+                    handelrDialogClose={handelrDialogClose}
+                />:
+                ""}
+        </Suspense>
     </Dialog>);
 }
 
