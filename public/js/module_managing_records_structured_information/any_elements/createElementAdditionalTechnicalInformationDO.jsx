@@ -6,6 +6,7 @@ import {
     Accordion, 
     AccordionSummary, 
     AccordionDetails,
+    Button,
     Card,
     CardHeader,
     CardContent,
@@ -13,7 +14,11 @@ import {
     TextField,
     Grid,
     Link,
+    Select,
     IconButton,
+    InputLabel,
+    FormControl,
+    MenuItem,
 } from "@material-ui/core";
 import IconCloseOutlined from "@material-ui/icons/CloseOutlined";
 import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
@@ -44,17 +49,33 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: green[700],
         },
     },
+    formControlTypeHashRE: {
+        minWidth: 120,
+    },
 }));
 
-export default function CreateElementAdditionalTechnicalInformation(props){
-    let { reportInfo, 
+const listHashType = [ 
+    { type: "MD5", description: "MD5" },
+    { type: "SHA-1", description: "SHA-1" },
+    { type: "SHA256", description: "SHA-2 (256)" },
+    { type: "SHA384", description: "SHA-2 (384)" },
+    { type: "SHA512", description: "SHA-2 (512)" },
+    { type: "SHA-3", description: "SHA-3" },
+    { type: "RIPEMD", description: "RIPEMD" },
+    { type: "Base64", description: "Base64" },
+];
+
+export default function CreateElementAdditionalTechnicalInformationDO(props){
+    let { 
+        reportInfo, 
         objectId,
         handlerElementConfidence, 
         handlerElementDefanged, 
         handlerElementLabels,
         handlerElementDelete,
         showDialogElementAdditionalThechnicalInfo,
-        isNotDisabled } = props;
+        isNotDisabled,
+    } = props;
 
     let listTmpLabelsAdditionalTechnicalInformation = [];
     
@@ -71,8 +92,24 @@ export default function CreateElementAdditionalTechnicalInformation(props){
     },
     [setLabelsTokenInput, objectId, handlerElementLabels]);
 
+    let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
+        [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
+        [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
+        [ valueER, setValueER ] = useState({
+            source_name: "",
+            description: "",
+            url: "",
+            hashes: [],
+        }),
+        [ valueGM, setValueGM ] = useState({
+            lang: "",
+            marking_ref: "",
+            selectors: [],
+        }),
+        [ valueE, setValueE ] = useState({ name: "", description: ""});
+
     let handlerElConf = (data) => {
-            handlerElementConfidence({ data: data.target.value, objectId: objectId });
+            handlerElementConfidence({ data: +data.target.value, objectId: objectId });
         }, 
         handlerElDef = (data) => {
             handlerElementDefanged({ data: data.target.value, objectId: objectId }); 
@@ -94,11 +131,107 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         </Grid>);
     };
 
+    /**
+        Надо сделать обработчики для добавления новых данных в функциях getExternalReferences, getGranularMarkings, getExtensions.
+        При этом нужно сделать доступность к нажатию ссылок 'добавить новую внешнюю ссылку', '"добавить новую \"гранулярную метку\""',
+        'добавить любую дополнительную информацию' только когда заполненно обязательное для заполнения поле.
+
+        Кроме того нужно сделать удаление ExternalReferences, GranularMarkings, Extensions и редактирование существующих данных.
+ */
+
     //дополнительные внешние ссылки
     let getExternalReferences = () => {
         return (<Grid container direction="row">
             <Grid item md={12}>
-                <Grid container direction="row" key="key_external_references_link">
+                <Grid container direction="row" spacing={3}>
+                    <Grid item md={4}>
+                        <TextField
+                            id="external-references-source-name"
+                            label="наименование"
+                            //defaultValue={(typeof erInfo.source_name === "undefined")? "": erInfo.source_name}
+                            //disabled={(typeof erInfo.source_name !== "undefined")}
+                            //error={isInvalidSourceName}
+                            fullWidth={true}
+                            helperText="обязательное для заполнения поле"
+                            //onChange={handlerSourceName}
+                        />
+                    </Grid>
+                    <Grid item md={8}>
+                        <TextField
+                            id="external-references-description"
+                            label="описание"
+                            fullWidth={true}
+                            //defaultValue={(typeof erInfo.description === "undefined")? "": erInfo.description}
+                            //onChange={handlerDescription}
+                        />
+                    </Grid>
+                </Grid>
+
+                <Grid container direction="row" spacing={3}>
+                    <Grid item md={5}>
+                        <TextField
+                            id="external-references-url"
+                            label="url"
+                            fullWidth={true}
+                            //defaultValue={(typeof erInfo.url === "undefined")? "": erInfo.url}
+                            //onChange={handlerURL}
+                        />
+                    </Grid>
+                    <Grid item md={7}>
+                        <Grid container direction="row" key="key_input_hash_field">
+                            <Grid item md={2}>
+                                <FormControl className={classes.formControlTypeHashRE}>
+                                    <InputLabel id="label-hash-type-change">тип хеша</InputLabel>
+                                    <Select
+                                        labelId="chose-hash-select-label"
+                                        id="chose-hash-select-label"
+                                        //value={selectItemHash}
+                                        fullWidth={true}
+                                        /*onChange={(elem) => {
+                                    let vt = elem.target.value;
+                                    setSelectItemHash(vt);
+                            
+                                    if((vt.length > 0) && (inputHash.length > 0)){
+                                        setButtonAddHashIsDisabled(false);
+                                    } else {
+                                        setButtonAddHashIsDisabled(true);
+                                    }
+                                }}*/>
+                                        {listHashType.map((elem, num)=>{
+                                            return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
+                                        })}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item md={8}>
+                                <TextField
+                                    id="external-references-hash"
+                                    label="хеш-сумма"
+                                    fullWidth
+                                    //value={inputHash}
+                                    /*onChange={(elem) => {
+                                let vt = elem.target.value;
+                                setInputHash(vt);
+                        
+                                if((selectItemHash.length > 0) && (vt.length > 0)){
+                                    setButtonAddHashIsDisabled(false);
+                                } else {
+                                    setButtonAddHashIsDisabled(true);
+                                }
+                            }}*/
+                                />
+                            </Grid>
+                            <Grid item md={2} className="text-end pt-2">
+                                <Button 
+                                //onClick={handlerAddNewHash} 
+                                //disabled={buttonAddHashIsDisabled}
+                                >добавить хеш</Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                <Grid container direction="row" className="mt-2" key="key_external_references_link">
                     <Grid item md={12} className="text-end pb-2">
                         <Link href="#" onClick={()=>{ 
                             showDialogElementAdditionalThechnicalInfo({ 
@@ -112,6 +245,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                         </Link>
                     </Grid>
                 </Grid>
+
                 {((typeof reportInfo.external_references === "undefined") || (reportInfo.external_references === null) || (reportInfo.external_references.length === 0))?
                     "":
                     reportInfo.external_references.map((item, key) => {
@@ -191,8 +325,60 @@ export default function CreateElementAdditionalTechnicalInformation(props){
     let getGranularMarkings = () => {
         return (<Grid container direction="row">
             <Grid item md={12}>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item md={2}>
+                        <TextField
+                            id="granular-markings-lang"
+                            label="маркер языка"
+                            fullWidth={true}
+                            //value={lang}
+                            //onChange={pphandlerLang}
+                        />
+                    </Grid>
+                    <Grid item md={10}>
+                        <Grid container direction="row">
+                            <Grid item md={10}>
+                                <TextField
+                                    id="granular-markings-marking-ref"
+                                    label="идентификатор объекта 'marking-definition'"
+                                    fullWidth={true}
+                                    //value={markingRef}
+                                    //onChange={pphandlerMarkingRef}
+                                />
+                            </Grid>
+                            <Grid item md={2} className="text-start mt-2">
+                                <Button /*onClick={pphandlerGenerateMarkingRef}*/>сгенерировать</Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" key="key_input_hash_field">
+                    <Grid item md={7}>
+                        <TextField
+                            id="external-references-hash"
+                            label="идентификатор селектора"
+                            fullWidth
+                            //value={selectorInput}
+                            //onChange={(obj) => setSelectorInput(obj.target.value)}
+                        />
+                    </Grid>
+                    <Grid item md={2} className="text-start mt-2">
+                        <Button /*onClick={() => setSelectorInput(`selector--${uuidv4()}`)}*/ >
+                            сгенерировать
+                        </Button>
+                    </Grid>
+                    <Grid item md={3} className="text-end mt-2">
+                        <Button 
+                            //onClick={pphandlerAddSelectorsList} 
+                            //disabled={buttonIsDisabled} 
+                            color="primary" >
+                                добавить селектор
+                        </Button>
+                    </Grid>
+                </Grid>
+
                 <Grid container direction="row" key="key_granular_markings_link">
-                    <Grid item md={12} className="text-end pb-2">
+                    <Grid item md={12} className="text-end pt-2 pb-2">
                         <Link href="#" onClick={()=>{ 
                             showDialogElementAdditionalThechnicalInfo({ 
                                 actionType: "new",
@@ -204,6 +390,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                         </Link>
                     </Grid>
                 </Grid>
+
                 {((typeof reportInfo.granular_markings === "undefined") || (reportInfo.granular_markings === null) || (reportInfo.granular_markings.length === 0))?
                     "":
                     reportInfo.granular_markings.map((item, key) => {
@@ -284,7 +471,34 @@ export default function CreateElementAdditionalTechnicalInformation(props){
         }
 
         return (<Grid container direction="row" key="key_extensions_link">
-            <Grid item md={12} className="text-end pb-2">
+            <Grid container direction="row" spacing={3}>
+                <Grid item md={4}>
+                    <TextField
+                        id="extensions-name"
+                        label="наименование"
+                        size="small"
+                        fullWidth={true}
+                        //error={nameIsInvalid}
+                        //value={valueName}
+                        //onChange={pphandlerName}
+                        variant="outlined"
+                        helperText="обязательное для заполнения поле"
+                    />
+                </Grid>
+                <Grid item md={8}>
+                    <TextField
+                        id="extensions-description"
+                        label="подробное описание"
+                        multiline
+                        rows={2}
+                        fullWidth
+                        //value={valueDescription}
+                        //onChange={pphandlerDescription}
+                        variant="outlined"/>
+                </Grid>
+            </Grid>
+
+            <Grid item md={12} className="text-end mt-2 pb-2">
                 <Link href="#" onClick={()=>{ 
                     showDialogElementAdditionalThechnicalInfo({ 
                         actionType: "new",
@@ -295,6 +509,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
                     <Typography variant="overline" display="block" gutterBottom>{"добавить любую дополнительную информацию"}</Typography>
                 </Link>
             </Grid>
+
             <Grid item md={12}><ul>{listExtensions}</ul></Grid>
         </Grid>);
     };
@@ -419,7 +634,7 @@ export default function CreateElementAdditionalTechnicalInformation(props){
     </React.Fragment>);
 }
 
-CreateElementAdditionalTechnicalInformation.propTypes = {
+CreateElementAdditionalTechnicalInformationDO.propTypes = {
     reportInfo: PropTypes.object.isRequired,
     objectId: PropTypes.string.isRequired,
     handlerElementConfidence: PropTypes.func.isRequired,

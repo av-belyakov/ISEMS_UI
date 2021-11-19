@@ -42,7 +42,7 @@ const listHashType = [
     { type: "Base64", description: "Base64" },
 ];
 
-export default function DialogElementAdditionalThechnicalInformation(props){
+export default function ModalWindowDialogElementAdditionalThechnicalInformation(props){
     let { show, 
         onHide, 
         objInfo, 
@@ -342,7 +342,7 @@ export default function DialogElementAdditionalThechnicalInformation(props){
     </Dialog>);
 }
 
-DialogElementAdditionalThechnicalInformation.propTypes = {
+ModalWindowDialogElementAdditionalThechnicalInformation.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func.isRequired,
     objInfo: PropTypes.object.isRequired,

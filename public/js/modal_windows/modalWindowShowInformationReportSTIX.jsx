@@ -31,8 +31,8 @@ import { MainTextField } from "../module_managing_records_structured_information
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
 import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
-import DialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
-import CreateElementAdditionalTechnicalInformation from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformation.jsx";
+import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
+import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -514,10 +514,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     handlerElementConfidence(obj){
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
-        if((listObjectInfoTmp[obj.objectId].confidence === null) || (typeof listObjectInfoTmp[obj.objectId].confidence === "undefined")){
-            listObjectInfoTmp[obj.objectId].confidence = {};
-        }
-
         listObjectInfoTmp[obj.objectId].confidence = obj.data;
         this.setState({ listObjectInfo: listObjectInfoTmp });
     }
@@ -526,8 +522,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     handlerElementLabels(obj){
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
-        if((listObjectInfoTmp[obj.objectId].labels === null) || (typeof listObjectInfoTmp[obj.objectId].labels === "undefined")){
-            listObjectInfoTmp[obj.objectId].labels = {};
+        if(!Array.isArray(listObjectInfoTmp[obj.objectId].labels)){
+            listObjectInfoTmp[obj.objectId].labels = [];
         }
 
         listObjectInfoTmp[obj.objectId].labels = obj.listTokenValue;
@@ -537,10 +533,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     //пункт "определены ли данные содержащиеся в объекте"
     handlerElementDefanged(obj){
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
-
-        if((listObjectInfoTmp[obj.objectId].defanged === null) || (typeof listObjectInfoTmp[obj.objectId].defanged === "undefined")){
-            listObjectInfoTmp[obj.objectId].defanged = {};
-        }
 
         listObjectInfoTmp[obj.objectId].defanged = obj.data;
         this.setState({ listObjectInfo: listObjectInfoTmp });
@@ -583,8 +575,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     handelrDialogClose(){
-        console.log("func 'handelrDialogClose', START...\n'BUTTON DIALOG CLOSE'");
-
         this.setState({ 
             currentAdditionalIdSTIXObject: "",
             showDialogElementAdditionalSTIXObject: false 
@@ -808,7 +798,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                     </Row>
                                 }
 
-                                <CreateElementAdditionalTechnicalInformation 
+                                <CreateElementAdditionalTechnicalInformationReportObject 
                                     reportInfo={reportInfo}
                                     objectId={this.props.showReportId}
                                     handlerElementConfidence={this.handlerElementConfidence.bind(this)}
@@ -852,9 +842,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 handelrDialogClose={this.handelrDialogClose}
                 handlerDialogButton={this.handlerDialogButton}
                 //handlerChangeCurrentObjectId={this.handlerChangeCurrentObjectIdBreadcrumbsObjects}
-                handlerNewAdditionalSTIXObject={this.handlerNewAdditionalSTIXObject} />
+                handlerNewAdditionalSTIXObject={this.handlerNewAdditionalSTIXObject}
+                isNotDisabled={this.props.userPermissions.editing_information.status} />
 
-            <DialogElementAdditionalThechnicalInformation 
+            <ModalWindowDialogElementAdditionalThechnicalInformation 
                 show={this.state.showDialogElementAdditionalThechnicalInfo}
                 onHide={this.closeDialogElementAdditionalThechnicalInfo.bind(this)}
                 objInfo={this.state.objectDialogElementAdditionalThechnicalInfo}
@@ -948,7 +939,9 @@ function CreateAnyModalWindowSTIXObject(props){
         currentAdditionalIdSTIXObject, 
         handelrDialogClose,
         handlerDialogButton,
-        handlerNewAdditionalSTIXObject } = props;
+        handlerNewAdditionalSTIXObject,
+        isNotDisabled, 
+    } = props;
 
     let idSTIXObject = currentAdditionalIdSTIXObject;
     let type = currentAdditionalIdSTIXObject.split("--");
@@ -1148,6 +1141,7 @@ function CreateAnyModalWindowSTIXObject(props){
                     currentIdSTIXObject={currentAdditionalIdSTIXObject} 
                     handlerDialog={handlerDialogButtonSaveOrAdd}
                     handelrDialogClose={handelrDialogClose}
+                    isNotDisabled={isNotDisabled}
                 />:
                 ""}
         </Suspense>
@@ -1161,4 +1155,5 @@ CreateAnyModalWindowSTIXObject.propTypes = {
     handelrDialogClose: PropTypes.func.isRequired,
     handlerDialogButton: PropTypes.func.isRequired,
     handlerNewAdditionalSTIXObject: PropTypes.func.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
 };

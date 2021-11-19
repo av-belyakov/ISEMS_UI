@@ -18,7 +18,8 @@ import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import CreateElementAdditionalTechnicalInformation from "../createElementAdditionalTechnicalInformation.jsx";
+import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
+
 //import { nextTick } from "async";
 
 const useStyles = makeStyles((theme) => ({
@@ -61,6 +62,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         currentIdSTIXObject,
         handlerDialog,
         handelrDialogClose,
+        isNotDisabled,
     } = props;
 
     console.log("func 'CreateDialogContentAttackPatternSTIXObject', START...");
@@ -144,20 +146,82 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 
             setAttackPatterElement(valueAPTmp);
         },
-        handlerElementConfidence = () => {
-            console.log("func 'handlerElementConfidence', START...");
+        //пункт "уверенность создателя в правильности своих данных от 0 до 100"
+        handlerElementConfidence = (obj) => { 
+            let valueAPTmp = _.cloneDeep(attackPatterElement);
+            valueAPTmp.confidence = obj.data;
+        
+            setAttackPatterElement(valueAPTmp);
         },
-        handlerElementDefanged = () => {
-            console.log("func 'handlerElementDefanged', START...");
+        //пункт "определены ли данные содержащиеся в объекте"
+        handlerElementDefanged = (obj) => {
+            let valueAPTmp = _.cloneDeep(attackPatterElement);
+            valueAPTmp.defanged = (obj.data === "true");
+        
+            setAttackPatterElement(valueAPTmp);
         },
-        handlerElementLabels = () => {
-            console.log("func 'handlerElementLabels', START...");
+        //пункт "набор терминов, используемых для описания данного объекта"
+        handlerElementLabels = (obj) => {
+            let valueAPTmp = _.cloneDeep(attackPatterElement);
+
+            if(!Array.isArray(valueAPTmp.labels)){
+                valueAPTmp.labels = [];
+            }
+
+            valueAPTmp.labels = obj.listTokenValue;
+        
+            setAttackPatterElement(valueAPTmp);
         },
         handlerDeleteElementAdditionalTechnicalInformation = () => {
             console.log("func 'handlerDeleteElementAdditionalTechnicalInformation', START...");
+
+            /**
+            let externalReferences = [];
+        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
+
+        if(obj.itemType === "external_references"){
+            externalReferences = listObjectTmp[obj.objectId].external_references.filter((item) => item.source_name !== obj.item);
+            listObjectTmp[obj.objectId].external_references = externalReferences;
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+
+        if(obj.itemType === "granular_markings"){
+            if(obj.orderNumber < 0){
+                return;
+            }
+
+            listObjectTmp[obj.objectId].granular_markings.splice(obj.orderNumber, 1);
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+
+        if(obj.itemType === "extensions"){
+            delete listObjectTmp[obj.objectId].extensions[obj.item];
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+             */
         },
         showDialogElementAdditionalThechnicalInfo = () => {
             console.log("func 'showDialogElementAdditionalThechnicalInfo', START...");
+
+            /**
+            console.log("func 'showDialogElementAdditionalThechnicalInfo', START...");
+        console.log(obj);
+
+        this.setState({
+            uuidValue: uuidv4(),
+            showDialogElementAdditionalThechnicalInfo: true,
+            objectDialogElementAdditionalThechnicalInfo: { 
+                actionType: obj.actionType,
+                modalType: obj.modalType, 
+                objectId: obj.objectId,
+                sourceName: obj.sourceName,
+                orderNumber: obj.orderNumber,
+            },
+        });
+             */
         },
         handlerSave = () => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
@@ -194,7 +258,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 <Col md={12} ></Col>
             </Row>
 
-            <CreateElementAdditionalTechnicalInformation 
+            <CreateElementAdditionalTechnicalInformationDO 
                 reportInfo={attackPatterElement}
                 objectId={currentIdSTIXObject}
                 handlerElementConfidence={handlerElementConfidence}
@@ -202,9 +266,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 handlerElementLabels={handlerElementLabels}
                 handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
                 showDialogElementAdditionalThechnicalInfo={showDialogElementAdditionalThechnicalInfo}
-                //isNotDisabled={this.props.userPermissions.editing_information.status} 
-                isNotDisabled={true} 
-            /> 
+                isNotDisabled={isNotDisabled} /> 
 
             <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
         </DialogContent>
@@ -225,7 +287,41 @@ CreateDialogContentAttackPatternSTIXObject.propTypes = {
     currentIdSTIXObject: PropTypes.string.isRequired,
     handlerDialog: PropTypes.func.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
 };
+
+/**
+//CommonPropertiesDomainObjectSTIX свойства общие, для всех объектов STIX
+// SpecVersion - версия спецификации STIX используемая для представления текущего объекта (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// Created - время создания объекта, в формате "2016-05-12T08:17:27.000Z" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// Modified - время модификации объекта, в формате "2016-05-12T08:17:27.000Z" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// CreatedByRef - содержит идентификатор источника создавшего данный объект
+// Revoked - вернуть к текущему состоянию
+// Labels - определяет набор терминов, используемых для описания данного объекта
+// Сonfidence - определяет уверенность создателя в правильности своих данных. Доверительное значение ДОЛЖНО быть числом
+//  в диапазоне 0-100. Если 0 - значение не определено.
+// Lang - содержит текстовый код языка, на котором написан контент объекта. Для английского это "en" для русского "ru"
+// ExternalReferences - список внешних ссылок не относящихся к STIX информации
+// ObjectMarkingRefs - определяет список ID ссылающиеся на объект "marking-definition", по терминалогии STIX, в котором содержатся значения применяющиеся к этому объекту
+// GranularMarkings - определяет список "гранулярных меток" (granular_markings) относящихся к этому объекту
+// Defanged - определяет были ли определены данные содержащиеся в объекте
+// Extensions - может содержать дополнительную информацию, относящуюся к объекту
+type CommonPropertiesDomainObjectSTIX struct {
+	SpecVersion        string                     `json:"spec_version" bson:"spec_version" required:"true"`
+	Created            time.Time                  `json:"created" bson:"created" required:"true"`
+	Modified           time.Time                  `json:"modified" bson:"modified" required:"true"`
+	CreatedByRef       IdentifierTypeSTIX         `json:"created_by_ref" bson:"created_by_ref"`
+	Revoked            bool                       `json:"revoked" bson:"revoked"`
+	Labels             []string                   `json:"labels" bson:"labels"`
+	Сonfidence         int                        `json:"confidence" bson:"confidence"`
+	Lang               string                     `json:"lang" bson:"lang"`
+	ExternalReferences ExternalReferencesTypeSTIX `json:"external_references" bson:"external_references"`
+	ObjectMarkingRefs  []IdentifierTypeSTIX       `json:"object_marking_refs" bson:"object_marking_refs"`
+	GranularMarkings   []GranularMarkingsTypeSTIX `json:"granular_markings" bson:"granular_markings"`
+	Defanged           bool                       `json:"defanged" bson:"defanged"`
+	Extensions         map[string]string          `json:"extensions" bson:"extensions"`
+}
+ */
 
 function CreateAtackPatternElements(props){
     let { 
@@ -251,32 +347,32 @@ function CreateAtackPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={6} justifyContent="flex-end"><span className="text-muted">Наименование</span>:</Grid>
-            <Grid item container md={6} >{attackPatterElement.name}</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование</span>:</Grid>
+            <Grid item container md={8} >{attackPatterElement.name}</Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={6} justifyContent="flex-end"><span className="text-muted">Дата и время</span>&nbsp;&nbsp;&nbsp;&nbsp;</Grid>
-            <Grid item container md={6}></Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Дата и время</span>&nbsp;&nbsp;&nbsp;&nbsp;</Grid>
+            <Grid item container md={8}></Grid>
         </Grid>      
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={6} justifyContent="flex-end"><span className="text-muted">создания</span>:</Grid>
-            <Grid item container md={6}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания</span>:</Grid>
+            <Grid item container md={8}>
                 {helpers.convertDateFromString(attackPatterElement.created, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={6} justifyContent="flex-end"><span className="text-muted">последнего обновления</span>:</Grid>
-            <Grid item container md={6}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления</span>:</Grid>
+            <Grid item container md={8}>
                 {helpers.convertDateFromString(attackPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={6} justifyContent="flex-end"><span className="text-muted">Подробное описание</span>:</Grid>
-            <Grid item container md={6}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание</span>:</Grid>
+            <Grid item container md={8}>
                 <TextField
                     id="outlined-multiline-static"
                     multiline
@@ -289,8 +385,8 @@ function CreateAtackPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={6} justifyContent="flex-end"><span className="text-muted">Альтернативные имена</span>:</Grid>
-            <Grid item md={6}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Альтернативные имена</span>:</Grid>
+            <Grid item md={8}>
                 <TokenInput
                     style={{ height: "41px", width: "auto" }}
                     tokenValues={(attackPatterElement.aliases === null) ? []: attackPatterElement.aliases}

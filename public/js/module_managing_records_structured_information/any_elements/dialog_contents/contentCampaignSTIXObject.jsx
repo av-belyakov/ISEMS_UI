@@ -46,7 +46,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateDialogContentCampaignSTIXObject(props){
-    let { listObjectInfo, currentIdSTIXObject, handlerDialog } = props;
+    let { 
+        listObjectInfo, 
+        currentIdSTIXObject,
+        handlerDialog,
+        handelrDialogClose,
+        isNotDisabled,
+    } = props;
 
     if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
         return (<React.Fragment>
@@ -72,4 +78,6 @@ CreateDialogContentCampaignSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
     handlerDialog: PropTypes.func.isRequired,
+    handelrDialogClose: PropTypes.func.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
 };
