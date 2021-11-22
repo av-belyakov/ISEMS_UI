@@ -172,20 +172,23 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         
             setAttackPatterElement(valueAPTmp);
         },
-        handlerDeleteElementAdditionalTechnicalInformation = () => {
+        handlerDeleteElementAdditionalTechnicalInformation = (obj) => {
             console.log("func 'handlerDeleteElementAdditionalTechnicalInformation', START...");
+            console.log(obj);
 
-            /**
-            let externalReferences = [];
-        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
+            let valueAPTmp = _.cloneDeep(attackPatterElement);
 
-        if(obj.itemType === "external_references"){
-            externalReferences = listObjectTmp[obj.objectId].external_references.filter((item) => item.source_name !== obj.item);
-            listObjectTmp[obj.objectId].external_references = externalReferences;
+            if(obj.itemType === "external_references"){
+                if(obj.orderNumber < 0){
+                    return;
+                }
 
-            this.setState({ listObjectInfo: listObjectTmp });
-        }
+                valueAPTmp.external_references.splice(obj.orderNumber, 1);
 
+                setAttackPatterElement(valueAPTmp);
+            }
+
+            /*
         if(obj.itemType === "granular_markings"){
             if(obj.orderNumber < 0){
                 return;
@@ -200,19 +203,56 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             delete listObjectTmp[obj.objectId].extensions[obj.item];
 
             this.setState({ listObjectInfo: listObjectTmp });
-        }
-             */
+        }*/
+             
         },
-        showDialogElementAdditionalThechnicalInfo = () => {
-            console.log("func 'showDialogElementAdditionalThechnicalInfo', START...");
+        handlerDialogElementAdditionalThechnicalInfo = (obj) => {
+            console.log("func 'handlerDialogElementAdditionalThechnicalInfo', START...");
+            console.log(obj);
+            console.log("-------------");
+
+            let valueAPTmp = _.cloneDeep(attackPatterElement);
+
+            if(obj.modalType === "external_references"){
+                if(obj.actionType === "new"){
+                    if(!Array.isArray(valueAPTmp.external_references)){
+                        valueAPTmp.external_references = [];
+                    }
+
+                    valueAPTmp.external_references.push(obj.data);
+            
+                    setAttackPatterElement(valueAPTmp);        
+                }
+
+                /*if(obj.actionType === "edit"){
+
+                }*/
+            }
+            /*if(obj.modalType === "granular_markings") {
+                if(obj.actionType === "new"){
+
+                }
+
+                if(obj.actionType === "edit"){
+
+                }
+            }*/
+            if(obj.modalType === "extensions") {
+                valueAPTmp.extensions[obj.data.name] = obj.data.description;
+        
+                setAttackPatterElement(valueAPTmp);  
+            }
+
+            //console.log(attackPatterElement);
+            console.log(valueAPTmp);
 
             /**
-            console.log("func 'showDialogElementAdditionalThechnicalInfo', START...");
+            console.log("func 'handlerDialogElementAdditionalThechnicalInfo', START...");
         console.log(obj);
 
         this.setState({
             uuidValue: uuidv4(),
-            showDialogElementAdditionalThechnicalInfo: true,
+            handlerDialogElementAdditionalThechnicalInfo: true,
             objectDialogElementAdditionalThechnicalInfo: { 
                 actionType: obj.actionType,
                 modalType: obj.modalType, 
@@ -265,7 +305,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 handlerElementDefanged={handlerElementDefanged}
                 handlerElementLabels={handlerElementLabels}
                 handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
-                showDialogElementAdditionalThechnicalInfo={showDialogElementAdditionalThechnicalInfo}
+                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
                 isNotDisabled={isNotDisabled} /> 
 
             <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>

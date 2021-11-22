@@ -25,9 +25,12 @@ import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
 import IconEdit from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import TokenInput from "react-customize-token-input";
 import { blue, grey, green, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
+import { v4 as uuidv4 } from "uuid";
+//import { timeout } from "async";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -73,7 +76,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         handlerElementDefanged, 
         handlerElementLabels,
         handlerElementDelete,
-        showDialogElementAdditionalThechnicalInfo,
+        handlerDialogElementAdditionalThechnicalInfo,
         isNotDisabled,
     } = props;
 
@@ -92,20 +95,28 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
     },
     [setLabelsTokenInput, objectId, handlerElementLabels]);
 
-    let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
-        [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
-        [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
-        [ valueER, setValueER ] = useState({
+    let patternValueER = {
             source_name: "",
             description: "",
             url: "",
             hashes: [],
-        }),
-        [ valueGM, setValueGM ] = useState({
+        },
+        patternValueGM = {
             lang: "",
             marking_ref: "",
             selectors: [],
-        }),
+        };
+
+    let [ buttonAddNewERIsDisabled, setButtonAddNewERIsDisabled ] = useState(true),
+        [ buttonAddNewGMIsDisabled, setButtonAddNewGMIsDisabled ] = useState(true),
+        [ buttonAddNewEIsDisabled, setButtonAddNewEIsDisabled ] = useState(true),
+        [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true),
+        [ buttonAddSelectorIsDisabled, setButtonAddSelectorIsDisabled ] = useState(true),
+        [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
+        [ valueTmpHashSumER, setValueTmpHashSumER ] = useState({ type: "", description: "" }),
+        [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
+        [ valueER, setValueER ] = useState(patternValueER),
+        [ valueGM, setValueGM ] = useState(patternValueGM),
         [ valueE, setValueE ] = useState({ name: "", description: ""});
 
     let handlerElConf = (data) => {
@@ -114,6 +125,13 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         handlerElDef = (data) => {
             handlerElementDefanged({ data: data.target.value, objectId: objectId }); 
         };
+
+    let handlerDelItemHash = (e, num) => {
+        let tmp = _.cloneDeep(valueER);
+        tmp.hashes.splice(num, 1);
+
+        setValueER(tmp);
+    };
 
     if(reportInfo.labels !== null){
         listTmpLabelsAdditionalTechnicalInformation = reportInfo.labels;
@@ -131,14 +149,6 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         </Grid>);
     };
 
-    /**
-        Надо сделать обработчики для добавления новых данных в функциях getExternalReferences, getGranularMarkings, getExtensions.
-        При этом нужно сделать доступность к нажатию ссылок 'добавить новую внешнюю ссылку', '"добавить новую \"гранулярную метку\""',
-        'добавить любую дополнительную информацию' только когда заполненно обязательное для заполнения поле.
-
-        Кроме того нужно сделать удаление ExternalReferences, GranularMarkings, Extensions и редактирование существующих данных.
- */
-
     //дополнительные внешние ссылки
     let getExternalReferences = () => {
         return (<Grid container direction="row">
@@ -148,12 +158,24 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         <TextField
                             id="external-references-source-name"
                             label="наименование"
-                            //defaultValue={(typeof erInfo.source_name === "undefined")? "": erInfo.source_name}
+                            value={(typeof valueER.source_name === "undefined")? "": valueER.source_name}
                             //disabled={(typeof erInfo.source_name !== "undefined")}
-                            //error={isInvalidSourceName}
+                            error={valuesIsInvalideSourceNameER}
                             fullWidth={true}
                             helperText="обязательное для заполнения поле"
-                            //onChange={handlerSourceName}
+                            onChange={(e) => {
+                                let valueERTmp = _.cloneDeep(valueER);
+                                valueERTmp.source_name = e.target.value;
+                                setValueER(valueERTmp);
+
+                                if(e.target.value.length === 0){
+                                    setButtonAddNewERIsDisabled(true);
+                                    setValuesIsInvalideSourceNameER(true);
+                                } else {
+                                    setButtonAddNewERIsDisabled(false);
+                                    setValuesIsInvalideSourceNameER(false);
+                                }
+                            }}
                         />
                     </Grid>
                     <Grid item md={8}>
@@ -161,8 +183,12 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                             id="external-references-description"
                             label="описание"
                             fullWidth={true}
-                            //defaultValue={(typeof erInfo.description === "undefined")? "": erInfo.description}
-                            //onChange={handlerDescription}
+                            value={(typeof valueER.description === "undefined")? "": valueER.description}
+                            onChange={(e) => {
+                                let valueERTmp = _.cloneDeep(valueER);
+                                valueERTmp.description = e.target.value;
+                                setValueER(valueERTmp);
+                            }}
                         />
                     </Grid>
                 </Grid>
@@ -173,8 +199,12 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                             id="external-references-url"
                             label="url"
                             fullWidth={true}
-                            //defaultValue={(typeof erInfo.url === "undefined")? "": erInfo.url}
-                            //onChange={handlerURL}
+                            value={(typeof valueER.url === "undefined")? "": valueER.url}
+                            onChange={(e) => {
+                                let valueERTmp = _.cloneDeep(valueER);
+                                valueERTmp.url = e.target.value;
+                                setValueER(valueERTmp);
+                            }}
                         />
                     </Grid>
                     <Grid item md={7}>
@@ -185,18 +215,15 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                     <Select
                                         labelId="chose-hash-select-label"
                                         id="chose-hash-select-label"
-                                        //value={selectItemHash}
+                                        value={valueTmpHashSumER.type}
                                         fullWidth={true}
-                                        /*onChange={(elem) => {
-                                    let vt = elem.target.value;
-                                    setSelectItemHash(vt);
-                            
-                                    if((vt.length > 0) && (inputHash.length > 0)){
-                                        setButtonAddHashIsDisabled(false);
-                                    } else {
-                                        setButtonAddHashIsDisabled(true);
-                                    }
-                                }}*/>
+                                        onChange={(e) => {
+                                            let tmp = valueTmpHashSumER.description,
+                                                v = e.target.value;
+                                            setValueTmpHashSumER({ type: v, description: tmp });
+
+                                            ((v.length > 0) && (tmp.length > 0))? setButtonAddHashIsDisabled(false): setButtonAddHashIsDisabled(true);
+                                        }}>
                                         {listHashType.map((elem, num)=>{
                                             return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
                                         })}
@@ -208,41 +235,70 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                     id="external-references-hash"
                                     label="хеш-сумма"
                                     fullWidth
-                                    //value={inputHash}
-                                    /*onChange={(elem) => {
-                                let vt = elem.target.value;
-                                setInputHash(vt);
-                        
-                                if((selectItemHash.length > 0) && (vt.length > 0)){
-                                    setButtonAddHashIsDisabled(false);
-                                } else {
-                                    setButtonAddHashIsDisabled(true);
-                                }
-                            }}*/
+                                    value={valueTmpHashSumER.description}
+                                    onChange={(e) => {
+                                        let tmp = valueTmpHashSumER.type,
+                                            v = e.target.value;
+                                        setValueTmpHashSumER({ type: tmp, description: v });
+
+                                        ((v.length > 0) && (tmp.length > 0))? setButtonAddHashIsDisabled(false): setButtonAddHashIsDisabled(true);
+                                    }}
                                 />
                             </Grid>
                             <Grid item md={2} className="text-end pt-2">
                                 <Button 
-                                //onClick={handlerAddNewHash} 
-                                //disabled={buttonAddHashIsDisabled}
+                                    onClick={() => {
+                                        let valueERTmp = _.cloneDeep(valueER);
+                                        valueERTmp.hashes.push(valueTmpHashSumER);
+                                        setValueER(valueERTmp);
+
+                                        setValueTmpHashSumER({ type: "", description: "" });
+                                        setButtonAddHashIsDisabled(true);
+                                    }} 
+                                    disabled={buttonAddHashIsDisabled}
                                 >добавить хеш</Button>
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
 
+                {(valueER.hashes.length === 0) ? 
+                    "" : 
+                    <Grid container direction="row" className="mt-3">
+                        <ol>
+                            {valueER.hashes.map((elem, numHash) => {
+                                return (<li key={`key_item_hash_${numHash}`}>
+                                    {`${elem.type}: ${elem.description}`}&nbsp;
+                                    <IconButton aria-label="delete-hash" onClick={() => handlerDelItemHash.call(null, numHash)}>
+                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                    </IconButton>
+                                </li>);
+                            })}
+                        </ol>
+                    </Grid> }
+
                 <Grid container direction="row" className="mt-2" key="key_external_references_link">
                     <Grid item md={12} className="text-end pb-2">
-                        <Link href="#" onClick={()=>{ 
-                            showDialogElementAdditionalThechnicalInfo({ 
+                        <Button onClick={() => {
+                            let obj = {};
+                            let tmpData = _.cloneDeep(valueER);
+                            setValueER(patternValueER);                            
+
+                            tmpData.hashes.map((item) => obj[item.type] = item.description);
+
+                            tmpData.hashes = obj;
+                            tmpData.external_id = `external-references--${uuidv4()}`;
+
+                            handlerDialogElementAdditionalThechnicalInfo({ 
                                 actionType: "new",
                                 modalType: "external_references", 
                                 objectId: objectId,
-                                sourceName: "",
-                                orderNumber: -1 }); 
-                        }} color="textPrimary">
-                            <Typography variant="overline" display="block" gutterBottom>добавить новую внешнюю ссылку</Typography>
-                        </Link>
+                                orderNumber: -1,
+                                data: tmpData,
+                            });
+                        }} disabled={buttonAddNewERIsDisabled}>
+                            добавить новую внешнюю ссылку
+                        </Button>
                     </Grid>
                 </Grid>
 
@@ -267,12 +323,12 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                 subheader={sourceName}
                                 action={<React.Fragment>
                                     <IconButton aria-label="delete" onClick={()=>{ 
-                                        handlerElementDelete({ itemType: "external_references", item: sourceName, objectId: objectId }); 
+                                        handlerElementDelete({ itemType: "external_references", item: sourceName, objectId: objectId, orderNumber: key }); 
                                     }}>
                                         <IconDeleteOutline style={{ color: red[400] }} />
                                     </IconButton>
                                     <IconButton aria-label="edit" onClick={()=>{ 
-                                        showDialogElementAdditionalThechnicalInfo({ 
+                                        handlerDialogElementAdditionalThechnicalInfo({ 
                                             actionType: "edit",
                                             modalType: "external_references", 
                                             objectId: objectId,
@@ -370,7 +426,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                     <Grid item md={3} className="text-end mt-2">
                         <Button 
                             //onClick={pphandlerAddSelectorsList} 
-                            //disabled={buttonIsDisabled} 
+                            disabled={buttonAddSelectorIsDisabled} 
                             color="primary" >
                                 добавить селектор
                         </Button>
@@ -380,13 +436,19 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                 <Grid container direction="row" key="key_granular_markings_link">
                     <Grid item md={12} className="text-end pt-2 pb-2">
                         <Link href="#" onClick={()=>{ 
-                            showDialogElementAdditionalThechnicalInfo({ 
+                            handlerDialogElementAdditionalThechnicalInfo({ 
                                 actionType: "new",
                                 modalType: "granular_markings", 
                                 objectId: objectId,
                                 orderNumber: -1 }); 
                         }} color="inherit">
-                            <Typography variant="overline" display="block" gutterBottom>{"добавить новую \"гранулярную метку\""}</Typography>
+                            <Typography 
+                                variant="overline" 
+                                display="block" 
+                                disabled={buttonAddNewGMIsDisabled}
+                                gutterBottom>
+                                {"добавить новую \"гранулярную метку\""}
+                            </Typography>
                         </Link>
                     </Grid>
                 </Grid>
@@ -421,7 +483,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                         <IconDeleteOutline style={{ color: red[400] }} />
                                     </IconButton>
                                     <IconButton aria-label="edit" onClick={()=>{ 
-                                        showDialogElementAdditionalThechnicalInfo({ 
+                                        handlerDialogElementAdditionalThechnicalInfo({ 
                                             actionType: "edit",
                                             modalType: "granular_markings",
                                             orderNumber: key,
@@ -478,9 +540,22 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         label="наименование"
                         size="small"
                         fullWidth={true}
-                        //error={nameIsInvalid}
-                        //value={valueName}
-                        //onChange={pphandlerName}
+                        error={valuesIsInvalideNameE}
+                        value={valueE.name}
+                        onChange={(e) => {
+                            let valueETmp = _.cloneDeep(valueE);
+                            valueETmp.name = e.target.value;
+                            
+                            setValueE(valueETmp);
+
+                            if(e.target.value.length > 0){
+                                setValuesIsInvalideNameE(false);
+                                setButtonAddNewEIsDisabled(false);
+                            } else {
+                                setValuesIsInvalideNameE(true);
+                                setButtonAddNewEIsDisabled(true);
+                            }
+                        }}
                         variant="outlined"
                         helperText="обязательное для заполнения поле"
                     />
@@ -492,22 +567,37 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         multiline
                         rows={2}
                         fullWidth
-                        //value={valueDescription}
-                        //onChange={pphandlerDescription}
+                        value={valueE.description}
+                        onChange={(e) => {
+                            let valueETmp = _.cloneDeep(valueE);
+                            valueETmp.description = e.target.value;
+
+                            setValueE(valueETmp);
+                        }}
                         variant="outlined"/>
                 </Grid>
             </Grid>
 
             <Grid item md={12} className="text-end mt-2 pb-2">
-                <Link href="#" onClick={()=>{ 
-                    showDialogElementAdditionalThechnicalInfo({ 
+                <Button onClick={(obj) => {
+                    console.log("button: 'добавить любую дополнительную информацию'");
+                    console.log(obj);
+
+                    let tmpData = _.cloneDeep(valueE);
+                    setValueE({ name: "", description: ""});                            
+
+                    tmpData.external_id = `extensions--${uuidv4()}`;
+
+                    handlerDialogElementAdditionalThechnicalInfo({ 
                         actionType: "new",
                         modalType: "extensions", 
                         objectId: objectId,
-                        orderNumber: -1 }); 
-                }} color="inherit">
-                    <Typography variant="overline" display="block" gutterBottom>{"добавить любую дополнительную информацию"}</Typography>
-                </Link>
+                        orderNumber: -1,
+                        data: tmpData,
+                    });
+                }} disabled={buttonAddNewEIsDisabled}>
+                    добавить любую дополнительную информацию
+                </Button>
             </Grid>
 
             <Grid item md={12}><ul>{listExtensions}</ul></Grid>
@@ -641,6 +731,6 @@ CreateElementAdditionalTechnicalInformationDO.propTypes = {
     handlerElementDefanged: PropTypes.func.isRequired,
     handlerElementLabels: PropTypes.func.isRequired,
     handlerElementDelete: PropTypes.func.isRequired,
-    showDialogElementAdditionalThechnicalInfo: PropTypes.func.isRequired,
+    handlerDialogElementAdditionalThechnicalInfo: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool,
 };

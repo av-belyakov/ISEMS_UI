@@ -59,7 +59,7 @@ export default function CreateElementAdditionalTechnicalInformationReportObject(
     } = props;
 
     let listTmpLabelsAdditionalTechnicalInformation = [];
-    
+
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
     const handleChange = (panel) => (event, isExpanded) => {
