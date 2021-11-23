@@ -115,6 +115,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
         [ valueTmpHashSumER, setValueTmpHashSumER ] = useState({ type: "", description: "" }),
         [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
+        [ valueTmpSelector, setValueTmpSelector ] = useState(""),
         [ valueER, setValueER ] = useState(patternValueER),
         [ valueGM, setValueGM ] = useState(patternValueGM),
         [ valueE, setValueE ] = useState({ name: "", description: ""});
@@ -126,11 +127,22 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             handlerElementDefanged({ data: data.target.value, objectId: objectId }); 
         };
 
-    let handlerDelItemHash = (e, num) => {
+    let handlerDelItemHash = (num) => {
         let tmp = _.cloneDeep(valueER);
         tmp.hashes.splice(num, 1);
 
         setValueER(tmp);
+    };
+
+    let handlerDelSelector = (num) => {
+        let tmp = _.cloneDeep(valueGM);
+        tmp.selectors.splice(num, 1);
+
+        if(tmp.selectors.length === 0){
+            setButtonAddNewGMIsDisabled(true);
+        }
+
+        setValueGM(tmp);
     };
 
     if(reportInfo.labels !== null){
@@ -282,8 +294,9 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         <Button onClick={() => {
                             let obj = {};
                             let tmpData = _.cloneDeep(valueER);
-                            setValueER(patternValueER);                            
-
+                            
+                            setValueER(patternValueER);
+                            setValuesIsInvalideSourceNameER(true);
                             tmpData.hashes.map((item) => obj[item.type] = item.description);
 
                             tmpData.hashes = obj;
@@ -387,8 +400,13 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                             id="granular-markings-lang"
                             label="маркер языка"
                             fullWidth={true}
-                            //value={lang}
-                            //onChange={pphandlerLang}
+                            value={valueGM.lang}
+                            onChange={(e) => {
+                                let valueGMTmp = _.cloneDeep(valueGM);
+
+                                valueGMTmp.lang = e.target.value.toUpperCase();
+                                setValueGM(valueGMTmp);
+                            }}
                         />
                     </Grid>
                     <Grid item md={10}>
@@ -398,12 +416,24 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                     id="granular-markings-marking-ref"
                                     label="идентификатор объекта 'marking-definition'"
                                     fullWidth={true}
-                                    //value={markingRef}
-                                    //onChange={pphandlerMarkingRef}
+                                    value={valueGM.marking_ref}
+                                    onChange={(e) => {
+                                        let valueGMTmp = _.cloneDeep(valueGM);
+
+                                        valueGMTmp.marking_ref = e.target.value;
+                                        setValueGM(valueGMTmp);
+                                    }}
                                 />
                             </Grid>
                             <Grid item md={2} className="text-start mt-2">
-                                <Button /*onClick={pphandlerGenerateMarkingRef}*/>сгенерировать</Button>
+                                <Button onClick={() => {
+                                    let valueGMTmp = _.cloneDeep(valueGM);
+
+                                    valueGMTmp.marking_ref = `marking-definition--${uuidv4()}`;
+                                    setValueGM(valueGMTmp);
+                                }}>
+                                    сгенерировать
+                                </Button>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -411,21 +441,40 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                 <Grid container direction="row" key="key_input_hash_field">
                     <Grid item md={7}>
                         <TextField
-                            id="external-references-hash"
+                            id="marking-definition-selector"
                             label="идентификатор селектора"
                             fullWidth
-                            //value={selectorInput}
-                            //onChange={(obj) => setSelectorInput(obj.target.value)}
+                            value={valueTmpSelector}
+                            onChange={(e) => {
+                                setValueTmpSelector(e.target.value);
+                                (e.target.value.length === 0)? setButtonAddSelectorIsDisabled(true): setButtonAddSelectorIsDisabled(false);
+                            }}
                         />
                     </Grid>
                     <Grid item md={2} className="text-start mt-2">
-                        <Button /*onClick={() => setSelectorInput(`selector--${uuidv4()}`)}*/ >
+                        <Button onClick={() => {
+                            setValueTmpSelector(`selector--${uuidv4()}`);
+                            setButtonAddSelectorIsDisabled(false);
+                        }} >
                             сгенерировать
                         </Button>
                     </Grid>
                     <Grid item md={3} className="text-end mt-2">
                         <Button 
-                            //onClick={pphandlerAddSelectorsList} 
+                            onClick={() => {
+                                if(valueTmpSelector === ""){
+                                    return;
+                                }
+
+                                let valueGMTmp = _.cloneDeep(valueGM);
+
+                                valueGMTmp.selectors.push(valueTmpSelector);
+                                setValueGM(valueGMTmp);
+                                setValueTmpSelector("");
+
+                                setButtonAddNewGMIsDisabled(false);
+                                setButtonAddSelectorIsDisabled(true);
+                            }} 
                             disabled={buttonAddSelectorIsDisabled} 
                             color="primary" >
                                 добавить селектор
@@ -433,40 +482,51 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                     </Grid>
                 </Grid>
 
+                {(valueGM.selectors.length === 0) ? 
+                    "" : 
+                    <Grid container direction="row" className="mt-3">
+                        <ol>
+                            {valueGM.selectors.map((item, num) => {
+                                return (<li key={`key_item_selector_${num}`}>
+                                    {item}&nbsp;
+                                    <IconButton aria-label="delete-selector" onClick={() => handlerDelSelector.call(null, num)}>
+                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                    </IconButton>
+                                </li>);
+                            })}
+                        </ol>
+                    </Grid>}
+
                 <Grid container direction="row" key="key_granular_markings_link">
                     <Grid item md={12} className="text-end pt-2 pb-2">
-                        <Link href="#" onClick={()=>{ 
+                        <Button onClick={() => {
+                            let tmpData = _.cloneDeep(valueGM);
+                            setValueGM(patternValueGM);
+                            setButtonAddNewGMIsDisabled(true);
+
+                            tmpData.external_id = `granular_markings--${uuidv4()}`;
+
                             handlerDialogElementAdditionalThechnicalInfo({ 
                                 actionType: "new",
                                 modalType: "granular_markings", 
                                 objectId: objectId,
-                                orderNumber: -1 }); 
-                        }} color="inherit">
-                            <Typography 
-                                variant="overline" 
-                                display="block" 
-                                disabled={buttonAddNewGMIsDisabled}
-                                gutterBottom>
-                                {"добавить новую \"гранулярную метку\""}
-                            </Typography>
-                        </Link>
+                                orderNumber: -1,
+                                data: tmpData,
+                            });
+                        }} disabled={buttonAddNewGMIsDisabled}>
+                            {"добавить новую \"гранулярную метку\""}
+                        </Button>
                     </Grid>
                 </Grid>
 
                 {((typeof reportInfo.granular_markings === "undefined") || (reportInfo.granular_markings === null) || (reportInfo.granular_markings.length === 0))?
                     "":
                     reportInfo.granular_markings.map((item, key) => {
-                        let listSelectors = [],
-                            markingRef = "";
+                        //let listSelectors = [],
+                        let markingRef = "";
 
                         if((typeof item.marking_ref !== "undefined") && (item.marking_ref !== null) && (item.marking_ref.length !== 0)){
                             markingRef = item.marking_ref;
-                        }
-
-                        if((item.selectors !== null) && (typeof item.selectors !== "undefined")){
-                            for(let k in item.selectors){
-                                listSelectors.push(<li key={`hash_${item.selectors[k]}`}>{item.selectors[k]}</li>);
-                            }    
                         }
 
                         return (<Card className={classes.customPaper} key={`key_granular_markings_${key}_fragment`}>
@@ -501,12 +561,18 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                         </Grid>
                                     </Grid>)}
 
-                                {(listSelectors.length !== 0) ? 
+                                {((item.selectors === null) && (typeof item.selectors === "undefined"))?
+                                    "":
                                     <Grid container direction="row" key={`key_granular_mark_${key}_3`}>
                                         <Grid item md={12}>
-                                            <span><span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство</span>:<ol>{listSelectors}</ol></span>
+                                            <span>
+                                                <span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство</span>:
+                                                <ol>{item.selectors.map((i, num) => {
+                                                    return <li key={`hash_${i.selectors}_${num}`}>{i}</li>;
+                                                })}</ol>
+                                            </span>
                                         </Grid>
-                                    </Grid> : ""}
+                                    </Grid>}
                             </CardContent>
                         </Card>);
                     })}
@@ -579,14 +645,11 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             </Grid>
 
             <Grid item md={12} className="text-end mt-2 pb-2">
-                <Button onClick={(obj) => {
-                    console.log("button: 'добавить любую дополнительную информацию'");
-                    console.log(obj);
-
+                <Button onClick={() => {
                     let tmpData = _.cloneDeep(valueE);
-                    setValueE({ name: "", description: ""});                            
 
-                    tmpData.external_id = `extensions--${uuidv4()}`;
+                    setValueE({ name: "", description: ""});
+                    setValuesIsInvalideNameE(true);
 
                     handlerDialogElementAdditionalThechnicalInfo({ 
                         actionType: "new",

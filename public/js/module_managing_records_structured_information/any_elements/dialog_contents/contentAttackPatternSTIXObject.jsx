@@ -65,8 +65,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         isNotDisabled,
     } = props;
 
-    console.log("func 'CreateDialogContentAttackPatternSTIXObject', START...");
-
     let [ attackPatterElement, setAttackPatterElement ] = React.useState(listObjectInfo[currentIdSTIXObject]);
     let [ valueNameChain, setValueNameChain ] = React.useState("");
     let [ valueNamePhases, setValueNamePhases ] = React.useState("");
@@ -75,8 +73,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
     let [ invalidNamePhases, setInvalidNamePhases ] = React.useState(true);
 
     const handlerAddNewKillChain = () => {
-            console.log("func 'handlerAddNewKillChain', START...");
-
             if(invalidNameChain || invalidNamePhases){
                 return;
             }
@@ -173,9 +169,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             setAttackPatterElement(valueAPTmp);
         },
         handlerDeleteElementAdditionalTechnicalInformation = (obj) => {
-            console.log("func 'handlerDeleteElementAdditionalTechnicalInformation', START...");
-            console.log(obj);
-
             let valueAPTmp = _.cloneDeep(attackPatterElement);
 
             if(obj.itemType === "external_references"){
@@ -188,22 +181,21 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 setAttackPatterElement(valueAPTmp);
             }
 
-            /*
-        if(obj.itemType === "granular_markings"){
-            if(obj.orderNumber < 0){
-                return;
+            if(obj.itemType === "granular_markings"){
+                if(obj.orderNumber < 0){
+                    return;
+                }
+
+                valueAPTmp.granular_markings.splice(obj.orderNumber, 1);
+
+                setAttackPatterElement(valueAPTmp);
             }
 
-            listObjectTmp[obj.objectId].granular_markings.splice(obj.orderNumber, 1);
+            if(obj.itemType === "extensions"){
+                delete valueAPTmp.extensions[obj.item];
 
-            this.setState({ listObjectInfo: listObjectTmp });
-        }
-
-        if(obj.itemType === "extensions"){
-            delete listObjectTmp[obj.objectId].extensions[obj.item];
-
-            this.setState({ listObjectInfo: listObjectTmp });
-        }*/
+                setAttackPatterElement(valueAPTmp);
+            }
              
         },
         handlerDialogElementAdditionalThechnicalInfo = (obj) => {
@@ -212,6 +204,9 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             console.log("-------------");
 
             let valueAPTmp = _.cloneDeep(attackPatterElement);
+            console.log("--- valueAPTmp ---");
+            console.log(valueAPTmp);
+            console.log("++++++++++++++");
 
             if(obj.modalType === "external_references"){
                 if(obj.actionType === "new"){
@@ -228,48 +223,41 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 
                 }*/
             }
-            /*if(obj.modalType === "granular_markings") {
+            
+            if(obj.modalType === "granular_markings") {
                 if(obj.actionType === "new"){
+                    if(!Array.isArray(valueAPTmp.granular_markings)){
+                        valueAPTmp.granular_markings = [];
+                    }
 
+                    valueAPTmp.granular_markings.push(obj.data);
+            
+                    setAttackPatterElement(valueAPTmp);  
                 }
 
-                if(obj.actionType === "edit"){
+                /*if(obj.actionType === "edit"){
 
-                }
-            }*/
+                }*/
+            }
+            
             if(obj.modalType === "extensions") {
+                if((valueAPTmp.extensions === null) || (typeof valueAPTmp.extensions === "undefined")){
+                    valueAPTmp.extensions = {};
+                }
+
                 valueAPTmp.extensions[obj.data.name] = obj.data.description;
         
                 setAttackPatterElement(valueAPTmp);  
             }
-
-            //console.log(attackPatterElement);
-            console.log(valueAPTmp);
-
-            /**
-            console.log("func 'handlerDialogElementAdditionalThechnicalInfo', START...");
-        console.log(obj);
-
-        this.setState({
-            uuidValue: uuidv4(),
-            handlerDialogElementAdditionalThechnicalInfo: true,
-            objectDialogElementAdditionalThechnicalInfo: { 
-                actionType: obj.actionType,
-                modalType: obj.modalType, 
-                objectId: obj.objectId,
-                sourceName: obj.sourceName,
-                orderNumber: obj.orderNumber,
-            },
-        });
-             */
         },
         handlerSave = () => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
             valueAPTmp.modified = (new Date).toISOString();
-        
+            valueAPTmp.lang = "RU";
+
             setAttackPatterElement(valueAPTmp);
 
-            handlerDialog(attackPatterElement);
+            handlerDialog(valueAPTmp);
         };
 
     if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
@@ -294,9 +282,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 handlerTokenValuesChange={handlerTokenValuesChange} 
                 handlerDeleteKillChain={handlerDeleteKillChain} />
 
-            <Row className="pt-2">
-                <Col md={12} ></Col>
-            </Row>
+            <Row className="pt-2"><Col md={12}></Col></Row>
 
             <CreateElementAdditionalTechnicalInformationDO 
                 reportInfo={attackPatterElement}
@@ -307,8 +293,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
                 handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
                 isNotDisabled={isNotDisabled} /> 
-
-            <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
         </DialogContent>
         <DialogActions>
             <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
@@ -330,39 +314,6 @@ CreateDialogContentAttackPatternSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
 };
 
-/**
-//CommonPropertiesDomainObjectSTIX свойства общие, для всех объектов STIX
-// SpecVersion - версия спецификации STIX используемая для представления текущего объекта (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
-// Created - время создания объекта, в формате "2016-05-12T08:17:27.000Z" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
-// Modified - время модификации объекта, в формате "2016-05-12T08:17:27.000Z" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
-// CreatedByRef - содержит идентификатор источника создавшего данный объект
-// Revoked - вернуть к текущему состоянию
-// Labels - определяет набор терминов, используемых для описания данного объекта
-// Сonfidence - определяет уверенность создателя в правильности своих данных. Доверительное значение ДОЛЖНО быть числом
-//  в диапазоне 0-100. Если 0 - значение не определено.
-// Lang - содержит текстовый код языка, на котором написан контент объекта. Для английского это "en" для русского "ru"
-// ExternalReferences - список внешних ссылок не относящихся к STIX информации
-// ObjectMarkingRefs - определяет список ID ссылающиеся на объект "marking-definition", по терминалогии STIX, в котором содержатся значения применяющиеся к этому объекту
-// GranularMarkings - определяет список "гранулярных меток" (granular_markings) относящихся к этому объекту
-// Defanged - определяет были ли определены данные содержащиеся в объекте
-// Extensions - может содержать дополнительную информацию, относящуюся к объекту
-type CommonPropertiesDomainObjectSTIX struct {
-	SpecVersion        string                     `json:"spec_version" bson:"spec_version" required:"true"`
-	Created            time.Time                  `json:"created" bson:"created" required:"true"`
-	Modified           time.Time                  `json:"modified" bson:"modified" required:"true"`
-	CreatedByRef       IdentifierTypeSTIX         `json:"created_by_ref" bson:"created_by_ref"`
-	Revoked            bool                       `json:"revoked" bson:"revoked"`
-	Labels             []string                   `json:"labels" bson:"labels"`
-	Сonfidence         int                        `json:"confidence" bson:"confidence"`
-	Lang               string                     `json:"lang" bson:"lang"`
-	ExternalReferences ExternalReferencesTypeSTIX `json:"external_references" bson:"external_references"`
-	ObjectMarkingRefs  []IdentifierTypeSTIX       `json:"object_marking_refs" bson:"object_marking_refs"`
-	GranularMarkings   []GranularMarkingsTypeSTIX `json:"granular_markings" bson:"granular_markings"`
-	Defanged           bool                       `json:"defanged" bson:"defanged"`
-	Extensions         map[string]string          `json:"extensions" bson:"extensions"`
-}
- */
-
 function CreateAtackPatternElements(props){
     let { 
         attackPatterElement,
@@ -378,12 +329,6 @@ function CreateAtackPatternElements(props){
         handlerTokenValuesChange,
         handlerDeleteKillChain,
     } = props;
-
-    //    console.log("func 'CreateAtackPatternElements'");
-    //    console.log(attackPatterElement);
-    //    console.log((new Date).toISOString());
-    //    console.log(`valueNameChain: '${valueNameChain}'`);
-    //    console.log(`valueNamePhases: '${valueNamePhases}'`);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>

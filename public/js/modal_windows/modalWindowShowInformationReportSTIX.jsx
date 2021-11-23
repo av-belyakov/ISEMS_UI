@@ -560,6 +560,16 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         console.log("----- ______ NEW STIX OBJECT ______-----");
         console.log(newSTIXObject);
 
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+
+        listObjectInfoTmp[newSTIXObject.id] = newSTIXObject;
+        this.setState({ listObjectInfo: listObjectInfoTmp });
+
+        /**
+         * Здесь выполняется успешная модификация объекта, однако он перезаписывается при повторном запросе к БД
+         * Надо подумать, оставить также или запретить запрос нового объекта у БД, если в listObjectInfoTmp уже есть
+         * объект с таким же ID 
+         */
     }
 
     handleSave(){
@@ -957,8 +967,7 @@ function CreateAnyModalWindowSTIXObject(props){
             height="35" />;
     }
     
-    let buttonName = (currentAdditionalIdSTIXObject === "create-new-stix-object")? "добавить": "сохранить",
-        titleName = (currentAdditionalIdSTIXObject === "create-new-stix-object")? 
+    let titleName = (currentAdditionalIdSTIXObject === "create-new-stix-object")? 
             "Создание нового объекта или добавление существующего": 
             `${(typeof objectElem === "undefined")? "": objectElem.description} id: ${currentAdditionalIdSTIXObject}`,
         img = (typeof objectElem === "undefined")? "": <img src={`/images/stix_object/${objectElem.link}`} width="35" height="35" />;
@@ -1109,12 +1118,12 @@ function CreateAnyModalWindowSTIXObject(props){
 
     const handlerDialogButtonSaveOrAdd = (data) => {
         console.log("func 'handlerDialogButtonSaveOrAdd', START...");
-        console.group("__===___===__+++");
+        console.group("!!! __===___===__+++ !!!");
         console.log(data);
         console.groupEnd();
+        console.group("@@@ __===___===__+++ @@@");
 
-        //dhеменно закоментирую что бы не проваливалась дальше
-        //        handlerNewAdditionalSTIXObject(data);
+        handlerNewAdditionalSTIXObject(data);
 
         handelrDialogClose();
     };
