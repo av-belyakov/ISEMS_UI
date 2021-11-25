@@ -540,13 +540,15 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     //изменяет выбранный, текущий, дополнительный STIX объект
     handlerChangeCurrentAdditionalIdSTIXObject(currentObjectId){
-        console.log("func 'handlerChangeCurrentAdditionalIdSTIXObject', START...");
-        console.log(`change to new STIX object ---> ID: '${currentObjectId}'`);
-
         this.setState({ 
             currentAdditionalIdSTIXObject: currentObjectId,
             showDialogElementAdditionalSTIXObject: true 
         });
+
+        //проверяем наличие информации об запрашиваемом STIX объекте
+        if((this.state.listObjectInfo[currentObjectId] !== null) && (typeof this.state.listObjectInfo[currentObjectId] !== "undefined")){
+            return;
+        }
 
         this.props.socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
             searchObjectId: currentObjectId,
@@ -565,11 +567,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         listObjectInfoTmp[newSTIXObject.id] = newSTIXObject;
         this.setState({ listObjectInfo: listObjectInfoTmp });
 
-        /**
-         * Здесь выполняется успешная модификация объекта, однако он перезаписывается при повторном запросе к БД
-         * Надо подумать, оставить также или запретить запрос нового объекта у БД, если в listObjectInfoTmp уже есть
-         * объект с таким же ID 
-         */
     }
 
     handleSave(){

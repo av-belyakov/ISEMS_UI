@@ -13,7 +13,6 @@ import {
     Typography, 
     TextField,
     Grid,
-    Link,
     Select,
     IconButton,
     InputLabel,
@@ -22,7 +21,7 @@ import {
 } from "@material-ui/core";
 import IconCloseOutlined from "@material-ui/icons/CloseOutlined";
 import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
-import IconEdit from "@material-ui/icons/Edit";
+import IconSave from "@material-ui/icons/Save";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
@@ -83,11 +82,11 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
     let listTmpLabelsAdditionalTechnicalInformation = [];
     
     const classes = useStyles();
-    const [expanded, setExpanded] = React.useState(false);
+    const [ expanded, setExpanded ] = useState(false),
+        [ labelsTokenInput, setLabelsTokenInput ] = useState(listTmpLabelsAdditionalTechnicalInformation);
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
-    const [labelsTokenInput, setLabelsTokenInput] = useState(listTmpLabelsAdditionalTechnicalInformation);
     const handlerChangeElementLabels = useCallback((newTokenValues) => {
         setLabelsTokenInput(newTokenValues);
 
@@ -114,6 +113,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         [ buttonAddSelectorIsDisabled, setButtonAddSelectorIsDisabled ] = useState(true),
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
         [ valueTmpHashSumER, setValueTmpHashSumER ] = useState({ type: "", description: "" }),
+        [ valueTmpUpdateHashSumER, setValueTmpUpdateHashSumER ] = useState({ num: -1, type: "", hash: "" }),
         [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
         [ valueTmpSelector, setValueTmpSelector ] = useState(""),
         [ valueER, setValueER ] = useState(patternValueER),
@@ -296,6 +296,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                             let tmpData = _.cloneDeep(valueER);
                             
                             setValueER(patternValueER);
+                            setButtonAddNewERIsDisabled(true);
                             setValuesIsInvalideSourceNameER(true);
                             tmpData.hashes.map((item) => obj[item.type] = item.description);
 
@@ -340,14 +341,17 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                     }}>
                                         <IconDeleteOutline style={{ color: red[400] }} />
                                     </IconButton>
-                                    <IconButton aria-label="edit" onClick={()=>{ 
+                                    <IconButton aria-label="save" onClick={()=>{ 
                                         handlerDialogElementAdditionalThechnicalInfo({ 
-                                            actionType: "edit",
+                                            actionType: "save",
                                             modalType: "external_references", 
                                             objectId: objectId,
                                             sourceName: sourceName,
-                                            orderNumber: key }); }}>
-                                        <IconEdit style={{ color: blue[400] }} />
+                                            orderNumber: key,
+                                            data: item,
+                                        }); 
+                                    }}>
+                                        <IconSave style={{ color: green[400] }} />
                                     </IconButton>
                                 </React.Fragment>
                                 } />
@@ -360,24 +364,115 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                         </Grid>
                                     </Grid>}
 
-                                {((typeof item.description === "undefined") || (item.description === null) || (item.description.length === 0) ? 
-                                    "": 
-                                    <Grid container direction="row" key={`key_external_references_${key}_3`}>
-                                        <Grid item md={12} className="pl-4 pr-4">
-                                            <Typography variant="body2" component="p"><span className="text-muted">описание</span>: {item.description}</Typography>
-                                        </Grid>
-                                    </Grid>)}
+                                <Grid container direction="row" key={`key_external_references_${key}_3`}>
+                                    <Grid item md={12} className="pl-4 pr-4">
+                                        <TextField
+                                            label="описание"
+                                            value={(typeof item.description === "undefined")? "": item.description}
+                                            fullWidth={true}
+                                            onChange={(e) => { 
+                                                item.description = e.target.value;
 
-                                {((typeof item.url === "undefined") ||  (item.url === null) || (item.url.length === 0) ? 
-                                    "": 
-                                    <Grid container direction="row" key={`key_external_references_${key}_4`}>
-                                        <Grid item md={12} className="pl-4 pr-4">
-                                            <Typography variant="body2" component="p"><span className="text-muted">url</span>: <a href={item.url}>{item.url}</a></Typography>
-                                        </Grid>
-                                    </Grid>)}
+                                                handlerDialogElementAdditionalThechnicalInfo({ 
+                                                    actionType: "update",
+                                                    modalType: "external_references", 
+                                                    objectId: objectId,
+                                                    orderNumber: key,
+                                                    data: item,
+                                                });
+                                            }}
+                                        />
+                                    </Grid>
+                                </Grid>
+
+                                <Grid container direction="row" key={`key_external_references_${key}_4`}>
+                                    <Grid item md={12} className="pl-4 pr-4">
+                                        <TextField
+                                            label="url"
+                                            value={(typeof item.url === "undefined")? "": item.url}
+                                            fullWidth={true}
+                                            onChange={(e) => {
+                                                item.url = e.target.value;
+
+                                                handlerDialogElementAdditionalThechnicalInfo({ 
+                                                    actionType: "update",
+                                                    modalType: "external_references", 
+                                                    objectId: objectId,
+                                                    orderNumber: key,
+                                                    data: item,
+                                                });
+                                            }}
+                                        />
+                                    </Grid>
+                                </Grid>
+
+                                <Grid container direction="row" key={`key_input_hash_field_${key}`}>
+                                    <Grid item md={2}>
+                                        <FormControl className={classes.formControlTypeHashRE}>
+                                            <InputLabel id={`label-hash-type-change_${key}`}>тип хеша</InputLabel>
+                                            <Select
+                                                labelId={`chose-hash-select-label_${key}`}
+                                                value={(valueTmpUpdateHashSumER.num === key)? valueTmpUpdateHashSumER.type: ""}
+                                                fullWidth={true}
+                                                onChange={(e) => {
+                                                    let tmp = Object.assign(valueTmpUpdateHashSumER);
+                                                    tmp.num = key;
+                                                    tmp.type = e.target.value;
+
+                                                    console.log("TEST select change");
+                                                    console.log(tmp);
+
+                                                    setValueTmpUpdateHashSumER(tmp);
+                                                }}>
+                                                {listHashType.map((elem, num)=>{
+                                                    return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
+                                                })}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item md={8}>
+                                        <TextField
+                                            id="external-references-hash"
+                                            label="хеш-сумма"
+                                            fullWidth
+                                            value={(valueTmpUpdateHashSumER.num === key)? valueTmpUpdateHashSumER.hash: ""}
+                                            onChange={(e) => {
+                                                let tmp = Object.assign(valueTmpUpdateHashSumER);
+                                                tmp.num = key;
+                                                tmp.hash = e.target.value;
+
+                                                setValueTmpUpdateHashSumER(tmp);
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item md={2} className="text-end pt-2">
+                                        <Button 
+                                            onClick={() => {
+                                                console.log("BUTTON ADD HASH");
+                                                console.log(`TYPE: ${valueTmpUpdateHashSumER[key].type}, HASH: ${valueTmpUpdateHashSumER[key].hash}`);
+
+                                                /**
+ * тут вызов функции для записи в хеш
+ */
+
+                                                //valueTmpUpdateHashSumER[key]
+
+                                                /*let valueERTmp = _.cloneDeep(valueER);
+                                                valueERTmp.hashes.push(valueTmpHashSumER);
+                                                setValueER(valueERTmp);
+
+                                                setValueTmpHashSumER({ type: "", description: "" });
+                                                setButtonAddHashIsDisabled(true);*/
+
+                                                setValueTmpUpdateHashSumER({ num: -1, type: "", hash: "" });
+                                            }} 
+                                            disabled={buttonAddHashIsDisabled}
+                                        >добавить хеш</Button>
+                                    </Grid>
+                                </Grid>
 
                                 {(listHashes.length !== 0) ? 
-                                    <Grid container direction="row" key={`key_external_references_${key}_5`}>
+                                    <Grid container direction="row" key={`key_external_references_${key}_5`} className="mt-2">
                                         <Grid item md={12} className="pl-4 pr-4">
                                             <span><span className="text-muted">хеш суммы</span>:<ol>{listHashes}</ol></span>
                                         </Grid>
@@ -541,14 +636,6 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                             objectId: objectId }); 
                                     }}>
                                         <IconDeleteOutline style={{ color: red[400] }} />
-                                    </IconButton>
-                                    <IconButton aria-label="edit" onClick={()=>{ 
-                                        handlerDialogElementAdditionalThechnicalInfo({ 
-                                            actionType: "edit",
-                                            modalType: "granular_markings",
-                                            orderNumber: key,
-                                            objectId: objectId }); }}>
-                                        <IconEdit style={{ color: blue[400] }} />
                                     </IconButton>
                                 </React.Fragment>
                                 } />

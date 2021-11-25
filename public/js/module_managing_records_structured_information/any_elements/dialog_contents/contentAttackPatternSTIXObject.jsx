@@ -219,25 +219,24 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                     setAttackPatterElement(valueAPTmp);        
                 }
 
-                /*if(obj.actionType === "edit"){
+                if((obj.actionType === "save") || (obj.actionType === "update")){
+                    console.log("obj.modalType: ", obj.modalType, ", obj.actionType: ", obj.actionType, " !!!!");
+                    console.log(`num key: ${obj.orderNumber}`);
+                    console.log(obj.data);
 
-                }*/
+                    valueAPTmp.external_references[obj.orderNumber] = obj.data;
+                    setAttackPatterElement(valueAPTmp);        
+                }
             }
             
-            if(obj.modalType === "granular_markings") {
-                if(obj.actionType === "new"){
-                    if(!Array.isArray(valueAPTmp.granular_markings)){
-                        valueAPTmp.granular_markings = [];
-                    }
-
-                    valueAPTmp.granular_markings.push(obj.data);
-            
-                    setAttackPatterElement(valueAPTmp);  
+            if((obj.modalType === "granular_markings") && (obj.actionType === "new")) {
+                if(!Array.isArray(valueAPTmp.granular_markings)){
+                    valueAPTmp.granular_markings = [];
                 }
 
-                /*if(obj.actionType === "edit"){
-
-                }*/
+                valueAPTmp.granular_markings.push(obj.data);
+            
+                setAttackPatterElement(valueAPTmp);  
             }
             
             if(obj.modalType === "extensions") {
