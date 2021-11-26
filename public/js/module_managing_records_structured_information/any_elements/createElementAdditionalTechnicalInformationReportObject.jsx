@@ -15,8 +15,8 @@ import {
     Link,
     IconButton,
 } from "@material-ui/core";
-import IconCloseOutlined from "@material-ui/icons/CloseOutlined";
 import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
+import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import IconEdit from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -272,15 +272,14 @@ export default function CreateElementAdditionalTechnicalInformationReportObject(
         let  listExtensions = [];
         for(let k in reportInfo.extensions){
             listExtensions.push(<li key={`extensions_${k}`}>
-                {k}: {reportInfo.extensions[k]}
+                {k}: {reportInfo.extensions[k]}&nbsp;
                 <IconButton aria-label="delete-extensions-item" onClick={() => { 
                     handlerElementDelete({ 
                         itemType: "extensions", 
                         item: k, 
                         objectId: objectId,
                         orderNumber: -1 }); 
-                }}>
-                    <IconCloseOutlined style={{ color: red[400] }} />
+                }}><RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                 </IconButton>
             </li>);
         }

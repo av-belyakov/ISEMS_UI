@@ -97,7 +97,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handlerDeleteChipFromListGroupAccessToReport = this.handlerDeleteChipFromListGroupAccessToReport.bind(this);
         this.handlerChosenComputerThreatType = this.handlerChosenComputerThreatType.bind(this);
         this.handlerChosenDecisionsMadeComputerThreat = this.handlerChosenDecisionsMadeComputerThreat.bind(this);
-        this.handlerChangeCurrentObjectIdBreadcrumbsObjects = this.handlerChangeCurrentObjectIdBreadcrumbsObjects.bind(this);
         this.handlerExternalReferencesButtonSave = this.handlerExternalReferencesButtonSave.bind(this);
 
         this.handlerEvents.call(this);
@@ -237,10 +236,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
                 break;
             case "isems-mrsi ui request: send search request, get STIX object for id":
-
-                console.log("__--__ send search request, get STIX object for id __--__");
-                console.log(data);    
-
                 if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
                     break;
                 }
@@ -253,11 +248,12 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 for(let obj of data.information.additional_parameters.transmitted_data){
                     listObjectInfoTmp[obj.id] = obj;
                 }
+
                 this.setState({ listObjectInfo: listObjectInfoTmp });
 
-                console.log("|||||||");
-                console.log(listObjectInfoTmp);
-                console.log(":::::::::");
+                //console.log("|||||||");
+                //console.log(listObjectInfoTmp);
+                //console.log(":::::::::");
 
                 break;
             }
@@ -270,18 +266,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.modalClose();
     }
 
-    //обработчик выбора текущего объекта из общего пути объектов (строка вида "id--<uuid>/id--<uuid>/id--<uuid>")
-    handlerChangeCurrentObjectIdBreadcrumbsObjects(objectId){
-        console.log("func 'handlerChangeCurrentObjectIdBreadcrumbsObjects', START...");
-        console.log(`new ID: '${objectId}''`);
-
-        this.setState({ currentAdditionalIdSTIXObject: objectId });
-    }
-
     //обработчик выбора группы из списка непривилегированных групп 
     handlerOnChangeAccessGroupToReport(data){
         let listGroupAccessToReport = this.state.listGroupAccessToReport.slice(),
             groupName = data.target.value;
+
         for(let item of listGroupAccessToReport){
             if((groupName === item.group) || (groupName === "select_group")){
                 return;
@@ -294,7 +283,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             group: groupName, 
             title: `Пользователь: текущий, Время: ${helpers.getDate(+new Date)}` 
         });
-        this.setState({ listGroupAccessToReport: listGroupAccessToReport });
+
+        this.setState({ 
+            listGroupAccessToReport: listGroupAccessToReport,
+            currentGroupAccessToReport: "select_group",
+        });
 
         this.props.socketIo.emit("isems-mrsi ui request: allow the group to access the report", { arguments: {
             reportId: this.props.showReportId,
@@ -645,6 +638,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         }
 
         let reportInfo = this.state.listObjectInfo[this.props.showReportId];
+
+        //console.log(reportInfo);
+
         let published = () => {
             if(Date.parse(reportInfo.published) <= 0){
                 return (<Col md={6} className="text-end">
@@ -848,7 +844,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
                 handelrDialogClose={this.handelrDialogClose}
                 handlerDialogButton={this.handlerDialogButton}
-                //handlerChangeCurrentObjectId={this.handlerChangeCurrentObjectIdBreadcrumbsObjects}
                 handlerNewAdditionalSTIXObject={this.handlerNewAdditionalSTIXObject}
                 isNotDisabled={this.props.userPermissions.editing_information.status} />
 

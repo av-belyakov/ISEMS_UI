@@ -113,7 +113,8 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         [ buttonAddSelectorIsDisabled, setButtonAddSelectorIsDisabled ] = useState(true),
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
         [ valueTmpHashSumER, setValueTmpHashSumER ] = useState({ type: "", description: "" }),
-        [ valueTmpUpdateHashSumER, setValueTmpUpdateHashSumER ] = useState({ num: -1, type: "", hash: "" }),
+        [ valueTmpUpdateHashSumER, setValueTmpUpdateHashSumER ] = useState({}),
+        //[ valueTmpUpdateHashSumER, setValueTmpUpdateHashSumER ] = useState({ num: -1, type: "", hash: "" }),
         [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
         [ valueTmpSelector, setValueTmpSelector ] = useState(""),
         [ valueER, setValueER ] = useState(patternValueER),
@@ -328,8 +329,27 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
 
                         if((item.hashes !== null) && (typeof item.hashes !== "undefined")){
                             for(let k in item.hashes){
-                                listHashes.push(<li key={`hash_${item.hashes[k]}`}>{k}: {item.hashes[k]}</li>);
+                                listHashes.push(<li key={`hash_${item.hashes[k]}`}>
+                                    {k}: {item.hashes[k]}&nbsp;
+                                    <IconButton aria-label="delete-ext_ref-item" onClick={() => { 
+                                        handlerDialogElementAdditionalThechnicalInfo({ 
+                                            actionType: "hashes_delete",
+                                            modalType: "external_references", 
+                                            objectId: objectId,
+                                            orderNumber: key,
+                                            hashName: k,
+                                        }); 
+                                    }}><RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                    </IconButton>
+                                </li>);
                             }    
+                        }
+                        
+                        let buttonIsDisabled = true;
+                        if((valueTmpUpdateHashSumER[key] !== null) && (typeof valueTmpUpdateHashSumER[key] !== "undefined")){
+                            if((valueTmpUpdateHashSumER[key].type.length > 0) && (valueTmpUpdateHashSumER[key].hash.length > 0)){
+                                buttonIsDisabled = false;
+                            }
                         }
 
                         return (<Card className={classes.customPaper} key={`key_external_references_${key}_fragment`}>
@@ -341,20 +361,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                     }}>
                                         <IconDeleteOutline style={{ color: red[400] }} />
                                     </IconButton>
-                                    <IconButton aria-label="save" onClick={()=>{ 
-                                        handlerDialogElementAdditionalThechnicalInfo({ 
-                                            actionType: "save",
-                                            modalType: "external_references", 
-                                            objectId: objectId,
-                                            sourceName: sourceName,
-                                            orderNumber: key,
-                                            data: item,
-                                        }); 
-                                    }}>
-                                        <IconSave style={{ color: green[400] }} />
-                                    </IconButton>
-                                </React.Fragment>
-                                } />
+                                </React.Fragment>} />
                             <CardContent>
                                 {((typeof item.external_id === "undefined") || (item.external_id === null)) ? 
                                     "": 
@@ -411,16 +418,16 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                         <FormControl className={classes.formControlTypeHashRE}>
                                             <InputLabel id={`label-hash-type-change_${key}`}>тип хеша</InputLabel>
                                             <Select
-                                                labelId={`chose-hash-select-label_${key}`}
-                                                value={(valueTmpUpdateHashSumER.num === key)? valueTmpUpdateHashSumER.type: ""}
+                                                key={`chose-hash-select-label_${key}`}
+                                                value={((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined"))? "": valueTmpUpdateHashSumER[key].type}
                                                 fullWidth={true}
                                                 onChange={(e) => {
-                                                    let tmp = Object.assign(valueTmpUpdateHashSumER);
-                                                    tmp.num = key;
-                                                    tmp.type = e.target.value;
-
-                                                    console.log("TEST select change");
-                                                    console.log(tmp);
+                                                    let tmp = _.cloneDeep(valueTmpUpdateHashSumER);
+                                                    if((tmp[key] === null) || (typeof tmp[key] === "undefined")){
+                                                        tmp[key] = { type: e.target.value, hash: "" };
+                                                    } else {
+                                                        tmp[key].type = e.target.value;
+                                                    }
 
                                                     setValueTmpUpdateHashSumER(tmp);
                                                 }}>
@@ -435,11 +442,14 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                             id="external-references-hash"
                                             label="хеш-сумма"
                                             fullWidth
-                                            value={(valueTmpUpdateHashSumER.num === key)? valueTmpUpdateHashSumER.hash: ""}
+                                            value={((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined"))? "": valueTmpUpdateHashSumER[key].hash}
                                             onChange={(e) => {
-                                                let tmp = Object.assign(valueTmpUpdateHashSumER);
-                                                tmp.num = key;
-                                                tmp.hash = e.target.value;
+                                                let tmp = _.cloneDeep(valueTmpUpdateHashSumER);
+                                                if((tmp[key] === null) || (typeof tmp[key] === "undefined")){
+                                                    tmp[key] = { type: "", hash: e.target.value };
+                                                } else {
+                                                    tmp[key].hash = e.target.value;
+                                                }
 
                                                 setValueTmpUpdateHashSumER(tmp);
                                             }}
@@ -450,6 +460,43 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                             onClick={() => {
                                                 console.log("BUTTON ADD HASH");
                                                 console.log(`TYPE: ${valueTmpUpdateHashSumER[key].type}, HASH: ${valueTmpUpdateHashSumER[key].hash}`);
+
+                                                if((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined")){
+                                                    console.log("valueTmpUpdateHashSumER[key] is undefined");
+                                                    
+                                                    return;
+                                                }
+                    
+                                                handlerDialogElementAdditionalThechnicalInfo({ 
+                                                    actionType: "hashes_update",
+                                                    modalType: "external_references", 
+                                                    objectId: objectId,
+                                                    orderNumber: key,
+                                                    data: valueTmpUpdateHashSumER[key],
+                                                });
+
+                                                /*
+                                                let valueERTmp = _.cloneDeep(valueER);
+
+                                                if(typeof valueERTmp.hashes[key] === "undefined"){
+                                                    console.log("111111");
+
+                                                    valueERTmp.hashes.push({ type: valueTmpUpdateHashSumER[key].type, description: valueTmpUpdateHashSumER[key].hash });
+                                                } else {
+                                                    console.log("222222");
+
+                                                    valueERTmp.hashes[key]({ type: valueTmpUpdateHashSumER[key].type, description: valueTmpUpdateHashSumER[key].hash });
+                                                }
+
+                                                console.log("AFTER ===");
+                                                console.log(valueERTmp);
+
+                                                setValueER(valueERTmp);
+                                                */
+
+                                                let tmp = _.cloneDeep(valueTmpUpdateHashSumER);
+                                                tmp[key] = { type: "", hash: "" };
+                                                setValueTmpUpdateHashSumER(tmp);
 
                                                 /**
  * тут вызов функции для записи в хеш
@@ -466,7 +513,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
 
                                                 setValueTmpUpdateHashSumER({ num: -1, type: "", hash: "" });
                                             }} 
-                                            disabled={buttonAddHashIsDisabled}
+                                            disabled={buttonIsDisabled}
                                         >добавить хеш</Button>
                                     </Grid>
                                 </Grid>

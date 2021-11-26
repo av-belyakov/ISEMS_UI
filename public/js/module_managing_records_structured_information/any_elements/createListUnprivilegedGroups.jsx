@@ -7,9 +7,6 @@ import PropTypes from "prop-types";
 export default function CreateListUnprivilegedGroups(props){
     let { groupList, currentGroup, handlerChosen, isNotDisabled } = props;
 
-    console.log("func 'CreateListUnprivilegedGroups'");
-    console.log(groupList);
-
     return (<Form.Group>
         <Form.Control 
             disabled={!isNotDisabled}
@@ -26,14 +23,12 @@ export default function CreateListUnprivilegedGroups(props){
                         isDisabled = true;
                     }
                         
-                    return (
-                        <option 
-                            key={`key_group_${num}_${item.groupName}`} 
-                            value={item.groupName} 
-                            disabled={isDisabled}>
-                            {item.groupName}
-                        </option>
-                    );
+                    return (<option 
+                        key={`key_group_${num}_${item.groupName}`} 
+                        value={item.groupName} 
+                        disabled={isDisabled}>
+                        {item.groupName}
+                    </option>);
                 });
             })()}
         </Form.Control>

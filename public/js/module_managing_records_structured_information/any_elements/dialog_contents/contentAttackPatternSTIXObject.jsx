@@ -10,8 +10,6 @@ import {
     TextField,
     IconButton,
 } from "@material-ui/core";
-import { teal, grey } from "@material-ui/core/colors";
-import { makeStyles } from "@material-ui/core/styles";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { red } from "@material-ui/core/colors";
 import TokenInput from "react-customize-token-input";
@@ -19,42 +17,6 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
-
-//import { nextTick } from "async";
-
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: "fixed",
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    appBreadcrumbs: {
-        position: "fixed",
-        top: "60px",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        paddingLeft: theme.spacing(4),
-    },
-    buttonSave: {
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    title: {
-        marginLeft: theme.spacing(2),
-        flex: 1,
-    },
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-    columeLeft: {
-        alignContent: "text-right",
-        marginRight: theme.spacing(2),
-    },
-}));
 
 export default function CreateDialogContentAttackPatternSTIXObject(props){
     let { 
@@ -199,14 +161,11 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
              
         },
         handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-            console.log("func 'handlerDialogElementAdditionalThechnicalInfo', START...");
-            console.log(obj);
-            console.log("-------------");
+            //console.log("func 'handlerDialogElementAdditionalThechnicalInfo', START...");
+            //console.log(obj);
+            //console.log("-------------");
 
             let valueAPTmp = _.cloneDeep(attackPatterElement);
-            console.log("--- valueAPTmp ---");
-            console.log(valueAPTmp);
-            console.log("++++++++++++++");
 
             if(obj.modalType === "external_references"){
                 if(obj.actionType === "new"){
@@ -219,13 +178,23 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                     setAttackPatterElement(valueAPTmp);        
                 }
 
-                if((obj.actionType === "save") || (obj.actionType === "update")){
-                    console.log("obj.modalType: ", obj.modalType, ", obj.actionType: ", obj.actionType, " !!!!");
-                    console.log(`num key: ${obj.orderNumber}`);
-                    console.log(obj.data);
-
+                if(obj.actionType === "update"){
                     valueAPTmp.external_references[obj.orderNumber] = obj.data;
                     setAttackPatterElement(valueAPTmp);        
+                }
+
+                if(obj.actionType === "hashes_update"){
+                    if((valueAPTmp.external_references[obj.orderNumber].hashes === null) || (typeof valueAPTmp.external_references[obj.orderNumber].hashes === "undefined")){
+                        valueAPTmp.external_references[obj.orderNumber].hashes = {};
+                    }
+
+                    valueAPTmp.external_references[obj.orderNumber].hashes[obj.data.type] = obj.data.hash;
+                    setAttackPatterElement(valueAPTmp);      
+                }
+
+                if(obj.actionType === "hashes_delete"){
+                    delete valueAPTmp.external_references[obj.orderNumber].hashes[obj.hashName];
+                    setAttackPatterElement(valueAPTmp);  
                 }
             }
             
@@ -251,7 +220,45 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         },
         handlerSave = () => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
-            valueAPTmp.modified = (new Date).toISOString();
+
+            /**
+let dateNow = obj.date,
+                currentTimeZoneOffsetInHours = new Date(obj.date).getTimezoneOffset() / 60;
+
+            if(currentTimeZoneOffsetInHours < 0){
+                dateNow = +obj.date - ((currentTimeZoneOffsetInHours * -1) * 360000);
+            } else if(currentTimeZoneOffsetInHours > 0) {
+                dateNow = +obj.date + (currentTimeZoneOffsetInHours * 360000);
+            }
+
+            let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+            listObjectInfoTmp[this.props.showReportId].published = new Date(dateNow).toISOString();
+ */
+
+            let dateNow = new Date(),
+                dn = "";
+            let currentTimeZoneOffsetInHours = dateNow.getTimezoneOffset() / 60;
+            if(currentTimeZoneOffsetInHours < 0){
+                dn = +dateNow - ((currentTimeZoneOffsetInHours * -1) * 360000);
+
+                console.log("1111111");
+            } else if(currentTimeZoneOffsetInHours > 0) {
+                dn = +dateNow + (currentTimeZoneOffsetInHours * 360000);
+            
+                console.log("2222222");
+            }
+
+            /**
+ * Разобраться с датой модификации объекта Attack-Pattern
+ * и заодно с датой модификации объекта Report 
+ */
+
+            console.log("currentTimeZoneOffsetInHours ", currentTimeZoneOffsetInHours);
+            console.log("IIIIII:", +dateNow);
+            console.log("EEEEEE:", dn);
+            console.log("YYYYYY:", new Date(dn).toISOString());
+
+            valueAPTmp.modified = new Date(dateNow).toISOString();
             valueAPTmp.lang = "RU";
 
             setAttackPatterElement(valueAPTmp);
