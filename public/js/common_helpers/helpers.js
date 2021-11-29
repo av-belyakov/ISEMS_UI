@@ -28,6 +28,21 @@ let helpers = {
         return (new Date((+dateUnix - x)).toISOString().slice(0, -1).replace(/T/, " ").replace(/\..+/, ""));
     },
 
+    //возвращает строковое представление времени в формате ISO с учетом локального часового пояса
+    getToISODatetime(){
+        let dn = "";
+        let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+        if(currentTimeZoneOffsetInHours < 0){
+            dn = Date.now() + ((currentTimeZoneOffsetInHours * -1) * 3600000);
+        } else if(currentTimeZoneOffsetInHours > 0) {
+            dn = Date.now() - (currentTimeZoneOffsetInHours * 3600000);
+        } else {
+            dn = Date.now();
+        }
+
+        return new Date(dn).toISOString();
+    },
+
     //конвертирование даты и времени из строки формата "2017-02-20T01:34:11Z" в объект Date
     convertDateFromString(dateString, { monthDescription = "numeric", dayDescription = "numeric" }){
         let x = -(new Date()).getTimezoneOffset() * 60000;

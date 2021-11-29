@@ -1,12 +1,15 @@
 "use strict";
 
+const debug = require("debug")("handlerAny");
+const uuid = require("uuid");
+
 const models = require("../../../controllers/models");
 const MyError = require("../../../libs/helpers/myError");
 const showNotify = require("../../../libs/showNotify");
-//const helpersFunc = require("../../../libs/helpers/helpersFunc");
+const helpersFunc = require("../../../libs/helpers/helpersFunc");
 const getSessionId = require("../../../libs/helpers/getSessionId");
-//const createUniqID = require("../../../libs/helpers/createUniqID");
-//const globalObject = require("../../../configure/globalObject");
+const createUniqID = require("../../../libs/helpers/createUniqID");
+const globalObject = require("../../../configure/globalObject");
 const writeLogFile = require("../../../libs/writeLogFile");
 //const localHelpersFunc = require("./helpersFunc");
 const mongodbQueryProcessor = require("../../../middleware/mongodbQueryProcessor");
@@ -150,6 +153,72 @@ module.exports.forbidGroupAccessReport = function(socketIo, data){
                 }}, (err) => {
                     if (err) reject(err);
                     else resolve();
+                });
+            });
+        }).catch((err) => {
+            if ((err.name === "management auth") || (err.name === "management MRSICT")) {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
+};
+
+/**
+ * Обработчик запроса для вставки, сформированных UI STIX объектов
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
+module.exports.insertSTIXObject = function(socketIo, data){
+    let funcName = " (func 'insertSTIXObject')";
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return authData.document.userName;
+        }).then((userName) => {          
+            return new Promise((resolve, reject) => {
+                process.nextTick(() => {
+                    if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                        return reject(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
+                    }
+
+                    let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
+                    if (conn !== null) {
+
+                        debug(`func '${funcName}'`);
+                        debug(`user name: '${userName}'`);
+                        debug(data);
+                        //{ "commonpropertiesobjectstix.id":  "attack-pattern--3cd10f23-dc4a-4db0-82d7-cc345743d481" }
+
+                        for(let i = 0; i < data.length; i++){
+                            data[i].modified = helpersFunc.getToISODatetime();
+                        }
+
+                        conn.sendMessage({
+                            task_id: createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`),
+                            section: "handling stix object",
+                            user_name_generated_task: userName,
+                            request_details: data.arguments, 
+                        });
+                    }
+
+                    resolve();
                 });
             });
         }).catch((err) => {

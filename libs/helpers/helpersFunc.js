@@ -124,3 +124,18 @@ module.exports.sendBroadcastSocketIo = (e, msg) => {
         socketIo.emit(e, msg);
     }
 };
+
+//возвращает строковое представление времени в формате ISO с учетом локального часового пояса
+module.exports.getToISODatetime = () => {
+    let dn = "";
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    if(currentTimeZoneOffsetInHours < 0){
+        dn = Date.now() + ((currentTimeZoneOffsetInHours * -1) * 3600000);
+    } else if(currentTimeZoneOffsetInHours > 0) {
+        dn = Date.now() - (currentTimeZoneOffsetInHours * 3600000);
+    } else {
+        dn = Date.now();
+    }
+
+    return new Date(dn).toISOString();
+};

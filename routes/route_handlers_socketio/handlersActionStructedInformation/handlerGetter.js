@@ -1,6 +1,7 @@
 "use strict";
 
 const debug = require("debug")("hadcsihg");
+const uuid = require("uuid");
 
 const models = require("../../../controllers/models");
 const MyError = require("../../../libs/helpers/myError");
@@ -46,7 +47,7 @@ module.exports.getCountOpenReports = function(socketIo, data){
 
                     let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                     if (conn !== null) {
-                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}_open_reports`);
+                        let taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}_open_reports`);
 
                         globalObject.setData("tasks", taskID, {
                             eventName: "doc type 'reports' status 'open'",
@@ -137,7 +138,7 @@ module.exports.getCountPublishedReports = function(socketIo, data){
 
                     let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                     if (conn !== null) {
-                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}_published_reports`);
+                        let taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}_published_reports`);
 
                         globalObject.setData("tasks", taskID, {
                             eventName: "get count doc type 'reports' status 'published'",
@@ -227,7 +228,7 @@ module.exports.getCountStatusesDecisionsMadeComputerThreats = function(socketIo,
 
                     let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                     if (conn !== null) {
-                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}_decisions_made_computer_threats`);
+                        let taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}_decisions_made_computer_threats`);
 
                         globalObject.setData("tasks", taskID, {
                             eventName: "get count doc statuses decisions made computer threats",
@@ -334,7 +335,7 @@ module.exports.getListGroupsWhichReportAvailable = function(socketIo, data){
                         section: section,
                         eventForWidgets: false,
                         information: {
-                            task_id: createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}_groups_which_report_available`),
+                            task_id: createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}_groups_which_report_available`),
                             section: section,
                             additional_parameters: { list_groups_which_report_available: queryResult},
                         },
@@ -401,7 +402,7 @@ module.exports.getListTypesComputerThreat = function(socketIo, data){
 
                     let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                     if (conn !== null) {
-                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}_types_computer_threat`);
+                        let taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}_types_computer_threat`);
 
                         globalObject.setData("tasks", taskID, {
                             eventName: "list types computer threat",
@@ -488,7 +489,7 @@ module.exports.getListTypesDecisionsMadeComputerThreat = function(socketIo, data
 
                     let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                     if (conn !== null) {
-                        let taskID = createUniqID.getMD5(`sid_${result.sessionId}_${(+new Date).toString(16)}_types_decisions_made_computer_threat`);
+                        let taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}_types_decisions_made_computer_threat`);
 
                         globalObject.setData("tasks", taskID, {
                             eventName: "list types decisions made computer threat",

@@ -24,6 +24,7 @@ module.exports.addHandlers = function(socketIo) {
         "isems-mrsi ui request: send search request, get STIX object for id": handlerSender.sendSearchRequestGetSTIXObjectForId,
         "isems-mrsi ui request: allow the group to access the report": handlerAny.allowGroupAccessReport,
         "isems-mrsi ui request: forbid the group to access the report": handlerAny.forbidGroupAccessReport,
+        "isems-mrsi ui request: insert STIX object": handlerAny.insertSTIXObject,
     };
 
     for (let e in handlers) {

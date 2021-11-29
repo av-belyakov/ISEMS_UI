@@ -22,6 +22,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
     let { 
         listObjectInfo, 
         currentIdSTIXObject,
+        socketIo,
         handlerDialog,
         handelrDialogClose,
         isNotDisabled,
@@ -220,48 +221,52 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         },
         handlerSave = () => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
-
-            /**
-let dateNow = obj.date,
-                currentTimeZoneOffsetInHours = new Date(obj.date).getTimezoneOffset() / 60;
-
-            if(currentTimeZoneOffsetInHours < 0){
-                dateNow = +obj.date - ((currentTimeZoneOffsetInHours * -1) * 360000);
-            } else if(currentTimeZoneOffsetInHours > 0) {
-                dateNow = +obj.date + (currentTimeZoneOffsetInHours * 360000);
-            }
-
-            let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
-            listObjectInfoTmp[this.props.showReportId].published = new Date(dateNow).toISOString();
- */
-
-            let dateNow = new Date(),
-                dn = "";
-            let currentTimeZoneOffsetInHours = dateNow.getTimezoneOffset() / 60;
-            if(currentTimeZoneOffsetInHours < 0){
-                dn = +dateNow - ((currentTimeZoneOffsetInHours * -1) * 360000);
-
-                console.log("1111111");
-            } else if(currentTimeZoneOffsetInHours > 0) {
-                dn = +dateNow + (currentTimeZoneOffsetInHours * 360000);
-            
-                console.log("2222222");
-            }
-
-            /**
- * Разобраться с датой модификации объекта Attack-Pattern
- * и заодно с датой модификации объекта Report 
- */
-
-            console.log("currentTimeZoneOffsetInHours ", currentTimeZoneOffsetInHours);
-            console.log("IIIIII:", +dateNow);
-            console.log("EEEEEE:", dn);
-            console.log("YYYYYY:", new Date(dn).toISOString());
-
-            valueAPTmp.modified = new Date(dateNow).toISOString();
+            //valueAPTmp.modified = helpers.getToISODatetime();
             valueAPTmp.lang = "RU";
 
+            
+            if(valueAPTmp.labels === null){
+                valueAPTmp.labels = [];
+            }
+
+            if(valueAPTmp.external_references === null){
+                valueAPTmp.external_references = [];
+            }
+
+            if(valueAPTmp.object_marking_refs === null){
+                valueAPTmp.object_marking_refs = [];
+            }
+
+            if(valueAPTmp.granular_markings === null){
+                valueAPTmp.granular_markings = [];
+            }
+
+            if(valueAPTmp.extensions === null){
+                valueAPTmp.extensions = {};
+            }
+
+            if(valueAPTmp.aliases === null){
+                valueAPTmp.aliases = [];
+            }
+
+            if(valueAPTmp.kill_chain_phases === null){
+                valueAPTmp.kill_chain_phases = [];
+            }
+            
+
             setAttackPatterElement(valueAPTmp);
+
+            //ObjectMarkingRefs  []string       `json:"object_marking_refs" bson:"object_marking_refs"`
+            //ObjectMarkingRefs - определяет список ID ссылающиеся на объект "marking-definition", по терминалогии STIX, в котором содержатся значения применяющиеся к этому объекту
+
+            //socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ valueAPTmp ] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [{
+                type: valueAPTmp.type,
+                id: valueAPTmp.id,
+                spec_version: valueAPTmp.spec_version,
+                name: valueAPTmp.name,
+                description: valueAPTmp.description,
+            }] });
 
             handlerDialog(valueAPTmp);
         };
@@ -315,6 +320,7 @@ let dateNow = obj.date,
 CreateDialogContentAttackPatternSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
+    socketIo: PropTypes.object.isRequired,
     handlerDialog: PropTypes.func.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,

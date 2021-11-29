@@ -81,7 +81,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             objectDialogElementAdditionalThechnicalInfo: {},
         };
 
-        this.handleSave = this.handleSave.bind(this);
         this.modalClose = this.modalClose.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handlePublished = this.handlePublished.bind(this);
@@ -562,18 +561,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     }
 
-    handleSave(){
-
-        console.log("func 'handleSave', START...\n'BUTTON SAVE'");
-        console.log(this.state.listObjectInfo);
-
-        /**
-         * при сохранении новой информации об объекте типа Доклад, нужно изменить дату в свойстве modified
-         * (new Date).toISOString() 
-         */
-
-    }
-
     handelrDialogClose(){
         this.setState({ 
             currentAdditionalIdSTIXObject: "",
@@ -588,6 +575,13 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     handlerReportSave(){
         console.log("func 'handlerReportSave', START... BUTTON SAVE");
+
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+        listObjectInfoTmp[this.props.showReportId].modified = helpers.getToISODatetime();
+
+        this.setState({ listObjectInfo: listObjectInfoTmp });
+
+        console.log("Далее отправляем объект через WebSocket и закрываем окно");
     }
 
     showDialogElementAdditionalThechnicalInfo(obj){
@@ -633,7 +627,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     title=""
                     nameDialogButton="сохранить"
                     handelrDialogClose={this.modalClose}
-                    handlerDialogButton={this.handleSave} />
+                    handlerDialogButton={this.handlerReportSave} />
             </Dialog>);
         }
 
@@ -839,11 +833,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             </Dialog>
 
             <CreateAnyModalWindowSTIXObject
+                socketIo={this.props.socketIo}
                 listObjectInfo={this.state.listObjectInfo}
                 showDialogElement={this.state.showDialogElementAdditionalSTIXObject}
                 currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
                 handelrDialogClose={this.handelrDialogClose}
-                handlerDialogButton={this.handlerDialogButton}
                 handlerNewAdditionalSTIXObject={this.handlerNewAdditionalSTIXObject}
                 isNotDisabled={this.props.userPermissions.editing_information.status} />
 
@@ -936,11 +930,12 @@ GetListObjectRefs.propTypes = {
 };
 
 function CreateAnyModalWindowSTIXObject(props){    
-    let { listObjectInfo,
+    let { 
+        socketIo,
+        listObjectInfo,
         showDialogElement,
         currentAdditionalIdSTIXObject, 
         handelrDialogClose,
-        handlerDialogButton,
         handlerNewAdditionalSTIXObject,
         isNotDisabled, 
     } = props;
@@ -948,8 +943,6 @@ function CreateAnyModalWindowSTIXObject(props){
     let idSTIXObject = currentAdditionalIdSTIXObject;
     let type = currentAdditionalIdSTIXObject.split("--");
     let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-    //let [ currentSTIXObj, setCurrentSTIXObj ] = React.useState({ actionType: "update", data: {} });
-    let [ currentSTIXObj, setCurrentSTIXObj ] = React.useState({});
 
     if(typeof objectElem !== "undefined" ){
         idSTIXObject = type[0];
@@ -1093,28 +1086,7 @@ function CreateAnyModalWindowSTIXObject(props){
 
     let MyModule = getMyModule(idSTIXObject);
 
-    const handlerActionsModifyObject = ({ actionType = "update", data = null }) => {
-        console.log("func 'handlerActionsModifyObject', START");
-        console.group();
-        console.log("---- received ----");
-        console.log(data);
-        console.groupEnd();
-
-        if(actionType === "update"){
-            setCurrentSTIXObj(data);
-
-            return;
-        }
-
-    };
-
     const handlerDialogButtonSaveOrAdd = (data) => {
-        console.log("func 'handlerDialogButtonSaveOrAdd', START...");
-        console.group("!!! __===___===__+++ !!!");
-        console.log(data);
-        console.groupEnd();
-        console.group("@@@ __===___===__+++ @@@");
-
         handlerNewAdditionalSTIXObject(data);
 
         handelrDialogClose();
@@ -1140,6 +1112,7 @@ function CreateAnyModalWindowSTIXObject(props){
                 <MyModule
                     listObjectInfo={listObjectInfo}
                     currentIdSTIXObject={currentAdditionalIdSTIXObject} 
+                    socketIo={socketIo}
                     handlerDialog={handlerDialogButtonSaveOrAdd}
                     handelrDialogClose={handelrDialogClose}
                     isNotDisabled={isNotDisabled}
@@ -1150,11 +1123,11 @@ function CreateAnyModalWindowSTIXObject(props){
 }
 
 CreateAnyModalWindowSTIXObject.propTypes = {
+    socketIo: PropTypes.object.isRequired,
     listObjectInfo: PropTypes.object.isRequired,
     showDialogElement: PropTypes.bool.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
-    handlerDialogButton: PropTypes.func.isRequired,
     handlerNewAdditionalSTIXObject: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
