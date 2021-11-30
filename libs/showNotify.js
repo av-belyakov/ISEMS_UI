@@ -12,10 +12,13 @@ const writeLogFile = require("./writeLogFile");
 module.exports = function(settings) {
     let { socketIo = null, type = "danger", message = "сообщение не определено" } = settings;
 
-    if (socketIo === null) return writeLogFile.writeLog("\tError: the 'socketIo' variable is not defined");
+    if (socketIo === null){
+        return writeLogFile.writeLog("\tError: the 'socketIo' variable is not defined");
+    }
+
     socketIo.emit("notify information", {
         notify: JSON.stringify({
-            id: getMD5(`${+new Date()}_${randomInteger(1,1000)}`),
+            id: getMD5(`${+new Date()}_${randomInteger(1, 1000)}`),
             type: type,
             message: message,
         })

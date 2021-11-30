@@ -5,62 +5,56 @@ import PropTypes from "prop-types";
 import { Snackbar } from "material-ui-core";
 import { Alert } from "material-ui-lab";
 
-class DrawingAlertMessage extends React.Component {
-    constructor(props){
-        super(props);
+export default function DrawingAlertMessage(props) {
+    let { show, onHide, notiyMsg } = props;
+    let level = (notiyMsg.type === "danger")? "error": notiyMsg.type;
 
-        this.state = {
-            showSnackbar: true
-        };
+    const titleObj = {
+        "success": {
+            title: "Успешно выполненное действие.",
+            severity: "success",
+        },
+        "info": {
+            title: "Информация.",
+            severity: "info",
+        },
+        "warning": {
+            title: "Внимание!",
+            severity: "warning",
+        },
+        "error": {
+            title: "Ошибка!!!",
+            severity: "error",
+        },
+    };
+            
+    const handleClose = (event, reason) => {
+        onHide();
+    };
 
-        this.titleObj = {
-            "success": {
-                title: "Успешно выполненное действие.",
-                severity: "success",
-            },
-            "info": {
-                title: "Информация.",
-                severity: "info",
-            },
-            "warning": {
-                title: "Внимание!",
-                severity: "warning",
-            },
-            "error": {
-                title: "Ошибка!!!",
-                severity: "error",
-            },
-        };
+    console.log("DrawingAlertMessage show:", show);
+    console.log("level: ", level);
+    console.log(notiyMsg);
+
+    if(typeof titleObj[level] === "undefined"){
+        return null;
     }
 
-    handleClose(){
-        this.setState({ showSnackbar: false });
-    }
-
-    render(){
-        let level = (this.props.notiyMsg.type === "danger")? "error": this.props.notiyMsg.type;
-
-        if(typeof this.titleObj[level] === "undefined"){
-            return null;
-        }
-
-        return (
-            <Snackbar 
-                open={this.state.showSnackbar} 
-                onClose={this.handleClose.bind(this)} 
-                autoHideDuration={9000} 
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}>
-                <Alert onClose={this.handleClose.bind(this)} severity={this.titleObj[level].severity}>
-                    {this.props.notiyMsg.message}
-                </Alert>
-            </Snackbar>
-        );
-    }
-}
+    return (<Snackbar 
+        open={show}
+        onClose={handleClose} 
+        autoHideDuration={9000} 
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+        <Alert onClose={handleClose} severity={titleObj[level].severity}>
+            {notiyMsg.message}
+        </Alert>
+    </Snackbar>);
+}    
 
 DrawingAlertMessage.propTypes = {
-    socketIo: PropTypes.object.isRequired,
+    show: PropTypes.bool.isRequired,
+    onHide: PropTypes.func.isRequired,
     notiyMsg: PropTypes.object.isRequired,
 };
 
-export { DrawingAlertMessage };
+

@@ -276,12 +276,23 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
             debug("--- MESSAGE from module ISEMS-MRSICT ---");
             debug(msg);
         }).on("document message", (msg) => {
-            debug("--- DOCUMENT MESSAGE from module ISEMS-MRSICT ---");
-            debug(msg);
+            //debug("--- DOCUMENT MESSAGE from module ISEMS-MRSICT ---");
+            //debug(msg);
 
+            //вывод информационного сообщения
             if(!msg.is_successful){
+                
+                debug("Received NOTIFY Message");
+                debug(msg.information_message);
+            
+                showNotify({
+                    socketIo: socketIo,
+                    type: msg.information_message.msg_type,
+                    message: `МОДУЛЬ УПРАВЛЕНИЯ СТРУКТУРИРОВАННОЙ ИНФОРМАЦИЕЙ (${msg.information_message.msg})`,
+                });
+
                 return;
-            }
+            }            
 
             if (globalObject.hasData("tasks", msg.task_id)) {
                 let taskInfo = globalObject.getData("tasks", msg.task_id);
@@ -306,26 +317,11 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
                     eventForWidgets: taskInfo.eventForWidgets,
                     information: msg,
                 })) {
-
-                    debug("2222222");
-
                     helpersFunc.sendBroadcastSocketIo("isems-mrsi response ui", msg);
                 }
             } else {
-
-                debug("33333");
-
                 helpersFunc.sendBroadcastSocketIo("isems-mrsi response ui", msg);
             }
-
-            //вывод информационного сообщения
-            if(!msg.is_successful){
-                showNotify({
-                    socketIo: socketIo,
-                    type: msg.information_message.msg_type,
-                    message: `МОДУЛЬ УПРАВЛЕНИЯ СТРУКТУРИРОВАННОЙ ИНФОРМАЦИЕЙ (${msg.information_message.msg})`,
-                });
-            }            
         }).on("binary message", (msg) => {
             debug("--- BINARY MESSAGE from module ISEMS-MRSICT ---");
             debug(msg);

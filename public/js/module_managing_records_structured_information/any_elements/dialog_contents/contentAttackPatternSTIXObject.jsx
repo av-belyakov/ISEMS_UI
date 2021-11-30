@@ -260,13 +260,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             //ObjectMarkingRefs - определяет список ID ссылающиеся на объект "marking-definition", по терминалогии STIX, в котором содержатся значения применяющиеся к этому объекту
 
             //socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ valueAPTmp ] });
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [{
-                type: valueAPTmp.type,
-                id: valueAPTmp.id,
-                spec_version: valueAPTmp.spec_version,
-                name: valueAPTmp.name,
-                description: valueAPTmp.description,
-            }] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [valueAPTmp] });
 
             handlerDialog(valueAPTmp);
         };
@@ -276,6 +270,11 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             <Grid item container md={12}>Поиск информации об STIX объекте типа Шаблон атаки (Attack Pattern DO STIX)</Grid>
         </Grid>);
     }
+
+    /**
+     * Надо сделать область для вывода ИСТОРИИ ИЗМЕНЕНИЙ и ссылки на объекты Report с которыми может
+     * быть связан данный объект
+     */
 
     return (<React.Fragment>
         <DialogContent>
