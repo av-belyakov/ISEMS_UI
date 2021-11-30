@@ -278,31 +278,48 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 
     return (<React.Fragment>
         <DialogContent>
-            <CreateAtackPatternElements 
-                attackPatterElement={attackPatterElement}
-                valueNameChain={valueNameChain}
-                valueNamePhases={valueNamePhases}
-                buttonAddNewKillChain={buttonAddNewKillChain}
-                invalidNameChain={invalidNameChain}
-                invalidNamePhases={invalidNamePhases}
-                handlerNameChain={handlerNameChain}
-                handlerNamePhases={handlerNamePhases}
-                handlerDescription={handlerDescription}
-                handlerAddNewKillChain={handlerAddNewKillChain}
-                handlerTokenValuesChange={handlerTokenValuesChange} 
-                handlerDeleteKillChain={handlerDeleteKillChain} />
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={8}>
+                    <Row className="pt-3">
+                        <Col md={12} className="text-center"><strong>Основная информация</strong></Col>
+                    </Row>
 
-            <Row className="pt-2"><Col md={12}></Col></Row>
+                    <Row className="pt-3">
+                        <CreateAtackPatternElements 
+                            attackPatterElement={attackPatterElement}
+                            valueNameChain={valueNameChain}
+                            valueNamePhases={valueNamePhases}
+                            buttonAddNewKillChain={buttonAddNewKillChain}
+                            invalidNameChain={invalidNameChain}
+                            invalidNamePhases={invalidNamePhases}
+                            handlerNameChain={handlerNameChain}
+                            handlerNamePhases={handlerNamePhases}
+                            handlerDescription={handlerDescription}
+                            handlerAddNewKillChain={handlerAddNewKillChain}
+                            handlerTokenValuesChange={handlerTokenValuesChange} 
+                            handlerDeleteKillChain={handlerDeleteKillChain} />
+                    </Row> 
 
-            <CreateElementAdditionalTechnicalInformationDO 
-                reportInfo={attackPatterElement}
-                objectId={currentIdSTIXObject}
-                handlerElementConfidence={handlerElementConfidence}
-                handlerElementDefanged={handlerElementDefanged}
-                handlerElementLabels={handlerElementLabels}
-                handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
-                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
-                isNotDisabled={isNotDisabled} /> 
+                    <Row className="pt-2"><Col md={12}></Col></Row>
+
+                    <CreateElementAdditionalTechnicalInformationDO 
+                        reportInfo={attackPatterElement}
+                        objectId={currentIdSTIXObject}
+                        handlerElementConfidence={handlerElementConfidence}
+                        handlerElementDefanged={handlerElementDefanged}
+                        handlerElementLabels={handlerElementLabels}
+                        handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
+                        handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
+                        isNotDisabled={isNotDisabled} />       
+
+                </Grid>
+
+                <Grid item container md={4}>
+                    <Row className="pt-3">
+                        <Col md={12} className="text-center"><strong>История изменений</strong></Col>
+                    </Row>
+                </Grid>
+            </Grid>            
         </DialogContent>
         <DialogActions>
             <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
@@ -315,6 +332,91 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         </DialogActions>
     </React.Fragment>);
 }
+
+/**
+<Grid container direction="row" spacing={3}>
+        <Grid item container md={8}>
+        <Row className="pt-3">
+                        <Col md={12} className="text-center"><strong>Основная информация</strong></Col>
+                    </Row>
+
+                    <Row className="pt-3">
+                        <CreateAtackPatternElements 
+                            attackPatterElement={attackPatterElement}
+                            valueNameChain={valueNameChain}
+                            valueNamePhases={valueNamePhases}
+                            buttonAddNewKillChain={buttonAddNewKillChain}
+                            invalidNameChain={invalidNameChain}
+                            invalidNamePhases={invalidNamePhases}
+                            handlerNameChain={handlerNameChain}
+                            handlerNamePhases={handlerNamePhases}
+                            handlerDescription={handlerDescription}
+                            handlerAddNewKillChain={handlerAddNewKillChain}
+                            handlerTokenValuesChange={handlerTokenValuesChange} 
+                            handlerDeleteKillChain={handlerDeleteKillChain} />
+                    </Row>        
+
+                    <Row className="pt-2"><Col md={12}></Col></Row>
+
+                    <CreateElementAdditionalTechnicalInformationDO 
+                        reportInfo={attackPatterElement}
+                        objectId={currentIdSTIXObject}
+                        handlerElementConfidence={handlerElementConfidence}
+                        handlerElementDefanged={handlerElementDefanged}
+                        handlerElementLabels={handlerElementLabels}
+                        handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
+                        handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
+                        isNotDisabled={isNotDisabled} />
+            </Grid>
+        </Grid>
+            <Grid item container md={4}>
+            
+            </Grid>
+            </Grid>
+ */
+
+/**
+<Row >
+                <Col md={8}>
+                    <Row className="pt-3">
+                        <Col md={12} className="text-center"><strong>Основная информация</strong></Col>
+                    </Row>
+
+                    <Row className="pt-3">
+                        <CreateAtackPatternElements 
+                            attackPatterElement={attackPatterElement}
+                            valueNameChain={valueNameChain}
+                            valueNamePhases={valueNamePhases}
+                            buttonAddNewKillChain={buttonAddNewKillChain}
+                            invalidNameChain={invalidNameChain}
+                            invalidNamePhases={invalidNamePhases}
+                            handlerNameChain={handlerNameChain}
+                            handlerNamePhases={handlerNamePhases}
+                            handlerDescription={handlerDescription}
+                            handlerAddNewKillChain={handlerAddNewKillChain}
+                            handlerTokenValuesChange={handlerTokenValuesChange} 
+                            handlerDeleteKillChain={handlerDeleteKillChain} />
+                    </Row>        
+
+                    <Row className="pt-2"><Col md={12}></Col></Row>
+
+                    <CreateElementAdditionalTechnicalInformationDO 
+                        reportInfo={attackPatterElement}
+                        objectId={currentIdSTIXObject}
+                        handlerElementConfidence={handlerElementConfidence}
+                        handlerElementDefanged={handlerElementDefanged}
+                        handlerElementLabels={handlerElementLabels}
+                        handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
+                        handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
+                        isNotDisabled={isNotDisabled} />
+                </Col>
+                <Col md={4}>
+                    <Row className="pt-3">
+                        <Col md={12} className="text-center"><strong>История изменений</strong></Col>
+                    </Row>
+                </Col>
+            </Row>
+ */
 
 CreateDialogContentAttackPatternSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
