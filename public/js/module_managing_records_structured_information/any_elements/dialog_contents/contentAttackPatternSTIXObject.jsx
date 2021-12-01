@@ -35,6 +35,9 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
     let [ invalidNameChain, setInvalidNameChain ] = React.useState(true);
     let [ invalidNamePhases, setInvalidNamePhases ] = React.useState(true);
 
+    //запрос на получение дополнительной информации о предыдущем состоянии STIX объектов
+    socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { arguments: { "document_id": currentIdSTIXObject }});
+
     const handlerAddNewKillChain = () => {
             if(invalidNameChain || invalidNamePhases){
                 return;
@@ -98,7 +101,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             valueAPTmp.aliases = newTokenValues;
         
             setAttackPatterElement(valueAPTmp);
-        }, [ setAttackPatterElement, attackPatterElement/*, setCurrentSTIXObj, currentSTIXObj */]),
+        }, [ setAttackPatterElement, attackPatterElement ]),
         handlerDeleteKillChain = (num) => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
             valueAPTmp.kill_chain_phases.splice(num, 1);
@@ -162,10 +165,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
              
         },
         handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-            //console.log("func 'handlerDialogElementAdditionalThechnicalInfo', START...");
-            //console.log(obj);
-            //console.log("-------------");
-
             let valueAPTmp = _.cloneDeep(attackPatterElement);
 
             if(obj.modalType === "external_references"){
@@ -221,45 +220,39 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         },
         handlerSave = () => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
-            //valueAPTmp.modified = helpers.getToISODatetime();
             valueAPTmp.lang = "RU";
 
             
             if(valueAPTmp.labels === null){
-                valueAPTmp.labels = [];
+                delete valueAPTmp.labels;
             }
 
             if(valueAPTmp.external_references === null){
-                valueAPTmp.external_references = [];
+                delete valueAPTmp.external_references;
             }
 
             if(valueAPTmp.object_marking_refs === null){
-                valueAPTmp.object_marking_refs = [];
+                delete valueAPTmp.object_marking_refs;
             }
 
             if(valueAPTmp.granular_markings === null){
-                valueAPTmp.granular_markings = [];
+                delete valueAPTmp.granular_markings;
             }
 
             if(valueAPTmp.extensions === null){
-                valueAPTmp.extensions = {};
+                delete valueAPTmp.extensions;
             }
 
             if(valueAPTmp.aliases === null){
-                valueAPTmp.aliases = [];
+                delete valueAPTmp.aliases;
             }
 
             if(valueAPTmp.kill_chain_phases === null){
-                valueAPTmp.kill_chain_phases = [];
+                delete valueAPTmp.kill_chain_phases;
             }
-            
 
             setAttackPatterElement(valueAPTmp);
 
-            //ObjectMarkingRefs  []string       `json:"object_marking_refs" bson:"object_marking_refs"`
-            //ObjectMarkingRefs - определяет список ID ссылающиеся на объект "marking-definition", по терминалогии STIX, в котором содержатся значения применяющиеся к этому объекту
-
-            //socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ valueAPTmp ] });
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [valueAPTmp] });
 
             handlerDialog(valueAPTmp);
@@ -280,11 +273,11 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         <DialogContent>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={8}>
-                    <Row className="pt-3">
-                        <Col md={12} className="text-center"><strong>Основная информация</strong></Col>
-                    </Row>
+                    <Grid container direction="row" className="pt-3">
+                        <Grid item container md={12} justifyContent="center"><strong>Основная информация</strong></Grid>
+                    </Grid>
 
-                    <Row className="pt-3">
+                    <Grid container direction="row" className="pt-3">
                         <CreateAtackPatternElements 
                             attackPatterElement={attackPatterElement}
                             valueNameChain={valueNameChain}
@@ -298,9 +291,9 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                             handlerAddNewKillChain={handlerAddNewKillChain}
                             handlerTokenValuesChange={handlerTokenValuesChange} 
                             handlerDeleteKillChain={handlerDeleteKillChain} />
-                    </Row> 
+                    </Grid> 
 
-                    <Row className="pt-2"><Col md={12}></Col></Row>
+                    <Grid container direction="row" className="pt-3"></Grid>
 
                     <CreateElementAdditionalTechnicalInformationDO 
                         reportInfo={attackPatterElement}
@@ -315,9 +308,9 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 </Grid>
 
                 <Grid item container md={4}>
-                    <Row className="pt-3">
-                        <Col md={12} className="text-center"><strong>История изменений</strong></Col>
-                    </Row>
+                    <Grid container direction="row" className="pt-3">
+                        <Grid item container md={12} justifyContent="center"><strong>Предыдущие изменения</strong></Grid>
+                    </Grid>
                 </Grid>
             </Grid>            
         </DialogContent>
@@ -333,91 +326,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
     </React.Fragment>);
 }
 
-/**
-<Grid container direction="row" spacing={3}>
-        <Grid item container md={8}>
-        <Row className="pt-3">
-                        <Col md={12} className="text-center"><strong>Основная информация</strong></Col>
-                    </Row>
-
-                    <Row className="pt-3">
-                        <CreateAtackPatternElements 
-                            attackPatterElement={attackPatterElement}
-                            valueNameChain={valueNameChain}
-                            valueNamePhases={valueNamePhases}
-                            buttonAddNewKillChain={buttonAddNewKillChain}
-                            invalidNameChain={invalidNameChain}
-                            invalidNamePhases={invalidNamePhases}
-                            handlerNameChain={handlerNameChain}
-                            handlerNamePhases={handlerNamePhases}
-                            handlerDescription={handlerDescription}
-                            handlerAddNewKillChain={handlerAddNewKillChain}
-                            handlerTokenValuesChange={handlerTokenValuesChange} 
-                            handlerDeleteKillChain={handlerDeleteKillChain} />
-                    </Row>        
-
-                    <Row className="pt-2"><Col md={12}></Col></Row>
-
-                    <CreateElementAdditionalTechnicalInformationDO 
-                        reportInfo={attackPatterElement}
-                        objectId={currentIdSTIXObject}
-                        handlerElementConfidence={handlerElementConfidence}
-                        handlerElementDefanged={handlerElementDefanged}
-                        handlerElementLabels={handlerElementLabels}
-                        handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
-                        handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
-                        isNotDisabled={isNotDisabled} />
-            </Grid>
-        </Grid>
-            <Grid item container md={4}>
-            
-            </Grid>
-            </Grid>
- */
-
-/**
-<Row >
-                <Col md={8}>
-                    <Row className="pt-3">
-                        <Col md={12} className="text-center"><strong>Основная информация</strong></Col>
-                    </Row>
-
-                    <Row className="pt-3">
-                        <CreateAtackPatternElements 
-                            attackPatterElement={attackPatterElement}
-                            valueNameChain={valueNameChain}
-                            valueNamePhases={valueNamePhases}
-                            buttonAddNewKillChain={buttonAddNewKillChain}
-                            invalidNameChain={invalidNameChain}
-                            invalidNamePhases={invalidNamePhases}
-                            handlerNameChain={handlerNameChain}
-                            handlerNamePhases={handlerNamePhases}
-                            handlerDescription={handlerDescription}
-                            handlerAddNewKillChain={handlerAddNewKillChain}
-                            handlerTokenValuesChange={handlerTokenValuesChange} 
-                            handlerDeleteKillChain={handlerDeleteKillChain} />
-                    </Row>        
-
-                    <Row className="pt-2"><Col md={12}></Col></Row>
-
-                    <CreateElementAdditionalTechnicalInformationDO 
-                        reportInfo={attackPatterElement}
-                        objectId={currentIdSTIXObject}
-                        handlerElementConfidence={handlerElementConfidence}
-                        handlerElementDefanged={handlerElementDefanged}
-                        handlerElementLabels={handlerElementLabels}
-                        handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
-                        handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
-                        isNotDisabled={isNotDisabled} />
-                </Col>
-                <Col md={4}>
-                    <Row className="pt-3">
-                        <Col md={12} className="text-center"><strong>История изменений</strong></Col>
-                    </Row>
-                </Col>
-            </Row>
- */
-
 CreateDialogContentAttackPatternSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
@@ -426,6 +334,26 @@ CreateDialogContentAttackPatternSTIXObject.propTypes = {
     handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
+
+//DifferentObjectType содержит перечисление полей и их значения, которые были изменены в произвольном типе
+// SourceReceivingChanges - источник от которого были получены изменения
+// ModifiedTime - время выполнения модификации
+// CollectionName - наименование коллекции в которой выполнялись модификации
+// DocumentID - идентификатор документа в котором выполнялись модификации
+// FieldList - перечень полей подвергшихся изменениям
+/*type DifferentObjectType struct {
+	SourceReceivingChanges string                    `bson:"source_receiving_changes"`
+	ModifiedTime           time.Time                 `bson:"modified_time"`
+	CollectionName         string                    `bson:"collection_name"`
+	DocumentID             string                    `bson:"document_id"`
+	FieldList              []OldFieldValueObjectType `bson:"field_list"`
+}
+
+search_parameters: {
+            document_id: STRING // идентификатор документа в котором выполнялись модификации
+            collection_name: STRING // наименование коллекции в которой выполнялись модификации
+        }
+*/
 
 function CreateAtackPatternElements(props){
     let { 
@@ -486,7 +414,7 @@ function CreateAtackPatternElements(props){
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Альтернативные имена</span>:</Grid>
             <Grid item md={8}>
                 <TokenInput
-                    style={{ height: "41px", width: "auto" }}
+                    style={{ height: "80px", width: "auto" }}
                     tokenValues={(attackPatterElement.aliases === null) ? []: attackPatterElement.aliases}
                     onTokenValuesChange={handlerTokenValuesChange} />
             </Grid>

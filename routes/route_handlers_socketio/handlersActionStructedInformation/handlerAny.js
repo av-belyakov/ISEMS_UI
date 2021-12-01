@@ -1,6 +1,5 @@
 "use strict";
 
-const debug = require("debug")("handlerAny");
 const uuid = require("uuid");
 
 const models = require("../../../controllers/models");
@@ -200,12 +199,6 @@ module.exports.insertSTIXObject = function(socketIo, data){
 
                     let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                     if (conn !== null) {
-
-                        debug(`func '${funcName}'`);
-                        debug(`user name: '${userName}'`);
-                        debug(data);
-                        //{ "commonpropertiesobjectstix.id":  "attack-pattern--3cd10f23-dc4a-4db0-82d7-cc345743d481" }
-
                         for(let i = 0; i < data.length; i++){
                             data[i].modified = helpersFunc.getToISODatetime();
                         }

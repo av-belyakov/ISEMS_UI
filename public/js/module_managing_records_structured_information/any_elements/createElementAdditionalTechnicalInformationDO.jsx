@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: theme.typography.fontWeightRegular,
     },
     customPaper: {
+        width: "100%",
         color: theme.palette.getContrastText(grey[50]),
         backgroundColor: grey[50],
         margin: theme.spacing(1),
@@ -164,553 +165,507 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
 
     //дополнительные внешние ссылки
     let getExternalReferences = () => {
-        return (<Grid container direction="row">
-            <Grid item md={12}>
-                <Grid container direction="row" spacing={3}>
-                    <Grid item md={4}>
-                        <TextField
-                            id="external-references-source-name"
-                            label="наименование"
-                            value={(typeof valueER.source_name === "undefined")? "": valueER.source_name}
-                            //disabled={(typeof erInfo.source_name !== "undefined")}
-                            error={valuesIsInvalideSourceNameER}
-                            fullWidth={true}
-                            helperText="обязательное для заполнения поле"
-                            onChange={(e) => {
-                                let valueERTmp = _.cloneDeep(valueER);
-                                valueERTmp.source_name = e.target.value;
-                                setValueER(valueERTmp);
+        return (<Grid container direction="row" key="key_external_references_link">
+            <Grid container direction="row" spacing={3}>
+                <Grid item md={4}>
+                    <TextField
+                        id="external-references-source-name"
+                        label="наименование"
+                        value={(typeof valueER.source_name === "undefined")? "": valueER.source_name}
+                        //disabled={(typeof erInfo.source_name !== "undefined")}
+                        error={valuesIsInvalideSourceNameER}
+                        fullWidth={true}
+                        helperText="обязательное для заполнения поле"
+                        onChange={(e) => {
+                            let valueERTmp = _.cloneDeep(valueER);
+                            valueERTmp.source_name = e.target.value;
+                            setValueER(valueERTmp);
 
-                                if(e.target.value.length === 0){
-                                    setButtonAddNewERIsDisabled(true);
-                                    setValuesIsInvalideSourceNameER(true);
-                                } else {
-                                    setButtonAddNewERIsDisabled(false);
-                                    setValuesIsInvalideSourceNameER(false);
-                                }
-                            }}
-                        />
+                            if(e.target.value.length === 0){
+                                setButtonAddNewERIsDisabled(true);
+                                setValuesIsInvalideSourceNameER(true);
+                            } else {
+                                setButtonAddNewERIsDisabled(false);
+                                setValuesIsInvalideSourceNameER(false);
+                            }
+                        }}
+                    />
+                </Grid>
+                <Grid item md={8}>
+                    <TextField
+                        id="external-references-description"
+                        label="описание"
+                        fullWidth={true}
+                        value={(typeof valueER.description === "undefined")? "": valueER.description}
+                        onChange={(e) => {
+                            let valueERTmp = _.cloneDeep(valueER);
+                            valueERTmp.description = e.target.value;
+                            setValueER(valueERTmp);
+                        }}
+                    />
+                </Grid>
+            </Grid>
+
+            <Grid container direction="row">
+                <Grid item md={12}>
+                    <TextField
+                        id="external-references-url"
+                        label="url"
+                        fullWidth={true}
+                        value={(typeof valueER.url === "undefined")? "": valueER.url}
+                        onChange={(e) => {
+                            let valueERTmp = _.cloneDeep(valueER);
+                            valueERTmp.url = e.target.value;
+                            setValueER(valueERTmp);
+                        }}
+                    />
+                </Grid>
+                
+                <Grid container direction="row" spacing={3} key="key_input_hash_field">
+                    <Grid item md={2}>
+                        <FormControl className={classes.formControlTypeHashRE}>
+                            <InputLabel id="label-hash-type-change">тип хеша</InputLabel>
+                            <Select
+                                labelId="chose-hash-select-label"
+                                id="chose-hash-select-label"
+                                value={valueTmpHashSumER.type}
+                                fullWidth={true}
+                                onChange={(e) => {
+                                    let tmp = valueTmpHashSumER.description,
+                                        v = e.target.value;
+                                    setValueTmpHashSumER({ type: v, description: tmp });
+
+                                    ((v.length > 0) && (tmp.length > 0))? setButtonAddHashIsDisabled(false): setButtonAddHashIsDisabled(true);
+                                }}>
+                                {listHashType.map((elem, num)=>{
+                                    return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
+                                })}
+                            </Select>
+                        </FormControl>
                     </Grid>
                     <Grid item md={8}>
                         <TextField
-                            id="external-references-description"
-                            label="описание"
-                            fullWidth={true}
-                            value={(typeof valueER.description === "undefined")? "": valueER.description}
+                            id="external-references-hash"
+                            label="хеш-сумма"
+                            fullWidth
+                            value={valueTmpHashSumER.description}
                             onChange={(e) => {
-                                let valueERTmp = _.cloneDeep(valueER);
-                                valueERTmp.description = e.target.value;
-                                setValueER(valueERTmp);
+                                let tmp = valueTmpHashSumER.type,
+                                    v = e.target.value;
+                                setValueTmpHashSumER({ type: tmp, description: v });
+
+                                ((v.length > 0) && (tmp.length > 0))? setButtonAddHashIsDisabled(false): setButtonAddHashIsDisabled(true);
                             }}
                         />
+                    </Grid>
+                    <Grid item md={2} className="text-end pt-2">
+                        <Button 
+                            onClick={() => {
+                                let valueERTmp = _.cloneDeep(valueER);
+                                valueERTmp.hashes.push(valueTmpHashSumER);
+                                setValueER(valueERTmp);
+
+                                setValueTmpHashSumER({ type: "", description: "" });
+                                setButtonAddHashIsDisabled(true);
+                            }} 
+                            disabled={buttonAddHashIsDisabled}
+                        >добавить хеш</Button>
                     </Grid>
                 </Grid>
+            </Grid>
 
-                <Grid container direction="row" spacing={3}>
-                    <Grid item md={5}>
-                        <TextField
-                            id="external-references-url"
-                            label="url"
-                            fullWidth={true}
-                            value={(typeof valueER.url === "undefined")? "": valueER.url}
-                            onChange={(e) => {
-                                let valueERTmp = _.cloneDeep(valueER);
-                                valueERTmp.url = e.target.value;
-                                setValueER(valueERTmp);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item md={7}>
-                        <Grid container direction="row" key="key_input_hash_field">
-                            <Grid item md={2}>
-                                <FormControl className={classes.formControlTypeHashRE}>
-                                    <InputLabel id="label-hash-type-change">тип хеша</InputLabel>
-                                    <Select
-                                        labelId="chose-hash-select-label"
-                                        id="chose-hash-select-label"
-                                        value={valueTmpHashSumER.type}
+            {(valueER.hashes.length === 0) ? 
+                "" : 
+                <Grid container direction="row" className="mt-3">
+                    <ol>
+                        {valueER.hashes.map((elem, numHash) => {
+                            return (<li key={`key_item_hash_${numHash}`}>
+                                {`${elem.type}: ${elem.description}`}&nbsp;
+                                <IconButton aria-label="delete-hash" onClick={() => handlerDelItemHash.call(null, numHash)}>
+                                    <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                </IconButton>
+                            </li>);
+                        })}
+                    </ol>
+                </Grid> }
+
+            <Grid container direction="row" className="mt-2" key="key_external_references_link">
+                <Grid item md={12} className="text-end pb-2">
+                    <Button onClick={() => {
+                        let obj = {};
+                        let tmpData = _.cloneDeep(valueER);
+                            
+                        setValueER(patternValueER);
+                        setButtonAddNewERIsDisabled(true);
+                        setValuesIsInvalideSourceNameER(true);
+                        tmpData.hashes.map((item) => obj[item.type] = item.description);
+
+                        tmpData.hashes = obj;
+                        tmpData.external_id = `external-references--${uuidv4()}`;
+
+                        handlerDialogElementAdditionalThechnicalInfo({ 
+                            actionType: "new",
+                            modalType: "external_references", 
+                            objectId: objectId,
+                            orderNumber: -1,
+                            data: tmpData,
+                        });
+                    }} disabled={buttonAddNewERIsDisabled}>
+                            добавить новую внешнюю ссылку
+                    </Button>
+                </Grid>
+            </Grid>
+
+            {((typeof reportInfo.external_references === "undefined") || (reportInfo.external_references === null) || (reportInfo.external_references.length === 0))?
+                "":
+                reportInfo.external_references.map((item, key) => {
+                    let listHashes = [],
+                        sourceName = "";
+    
+                    if((typeof item.source_name !== "undefined") && (item.source_name !== null) && (item.source_name.length !== 0)){
+                        sourceName = item.source_name;
+                    }
+
+                    if((item.hashes !== null) && (typeof item.hashes !== "undefined")){
+                        for(let k in item.hashes){
+                            listHashes.push(<li key={`hash_${item.hashes[k]}`}>
+                                {k}: {item.hashes[k]}&nbsp;
+                                <IconButton aria-label="delete-ext_ref-item" onClick={() => { 
+                                    handlerDialogElementAdditionalThechnicalInfo({ 
+                                        actionType: "hashes_delete",
+                                        modalType: "external_references", 
+                                        objectId: objectId,
+                                        orderNumber: key,
+                                        hashName: k,
+                                    }); 
+                                }}><RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                </IconButton>
+                            </li>);
+                        }    
+                    }
+                        
+                    let buttonIsDisabled = true;
+                    if((valueTmpUpdateHashSumER[key] !== null) && (typeof valueTmpUpdateHashSumER[key] !== "undefined")){
+                        if((valueTmpUpdateHashSumER[key].type.length > 0) && (valueTmpUpdateHashSumER[key].hash.length > 0)){
+                            buttonIsDisabled = false;
+                        }
+                    }
+
+                    return (<Card className={classes.customPaper} key={`key_external_references_${key}_fragment`}>
+                        <CardHeader 
+                            subheader={sourceName}
+                            action={<React.Fragment>
+                                <IconButton aria-label="delete" onClick={()=>{ 
+                                    handlerElementDelete({ itemType: "external_references", item: sourceName, objectId: objectId, orderNumber: key }); 
+                                }}>
+                                    <IconDeleteOutline style={{ color: red[400] }} />
+                                </IconButton>
+                            </React.Fragment>} />
+                        <CardContent>
+                            {((typeof item.external_id === "undefined") || (item.external_id === null)) ? 
+                                "": 
+                                <Grid container direction="row" key={`key_external_references_${key}_2`}>
+                                    <Grid item md={12} className="pl-4 pr-4">
+                                        <Typography variant="body2" component="p"><span className="text-muted">ID</span>: {item.external_id}</Typography>
+                                    </Grid>
+                                </Grid>}
+
+                            <Grid container direction="row" key={`key_external_references_${key}_3`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <TextField
+                                        label="описание"
+                                        value={(typeof item.description === "undefined")? "": item.description}
+                                        fullWidth={true}
+                                        onChange={(e) => { 
+                                            item.description = e.target.value;
+
+                                            handlerDialogElementAdditionalThechnicalInfo({ 
+                                                actionType: "update",
+                                                modalType: "external_references", 
+                                                objectId: objectId,
+                                                orderNumber: key,
+                                                data: item,
+                                            });
+                                        }}
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            <Grid container direction="row" key={`key_external_references_${key}_4`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <TextField
+                                        label="url"
+                                        value={(typeof item.url === "undefined")? "": item.url}
                                         fullWidth={true}
                                         onChange={(e) => {
-                                            let tmp = valueTmpHashSumER.description,
-                                                v = e.target.value;
-                                            setValueTmpHashSumER({ type: v, description: tmp });
+                                            item.url = e.target.value;
 
-                                            ((v.length > 0) && (tmp.length > 0))? setButtonAddHashIsDisabled(false): setButtonAddHashIsDisabled(true);
-                                        }}>
-                                        {listHashType.map((elem, num)=>{
-                                            return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
-                                        })}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item md={8}>
-                                <TextField
-                                    id="external-references-hash"
-                                    label="хеш-сумма"
-                                    fullWidth
-                                    value={valueTmpHashSumER.description}
-                                    onChange={(e) => {
-                                        let tmp = valueTmpHashSumER.type,
-                                            v = e.target.value;
-                                        setValueTmpHashSumER({ type: tmp, description: v });
-
-                                        ((v.length > 0) && (tmp.length > 0))? setButtonAddHashIsDisabled(false): setButtonAddHashIsDisabled(true);
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item md={2} className="text-end pt-2">
-                                <Button 
-                                    onClick={() => {
-                                        let valueERTmp = _.cloneDeep(valueER);
-                                        valueERTmp.hashes.push(valueTmpHashSumER);
-                                        setValueER(valueERTmp);
-
-                                        setValueTmpHashSumER({ type: "", description: "" });
-                                        setButtonAddHashIsDisabled(true);
-                                    }} 
-                                    disabled={buttonAddHashIsDisabled}
-                                >добавить хеш</Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-
-                {(valueER.hashes.length === 0) ? 
-                    "" : 
-                    <Grid container direction="row" className="mt-3">
-                        <ol>
-                            {valueER.hashes.map((elem, numHash) => {
-                                return (<li key={`key_item_hash_${numHash}`}>
-                                    {`${elem.type}: ${elem.description}`}&nbsp;
-                                    <IconButton aria-label="delete-hash" onClick={() => handlerDelItemHash.call(null, numHash)}>
-                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                                    </IconButton>
-                                </li>);
-                            })}
-                        </ol>
-                    </Grid> }
-
-                <Grid container direction="row" className="mt-2" key="key_external_references_link">
-                    <Grid item md={12} className="text-end pb-2">
-                        <Button onClick={() => {
-                            let obj = {};
-                            let tmpData = _.cloneDeep(valueER);
-                            
-                            setValueER(patternValueER);
-                            setButtonAddNewERIsDisabled(true);
-                            setValuesIsInvalideSourceNameER(true);
-                            tmpData.hashes.map((item) => obj[item.type] = item.description);
-
-                            tmpData.hashes = obj;
-                            tmpData.external_id = `external-references--${uuidv4()}`;
-
-                            handlerDialogElementAdditionalThechnicalInfo({ 
-                                actionType: "new",
-                                modalType: "external_references", 
-                                objectId: objectId,
-                                orderNumber: -1,
-                                data: tmpData,
-                            });
-                        }} disabled={buttonAddNewERIsDisabled}>
-                            добавить новую внешнюю ссылку
-                        </Button>
-                    </Grid>
-                </Grid>
-
-                {((typeof reportInfo.external_references === "undefined") || (reportInfo.external_references === null) || (reportInfo.external_references.length === 0))?
-                    "":
-                    reportInfo.external_references.map((item, key) => {
-                        let listHashes = [],
-                            sourceName = "";
-    
-                        if((typeof item.source_name !== "undefined") && (item.source_name !== null) && (item.source_name.length !== 0)){
-                            sourceName = item.source_name;
-                        }
-
-                        if((item.hashes !== null) && (typeof item.hashes !== "undefined")){
-                            for(let k in item.hashes){
-                                listHashes.push(<li key={`hash_${item.hashes[k]}`}>
-                                    {k}: {item.hashes[k]}&nbsp;
-                                    <IconButton aria-label="delete-ext_ref-item" onClick={() => { 
-                                        handlerDialogElementAdditionalThechnicalInfo({ 
-                                            actionType: "hashes_delete",
-                                            modalType: "external_references", 
-                                            objectId: objectId,
-                                            orderNumber: key,
-                                            hashName: k,
-                                        }); 
-                                    }}><RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                                    </IconButton>
-                                </li>);
-                            }    
-                        }
-                        
-                        let buttonIsDisabled = true;
-                        if((valueTmpUpdateHashSumER[key] !== null) && (typeof valueTmpUpdateHashSumER[key] !== "undefined")){
-                            if((valueTmpUpdateHashSumER[key].type.length > 0) && (valueTmpUpdateHashSumER[key].hash.length > 0)){
-                                buttonIsDisabled = false;
-                            }
-                        }
-
-                        return (<Card className={classes.customPaper} key={`key_external_references_${key}_fragment`}>
-                            <CardHeader 
-                                subheader={sourceName}
-                                action={<React.Fragment>
-                                    <IconButton aria-label="delete" onClick={()=>{ 
-                                        handlerElementDelete({ itemType: "external_references", item: sourceName, objectId: objectId, orderNumber: key }); 
-                                    }}>
-                                        <IconDeleteOutline style={{ color: red[400] }} />
-                                    </IconButton>
-                                </React.Fragment>} />
-                            <CardContent>
-                                {((typeof item.external_id === "undefined") || (item.external_id === null)) ? 
-                                    "": 
-                                    <Grid container direction="row" key={`key_external_references_${key}_2`}>
-                                        <Grid item md={12} className="pl-4 pr-4">
-                                            <Typography variant="body2" component="p"><span className="text-muted">ID</span>: {item.external_id}</Typography>
-                                        </Grid>
-                                    </Grid>}
-
-                                <Grid container direction="row" key={`key_external_references_${key}_3`}>
-                                    <Grid item md={12} className="pl-4 pr-4">
-                                        <TextField
-                                            label="описание"
-                                            value={(typeof item.description === "undefined")? "": item.description}
-                                            fullWidth={true}
-                                            onChange={(e) => { 
-                                                item.description = e.target.value;
-
-                                                handlerDialogElementAdditionalThechnicalInfo({ 
-                                                    actionType: "update",
-                                                    modalType: "external_references", 
-                                                    objectId: objectId,
-                                                    orderNumber: key,
-                                                    data: item,
-                                                });
-                                            }}
-                                        />
-                                    </Grid>
+                                            handlerDialogElementAdditionalThechnicalInfo({ 
+                                                actionType: "update",
+                                                modalType: "external_references", 
+                                                objectId: objectId,
+                                                orderNumber: key,
+                                                data: item,
+                                            });
+                                        }}
+                                    />
                                 </Grid>
+                            </Grid>
 
-                                <Grid container direction="row" key={`key_external_references_${key}_4`}>
-                                    <Grid item md={12} className="pl-4 pr-4">
-                                        <TextField
-                                            label="url"
-                                            value={(typeof item.url === "undefined")? "": item.url}
+                            <Grid container direction="row" key={`key_input_hash_field_${key}`}>
+                                <Grid item md={2}>
+                                    <FormControl className={classes.formControlTypeHashRE}>
+                                        <InputLabel id={`label-hash-type-change_${key}`}>тип хеша</InputLabel>
+                                        <Select
+                                            key={`chose-hash-select-label_${key}`}
+                                            value={((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined"))? "": valueTmpUpdateHashSumER[key].type}
                                             fullWidth={true}
-                                            onChange={(e) => {
-                                                item.url = e.target.value;
-
-                                                handlerDialogElementAdditionalThechnicalInfo({ 
-                                                    actionType: "update",
-                                                    modalType: "external_references", 
-                                                    objectId: objectId,
-                                                    orderNumber: key,
-                                                    data: item,
-                                                });
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-
-                                <Grid container direction="row" key={`key_input_hash_field_${key}`}>
-                                    <Grid item md={2}>
-                                        <FormControl className={classes.formControlTypeHashRE}>
-                                            <InputLabel id={`label-hash-type-change_${key}`}>тип хеша</InputLabel>
-                                            <Select
-                                                key={`chose-hash-select-label_${key}`}
-                                                value={((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined"))? "": valueTmpUpdateHashSumER[key].type}
-                                                fullWidth={true}
-                                                onChange={(e) => {
-                                                    let tmp = _.cloneDeep(valueTmpUpdateHashSumER);
-                                                    if((tmp[key] === null) || (typeof tmp[key] === "undefined")){
-                                                        tmp[key] = { type: e.target.value, hash: "" };
-                                                    } else {
-                                                        tmp[key].type = e.target.value;
-                                                    }
-
-                                                    setValueTmpUpdateHashSumER(tmp);
-                                                }}>
-                                                {listHashType.map((elem, num)=>{
-                                                    return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
-                                                })}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item md={8}>
-                                        <TextField
-                                            id="external-references-hash"
-                                            label="хеш-сумма"
-                                            fullWidth
-                                            value={((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined"))? "": valueTmpUpdateHashSumER[key].hash}
                                             onChange={(e) => {
                                                 let tmp = _.cloneDeep(valueTmpUpdateHashSumER);
                                                 if((tmp[key] === null) || (typeof tmp[key] === "undefined")){
-                                                    tmp[key] = { type: "", hash: e.target.value };
+                                                    tmp[key] = { type: e.target.value, hash: "" };
                                                 } else {
-                                                    tmp[key].hash = e.target.value;
+                                                    tmp[key].type = e.target.value;
                                                 }
 
                                                 setValueTmpUpdateHashSumER(tmp);
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item md={2} className="text-end pt-2">
-                                        <Button 
-                                            onClick={() => {
-                                                console.log("BUTTON ADD HASH");
-                                                console.log(`TYPE: ${valueTmpUpdateHashSumER[key].type}, HASH: ${valueTmpUpdateHashSumER[key].hash}`);
-
-                                                if((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined")){
-                                                    console.log("valueTmpUpdateHashSumER[key] is undefined");
-                                                    
-                                                    return;
-                                                }
-                    
-                                                handlerDialogElementAdditionalThechnicalInfo({ 
-                                                    actionType: "hashes_update",
-                                                    modalType: "external_references", 
-                                                    objectId: objectId,
-                                                    orderNumber: key,
-                                                    data: valueTmpUpdateHashSumER[key],
-                                                });
-
-                                                /*
-                                                let valueERTmp = _.cloneDeep(valueER);
-
-                                                if(typeof valueERTmp.hashes[key] === "undefined"){
-                                                    console.log("111111");
-
-                                                    valueERTmp.hashes.push({ type: valueTmpUpdateHashSumER[key].type, description: valueTmpUpdateHashSumER[key].hash });
-                                                } else {
-                                                    console.log("222222");
-
-                                                    valueERTmp.hashes[key]({ type: valueTmpUpdateHashSumER[key].type, description: valueTmpUpdateHashSumER[key].hash });
-                                                }
-
-                                                console.log("AFTER ===");
-                                                console.log(valueERTmp);
-
-                                                setValueER(valueERTmp);
-                                                */
-
-                                                let tmp = _.cloneDeep(valueTmpUpdateHashSumER);
-                                                tmp[key] = { type: "", hash: "" };
-                                                setValueTmpUpdateHashSumER(tmp);
-
-                                                /**
- * тут вызов функции для записи в хеш
- */
-
-                                                //valueTmpUpdateHashSumER[key]
-
-                                                /*let valueERTmp = _.cloneDeep(valueER);
-                                                valueERTmp.hashes.push(valueTmpHashSumER);
-                                                setValueER(valueERTmp);
-
-                                                setValueTmpHashSumER({ type: "", description: "" });
-                                                setButtonAddHashIsDisabled(true);*/
-
-                                                setValueTmpUpdateHashSumER({ num: -1, type: "", hash: "" });
-                                            }} 
-                                            disabled={buttonIsDisabled}
-                                        >добавить хеш</Button>
-                                    </Grid>
+                                            }}>
+                                            {listHashType.map((elem, num)=>{
+                                                return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
+                                            })}
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
+                                <Grid item md={8}>
+                                    <TextField
+                                        id="external-references-hash"
+                                        label="хеш-сумма"
+                                        fullWidth
+                                        value={((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined"))? "": valueTmpUpdateHashSumER[key].hash}
+                                        onChange={(e) => {
+                                            let tmp = _.cloneDeep(valueTmpUpdateHashSumER);
+                                            if((tmp[key] === null) || (typeof tmp[key] === "undefined")){
+                                                tmp[key] = { type: "", hash: e.target.value };
+                                            } else {
+                                                tmp[key].hash = e.target.value;
+                                            }
 
-                                {(listHashes.length !== 0) ? 
-                                    <Grid container direction="row" key={`key_external_references_${key}_5`} className="mt-2">
-                                        <Grid item md={12} className="pl-4 pr-4">
-                                            <span><span className="text-muted">хеш суммы</span>:<ol>{listHashes}</ol></span>
-                                        </Grid>
-                                    </Grid>: 
-                                    ""}
-                            </CardContent>
-                        </Card>);
-                    })}
-            </Grid>
+                                            setValueTmpUpdateHashSumER(tmp);
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item md={2} className="text-end pt-2">
+                                    <Button 
+                                        onClick={() => {
+                                            if((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined")){                                                    
+                                                return;
+                                            }
+                    
+                                            handlerDialogElementAdditionalThechnicalInfo({ 
+                                                actionType: "hashes_update",
+                                                modalType: "external_references", 
+                                                objectId: objectId,
+                                                orderNumber: key,
+                                                data: valueTmpUpdateHashSumER[key],
+                                            });
+
+                                            let tmp = _.cloneDeep(valueTmpUpdateHashSumER);
+                                            tmp[key] = { type: "", hash: "" };
+                                            setValueTmpUpdateHashSumER(tmp);
+                                        }} 
+                                        disabled={buttonIsDisabled}
+                                    >добавить хеш</Button>
+                                </Grid>
+                            </Grid>
+
+                            {(listHashes.length !== 0) ? 
+                                <Grid container direction="row" key={`key_external_references_${key}_5`} className="mt-2">
+                                    <Grid item md={12} className="pl-4 pr-4">
+                                        <span><span className="text-muted">хеш суммы</span>:<ol>{listHashes}</ol></span>
+                                    </Grid>
+                                </Grid>: 
+                                ""}
+                        </CardContent>
+                    </Card>);
+                })}
         </Grid>);
     };
 
     //дополнительные "гранулярные метки"
     let getGranularMarkings = () => {
-        return (<Grid container direction="row">
-            <Grid item md={12}>
-                <Grid container direction="row" spacing={3}>
-                    <Grid item md={2}>
-                        <TextField
-                            id="granular-markings-lang"
-                            label="маркер языка"
-                            fullWidth={true}
-                            value={valueGM.lang}
-                            onChange={(e) => {
-                                let valueGMTmp = _.cloneDeep(valueGM);
+        return (<Grid container direction="row" key="key_granular_markings_link">
+            <Grid container direction="row" spacing={3}>
+                <Grid item md={2}>
+                    <TextField
+                        id="granular-markings-lang"
+                        label="маркер языка"
+                        fullWidth={true}
+                        value={valueGM.lang}
+                        onChange={(e) => {
+                            let valueGMTmp = _.cloneDeep(valueGM);
 
-                                valueGMTmp.lang = e.target.value.toUpperCase();
-                                setValueGM(valueGMTmp);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item md={10}>
-                        <Grid container direction="row">
-                            <Grid item md={10}>
-                                <TextField
-                                    id="granular-markings-marking-ref"
-                                    label="идентификатор объекта 'marking-definition'"
-                                    fullWidth={true}
-                                    value={valueGM.marking_ref}
-                                    onChange={(e) => {
-                                        let valueGMTmp = _.cloneDeep(valueGM);
-
-                                        valueGMTmp.marking_ref = e.target.value;
-                                        setValueGM(valueGMTmp);
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item md={2} className="text-start mt-2">
-                                <Button onClick={() => {
+                            valueGMTmp.lang = e.target.value.toUpperCase();
+                            setValueGM(valueGMTmp);
+                        }}
+                    />
+                </Grid>
+                <Grid item md={10}>
+                    <Grid container direction="row">
+                        <Grid item md={9}>
+                            <TextField
+                                id="granular-markings-marking-ref"
+                                label="идентификатор объекта 'marking-definition'"
+                                fullWidth={true}
+                                value={valueGM.marking_ref}
+                                onChange={(e) => {
                                     let valueGMTmp = _.cloneDeep(valueGM);
 
-                                    valueGMTmp.marking_ref = `marking-definition--${uuidv4()}`;
+                                    valueGMTmp.marking_ref = e.target.value;
                                     setValueGM(valueGMTmp);
-                                }}>
+                                }}
+                            />
+                        </Grid>
+                        <Grid item md={3} className="text-start mt-2">
+                            <Button onClick={() => {
+                                let valueGMTmp = _.cloneDeep(valueGM);
+
+                                valueGMTmp.marking_ref = `marking-definition--${uuidv4()}`;
+                                setValueGM(valueGMTmp);
+                            }}>
                                     сгенерировать
-                                </Button>
-                            </Grid>
+                            </Button>
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid container direction="row" key="key_input_hash_field">
-                    <Grid item md={7}>
-                        <TextField
-                            id="marking-definition-selector"
-                            label="идентификатор селектора"
-                            fullWidth
-                            value={valueTmpSelector}
-                            onChange={(e) => {
-                                setValueTmpSelector(e.target.value);
-                                (e.target.value.length === 0)? setButtonAddSelectorIsDisabled(true): setButtonAddSelectorIsDisabled(false);
-                            }}
-                        />
-                    </Grid>
-                    <Grid item md={2} className="text-start mt-2">
-                        <Button onClick={() => {
-                            setValueTmpSelector(`selector--${uuidv4()}`);
-                            setButtonAddSelectorIsDisabled(false);
-                        }} >
-                            сгенерировать
-                        </Button>
-                    </Grid>
-                    <Grid item md={3} className="text-end mt-2">
-                        <Button 
-                            onClick={() => {
-                                if(valueTmpSelector === ""){
-                                    return;
-                                }
-
-                                let valueGMTmp = _.cloneDeep(valueGM);
-
-                                valueGMTmp.selectors.push(valueTmpSelector);
-                                setValueGM(valueGMTmp);
-                                setValueTmpSelector("");
-
-                                setButtonAddNewGMIsDisabled(false);
-                                setButtonAddSelectorIsDisabled(true);
-                            }} 
-                            disabled={buttonAddSelectorIsDisabled} 
-                            color="primary" >
-                                добавить селектор
-                        </Button>
-                    </Grid>
-                </Grid>
-
-                {(valueGM.selectors.length === 0) ? 
-                    "" : 
-                    <Grid container direction="row" className="mt-3">
-                        <ol>
-                            {valueGM.selectors.map((item, num) => {
-                                return (<li key={`key_item_selector_${num}`}>
-                                    {item}&nbsp;
-                                    <IconButton aria-label="delete-selector" onClick={() => handlerDelSelector.call(null, num)}>
-                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                                    </IconButton>
-                                </li>);
-                            })}
-                        </ol>
-                    </Grid>}
-
-                <Grid container direction="row" key="key_granular_markings_link">
-                    <Grid item md={12} className="text-end pt-2 pb-2">
-                        <Button onClick={() => {
-                            let tmpData = _.cloneDeep(valueGM);
-                            setValueGM(patternValueGM);
-                            setButtonAddNewGMIsDisabled(true);
-
-                            tmpData.external_id = `granular_markings--${uuidv4()}`;
-
-                            handlerDialogElementAdditionalThechnicalInfo({ 
-                                actionType: "new",
-                                modalType: "granular_markings", 
-                                objectId: objectId,
-                                orderNumber: -1,
-                                data: tmpData,
-                            });
-                        }} disabled={buttonAddNewGMIsDisabled}>
-                            {"добавить новую \"гранулярную метку\""}
-                        </Button>
-                    </Grid>
-                </Grid>
-
-                {((typeof reportInfo.granular_markings === "undefined") || (reportInfo.granular_markings === null) || (reportInfo.granular_markings.length === 0))?
-                    "":
-                    reportInfo.granular_markings.map((item, key) => {
-                        //let listSelectors = [],
-                        let markingRef = "";
-
-                        if((typeof item.marking_ref !== "undefined") && (item.marking_ref !== null) && (item.marking_ref.length !== 0)){
-                            markingRef = item.marking_ref;
-                        }
-
-                        return (<Card className={classes.customPaper} key={`key_granular_markings_${key}_fragment`}>
-                            <CardHeader 
-                                subheader={markingRef}
-                                action={<React.Fragment>
-                                    <IconButton aria-label="delete" onClick={()=>{ 
-                                        handlerElementDelete({ 
-                                            itemType: "granular_markings", 
-                                            item: markingRef,
-                                            orderNumber: key,
-                                            objectId: objectId }); 
-                                    }}>
-                                        <IconDeleteOutline style={{ color: red[400] }} />
-                                    </IconButton>
-                                </React.Fragment>
-                                } />
-                            <CardContent>
-                                {((typeof item.lang === "undefined") || (item.lang === null) || (item.lang.length === 0) ? 
-                                    "": 
-                                    <Grid container direction="row" key={`key_granular_mark_${key}_2`}>
-                                        <Grid item md={12}>
-                                            <Typography variant="body2" component="p"><span className="text-muted">текстовый код языка</span>: {item.lang}</Typography>
-                                        </Grid>
-                                    </Grid>)}
-
-                                {((item.selectors === null) && (typeof item.selectors === "undefined"))?
-                                    "":
-                                    <Grid container direction="row" key={`key_granular_mark_${key}_3`}>
-                                        <Grid item md={12}>
-                                            <span>
-                                                <span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство</span>:
-                                                <ol>{item.selectors.map((i, num) => {
-                                                    return <li key={`hash_${i.selectors}_${num}`}>{i}</li>;
-                                                })}</ol>
-                                            </span>
-                                        </Grid>
-                                    </Grid>}
-                            </CardContent>
-                        </Card>);
-                    })}
             </Grid>
+            <Grid container direction="row" key="key_input_hash_field">
+                <Grid item md={7}>
+                    <TextField
+                        id="marking-definition-selector"
+                        label="идентификатор селектора"
+                        fullWidth
+                        value={valueTmpSelector}
+                        onChange={(e) => {
+                            setValueTmpSelector(e.target.value);
+                            (e.target.value.length === 0)? setButtonAddSelectorIsDisabled(true): setButtonAddSelectorIsDisabled(false);
+                        }}
+                    />
+                </Grid>
+                <Grid item md={2} className="text-start mt-2">
+                    <Button onClick={() => {
+                        setValueTmpSelector(`selector--${uuidv4()}`);
+                        setButtonAddSelectorIsDisabled(false);
+                    }} >
+                            сгенерировать
+                    </Button>
+                </Grid>
+                <Grid item md={3} className="text-end mt-2">
+                    <Button 
+                        onClick={() => {
+                            if(valueTmpSelector === ""){
+                                return;
+                            }
+
+                            let valueGMTmp = _.cloneDeep(valueGM);
+
+                            valueGMTmp.selectors.push(valueTmpSelector);
+                            setValueGM(valueGMTmp);
+                            setValueTmpSelector("");
+
+                            setButtonAddNewGMIsDisabled(false);
+                            setButtonAddSelectorIsDisabled(true);
+                        }} 
+                        disabled={buttonAddSelectorIsDisabled} 
+                        color="primary" >
+                            добавить селектор
+                    </Button>
+                </Grid>
+            </Grid>
+
+            {(valueGM.selectors.length === 0) ? 
+                "" : 
+                <Grid container direction="row" className="mt-3">
+                    <ol>
+                        {valueGM.selectors.map((item, num) => {
+                            return (<li key={`key_item_selector_${num}`}>
+                                {item}&nbsp;
+                                <IconButton aria-label="delete-selector" onClick={() => handlerDelSelector.call(null, num)}>
+                                    <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                </IconButton>
+                            </li>);
+                        })}
+                    </ol>
+                </Grid>}
+
+            <Grid container direction="row" key="key_granular_markings_link">
+                <Grid item md={12} className="text-end pt-2 pb-2">
+                    <Button onClick={() => {
+                        let tmpData = _.cloneDeep(valueGM);
+                        setValueGM(patternValueGM);
+                        setButtonAddNewGMIsDisabled(true);
+
+                        tmpData.external_id = `granular_markings--${uuidv4()}`;
+
+                        handlerDialogElementAdditionalThechnicalInfo({ 
+                            actionType: "new",
+                            modalType: "granular_markings", 
+                            objectId: objectId,
+                            orderNumber: -1,
+                            data: tmpData,
+                        });
+                    }} disabled={buttonAddNewGMIsDisabled}>
+                        {"добавить новую \"гранулярную метку\""}
+                    </Button>
+                </Grid>
+            </Grid>
+
+            {((typeof reportInfo.granular_markings === "undefined") || (reportInfo.granular_markings === null) || (reportInfo.granular_markings.length === 0))?
+                "":
+                reportInfo.granular_markings.map((item, key) => {
+                    let markingRef = "";
+
+                    if((typeof item.marking_ref !== "undefined") && (item.marking_ref !== null) && (item.marking_ref.length !== 0)){
+                        markingRef = item.marking_ref;
+                    }
+
+                    return (<Card className={classes.customPaper} key={`key_granular_markings_${key}_fragment`}>
+                        <CardHeader 
+                            subheader={markingRef}
+                            action={<React.Fragment>
+                                <IconButton aria-label="delete" onClick={()=>{ 
+                                    handlerElementDelete({ 
+                                        itemType: "granular_markings", 
+                                        item: markingRef,
+                                        orderNumber: key,
+                                        objectId: objectId }); 
+                                }}>
+                                    <IconDeleteOutline style={{ color: red[400] }} />
+                                </IconButton>
+                            </React.Fragment>} />
+                        <CardContent>
+                            {((typeof item.lang === "undefined") || (item.lang === null) || (item.lang.length === 0) ? 
+                                "": 
+                                <Grid container direction="row" key={`key_granular_mark_${key}_2`}>
+                                    <Grid item md={12}>
+                                        <Typography variant="body2" component="p"><span className="text-muted">текстовый код языка</span>: {item.lang}</Typography>
+                                    </Grid>
+                                </Grid>)}
+
+                            {((item.selectors === null) && (typeof item.selectors === "undefined"))?
+                                "":
+                                <Grid container direction="row" key={`key_granular_mark_${key}_3`}>
+                                    <Grid item md={12}>
+                                        <span>
+                                            <span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство</span>:
+                                            <ol>{item.selectors.map((i, num) => {
+                                                return <li key={`hash_${i.selectors}_${num}`}>{i}</li>;
+                                            })}</ol>
+                                        </span>
+                                    </Grid>
+                                </Grid>}
+                        </CardContent>
+                    </Card>);
+                })}
         </Grid>);
     };
 
