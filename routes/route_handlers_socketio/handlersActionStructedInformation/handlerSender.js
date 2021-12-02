@@ -629,7 +629,7 @@ module.exports.sendSearchRequestGetSTIXObjectForId = function(socketIo, data){
  */
 module.exports.sendSearchRequestGetDifferentObjectsSTIXObjectForId = function(socketIo, data){
     let funcName = " (func 'sendSearchRequestGetSTIXObjectForId')",
-        section = "isems-mrsi ui request: send search request, get different objects STIX object for id";
+        section = "isems-mrsi ui request: send search request, list different objects STIX object for id";
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
@@ -682,14 +682,9 @@ module.exports.sendSearchRequestGetDifferentObjectsSTIXObjectForId = function(so
                 user_name_generated_task: result.userName,
                 request_details: {
                     collection_name: "differences objects collection",
-                    paginate_parameters: {
-                        max_part_size: 15,
-                        current_part_number: 1,
-                    },
+                    paginate_parameters: data.arguments.paginateParameters,
                     sortable_field: "data_created",
-                    search_parameters: {
-                        document_id: data.arguments.document_id,
-                    },
+                    search_parameters: { document_id: data.arguments.documentId },
                 },
             });
         }).catch((err) => {

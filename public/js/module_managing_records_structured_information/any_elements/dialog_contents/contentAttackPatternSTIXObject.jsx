@@ -16,6 +16,7 @@ import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
+import CreateListPreviousStateSTIXObject from "../createListPreviousStateSTIXObject.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 export default function CreateDialogContentAttackPatternSTIXObject(props){
@@ -34,9 +35,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
     let [ buttonAddNewKillChain, setButtonAddNewKillChain ] = React.useState(true);
     let [ invalidNameChain, setInvalidNameChain ] = React.useState(true);
     let [ invalidNamePhases, setInvalidNamePhases ] = React.useState(true);
-
-    //запрос на получение дополнительной информации о предыдущем состоянии STIX объектов
-    socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { arguments: { "document_id": currentIdSTIXObject }});
 
     const handlerAddNewKillChain = () => {
             if(invalidNameChain || invalidNamePhases){
@@ -309,8 +307,10 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 
                 <Grid item container md={4}>
                     <Grid container direction="row" className="pt-3">
-                        <Grid item container md={12} justifyContent="center"><strong>Предыдущие изменения</strong></Grid>
+                        <Grid item container md={12} justifyContent="center"><strong>История предыдущих состояний</strong></Grid>
                     </Grid>
+
+                    <CreateListPreviousStateSTIXObject socketIo={socketIo} searchObjectId={currentIdSTIXObject}/>
                 </Grid>
             </Grid>            
         </DialogContent>
