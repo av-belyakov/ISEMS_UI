@@ -41,6 +41,7 @@ module.exports = {
             "react-beautiful-dnd",
             "react-router-dom",
             "react-customize-token-input",
+            "react-frame-component",
         ],
         authPage: "./authPage.js",
         mainPage: "./mainPage.js",
@@ -128,6 +129,7 @@ module.exports = {
             "react-beautiful-dnd":"react-beautiful-dnd",
             "react-router-dom": "react-router-dom",
             "react-customize-token-input": "react-customize-token-input/lib/index.js",
+            "react-frame-component": "react-frame-component/lib/index.js",
         }
     },
 

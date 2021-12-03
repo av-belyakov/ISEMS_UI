@@ -631,6 +631,8 @@ module.exports.sendSearchRequestGetDifferentObjectsSTIXObjectForId = function(so
     let funcName = " (func 'sendSearchRequestGetSTIXObjectForId')",
         section = "isems-mrsi ui request: send search request, list different objects STIX object for id";
 
+    console.log(funcName, " !!!!!!!!!!!!!!!");
+
     checkUserAuthentication(socketIo)
         .then((authData) => {
         //авторизован ли пользователь
@@ -639,9 +641,7 @@ module.exports.sendSearchRequestGetDifferentObjectsSTIXObjectForId = function(so
             }
 
             return authData.document.userName;
-        }).then((userName) => {
-            debug("handlerSender");
-        
+        }).then((userName) => {        
             return new Promise((resolve, reject) => {
                 getSessionId("socketIo", socketIo, (err, sid) => {
                     if(err){
@@ -660,13 +660,13 @@ module.exports.sendSearchRequestGetDifferentObjectsSTIXObjectForId = function(so
             let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection"),
                 taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
 
-            debug("func: ", funcName, " taskID: ", taskID);
+            console.log("func: ", funcName, " taskID: ", taskID);
 
             if (conn === null) {
                 return;
             }
 
-            debug(`func '${funcName}', send new request ---->`);
+            console.log(`func '${funcName}', send new request ---->`);
 
             globalObject.setData("tasks", taskID, {
                 eventName: section,

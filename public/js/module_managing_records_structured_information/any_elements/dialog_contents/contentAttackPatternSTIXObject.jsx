@@ -22,6 +22,7 @@ import CreateElementAdditionalTechnicalInformationDO from "../createElementAddit
 export default function CreateDialogContentAttackPatternSTIXObject(props){
     let { 
         listObjectInfo, 
+        objectPreviousState,
         currentIdSTIXObject,
         socketIo,
         handlerDialog,
@@ -306,11 +307,10 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 </Grid>
 
                 <Grid item container md={4}>
-                    <Grid container direction="row" className="pt-3">
-                        <Grid item container md={12} justifyContent="center"><strong>История предыдущих состояний</strong></Grid>
-                    </Grid>
-
-                    <CreateListPreviousStateSTIXObject socketIo={socketIo} searchObjectId={currentIdSTIXObject}/>
+                    <CreateListPreviousStateSTIXObject 
+                        socketIo={socketIo} 
+                        searchObjectId={currentIdSTIXObject}
+                        objectPreviousState={objectPreviousState} /> 
                 </Grid>
             </Grid>            
         </DialogContent>
@@ -328,32 +328,13 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 
 CreateDialogContentAttackPatternSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
+    objectPreviousState: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
     socketIo: PropTypes.object.isRequired,
     handlerDialog: PropTypes.func.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
-
-//DifferentObjectType содержит перечисление полей и их значения, которые были изменены в произвольном типе
-// SourceReceivingChanges - источник от которого были получены изменения
-// ModifiedTime - время выполнения модификации
-// CollectionName - наименование коллекции в которой выполнялись модификации
-// DocumentID - идентификатор документа в котором выполнялись модификации
-// FieldList - перечень полей подвергшихся изменениям
-/*type DifferentObjectType struct {
-	SourceReceivingChanges string                    `bson:"source_receiving_changes"`
-	ModifiedTime           time.Time                 `bson:"modified_time"`
-	CollectionName         string                    `bson:"collection_name"`
-	DocumentID             string                    `bson:"document_id"`
-	FieldList              []OldFieldValueObjectType `bson:"field_list"`
-}
-
-search_parameters: {
-            document_id: STRING // идентификатор документа в котором выполнялись модификации
-            collection_name: STRING // наименование коллекции в которой выполнялись модификации
-        }
-*/
 
 function CreateAtackPatternElements(props){
     let { 

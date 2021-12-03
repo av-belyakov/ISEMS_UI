@@ -282,8 +282,8 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
             //вывод информационного сообщения
             if(!msg.is_successful){
                 
-                debug("Received NOTIFY Message");
-                debug(msg.information_message);
+                //debug("Received NOTIFY Message");
+                //debug(msg.information_message);
             
                 showNotify({
                     socketIo: socketIo,

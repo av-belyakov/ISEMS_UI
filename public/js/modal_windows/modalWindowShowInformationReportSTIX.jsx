@@ -5,11 +5,8 @@ import { Col, Row } from "react-bootstrap";
 import { 
     AppBar,
     Button,
-    Breadcrumbs,
     Container,
     Dialog,
-    DialogActions,
-    DialogContent,
     DialogTitle,
     Toolbar,
     IconButton,
@@ -72,6 +69,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             uuidValue: "",
             listObjectInfo: {},
             availableForGroups: [],
+            objectPreviousState: {},
             listGroupAccessToReport: [],
             secondBreadcrumbsObjectId: "",
             currentGroupAccessToReport: "select_group",
@@ -176,7 +174,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             }
 
             let reportInfo = {},
-                listObjectInfoTmp= {};
+                listObjectInfoTmp = {},
+                listPreviousState = [],
+                objectPreviousState = {};
 
             switch(data.section){
             case "list of groups that are allowed access":
@@ -253,6 +253,20 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 //console.log("|||||||");
                 //console.log(listObjectInfoTmp);
                 //console.log(":::::::::");
+
+                break;
+
+            case "isems-mrsi ui request: send search request, list different objects STIX object for id":
+                objectPreviousState = _.cloneDeep(this.state.objectPreviousState);
+                
+                if(typeof objectPreviousState.transmitted_data !== "undefined"){
+                    listPreviousState = objectPreviousState.transmitted_data.slice();
+                    listPreviousState.concat(data.information.additional_parameters);
+                } else {
+                    objectPreviousState = data.information.additional_parameters;
+                }
+
+                this.setState({ objectPreviousState: objectPreviousState });
 
                 break;
             }
@@ -546,6 +560,19 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             searchObjectId: currentObjectId,
             parentObjectId: this.props.showReportId,
         }});
+
+        console.log("handlerChangeCurrentAdditionalIdSTIXObject");
+
+        //запрос на получение дополнительной информации о предыдущем состоянии STIX объектов
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { 
+            arguments: { 
+                "documentId": currentObjectId,
+                "paginateParameters": {
+                    "max_part_size": 15,
+                    "current_part_number": 1,
+                } 
+            }});
+
     }
 
     //обрабатывает добавление новых объектов STIX или изменение информации о старых (при этом все равно происходит добавление объекта)
@@ -835,6 +862,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             <CreateAnyModalWindowSTIXObject
                 socketIo={this.props.socketIo}
                 listObjectInfo={this.state.listObjectInfo}
+                objectPreviousState={this.state.objectPreviousState}
                 showDialogElement={this.state.showDialogElementAdditionalSTIXObject}
                 currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
                 handelrDialogClose={this.handelrDialogClose}
@@ -933,6 +961,7 @@ function CreateAnyModalWindowSTIXObject(props){
     let { 
         socketIo,
         listObjectInfo,
+        objectPreviousState,
         showDialogElement,
         currentAdditionalIdSTIXObject, 
         handelrDialogClose,
@@ -1111,6 +1140,7 @@ function CreateAnyModalWindowSTIXObject(props){
             {(MyModule)?
                 <MyModule
                     listObjectInfo={listObjectInfo}
+                    objectPreviousState={objectPreviousState}
                     currentIdSTIXObject={currentAdditionalIdSTIXObject} 
                     socketIo={socketIo}
                     handlerDialog={handlerDialogButtonSaveOrAdd}
@@ -1124,6 +1154,7 @@ function CreateAnyModalWindowSTIXObject(props){
 
 CreateAnyModalWindowSTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    objectPreviousState: PropTypes.object.isRequired,
     listObjectInfo: PropTypes.object.isRequired,
     showDialogElement: PropTypes.bool.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
