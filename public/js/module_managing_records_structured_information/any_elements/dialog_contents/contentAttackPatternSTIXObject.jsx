@@ -306,7 +306,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 
                 </Grid>
 
-                <Grid item container md={4}>
+                <Grid item container md={4} style={{ display: "block" }}>
                     <CreateListPreviousStateSTIXObject 
                         socketIo={socketIo} 
                         searchObjectId={currentIdSTIXObject}

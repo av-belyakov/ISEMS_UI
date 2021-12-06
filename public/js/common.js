@@ -16,6 +16,7 @@ require("datatablesNetBs");
 require("react-scrollbar");
 require("react-beautiful-dnd");
 require("react-customize-token-input");
+require("react-infinite-scroll-component");
 
 require("lodash");
 require("moment");

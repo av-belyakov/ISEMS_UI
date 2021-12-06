@@ -21,12 +21,11 @@ import {
 } from "@material-ui/core";
 import IconCloseOutlined from "@material-ui/icons/CloseOutlined";
 import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
-import IconSave from "@material-ui/icons/Save";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import TokenInput from "react-customize-token-input";
-import { blue, grey, green, red } from "@material-ui/core/colors";
+import { grey, green, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 //import { timeout } from "async";
@@ -115,7 +114,6 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
         [ valueTmpHashSumER, setValueTmpHashSumER ] = useState({ type: "", description: "" }),
         [ valueTmpUpdateHashSumER, setValueTmpUpdateHashSumER ] = useState({}),
-        //[ valueTmpUpdateHashSumER, setValueTmpUpdateHashSumER ] = useState({ num: -1, type: "", hash: "" }),
         [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
         [ valueTmpSelector, setValueTmpSelector ] = useState(""),
         [ valueER, setValueER ] = useState(patternValueER),
