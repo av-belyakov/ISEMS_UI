@@ -11,7 +11,8 @@ import {
     Grid,
 //    CircularProgress,
 } from "@material-ui/core";
-import { orange } from "@material-ui/core/colors";
+import { Badge } from "react-bootstrap";
+import { orange, green } from "@material-ui/core/colors";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 /*import IconCloseOutlined from "@material-ui/icons/CloseOutlined";
@@ -25,9 +26,8 @@ import { blue, grey, green, red } from "@material-ui/core/colors";*/
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
-//import { v4 as uuidv4 } from "uuid";
 import { helpers } from "../../common_helpers/helpers";
-
+import _ from "lodash";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -40,6 +40,99 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const listValueName = {
+    Created: "время создания",
+    Modified: "время модификации",
+    CreatedByRef: "id источника создавшего данный объект",
+    Labels: "термины используемые для описания данного объекта",
+    Сonfidence: "уверенность создателя в правильности своих данных",
+    Lang: "текстовый код языка",
+    ExternalReferences: "внешние ссылки",
+    ObjectMarkingRefs: "список ID ссылающиеся на объект \"marking-definition\"",
+    GranularMarkings: "список \"гранулярных меток\"",
+    Extensions: "список дополнительной информации",
+    Name: "имя",
+    Description: "подробное описание",
+    Aliases: "альтернативные имена",
+    KillChainPhases: "список цепочки фактов",
+    FirstSeen: "время первого обнаружения",
+    LastSeen: "время последнего обнаружения",
+    Objective: "основная цель",
+};
+
+const showInformationInCycle = (data, num) => {
+    //console.log(`func 'showInformationInCicle', Num: ${num}, data:`);
+    //console.log(data);
+    //console.log("__________");
+
+    if(_.isEmpty(data)){
+        return <span style={{ color: green[600] }}>нет значения</span>;
+    }
+
+    if((_.isString(data)) || (_.isBoolean(data))){
+        if((_.isString(data)) && (data.length === 0)){
+            return <span style={{ color: green[600] }}>нет значения</span>;
+        }
+
+        return data;
+    }
+
+    if(_.isObject(data)){
+        if(Array.isArray(data)){
+            let tmpList = [];
+
+            for(let i = 0; i < data.length; i++){
+                if((_.isString(data[i])) || (_.isBoolean(data[i]))){
+                    tmpList.push(<span key={`key_badge_${i}_${num}`}><Badge bg="info">{data[i]}</Badge>{" "}</span>);
+
+                    continue;
+                }
+
+                if(Array.isArray(data[i])){
+                    tmpList.push(<div key={`key_list_${i}_${num}`} style={{ marginTop: 4 }}>{showInformationInCycle(data[i], num++)}</div>);
+                } else {
+                    tmpList.push(showInformationInCycle(data[i], num++));
+                }
+            }
+
+            return tmpList;
+        } else {
+            if(Object.keys(data).length === 2){
+                let newKey = (data.Key)? data.Key: "",
+                    newValue = (data.Value)? data.Value: "";
+
+                if(newValue.length === 0){
+                    newValue = <span style={{ color: green[600] }}>нет значения</span>;
+                }
+
+                return (<div style={{ marginLeft: 6, paddingBottom: -2 }} key={`key_div_${newKey}_${num}`}>
+                    <span className="text-muted">{newKey}</span>: {newValue}
+                </div>);
+            }/* else {
+                let tmp = [];
+                for(let k in data){
+                    console.log("==========");
+                    console.log(k);
+                    console.log(data[k]);
+                    console.log("==========");
+
+                    if((_.isString(data[k])) || (_.isBoolean(data[k]))){
+                        tmp.push(<div key={`key_${k}_${num}`}>{(listValueName[k])? listValueName[k]: k}: {data[k]}</div>);
+                        //                tmp.push(<div key={`key_${k}_${num}`}>{(listValueName[k])? listValueName[k]: k}: {data[k]}</div>);
+        
+                        continue;
+                    }
+
+                    let comma = (tmp.length === 0)? " ": ", ";
+                    tmp.push(comma + showInformationInCicle(data[k], num++));
+                }
+            }*/
+        }
+    }
+
+    return data;
+};
+
 export default function CreateListPreviousStateSTIXObject(props){
     let { socketIo, searchObjectId, objectPreviousState } = props;
     const classes = useStyles();
@@ -47,39 +140,30 @@ export default function CreateListPreviousStateSTIXObject(props){
     console.log("func 'CreateListPreviousStateSTIXObject', START...");
     console.log(objectPreviousState);
 
-    const listValueName = {
-        Created: "время создания",
-        Modified: "время модификации",
-        CreatedByRef: "id источника создавшего данный объект",
-        Labels: "термины используемые для описания данного объекта",
-        Сonfidence: "уверенность создателя в правильности своих данных",
-        Lang: "текстовый код языка",
-        ExternalReferences: "внешние ссылки",
-        ObjectMarkingRefs: "список ID ссылающиеся на объект \"marking-definition\"",
-        GranularMarkings: "список \"гранулярных меток\"",
-        Extensions: "список дополнительной информации",
-        Name: "имя",
-        Description: "подробное описание",
-        Aliases: "альтернативные имена",
-        KillChainPhases: "список цепочки фактов",
-        FirstSeen: "время первого обнаружения",
-        LastSeen: "время последнего обнаружения",
-        Objective: "основная цель",
-    };
+    /**
+ * 
+ * Для теста изменил некоторые значения объекта Attack-Pattern, в БД история для этого объекта изменилась 
+ * с 5 документов до 6, однако в интерфейсе как было 5 отрисованных элементов так и осталось. 
+ * Но когда я выполнил перезагрузку страницы, стало 6 элементов!!!
+ * 
+ */
 
     let createFrame = () => {
         return (<InfiniteScroll
             height={900}
             next={()=> {
-                console.log("element InfiniteScroll, start func 'Next' --->");
+                //console.log("element InfiniteScroll, start func 'Next' --->");
             }}
             onScroll={(e) => {
-                console.log("element InfiniteScroll, start func 'onScroll' --->");
-                console.log(e);
+                //console.log("element InfiniteScroll, start func 'onScroll' --->");
+                //console.log(e);
             }}
             dataLength={objectPreviousState.transmitted_data.length}>
             {objectPreviousState.transmitted_data.map((item, num) => {
-                return (<Card className="mb-2 pl-2 pr-2" variant="outlined" key={`key_history_${num}`}>
+
+                console.log("modified data: ", item.modified_time);
+
+                return (<Card className="mb-2 pl-2 pr-2" variant="outlined" key={`key_history_${num}_${item.modified_time}`}>
                     <CardContent>
                         <div>
                             <Typography variant="caption">
@@ -94,8 +178,8 @@ export default function CreateListPreviousStateSTIXObject(props){
                             </Typography>
                         </div>
                         <hr/>
-                        <div className="text-center">
-                            <Typography variant="caption">Предыдущее значение:</Typography>
+                        <div className="text-start mb-2">
+                            <Typography variant="subtitle2">предыдущие значения:</Typography>
                         </div>
                         {item.field_list.map((e, n) => {
                             let tmpPath = e.path.split("/"),
@@ -103,21 +187,19 @@ export default function CreateListPreviousStateSTIXObject(props){
                                 value = e.value,
                                 valueName = (typeof listValueName[tmpPath[num]] === "undefined")? tmpPath[num]: listValueName[tmpPath[num]];
 
-                            console.log(`Value: ${e.value}, type: ${typeof e.value}`);
+                            //console.log(`Value: ${value}, type: ${typeof value}`);
+                            //console.log(value);
 
                             /*return (<Typography variant="caption" color="textSecondary" key={`key_value_name_${n}`}>
                                 {valueName}: <strong>{e.value}</strong>
                             </Typography>);*/
-                            if((typeof value === "string") && (value.length === 0)){
-                                value = "пустое значение";
-                            }
 
                             /** 
                              *      !!!!
                              * Здесь нужно придумать функцию замыкания для вывода информации из объектов и массивов
                              *      !!!!
                              */
-                            if(_.isObject(value)){
+                            /*if(_.isObject(value)){
                                 if(Array.isArray(value)){
                                     value = e.value.map((item, n) => {
                                         let elem = item;
@@ -139,11 +221,11 @@ export default function CreateListPreviousStateSTIXObject(props){
                                         value.push(<div key={`key_value_list_object_${n}`}>{elem}</div>); 
                                     }
                                 }
-                            }
+                            }*/
 
-                            return (<div key={`key_value_name_${n}`}>
+                            return (<div key={`key_value_name_${n}_${item.modified_time}`}>
                                 <Typography variant="caption" color="inherit" display="block">
-                                    <span className="text-muted">{valueName}</span>: {`${value}`}
+                                    <span className="text-muted">{valueName}</span>: {showInformationInCycle(value, 1)}
                                 </Typography>
                             </div>);
                         })}
