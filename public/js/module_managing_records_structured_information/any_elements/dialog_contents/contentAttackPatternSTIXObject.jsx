@@ -22,7 +22,7 @@ import CreateElementAdditionalTechnicalInformationDO from "../createElementAddit
 export default function CreateDialogContentAttackPatternSTIXObject(props){
     let { 
         listObjectInfo, 
-        objectPreviousState,
+        listPreviousState,
         currentIdSTIXObject,
         socketIo,
         handlerDialog,
@@ -121,7 +121,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         
             setAttackPatterElement(valueAPTmp);
         },
-        //пункт "набор терминов, используемых для описания данного объекта"
+        //пункт "набор терминов, используемых для описания данного объекта"        
         handlerElementLabels = (obj) => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
 
@@ -130,7 +130,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             }
 
             valueAPTmp.labels = obj.listTokenValue;
-        
+
             setAttackPatterElement(valueAPTmp);
         },
         handlerDeleteElementAdditionalTechnicalInformation = (obj) => {
@@ -310,7 +310,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                     <CreateListPreviousStateSTIXObject 
                         socketIo={socketIo} 
                         searchObjectId={currentIdSTIXObject}
-                        objectPreviousState={objectPreviousState} /> 
+                        listPreviousState={listPreviousState} /> 
                 </Grid>
             </Grid>            
         </DialogContent>
@@ -328,7 +328,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 
 CreateDialogContentAttackPatternSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
-    objectPreviousState: PropTypes.object.isRequired,
+    listPreviousState: PropTypes.array.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
     socketIo: PropTypes.object.isRequired,
     handlerDialog: PropTypes.func.isRequired,

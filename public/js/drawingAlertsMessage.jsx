@@ -28,13 +28,9 @@ export default function DrawingAlertMessage(props) {
         },
     };
             
-    const handleClose = (event, reason) => {
+    const handleClose = () => {
         onHide();
     };
-
-    console.log("DrawingAlertMessage show:", show);
-    console.log("level: ", level);
-    console.log(notiyMsg);
 
     if(typeof titleObj[level] === "undefined"){
         return null;
