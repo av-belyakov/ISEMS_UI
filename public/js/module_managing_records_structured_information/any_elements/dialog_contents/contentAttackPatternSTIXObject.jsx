@@ -1,7 +1,6 @@
 "use strict";
 
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 import { 
     Button,
     DialogActions,
@@ -23,6 +22,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
     let { 
         listObjectInfo, 
         listPreviousState,
+        optionsPreviousState,
         currentIdSTIXObject,
         socketIo,
         handlerDialog,
@@ -263,11 +263,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         </Grid>);
     }
 
-    /**
-     * Надо сделать область для вывода ИСТОРИИ ИЗМЕНЕНИЙ и ссылки на объекты Report с которыми может
-     * быть связан данный объект
-     */
-
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" spacing={3}>
@@ -292,7 +287,14 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                             handlerDeleteKillChain={handlerDeleteKillChain} />
                     </Grid> 
 
-                    <Grid container direction="row" className="pt-3"></Grid>
+                    <Grid container direction="row" className="pt-3">
+                        <Grid item container md={12} justifyContent="center">
+                            <h3>
+                            Здесь нужно разместить область с ссылками на объекты Report с которыми может быть связан данный объект. 
+                            При чем нужно ограничить переходы по этим ссылка для непривелегированных пользователей. Это надо доделать.
+                            </h3>
+                        </Grid>
+                    </Grid>
 
                     <CreateElementAdditionalTechnicalInformationDO 
                         reportInfo={attackPatterElement}
@@ -310,6 +312,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                     <CreateListPreviousStateSTIXObject 
                         socketIo={socketIo} 
                         searchObjectId={currentIdSTIXObject}
+                        optionsPreviousState={optionsPreviousState}
                         listPreviousState={listPreviousState} /> 
                 </Grid>
             </Grid>            
@@ -329,6 +332,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 CreateDialogContentAttackPatternSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
     listPreviousState: PropTypes.array.isRequired,
+    optionsPreviousState: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
     socketIo: PropTypes.object.isRequired,
     handlerDialog: PropTypes.func.isRequired,

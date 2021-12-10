@@ -16,8 +16,8 @@ import { helpers } from "../../common_helpers/helpers";
 import _ from "lodash";
 
 const showInformationInCycle = (data, num) => {
-    if(_.isEmpty(data)){
-        return <span style={{ color: green[600] }}>нет значения</span>;
+    if(!(_.isInteger(data)) && (_.isEmpty(data))){
+        return <span style={{ color: green[600] }}>нет значения1</span>;
     }
 
     if((_.isString(data)) || (_.isBoolean(data))){
@@ -105,20 +105,38 @@ const showInformationInCycle = (data, num) => {
 };
 
 export default function CreateListPreviousStateSTIXObject(props){
-    let { socketIo, searchObjectId, listPreviousState } = props;
+    let { socketIo, searchObjectId, optionsPreviousState, listPreviousState } = props;
+    let [ hasMore, setHasMore ] = React.useState(true);
 
     let createFrame = () => {
         return (<InfiniteScroll
-            height={900}
+            height={1000}
+            loader={<div className="text-center"><h5>загрузка...</h5></div>}
+            dataLength={listPreviousState.length}
+            hasMore={hasMore}
             next={()=> {
-                //console.log("element InfiniteScroll, start func 'Next' --->");
-            }}
-            onScroll={(e) => {
-                //console.log("element InfiniteScroll, start func 'onScroll' --->");
-                //console.log(e);
-            }}
-            dataLength={listPreviousState.length}>
+                if(listPreviousState.length > 100){
+                    setHasMore(false);
+
+                    return;
+                }
+
+                let currentPartNumber = optionsPreviousState.currentPartNumber+1;
+
+                socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { 
+                    arguments: { 
+                        "documentId": searchObjectId,
+                        "paginateParameters": {
+                            "max_part_size": optionsPreviousState.sizePart,
+                            "current_part_number": currentPartNumber,
+                        } 
+                    }});
+            }} >
             {listPreviousState.map((item, num) => {
+                if(typeof item.modified_time === "undefined"){
+                    return;
+                }
+
                 return (<Card className="mb-2 pl-2 pr-2" variant="outlined" key={`key_history_${num}_${item.modified_time}`}>
                     <CardContent>
                         <div>
@@ -165,28 +183,16 @@ export default function CreateListPreviousStateSTIXObject(props){
         <Grid container direction="row" className="pt-2">
             <Grid item container md={12} justifyContent="center">
                 {((listPreviousState === null) || (typeof listPreviousState === "undefined"))? 
-                    "Загрузка...":
+                    "загрузка...":
                     createFrame()}
             </Grid>
         </Grid>
-
-        {/*<Grid container direction="column" className="pt-3" justifyContent="flex-start" alignItems="center">
-            <Grid item container md={12} justifyContent="center">
-                <strong>История предыдущих состояний</strong>
-            </Grid>
-        </Grid>
-        <Grid container direction="row" alignItems="stretch">
-            <Grid item container md={12} justifyContent="center">
-                {((objectPreviousState.transmitted_data === null) || (typeof objectPreviousState.transmitted_data === "undefined"))? 
-                    "Загрузка...":
-                    createFrame()}
-            </Grid>
-    </Grid>*/}
     </React.Fragment>);
 }
 
 CreateListPreviousStateSTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
     searchObjectId: PropTypes.string.isRequired,
+    optionsPreviousState: PropTypes.object.isRequired,
     listPreviousState: PropTypes.array.isRequired,
 };
