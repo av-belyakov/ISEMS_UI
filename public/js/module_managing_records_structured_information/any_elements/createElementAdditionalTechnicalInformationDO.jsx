@@ -776,7 +776,11 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
 
         <Grid container direction="row" className="mt-3 pl-4">
             <Grid item md={6}><span className="text-muted">версия спецификации STIX</span>:</Grid>
-            <Grid item md={6} className="text-end">{(reportInfo.spec_version.length === 0) ? <span className="text-dark">версия не определена</span> : <i>{reportInfo.spec_version}</i>}</Grid>
+            <Grid item md={6} className="text-end">
+                {((typeof reportInfo.spec_version === "undefined") || (reportInfo.spec_version.length === 0))? 
+                    <span className="text-dark">версия не определена</span>: 
+                    <i>{reportInfo.spec_version}</i>}
+            </Grid>
         </Grid>
             
         {((typeof reportInfo.lang !== "undefined") && (reportInfo.lang !== null) && (reportInfo.lang.length !== 0)) ? 

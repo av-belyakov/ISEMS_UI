@@ -17,7 +17,7 @@ import _ from "lodash";
 
 const showInformationInCycle = (data, num) => {
     if(!(_.isInteger(data)) && (_.isEmpty(data))){
-        return <span style={{ color: green[600] }}>нет значения1</span>;
+        return <span style={{ color: green[600] }}>нет значения</span>;
     }
 
     if((_.isString(data)) || (_.isBoolean(data))){
@@ -115,6 +115,21 @@ export default function CreateListPreviousStateSTIXObject(props){
             dataLength={listPreviousState.length}
             hasMore={hasMore}
             next={()=> {
+
+                console.log("func 'CreateListPreviousStateSTIXObject'");
+                console.log(`listPreviousState.length (${listPreviousState.length}) === (${optionsPreviousState.countFoundDocuments}) optionsPreviousState.countFoundDocuments`);
+
+                /**
+ * При загрузке дополнительных списков документов сравнение не работает корректно,
+ * все время получается меньше в listPreviousState.length чем в optionsPreviousState.countFoundDocuments
+ */
+
+                if(listPreviousState.length >= optionsPreviousState.countFoundDocuments){
+                    setHasMore(false);
+
+                    return;
+                }
+
                 if(listPreviousState.length > 100){
                     setHasMore(false);
 
@@ -122,7 +137,6 @@ export default function CreateListPreviousStateSTIXObject(props){
                 }
 
                 let currentPartNumber = optionsPreviousState.currentPartNumber+1;
-
                 socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { 
                     arguments: { 
                         "documentId": searchObjectId,
@@ -165,11 +179,6 @@ export default function CreateListPreviousStateSTIXObject(props){
                                 </Typography>
                             </Grid>);
                         })}
-
-                        {/*JSON.stringify(objectPreviousState.transmitted_data)*/}
-                        {/*<Typography variant="caption" display="block">
-                        {JSON.stringify(objectPreviousState.transmitted_data)}
-                </Typography>*/}
                     </CardContent>
                 </Card>);
             })}
@@ -179,6 +188,11 @@ export default function CreateListPreviousStateSTIXObject(props){
     return (<React.Fragment>
         <Grid container direction="row" className="pt-3">
             <Grid item container md={12} justifyContent="center"><strong>История предыдущих состояний</strong></Grid>
+        </Grid>
+        <Grid container direction="row" className="pt-3">
+            <Grid item container md={12}>Всего документов:&nbsp; 
+                <strong className="text-muted">{optionsPreviousState.countFoundDocuments}</strong>
+            </Grid>
         </Grid>
         <Grid container direction="row" className="pt-2">
             <Grid item container md={12} justifyContent="center">

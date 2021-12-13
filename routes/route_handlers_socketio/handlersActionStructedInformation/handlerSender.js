@@ -628,10 +628,8 @@ module.exports.sendSearchRequestGetSTIXObjectForId = function(socketIo, data){
  * @param {*} data 
  */
 module.exports.sendSearchRequestGetDifferentObjectsSTIXObjectForId = function(socketIo, data){
-    let funcName = " (func 'sendSearchRequestGetSTIXObjectForId')",
+    let funcName = " (func 'sendSearchRequestGetDifferentObjectsSTIXObjectForId')",
         section = "isems-mrsi ui request: send search request, list different objects STIX object for id";
-
-    console.log(funcName, " !!!!!!!!!!!!!!!");
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
@@ -660,13 +658,87 @@ module.exports.sendSearchRequestGetDifferentObjectsSTIXObjectForId = function(so
             let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection"),
                 taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
 
-            console.log("func: ", funcName, " taskID: ", taskID);
-
             if (conn === null) {
                 return;
             }
 
-            console.log(`func '${funcName}', send new request ---->`);
+            globalObject.setData("tasks", taskID, {
+                eventName: section,
+                eventForWidgets: false,
+                userSessionID: result.sessionId,
+                generationTime: +new Date(),
+                socketId: socketIo.id,
+            });
+
+            conn.sendMessage({
+                task_id: taskID,
+                section: "handling search requests",
+                user_name_generated_task: result.userName,
+                request_details: {
+                    collection_name: "differences objects collection",
+                    paginate_parameters: data.arguments.paginateParameters,
+                    sortable_field: "data_created",
+                    search_parameters: { document_id: data.arguments.documentId },
+                },
+            });
+        }).catch((err) => {
+            if ((err.name === "management auth") || (err.name === "management MRSICT")) {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
+};
+
+/**
+ * Обработчик запроса для поиска количества документов о предыдущем состоянии STIX объектов находящейся в коллекции "accounting_differences_objects_collection"
+ * 
+ * @param {*} socketIo 
+ * @param {*} data 
+ */
+module.exports.sendSearchRequestGetCountDifferentObjectsSTIXObjectForId = function(socketIo, data){
+    let funcName = " (func 'sendSearchRequestGetCountDifferentObjectsSTIXObjectForId')",
+        section = "isems-mrsi ui request: send search request, count list different objects STIX object for id";
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+            //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return authData.document.userName;
+        }).then((userName) => {        
+            return new Promise((resolve, reject) => {
+                getSessionId("socketIo", socketIo, (err, sid) => {
+                    if(err){
+                        return reject(err);
+                    }
+
+                    resolve({ userName: userName, sessionId: sid });
+                });
+            });
+        }).then((result) => {
+            if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                throw(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection"),
+                taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
+
+            if (conn === null) {
+                return;
+            }
 
             globalObject.setData("tasks", taskID, {
                 eventName: section,

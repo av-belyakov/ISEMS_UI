@@ -3,20 +3,12 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
-    //AppBar,
     Button,
-    //Container,
-    //Dialog,
     DialogActions,
     DialogContent,
     TextField,
-    //Toolbar,
-    //Typography,
     Grid,
 } from "@material-ui/core";
-//import { teal, grey } from "@material-ui/core/colors";
-//import { makeStyles } from "@material-ui/core/styles";
-//import { v4 as uuidv4 } from "uuid";
 import TokenInput from "react-customize-token-input";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
@@ -26,35 +18,8 @@ import { helpers } from "../../../common_helpers/helpers";
 import CreateListPreviousStateSTIXObject from "../createListPreviousStateSTIXObject.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
-/*const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: "fixed",
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    appBreadcrumbs: {
-        position: "fixed",
-        top: "60px",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        paddingLeft: theme.spacing(4),
-    },
-    buttonSave: {
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    title: {
-        marginLeft: theme.spacing(2),
-        flex: 1,
-    },
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-}));*/
+const minDefaultData = "0001-01-01T00:00:00Z",
+    defaultData = "2001-01-01T00:00:01Z";
 
 export default function CreateDialogContentCampaignSTIXObject(props){
     let { 
@@ -89,28 +54,14 @@ export default function CreateDialogContentCampaignSTIXObject(props){
             setDataPatterElement(valueTmp);
         },
         handlerChangeDateTimeFirstSeen = (obj) => {
-            console.log("func 'handlerChangeDateTimeFirstSeen', START...");
-            console.log(obj);
-
             let valueTmp = _.cloneDeep(dataPatterElement);
             valueTmp.first_seen = new Date(obj).toISOString();
     
             setDataPatterElement(valueTmp);
-
-            /**
-             * Доделать два обработчика времени 
-             * "0001-01-01T00:00:00Z")? "2001-01-01T00:00:01Z"
-             */
-
-            console.log(new Date(obj).toISOString());
-
         },
         handlerChangeDateTimeLastSeen = (obj) => {
-            console.log("func 'handlerChangeDateTimeLastSeen', START...");
-            console.log(obj);
-
             let valueTmp = _.cloneDeep(dataPatterElement);
-            valueTmp.first_seen = new Date(obj).toISOString();
+            valueTmp.last_seen = new Date(obj).toISOString();
     
             setDataPatterElement(valueTmp);
         },
@@ -171,7 +122,7 @@ export default function CreateDialogContentCampaignSTIXObject(props){
      
         },
         handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-            let valueTmp = _.cloneDeep(setDataPatterElement);
+            let valueTmp = _.cloneDeep(dataPatterElement);
 
             if(obj.modalType === "external_references"){
                 if(obj.actionType === "new"){
@@ -227,7 +178,6 @@ export default function CreateDialogContentCampaignSTIXObject(props){
         handlerSave = () => {
             let valueTmp = _.cloneDeep(dataPatterElement);
             valueTmp.lang = "RU";
-
             
             if(valueTmp.labels === null){
                 delete valueTmp.labels;
@@ -270,16 +220,6 @@ export default function CreateDialogContentCampaignSTIXObject(props){
         </Grid>);
     }
 
-    /*    return (<React.Fragment>
-        <Row className="mt-2">
-            <Col md={12} className="pl-3 pr-3">
- 
-        Просмотр и редактирование STIX объекта типа Кампания (Campaign DO STIX)
-            </Col>
-            <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
-        </Row>
-    </React.Fragment>);*/
-
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" spacing={3}>
@@ -317,13 +257,6 @@ export default function CreateDialogContentCampaignSTIXObject(props){
                         handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
                         handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
                         isNotDisabled={isNotDisabled} />       
-
-                    <Row className="mt-2">
-                        <Col md={12} className="pl-3 pr-3">
-                            Просмотр и редактирование STIX объекта типа Кампания (Campaign DO STIX)
-                        </Col>
-                        <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
-                    </Row>
                 </Grid>
 
                 <Grid item container md={4} style={{ display: "block" }}>
@@ -368,8 +301,8 @@ function CreateCampaingPatternElements(props){
         handlerChangeDateTimeLastSeen,
     } = props;
 
-    let firstSeen = (campaignPatterElement.first_seen === "0001-01-01T00:00:00Z")? "2001-01-01T00:00:01Z": campaignPatterElement.first_seen;
-    let lastSeen = (campaignPatterElement.last_seen === "0001-01-01T00:00:00Z")? "2001-01-01T00:00:01Z": campaignPatterElement.last_seen;
+    let firstSeen = (campaignPatterElement.first_seen === minDefaultData)? defaultData: campaignPatterElement.first_seen;
+    let lastSeen = (campaignPatterElement.last_seen === minDefaultData)? defaultData: campaignPatterElement.last_seen;
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -425,12 +358,10 @@ function CreateCampaingPatternElements(props){
                 <span className="text-muted">Первое обнаружение</span>:
             </Grid>
             <Grid item container md={8}>
-                {/*campaignPatterElement.first_seen*/}
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <DateTimePicker
                         variant="inline"
                         ampm={false}
-                        label="начальное время"
                         value={firstSeen}
                         minDate={new Date("2000-01-01")}
                         maxDate={new Date()}
@@ -446,12 +377,10 @@ function CreateCampaingPatternElements(props){
                 <span className="text-muted">Последнее обнаружение</span>:
             </Grid>
             <Grid item container md={8}>
-                {/*campaignPatterElement.last_seen*/}
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <DateTimePicker
                         variant="inline"
                         ampm={false}
-                        label="начальное время"
                         value={lastSeen}
                         minDate={new Date("2000-01-02")}
                         maxDate={new Date()}
@@ -479,26 +408,6 @@ function CreateCampaingPatternElements(props){
         </Grid>
     </React.Fragment>);
 }
-
-/**
-//CampaignDomainObjectsSTIX объект "Campaign", по терминалогии STIX, это набор действий определяющих злонамеренную деятельность или атаки
-// Name - имя используемое для идентификации "Campaign" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
-// Description - более подробное описание
-// Aliases - альтернативные имена используемые для идентификации "Campaign"
-// FirstSeen - время когда компания была впервые обнаружена, в формате "2016-05-12T08:17:27.000Z"
-// LastSeen - время когда компания была зафиксирована в последний раз, в формате "2016-05-12T08:17:27.000Z"
-// Objective - основная цель, желаемый результат или предполагаемый эффект
-type CampaignDomainObjectsSTIX struct {
-	CommonPropertiesObjectSTIX
-	CommonPropertiesDomainObjectSTIX
-	Name        string    `json:"name" bson:"name" required:"true"`
-	Description string    `json:"description" bson:"description"`
-	Aliases     []string  `json:"aliases" bson:"aliases"`
-	FirstSeen   time.Time `json:"first_seen" bson:"first_seen"`
-	LastSeen    time.Time `json:"last_seen" bson:"last_seen"`
-	Objective   string    `json:"objective" bson:"objective"`
-}
- */
 
 CreateCampaingPatternElements.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,

@@ -70,6 +70,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             listObjectInfo: {},
             optionsPreviousState: {
                 sizePart: 15,
+                countFoundDocuments: 0,
                 objectId: "",
                 currentPartNumber: 1,
             },
@@ -264,9 +265,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 break;
 
             case "isems-mrsi ui request: send search request, list different objects STIX object for id":
-
-                console.log("isems-mrsi ui request: send search request, list different objects STIX object for id");
-                console.log(data.information.additional_parameters);
+                if(data.information.additional_parameters.transmitted_data.length === 0){
+                    return;
+                }
 
                 objectId = (data.information.additional_parameters.transmitted_data.length > 1)? data.information.additional_parameters.transmitted_data[0]: "";
 
@@ -310,6 +311,15 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     listPreviousState: listPreviousState,
                     optionsPreviousState: optionsPreviousStateTmp 
                 });
+
+                break;
+
+            case "isems-mrsi ui request: send search request, count list different objects STIX object for id":
+                optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousState);
+                optionsPreviousStateTmp.objectId = data.information.additional_parameters.document_id;
+                optionsPreviousStateTmp.countFoundDocuments = data.information.additional_parameters.number_documents_found;
+
+                this.setState({ optionsPreviousState: optionsPreviousStateTmp });
 
                 break;
             }
@@ -598,6 +608,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         optionsPreviousStateTmp.objectId = currentObjectId;
 
         this.setState({ optionsPreviousState: optionsPreviousStateTmp });
+
+        //запрос на получение количества документов о предыдущем состоянии STIX объектов
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, get count different objects STIX object for id", {
+            arguments: { "documentId": currentObjectId },
+        });
 
         //запрос на получение дополнительной информации о предыдущем состоянии STIX объектов
         this.props.socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { 
