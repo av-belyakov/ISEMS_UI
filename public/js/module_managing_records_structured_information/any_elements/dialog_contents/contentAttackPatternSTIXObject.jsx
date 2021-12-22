@@ -220,7 +220,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         handlerSave = () => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
             valueAPTmp.lang = "RU";
-
             
             if(valueAPTmp.labels === null){
                 delete valueAPTmp.labels;
@@ -249,6 +248,9 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             if(valueAPTmp.kill_chain_phases === null){
                 delete valueAPTmp.kill_chain_phases;
             }
+
+            console.log("attack pattern");
+            console.log(valueAPTmp);
 
             setAttackPatterElement(valueAPTmp);
 

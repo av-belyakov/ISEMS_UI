@@ -8,16 +8,14 @@
 <div class="container py-5">
     <div class="row">
         <div class="col-md-12">
-            <h2 class="text-center mb-4">ISEMS-UI</h2>
             <div class="row">
                 <div class="col-md-6 mx-auto">
-                    <div class="card rounded-0">
-                        <div class="card-header">
-                            <h4 class="mb-0">Аутентификация</h4>
-                        </div>
-                        <div class="alert alert-danger alert-dismissible fade show" style="display: none" id="divAlert">
-                            <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            <strong>Ошибка!</strong> Некорректный логин или пароль.
+                    <div class="card">
+                        <div class="card-header text-center">ISEMS-UI аутентификация</div>
+                        <!-- <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none" id="divAlert"> -->
+                        <div class="alert alert-danger alert-dismissible fade visually-hidden" role="alert" id="divAlert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <strong>Ошибка!</strong> Некорректный логин или пароль. 
                         </div>
                         <div class="card-body">
                             <form method="POST" action="auth" class="form" role="form" autocomplete="off" id="formLogin" novalidate="">
@@ -29,7 +27,11 @@
                                     <label>Пароль</label>
                                     <input type="password" class="form-control form-control rounded-0" name="password" id="inputPassword" required="" autocomplete="new-password">
                                 </div>
-                                <button type="submit" class="btn btn-success btn-sm float-right" id="btnLogin">ВХОД</button>
+                                <div class="row">
+                                    <div class="col-md-12 text-end">
+                                        <button type="submit" class="btn btn-success btn-sm text-right" id="btnLogin" style="margin-top: 15px;">ВХОД</button>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </div>

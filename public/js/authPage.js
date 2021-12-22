@@ -19,7 +19,8 @@ const md5js = require("md5js");
             let string = parametrs[i].split("=");
             if (string[0] === "username" && string[1] === "error") {
                 let div = document.getElementById("divAlert");
-                div.style.display = "";
+                div.classList.remove("visually-hidden");
+                div.classList.add("show");
             }
         }
     }
@@ -32,8 +33,9 @@ const md5js = require("md5js");
         if (divLogin.length === 0) return false;
         if (divPassword.length === 0) return false;
         if (!/^\w+$/.test(divLogin)) {
-            let divAlert = document.getElementById("divAlert");
-            divAlert.style.display = "";
+            let div = document.getElementById("divAlert");
+            div.classList.remove("visually-hidden");
+            div.classList.add("show");
 
             return false;
         }

@@ -76,10 +76,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             },
             listPreviousState: [],
             availableForGroups: [],
-            //objectPreviousState: {},
             listGroupAccessToReport: [],
             secondBreadcrumbsObjectId: "",
             currentGroupAccessToReport: "select_group",
+            reportAcceptedInformation: {},
             currentAdditionalIdSTIXObject: "",
             showDialogElementAdditionalSTIXObject: false,
             showDialogElementAdditionalThechnicalInfo: false,
@@ -216,8 +216,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 listObjectInfoTmp[reportInfo.id] = reportInfo;
 
                 this.setState({ 
-                    //reportInfo: data.information.additional_parameters.transmitted_data,
                     listObjectInfo: listObjectInfoTmp,
+                    reportAcceptedInformation: reportInfo,
                 });
 
                 /*
@@ -225,7 +225,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 * Функция testWriteAdditionalInfoForListObjectInfo осуществляет ДОПОЛНИТЕЛЬНОЕ наполнение ТЕСТОВОЙ информацией объекта
                 * listObjectInfo
                 **/
-                this.testWriteAdditionalInfoForListObjectInfo.call(this);
+                //this.testWriteAdditionalInfoForListObjectInfo.call(this);
         
                 break;
             case "list of groups to which the report is available":
@@ -269,7 +269,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     return;
                 }
 
-                objectId = (data.information.additional_parameters.transmitted_data.length > 1)? data.information.additional_parameters.transmitted_data[0]: "";
+                objectId = (data.information.additional_parameters.transmitted_data.length > 1)? data.information.additional_parameters.transmitted_data[0].document_id: "";
 
                 if((this.state.listPreviousState.length === 0) || (this.state.optionsPreviousState.objectId !== objectId)){
                     listPreviousState = (data.information.additional_parameters.transmitted_data.length === 0)? 
@@ -280,9 +280,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     let receivedList = data.information.additional_parameters.transmitted_data;
 
                     for(let item of receivedList){
-                        if(typeof listPreviousState.find((elem) => {
-                            return (elem.modified_time === item.modified_time);
-                        }) === "undefined"){
+                        if(!listPreviousState.find((elem) => elem.modified_time === item.modified_time)){
                             listPreviousState.push(item);
                         }
                     }
@@ -423,6 +421,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             };
 
             if(obj.actionType === "new"){
+                if(!Array.isArray(listObjectTmp[obj.objectId].granular_markings)){
+                    listObjectTmp[obj.objectId].external_references = [];
+                }
+
                 newExternalReferences.external_id = this.state.uuidValue;
                 listObjectTmp[obj.objectId].external_references.push(newExternalReferences);
             }
@@ -440,6 +442,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
         if(obj.modalType === "granular_markings"){
             if(obj.actionType === "new"){
+                if(!Array.isArray(listObjectTmp[obj.objectId].granular_markings)){
+                    listObjectTmp[obj.objectId].granular_markings = [];
+                }
+
                 listObjectTmp[obj.objectId].granular_markings.push({
                     lang: obj.value.lang,
                     marking_ref: obj.value.marking_ref,
@@ -457,6 +463,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         }
 
         if(obj.modalType === "extensions"){
+            if((listObjectTmp[obj.objectId].extensions === null) || (typeof listObjectTmp[obj.objectId].extensions === "undefined")){
+                listObjectTmp[obj.objectId].extensions = {};
+            }
+
             listObjectTmp[obj.objectId].extensions[obj.value.name] = obj.value.description;
         }
 
@@ -653,6 +663,13 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     handelrDialogClose(){
         this.setState({ 
+            listPreviousState: [],
+            optionsPreviousState: {
+                sizePart: 15,
+                countFoundDocuments: 0,
+                objectId: "",
+                currentPartNumber: 1,
+            },
             currentAdditionalIdSTIXObject: "",
             showDialogElementAdditionalSTIXObject: false 
         });
@@ -667,11 +684,63 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         console.log("func 'handlerReportSave', START... BUTTON SAVE");
 
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
-        listObjectInfoTmp[this.props.showReportId].modified = helpers.getToISODatetime();
+        let currentReport = listObjectInfoTmp[this.props.showReportId];
 
-        this.setState({ listObjectInfo: listObjectInfoTmp });
+        currentReport.lang = "RU";
 
-        console.log("Далее отправляем объект через WebSocket и закрываем окно");
+        if(currentReport.labels === null){
+            delete currentReport.labels;
+        }
+
+        if(currentReport.external_references === null){
+            delete currentReport.external_references;
+        }
+
+        if(currentReport.object_marking_refs === null){
+            delete currentReport.object_marking_refs;
+        }
+
+        if(currentReport.granular_markings === null){
+            delete currentReport.granular_markings;
+        }
+
+        if(currentReport.extensions === null){
+            delete currentReport.extensions;
+        }
+
+        if(currentReport.aliases === null){
+            delete currentReport.aliases;
+        }
+
+        if(currentReport.kill_chain_phases === null){
+            delete currentReport.kill_chain_phases;
+        }
+
+        console.log("----->");
+        console.log("--- BEFORE ---");
+        console.log(this.state.listObjectInfo[this.props.showReportId]);
+        console.log("--- AFTER ---");
+        console.log(currentReport);
+        console.log("<-----");
+
+        /** FOR TEST START */
+        /** СОДЕРЖИМОЕ currentReport.external_references почему то не является валидным 
+         *  ПРОБЛЕММА В АДРЕСЕ URL, он единственный проверяется, если он не валидный то весь объект невалидный
+        */
+        //delete currentReport.external_references;
+        /** FOR TEST END */
+
+        this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [currentReport] });
+        /*this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [{
+            id: currentReport.id,
+            type: currentReport.type,
+            name: currentReport.name,
+            created: currentReport.created,
+            spec_version: currentReport.spec_version,
+            object_refs: currentReport.object_refs,
+            description: currentReport.description,
+        }] });*/
+        this.modalClose();
     }
 
     showDialogElementAdditionalThechnicalInfo(obj){
@@ -716,6 +785,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 <CreateAppBar 
                     title=""
                     nameDialogButton="сохранить"
+                    reportAcceptedInformation={this.state.reportAcceptedInformation}
+                    reportChangeableInformation={{}}
                     handelrDialogClose={this.modalClose}
                     handlerDialogButton={this.handlerReportSave} />
             </Dialog>);
@@ -757,6 +828,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 <CreateAppBar 
                     title={reportInfo.id}
                     nameDialogButton="сохранить"
+                    reportAcceptedInformation={this.state.reportAcceptedInformation}
+                    reportChangeableInformation={reportInfo}
                     handelrDialogClose={this.modalClose}
                     handlerDialogButton={this.handlerReportSave} />
 
@@ -958,7 +1031,14 @@ ModalWindowShowInformationReportSTIX.propTypes = {
 
 function CreateAppBar(props){
     const classes = useStyles();
-    const { title, nameDialogButton, handelrDialogClose, handlerDialogButton } = props;
+    const { 
+        title, 
+        nameDialogButton, 
+        reportAcceptedInformation,
+        reportChangeableInformation,
+        handelrDialogClose, 
+        handlerDialogButton 
+    } = props;
     
     return (<AppBar className={classes.appBar}>
         <Toolbar>
@@ -966,7 +1046,13 @@ function CreateAppBar(props){
                 <CloseIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>{title}</Typography>
-            <Button size="small" className={classes.buttonSave} onClick={handlerDialogButton}>{nameDialogButton}</Button>
+            <Button 
+                size="small"
+                disabled={_.isEqual(reportAcceptedInformation, reportChangeableInformation)} 
+                className={classes.buttonSave} 
+                onClick={handlerDialogButton}>
+                {nameDialogButton}
+            </Button>
         </Toolbar>
     </AppBar>);
 }
@@ -974,6 +1060,8 @@ function CreateAppBar(props){
 CreateAppBar.propTypes = {
     title: PropTypes.string.isRequired,
     nameDialogButton: PropTypes.string.isRequired,
+    reportAcceptedInformation: PropTypes.object.isRequired,
+    reportChangeableInformation: PropTypes.object.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
     handlerDialogButton: PropTypes.func.isRequired,
 };

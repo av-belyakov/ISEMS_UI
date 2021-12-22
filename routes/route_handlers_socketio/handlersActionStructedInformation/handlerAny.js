@@ -199,10 +199,6 @@ module.exports.insertSTIXObject = function(socketIo, data){
 
                     let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
                     if (conn !== null) {
-                        for(let i = 0; i < data.length; i++){
-                            data[i].modified = helpersFunc.getToISODatetime();
-                        }
-
                         conn.sendMessage({
                             task_id: createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`),
                             section: "handling stix object",

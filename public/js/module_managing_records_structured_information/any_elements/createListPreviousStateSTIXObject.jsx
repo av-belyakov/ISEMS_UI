@@ -115,15 +115,6 @@ export default function CreateListPreviousStateSTIXObject(props){
             dataLength={listPreviousState.length}
             hasMore={hasMore}
             next={()=> {
-
-                console.log("func 'CreateListPreviousStateSTIXObject'");
-                console.log(`listPreviousState.length (${listPreviousState.length}) === (${optionsPreviousState.countFoundDocuments}) optionsPreviousState.countFoundDocuments`);
-
-                /**
- * При загрузке дополнительных списков документов сравнение не работает корректно,
- * все время получается меньше в listPreviousState.length чем в optionsPreviousState.countFoundDocuments
- */
-
                 if(listPreviousState.length >= optionsPreviousState.countFoundDocuments){
                     setHasMore(false);
 
@@ -145,17 +136,21 @@ export default function CreateListPreviousStateSTIXObject(props){
                             "current_part_number": currentPartNumber,
                         } 
                     }});
+
+                console.log("currentPartNumber: ", currentPartNumber);
             }} >
             {listPreviousState.map((item, num) => {
                 if(typeof item.modified_time === "undefined"){
                     return;
                 }
 
-                return (<Card className="mb-2 pl-2 pr-2" variant="outlined" key={`key_history_${num}_${item.modified_time}`}>
+                return (<Card className="mb-3 pl-2 pr-2" variant="outlined" key={`key_history_${num}_${item.modified_time}`}>
                     <CardContent>
                         <div>
                             <Typography variant="caption">
-                                <span className="text-muted">время модификации</span>: <span  style={{ color: orange[800] }}>{helpers.convertDateFromString(item.modified_time, { monthDescription: "long", dayDescription: "numeric" })}</span>
+                                <span className="text-muted">время модификации</span>: <span  style={{ color: orange[800] }}>
+                                    {helpers.convertDateFromString(item.modified_time, { monthDescription: "long", dayDescription: "numeric" })}
+                                </span>
                             </Typography>
                         </div>
                         <div>
