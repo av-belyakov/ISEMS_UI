@@ -131,6 +131,25 @@ export default class CreatePageReport extends React.Component {
             showReportId: elemId,
             showModalWindowInformationReport: true, 
         });
+
+        if(elemId === ""){
+            return;
+        }
+
+        //запрос на получение количества документов о предыдущем состоянии STIX объектов
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, get count different objects STIX object for id", {
+            arguments: { "documentId": elemId },
+        });
+
+        //запрос на получение дополнительной информации о предыдущем состоянии STIX объектов
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { 
+            arguments: { 
+                "documentId": elemId,
+                "paginateParameters": {
+                    "max_part_size": 15,
+                    "current_part_number": 1,
+                } 
+            }});
     }
 
     handlerCloseModalWindowInformationReport(){

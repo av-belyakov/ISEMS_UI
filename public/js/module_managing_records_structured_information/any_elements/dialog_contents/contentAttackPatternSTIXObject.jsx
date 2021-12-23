@@ -179,7 +179,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
 
                 if(obj.actionType === "update"){
                     valueAPTmp.external_references[obj.orderNumber] = obj.data;
-                    setAttackPatterElement(valueAPTmp);        
+                    setAttackPatterElement(valueAPTmp);
                 }
 
                 if(obj.actionType === "hashes_update"){
@@ -325,7 +325,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 disabled={_.isEqual(attackPatterElement, listObjectInfo[currentIdSTIXObject])}
                 onClick={handlerSave}
                 color="primary">
-                сохранить
+                    сохранить
             </Button>
         </DialogActions>
     </React.Fragment>);

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { 
+    Box,
     Card,
     CardContent,
     Typography, 
@@ -136,46 +137,46 @@ export default function CreateListPreviousStateSTIXObject(props){
                             "current_part_number": currentPartNumber,
                         } 
                     }});
-
-                console.log("currentPartNumber: ", currentPartNumber);
             }} >
             {listPreviousState.map((item, num) => {
                 if(typeof item.modified_time === "undefined"){
                     return;
                 }
 
-                return (<Card className="mb-3 pl-2 pr-2" variant="outlined" key={`key_history_${num}_${item.modified_time}`}>
-                    <CardContent>
-                        <div>
-                            <Typography variant="caption">
-                                <span className="text-muted">время модификации</span>: <span  style={{ color: orange[800] }}>
-                                    {helpers.convertDateFromString(item.modified_time, { monthDescription: "long", dayDescription: "numeric" })}
-                                </span>
-                            </Typography>
-                        </div>
-                        <div>
-                            <Typography variant="caption">
-                                <span className="text-muted">изменения выполнил</span>: {(item.user_name_modified_object.length === 0)? 
-                                    <strong>имя неизвестно</strong>:
-                                    item.user_name_modified_object}
-                            </Typography>
-                        </div>
-                        <div className="text-start mb-2">
-                            <Typography variant="subtitle2">предыдущие значения:</Typography>
-                        </div>
-                        {item.field_list.map((e, n) => {
-                            let tmpPath = e.path.split("/"),
-                                num = tmpPath.length - 1,
-                                value = e.value;
-
-                            return (<Grid item xs zeroMinWidth key={`key_value_name_${n}_${item.modified_time}`}>
-                                <Typography variant="caption" color="inherit" display="block">
-                                    <span className="text-muted">{helpers.getHumanNameSTIXElement(tmpPath[num])}</span>: {showInformationInCycle(value, 1)}
+                return (<Box display="inline-block" sx={{ width: "100%" }} key={`key_history_${num}_${item.modified_time}`}>
+                    <Card className="mb-3 pl-2 pr-2">
+                        <CardContent>
+                            <div>
+                                <Typography variant="caption">
+                                    <span className="text-muted">время модификации</span>: <span  style={{ color: orange[800] }}>
+                                        {helpers.convertDateFromString(item.modified_time, { monthDescription: "long", dayDescription: "numeric" })}
+                                    </span>
                                 </Typography>
-                            </Grid>);
-                        })}
-                    </CardContent>
-                </Card>);
+                            </div>
+                            <div>
+                                <Typography variant="caption">
+                                    <span className="text-muted">изменения выполнил</span>: {(item.user_name_modified_object.length === 0)? 
+                                        <strong>имя неизвестно</strong>:
+                                        item.user_name_modified_object}
+                                </Typography>
+                            </div>
+                            <div className="text-start mb-2">
+                                <Typography variant="subtitle2">предыдущие значения:</Typography>
+                            </div>
+                            {item.field_list.map((e, n) => {
+                                let tmpPath = e.path.split("/"),
+                                    num = tmpPath.length - 1,
+                                    value = e.value;
+
+                                return (<Grid item xs zeroMinWidth key={`key_value_name_${n}_${item.modified_time}`}>
+                                    <Typography variant="caption" color="inherit" display="block">
+                                        <span className="text-muted">{helpers.getHumanNameSTIXElement(tmpPath[num])}</span>: {showInformationInCycle(value, 1)}
+                                    </Typography>
+                                </Grid>);
+                            })}
+                        </CardContent>
+                    </Card>
+                </Box>);
             })}
         </InfiniteScroll>);
     };
@@ -185,8 +186,8 @@ export default function CreateListPreviousStateSTIXObject(props){
             <Grid item container md={12} justifyContent="center"><strong>История предыдущих состояний</strong></Grid>
         </Grid>
         <Grid container direction="row" className="pt-3">
-            <Grid item container md={12}>Всего документов:&nbsp; 
-                <strong className="text-muted">{optionsPreviousState.countFoundDocuments}</strong>
+            <Grid item container md={12} justifyContent="flex-end" className="text-muted">Всего документов:&nbsp; 
+                <strong>{optionsPreviousState.countFoundDocuments}</strong>
             </Grid>
         </Grid>
         <Grid container direction="row" className="pt-2">

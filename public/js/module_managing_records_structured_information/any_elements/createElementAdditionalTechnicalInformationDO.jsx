@@ -26,9 +26,9 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import TokenInput from "react-customize-token-input";
 import { grey, green, red } from "@material-ui/core/colors";
-import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
-//import { timeout } from "async";
+import validatejs from "validatejs";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -112,6 +112,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true),
         [ buttonAddSelectorIsDisabled, setButtonAddSelectorIsDisabled ] = useState(true),
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
+        [ valuesIsInvalidURLER, setValuesIsInvalidURLER ] = useState(false),
         [ valueTmpHashSumER, setValueTmpHashSumER ] = useState({ type: "", description: "" }),
         [ valueTmpUpdateHashSumER, setValueTmpUpdateHashSumER ] = useState({}),
         [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
@@ -206,11 +207,20 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         id="external-references-url"
                         label="url"
                         fullWidth={true}
+                        error={valuesIsInvalidURLER}
                         value={(typeof valueER.url === "undefined")? "": valueER.url}
                         onChange={(e) => {
                             let valueERTmp = _.cloneDeep(valueER);
                             valueERTmp.url = e.target.value;
                             setValueER(valueERTmp);
+                            setValuesIsInvalidURLER(((typeof valueERTmp.url !== "undefined") && (valueERTmp.url !== "") && (typeof validatejs({
+                                website: valueERTmp.url,
+                            }, {
+                                website: { url: { 
+                                    allowLocal: true, 
+                                    schemes: [ "http", "https", "ftp" ], 
+                                }},
+                            }) !== "undefined")));
                         }}
                     />
                 </Grid>
@@ -305,7 +315,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                             data: tmpData,
                         });
                     }} disabled={buttonAddNewERIsDisabled}>
-                            добавить новую внешнюю ссылку
+                        добавить новую внешнюю ссылку
                     </Button>
                 </Grid>
             </Grid>
@@ -344,6 +354,15 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                             buttonIsDisabled = false;
                         }
                     }
+
+                    let isInvalidURL = ((typeof item.url !== "undefined") && (item.url !== "") && (typeof validatejs({
+                        website: item.url,
+                    }, {
+                        website: { url: { 
+                            allowLocal: true, 
+                            schemes: [ "http", "https", "ftp" ], 
+                        }},
+                    }) !== "undefined"));
 
                     return (<Card className={classes.customPaper} key={`key_external_references_${key}_fragment`}>
                         <CardHeader 
@@ -391,6 +410,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                         label="url"
                                         value={(typeof item.url === "undefined")? "": item.url}
                                         fullWidth={true}
+                                        error={isInvalidURL}
                                         onChange={(e) => {
                                             item.url = e.target.value;
 

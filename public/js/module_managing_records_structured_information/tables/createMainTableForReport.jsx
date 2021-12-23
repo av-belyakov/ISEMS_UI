@@ -135,14 +135,10 @@ export default class CreateMainTableForReport extends React.Component {
 
     handlerOnPageChange(numCurrentPagePagination){
         if(numCurrentPagePagination > this.state.numCurrentPagePagination){
-            //console.log("___func 'handlerOnPageChange', --->>>");
-
             if(((30 * numCurrentPagePagination) < this.state.countSearchReports) && (this.state.listReports.length < this.state.countSearchReports)){
                 this.props.handlerRequestNextPageOfTable(numCurrentPagePagination+1);
             }
-        }// else {
-        //    console.log("func 'handlerOnPageChange', <<<");
-        //}
+        }
 
         this.setState({ numCurrentPagePagination: numCurrentPagePagination });
     }
@@ -260,7 +256,6 @@ function CreateTable(props){
                                     key={`table_row_${item.id}`} 
                                     hover role="checkbox" tabIndex={-1} 
                                     onClick={(elem) => { handlerTableOnClick(elem, item.id); }}>
-                                    {/*<a target="_blank" href={`/security_event_management_page_information_report?id=${item.id}`}>*/}
                                     <TableCell>{`${++num}.`}</TableCell>
                                     <TableCell align="center">{imgTypeSTIX}</TableCell>
                                     <TableCell >{getChipForGroups(item.id)}</TableCell>

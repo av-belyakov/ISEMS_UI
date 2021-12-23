@@ -20,6 +20,7 @@ import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutl
 import { red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import { v4 as uuidv4 } from "uuid";
+import validatejs from "validatejs";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -74,6 +75,7 @@ export default function ModalWindowDialogElementAdditionalThechnicalInformation(
 
     let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true),
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
+        [ valuesIsInvalidURLER, setValuesIsInvalidURLER ] = useState(false),
         [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
         [ valueER, setValueER ] = useState(defaultValueER),
         [ valueGM, setValueGM ] = useState(defaultValueGM),
@@ -105,6 +107,14 @@ export default function ModalWindowDialogElementAdditionalThechnicalInformation(
         valueERTmp.url = obj.target.value;
         
         setValueER(valueERTmp);
+        setValuesIsInvalidURLER(((typeof valueERTmp.url !== "undefined") && (valueERTmp.url !== "") && (typeof validatejs({
+            website: valueERTmp.url,
+        }, {
+            website: { url: { 
+                allowLocal: true, 
+                schemes: [ "http", "https", "ftp" ], 
+            }},
+        }) !== "undefined")));
     };
 
     const handlerHashesExternalReferences = (hashes) => {
@@ -169,6 +179,7 @@ export default function ModalWindowDialogElementAdditionalThechnicalInformation(
             return <ManagementExternalReferencesObject
                 sourceName={objInfo.sourceName}
                 externalId={uuidValue}
+                urlIsInvalid={valuesIsInvalidURLER}
                 listObjectInfo={listObjectInfo[objInfo.objectId]}
                 sourceNameIsInvalid={valuesIsInvalideSourceNameER}
                 handlerSourceName={handlerSourceNameExternalReferences}
@@ -353,23 +364,41 @@ ModalWindowDialogElementAdditionalThechnicalInformation.propTypes = {
 
 function ManagementExternalReferencesObject(props){
     const classes = useStyles();
-    let { externalId, 
-        sourceNameIsInvalid,
+    let { 
         sourceName,
-        listObjectInfo, 
+        externalId,
+        urlIsInvalid, 
+        listObjectInfo,
+        sourceNameIsInvalid, 
         handlerSourceName,
         handlerDescription,
         handlerURL,
-        handlerHashList } = props;
+        handlerHashList, 
+    } = props;
+
+    /*
+    sourceName={objInfo.sourceName}
+    externalId={uuidValue}
+    urlIsInvalid={valuesIsInvalidURLER}
+    listObjectInfo={listObjectInfo[objInfo.objectId]}
+    sourceNameIsInvalid={valuesIsInvalideSourceNameER}
+    handlerSourceName={handlerSourceNameExternalReferences}
+    handlerDescription={handlerDescriptionExternalReferences}
+    handlerURL={handlerURLExternalReferences}
+    handlerHashList={handlerHashesExternalReferences}
+    */
 
     let eid = `external-reference--${externalId}`;
     let erInfo = {};
-    listObjectInfo.external_references.forEach((item) => {
-        if(item.source_name === sourceName){
-            eid = item.external_id;
-            erInfo = item;
-        }
-    });
+
+    if(Array.isArray(listObjectInfo.external_references)){
+        listObjectInfo.external_references.forEach((item) => {
+            if(item.source_name === sourceName){
+                eid = item.external_id;
+                erInfo = item;
+            }
+        });
+    }
 
     let [ selectItemHash, setSelectItemHash ] = useState(""),
         [ inputHash, setInputHash ] = useState(""),
@@ -406,7 +435,7 @@ function ManagementExternalReferencesObject(props){
         };
 
     let isInvalidSourceName = ((typeof erInfo.source_name === "undefined") || (erInfo.source_name === ""))? sourceNameIsInvalid: false;
-
+    
     return (<React.Fragment>
         <Grid container direction="row">
             <Grid item md={12}><span className="text-muted">ID</span>: {eid}</Grid>
@@ -442,6 +471,7 @@ function ManagementExternalReferencesObject(props){
                     id="external-references-url"
                     label="url"
                     fullWidth={true}
+                    error={urlIsInvalid}
                     defaultValue={(typeof erInfo.url === "undefined")? "": erInfo.url}
                     onChange={handlerURL}
                 />
@@ -514,12 +544,13 @@ function ManagementExternalReferencesObject(props){
 ManagementExternalReferencesObject.propTypes = {
     externalId: PropTypes.string.isRequired,
     sourceName: PropTypes.string.isRequired,
-    handlerURL: PropTypes.func.isRequired,
+    urlIsInvalid: PropTypes.bool.isRequired,
     listObjectInfo: PropTypes.object.isRequired,
+    sourceNameIsInvalid: PropTypes.bool.isRequired,
+    handlerURL: PropTypes.func.isRequired,
     handlerHashList: PropTypes.func.isRequired,
     handlerSourceName: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired,
-    sourceNameIsInvalid: PropTypes.bool.isRequired,
 };
 
 function ManagementGranularMarkingsObject(props){
