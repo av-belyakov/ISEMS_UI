@@ -1,33 +1,63 @@
 "use strict";
 
 import React from "react";
-import { Button, Modal } from "react-bootstrap";
+import { 
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    TextField,
+    Grid,
+} from "@material-ui/core";
+import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-export default class ModalWindowAddReportSTIX extends React.Component {
-    constructor(props){
-        super(props);
+export default function ModalWindowAddReportSTIX(props) {
+    let { show, onHide, socketio } = props;
 
-        this.handleClose = this.handleClose.bind(this);
-        this.handleSave = this.handleSave.bind(this);
-        this.modalClose = this.modalClose.bind(this);
-    }
+    return (<Dialog 
+        fullWidth
+        maxWidth="xl"
+        scroll="paper"
+        open={show} >
+        <DialogTitle>Новый доклад</DialogTitle>
+        <DialogContent>
+            <Grid container direction="row">
+                <Grid item container md={12}>
+                REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
+            REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
+            REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
+            REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
+            REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
+            REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
+            REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
+            REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
+                </Grid>
+            </Grid>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={() => { onHide(); }} color="primary">закрыть</Button>
+            <Button 
+                //disabled={_.isEqual(dataPatterElement, listObjectInfo[currentIdSTIXObject])}
+                onClick={() => {}}
+                color="primary">
+                сохранить
+            </Button>
+        </DialogActions>
+    </Dialog>);
+}
 
-    handleClose(){
-        this.modalClose();
-    }
+ModalWindowAddReportSTIX.propTypes = {
+    show: PropTypes.bool.isRequired,
+    onHide: PropTypes.func.isRequired,
+    socketIo: PropTypes.object.isRequired,
+};
 
-    handleSave(){
+/*
 
-    }
 
-    modalClose(){
-        this.props.onHide();
-    }
-
-    render() {
-        return (
-            <Modal
+ <Modal
                 show={this.props.show}
                 onHide={this.modalClose}
                 //dialogClassName="modal-90w"
@@ -47,21 +77,11 @@ REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT B
 REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
 REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
 REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY REPORT BODY
+                
                 </Modal.Body>
                 <Modal.Footer>
-                    {/*<ModalAlertDangerMessage show={this.state.showAlert} onClose={this.onCloseHandle} message={alertMessage}>
-                            Ошибка при сохранении!
-        </ModalAlertDangerMessage>*/}                   
                     <Button variant="outline-secondary" size="sm" onClick={this.handleClose}>закрыть</Button>
                     <Button variant="outline-primary" size="sm" onClick={this.handleSave}>сохранить</Button>
                 </Modal.Footer>
             </Modal>
-        );
-    }
-}
-
-ModalWindowAddReportSTIX.propTypes = {
-    show: PropTypes.bool,
-    onHide: PropTypes.func.isRequired,
-    socketIo: PropTypes.object.isRequired,
-};
+*/

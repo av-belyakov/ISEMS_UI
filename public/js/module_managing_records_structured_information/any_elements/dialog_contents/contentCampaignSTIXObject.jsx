@@ -1,7 +1,6 @@
 "use strict";
 
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 import { 
     Button,
     DialogActions,
@@ -225,10 +224,6 @@ export default function CreateDialogContentCampaignSTIXObject(props){
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={8}>
                     <Grid container direction="row" className="pt-3">
-                        <Grid item container md={12} justifyContent="center"><strong>Основная информация</strong></Grid>
-                    </Grid>
-
-                    <Grid container direction="row" className="pt-3">
                         <CreateCampaingPatternElements 
                             campaignPatterElement={dataPatterElement}
                             handlerObjective={handlerObjective}
@@ -335,7 +330,8 @@ function CreateCampaingPatternElements(props){
                 <TextField
                     id="outlined-description-static"
                     multiline
-                    rows={3}
+                    minRows={3}
+                    maxRows={8}
                     fullWidth
                     onChange={handlerDescription}
                     defaultValue={campaignPatterElement.description}

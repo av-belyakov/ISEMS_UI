@@ -270,10 +270,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={8}>
                     <Grid container direction="row" className="pt-3">
-                        <Grid item container md={12} justifyContent="center"><strong>Основная информация</strong></Grid>
-                    </Grid>
-
-                    <Grid container direction="row" className="pt-3">
                         <CreateAtackPatternElements 
                             attackPatterElement={attackPatterElement}
                             valueNameChain={valueNameChain}
@@ -389,7 +385,8 @@ function CreateAtackPatternElements(props){
                 <TextField
                     id="outlined-multiline-static"
                     multiline
-                    rows={3}
+                    minRows={3}
+                    maxRows={8}
                     fullWidth
                     onChange={handlerDescription}
                     defaultValue={attackPatterElement.description}

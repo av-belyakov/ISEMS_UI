@@ -1,11 +1,11 @@
 import React from "react";
 import { Button } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { blue } from "@material-ui/core/colors";
+//import { makeStyles } from "@material-ui/core/styles";
+import { green } from "@material-ui/core/colors";
 import AddIcon from "@material-ui/icons/Add";
 import PropTypes from "prop-types";
 
-const useStyles = makeStyles((theme) => ({
+/*const useStyles = makeStyles((theme) => ({
     button: {
         margin: theme.spacing(1),
         "&:hover": {
@@ -14,22 +14,21 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.getContrastText(blue[500]),
         backgroundColor: blue[500],
     },
-}));
+}));*/
 
 export function CreateButtonNewReport(props){
     const { buttonIsDisabled, handlerShowModalWindow } = props;
-    const classes = useStyles();
+    //const classes = useStyles();
 
-    return (
-        <Button
-            size="small"
-            className={classes.button}
-            startIcon={<AddIcon />}
-            disabled={buttonIsDisabled}
-            onClick={handlerShowModalWindow}>
-                новый доклад
-        </Button>
-    );
+    return (<Button
+        size="small"
+        style={{ borderColor: green[500] }}
+        startIcon={<AddIcon style={{ color: green[500] }} />}
+        variant="outlined"
+        disabled={buttonIsDisabled}
+        onClick={handlerShowModalWindow}>
+            новый доклад
+    </Button>);
 }
 
 CreateButtonNewReport.propTypes = {
