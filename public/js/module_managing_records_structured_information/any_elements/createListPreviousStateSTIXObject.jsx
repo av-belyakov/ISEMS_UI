@@ -6,6 +6,7 @@ import {
     Card,
     CardContent,
     Typography, 
+    Paper,
     Grid,
 } from "@material-ui/core";
 import { Badge } from "react-bootstrap";

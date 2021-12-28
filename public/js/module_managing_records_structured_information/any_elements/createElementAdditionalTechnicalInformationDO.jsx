@@ -174,6 +174,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         onChange={(e) => {
                             let valueERTmp = _.cloneDeep(valueER);
                             valueERTmp.source_name = e.target.value;
+
                             setValueER(valueERTmp);
 
                             if(e.target.value.length === 0){
@@ -195,6 +196,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         onChange={(e) => {
                             let valueERTmp = _.cloneDeep(valueER);
                             valueERTmp.description = e.target.value;
+
                             setValueER(valueERTmp);
                         }}
                     />
@@ -212,6 +214,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         onChange={(e) => {
                             let valueERTmp = _.cloneDeep(valueER);
                             valueERTmp.url = e.target.value;
+
                             setValueER(valueERTmp);
                             setValuesIsInvalidURLER(((typeof valueERTmp.url !== "undefined") && (valueERTmp.url !== "") && (typeof validatejs({
                                 website: valueERTmp.url,
@@ -267,8 +270,8 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                             onClick={() => {
                                 let valueERTmp = _.cloneDeep(valueER);
                                 valueERTmp.hashes.push(valueTmpHashSumER);
-                                setValueER(valueERTmp);
 
+                                setValueER(valueERTmp);
                                 setValueTmpHashSumER({ type: "", description: "" });
                                 setButtonAddHashIsDisabled(true);
                             }} 
@@ -296,6 +299,10 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             <Grid container direction="row" className="mt-2" key="key_external_references_link">
                 <Grid item md={12} className="text-end pb-2">
                     <Button onClick={() => {
+                        if(valuesIsInvalidURLER){
+                            return;
+                        }
+                        
                         let obj = {};
                         let tmpData = _.cloneDeep(valueER);
                             

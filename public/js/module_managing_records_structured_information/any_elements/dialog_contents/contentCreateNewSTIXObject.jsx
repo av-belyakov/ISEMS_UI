@@ -7,6 +7,8 @@ import {
     Button,
     Container,
     Dialog,
+    DialogActions,
+    DialogContent,
     Toolbar,
     Typography,
 } from "@material-ui/core";
@@ -49,24 +51,38 @@ export default function CreateDialogContentNewSTIXObject(props){
     let { 
         listObjectInfo, 
         currentIdSTIXObject,
+        socketIo,
         handlerDialog,
         handelrDialogClose,
         isNotDisabled,
     } = props;
 
     return (<React.Fragment>
-        <Row className="mt-2">
-            <Col md={12} className="pl-3 pr-3">
+        <DialogContent>
+            <Row className="mt-2">
+                <Col md={12} className="pl-3 pr-3">
             Добавление какого либо нового STIX объекта. При это можно как добавить новый STIX объект, так и выполнить поиск
             уже существующих STIX объектов по их типам, времени создания, идентификатору и т.д.
-            </Col>
-        </Row>
+                </Col>
+            </Row>
+        </DialogContent>
+
+        <DialogActions>
+            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
+            <Button 
+                //disabled={_.isEqual(dataPatterElement, listObjectInfo[currentIdSTIXObject])}
+                onClick={() => {}}
+                color="primary">
+                сохранить
+            </Button>
+        </DialogActions>
     </React.Fragment>);
 }
 
 CreateDialogContentNewSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
+    socketIo: PropTypes.object.isRequired,
     handlerDialog: PropTypes.func.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,

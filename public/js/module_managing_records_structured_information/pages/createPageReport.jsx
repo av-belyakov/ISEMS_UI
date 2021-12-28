@@ -166,48 +166,74 @@ export default class CreatePageReport extends React.Component {
         this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: requestDetailsTmp });
     }
 
+    handlerButtonSaveModalWindowAddReportSTIX(obj){
+        console.log("func 'handlerButtonSaveModalWindowAddReportSTIX', START");
+        console.log(obj);
+
+        /**
+         * 
+         * 
+         * 
+         * Надо протестировать добавление нового Доклада, так как я сделал но не пробовал
+         * 
+         * 
+         * 
+         */
+
+        this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
+
+        setTimeout(() => {
+        //запрос краткой информации (количество) по заданным параметрам
+            this.props.socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: this.state.requestDetails });
+
+            //запрос полной информации по заданным параметрам
+            this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: this.state.requestDetails });
+        }, 1500);
+    }
+
     isDisabledNewReport(){
         return !this.props.receivedData.userPermissions.create.status;
     }
 
     render(){
-        return (
-            <React.Fragment>
-                <CreateWidgetsPageReport socketIo={this.props.socketIo}/>
+        return (<React.Fragment>
+            <CreateWidgetsPageReport socketIo={this.props.socketIo}/>
 
-                <Row>
-                    <Col md={12} className="text-end pt-2">
-                        <CreateButtonNewReport 
-                            buttonIsDisabled={this.isDisabledNewReport.call(this)}
-                            handlerShowModalWindow={this.handlerShowModalWindowAddReport}/>
-                    </Col>
-                </Row>
+            <Row>
+                <Col md={12} className="text-end pt-2">
+                    <CreateButtonNewReport 
+                        buttonIsDisabled={this.isDisabledNewReport.call(this)}
+                        handlerShowModalWindow={this.handlerShowModalWindowAddReport}/>
+                </Col>
+            </Row>
 
-                {/** элементы поиска информации */}
-                <CreateSearchElementReport socketIo={this.props.socketIo} userPermissions={this.props.receivedData.userPermissions}/>
+            {/** элементы поиска информации */}
+            <CreateSearchElementReport socketIo={this.props.socketIo} userPermissions={this.props.receivedData.userPermissions}/>
 
-                {/** основная таблица страницы */}
-                <CreateMainTableReport 
-                    socketIo={this.props.socketIo} 
-                    handlerRequestNextPageOfTable={this.handlerRequestNextPageOfTable}
-                    handlerShowModalWindowInformationReport={this.handlerShowModalWindowInformationReport} />
+            {/** основная таблица страницы */}
+            <CreateMainTableReport 
+                socketIo={this.props.socketIo} 
+                handlerRequestNextPageOfTable={this.handlerRequestNextPageOfTable}
+                handlerShowModalWindowInformationReport={this.handlerShowModalWindowInformationReport} />
 
-                <ModalWindowAddReportSTIX
-                    show={this.state.showModalWindowAddReport}
-                    onHide={this.handlerCloseModalWindowAddReport}
-                    socketIo={this.props.socketIo} />
+            <ModalWindowAddReportSTIX
+                show={this.state.showModalWindowAddReport}
+                onHide={this.handlerCloseModalWindowAddReport}
+                listTypesComputerThreat={this.props.listTypesComputerThreat}
+                listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat}
+                handlerButtonSave={this.handlerButtonSaveModalWindowAddReportSTIX.bind(this)}
+                socketIo={this.props.socketIo} />
 
-                <ModalWindowShowInformationReportSTIX 
-                    show={this.state.showModalWindowInformationReport}
-                    onHide={this.handlerCloseModalWindowInformationReport}
-                    showReportId={this.state.showReportId}
-                    groupList={this.props.receivedData.groupList}
-                    userPermissions={this.props.receivedData.userPermissions}
-                    listTypesComputerThreat={this.props.listTypesComputerThreat}
-                    listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat}
-                    socketIo={this.props.socketIo} />
-            </React.Fragment>
-        );
+            <ModalWindowShowInformationReportSTIX 
+                show={this.state.showModalWindowInformationReport}
+                onHide={this.handlerCloseModalWindowInformationReport}
+                showReportId={this.state.showReportId}
+                groupList={this.props.receivedData.groupList}
+                userPermissions={this.props.receivedData.userPermissions}
+                listTypesComputerThreat={this.props.listTypesComputerThreat}
+                listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat}
+                socketIo={this.props.socketIo} />
+        </React.Fragment>);
     }
 }
 

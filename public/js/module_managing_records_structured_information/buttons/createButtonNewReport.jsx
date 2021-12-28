@@ -27,7 +27,7 @@ export function CreateButtonNewReport(props){
         variant="outlined"
         disabled={buttonIsDisabled}
         onClick={handlerShowModalWindow}>
-            новый доклад
+            создать доклад
     </Button>);
 }
 

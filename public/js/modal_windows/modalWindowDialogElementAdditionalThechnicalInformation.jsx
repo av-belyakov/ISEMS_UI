@@ -27,9 +27,6 @@ const useStyles = makeStyles((theme) => ({
     formControlTypeHashRE: {
         minWidth: 120,
     },
-//    selectEmpty: {
-//        marginTop: theme.spacing(2),
-//    },
 }));
 
 const listHashType = [ 
@@ -44,12 +41,14 @@ const listHashType = [
 ];
 
 export default function ModalWindowDialogElementAdditionalThechnicalInformation(props){
-    let { show, 
+    let { 
+        show, 
         onHide, 
         objInfo, 
         uuidValue, 
         listObjectInfo, 
-        handlerExternalReferencesButtonSave } = props;
+        handlerExternalReferencesButtonSave 
+    } = props;
 
     const listTitle = {
         "external_references": "Управление внешними ссылками",
@@ -275,8 +274,6 @@ export default function ModalWindowDialogElementAdditionalThechnicalInformation(
                             value = valueER;
                             value.external_id = `external-reference--${uuidValue}`;
 
-                            setValueER(defaultValueER);
-
                             break;
                         }
 
@@ -293,8 +290,6 @@ export default function ModalWindowDialogElementAdditionalThechnicalInformation(
                                     listObjectInfo[objInfo.objectId].external_references[i].hashes: 
                                     valueER.hashes;
                                 value.external_id = listObjectInfo[objInfo.objectId].external_references[i].external_id;
-    
-                                setValueER(defaultValueER);
 
                                 break;
                             }
@@ -305,8 +300,6 @@ export default function ModalWindowDialogElementAdditionalThechnicalInformation(
                         if(objInfo.actionType === "new"){
                             value = valueGM;
                             value.orderNumber = objInfo.orderNumber;
-
-                            setValueGM(defaultValueGM);
 
                             break;
                         }
@@ -324,15 +317,15 @@ export default function ModalWindowDialogElementAdditionalThechnicalInformation(
                             value.orderNumber = objInfo.orderNumber;
                         }
 
-                        setValueGM(defaultValueGM);
-
                         break;
                     case "extensions":
                         value = valueE;
 
-                        setValueE(defaultValueE);
-
                         break;    
+                    }
+
+                    if(valuesIsInvalidURLER){
+                        return;
                     }
 
                     handlerExternalReferencesButtonSave({ 
@@ -342,8 +335,13 @@ export default function ModalWindowDialogElementAdditionalThechnicalInformation(
                         objectId: objInfo.objectId,
                     });
 
+                    setValueER(defaultValueER);
+                    setValueGM(defaultValueGM);
+                    setValueE(defaultValueE);
+
                     setValuesIsInvalideNameE(true);
                     setValuesIsInvalideSourceNameER(true);
+                    setValuesIsInvalidURLER(false);
                     setButtonSaveIsDisabled(true);
                 }} 
                 color="primary">
@@ -376,18 +374,6 @@ function ManagementExternalReferencesObject(props){
         handlerHashList, 
     } = props;
 
-    /*
-    sourceName={objInfo.sourceName}
-    externalId={uuidValue}
-    urlIsInvalid={valuesIsInvalidURLER}
-    listObjectInfo={listObjectInfo[objInfo.objectId]}
-    sourceNameIsInvalid={valuesIsInvalideSourceNameER}
-    handlerSourceName={handlerSourceNameExternalReferences}
-    handlerDescription={handlerDescriptionExternalReferences}
-    handlerURL={handlerURLExternalReferences}
-    handlerHashList={handlerHashesExternalReferences}
-    */
-
     let eid = `external-reference--${externalId}`;
     let erInfo = {};
 
@@ -418,7 +404,6 @@ function ManagementExternalReferencesObject(props){
 
     const handlerAddNewHash = () => {
             let listHashesTmp = listHashes.concat([{ type: selectItemHash, description: inputHash }]);
-
             setListHashes(listHashesTmp);
             setInputHash("");
             setSelectItemHash("");
@@ -554,11 +539,13 @@ ManagementExternalReferencesObject.propTypes = {
 };
 
 function ManagementGranularMarkingsObject(props){
-    let { objInfo,
+    let { 
+        objInfo,
         listObjectInfo,
         handlerLang,
         handlerMarkingRef,
-        handlerSelectors } = props;
+        handlerSelectors 
+    } = props;
 
     let objGM = {};
     if(objInfo.orderNumber !== -1){
@@ -696,9 +683,11 @@ ManagementGranularMarkingsObject.propTypes = {
 
 
 function ManagementExtensionsObject(props){
-    let { nameIsInvalid,
+    let { 
+        nameIsInvalid,
         handlerName,
-        handlerDescription } = props;
+        handlerDescription 
+    } = props;
 
     let [ valueName, setValueName ] = useState(""),
         [ valueDescription, setValueDescription ] = useState("");

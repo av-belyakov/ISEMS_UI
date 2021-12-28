@@ -186,12 +186,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     handlerEvents(){
         //обработка события связанного с приемом списка групп которым разрешен доступ к данному докладу
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
-
-            //console.log("class 'ModalWindowShowInformationReportSTIX', func 'handlerEvents'");
-            //console.log(`sections: ${data.section}`);
-            //console.log(data);
-            //console.log(data.information.additional_parameters);
-
             if((data.information === null) || (typeof data.information === "undefined")){
                 return;
             }
@@ -278,10 +272,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
                 this.setState({ listObjectInfo: listObjectInfoTmp });
 
-                //console.log("|||||||");
-                //console.log(listObjectInfoTmp);
-                //console.log(":::::::::");
-
                 break;
 
             case "isems-mrsi ui request: send search request, list different objects STIX object for id":
@@ -312,10 +302,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     optionsPreviousStateTmp.objectId = objectId;
                     optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part;
     
-                    this.setState({ 
-                        listPreviousStateReport: listPreviousState,
-                        //                        optionsPreviousStateReport: optionsPreviousStateTmp 
-                    });
+                    this.setState({ listPreviousStateReport: listPreviousState });
                 } else {
                     if((this.state.listPreviousState.length === 0) || (this.state.optionsPreviousState.objectId !== objectId)){
                         listPreviousState = (data.information.additional_parameters.transmitted_data.length === 0)? 
@@ -342,26 +329,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                         optionsPreviousState: optionsPreviousStateTmp 
                     });
                 }
-
-                /*
-                            listPreviousStateReport: [],
-                if(this.props.showReportId === data.information.additional_parameters.document_id){
-                    console.log("count list different objects STIX object for REPORT");
-                    console.log("COUNT DOCUMENTS: ", data.information.additional_parameters.number_documents_found);
-                    console.log("================");
-                }
-                
-                                    console.log("count list different objects STIX object for REPORT");
-                    console.log("COUNT DOCUMENTS: ", data.information.additional_parameters.number_documents_found);
-                    console.log("================");
-
-                                    console.log("list different objects STIX object for REPORT, DOCUMENTS");
-                console.log(listPreviousState);
-                console.log(data.information.additional_parameters);
-                console.log("string starts with: ", objectId.startsWith("report"));
-                console.log("================");
-                */
-
 
                 break;
 
@@ -482,7 +449,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             };
 
             if(obj.actionType === "new"){
-                if(!Array.isArray(listObjectTmp[obj.objectId].granular_markings)){
+                if(!Array.isArray(listObjectTmp[obj.objectId].external_references)){
                     listObjectTmp[obj.objectId].external_references = [];
                 }
 
@@ -695,9 +662,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 } 
             }});
 
-        console.log("func 'handlerChangeCurrentAdditionalIdSTIXObject', START...");
-        console.log("send search request, get different objects STIX object for id -->");
-
         //проверяем наличие информации об запрашиваемом STIX объекте
         if((this.state.listObjectInfo[currentObjectId] !== null) && (typeof this.state.listObjectInfo[currentObjectId] !== "undefined")){
             return;
@@ -777,23 +741,12 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             delete currentReport.kill_chain_phases;
         }
 
-        console.log("----->");
-        console.log("--- BEFORE ---");
-        console.log(this.state.listObjectInfo[this.props.showReportId]);
-        console.log("--- AFTER ---");
-        console.log(currentReport);
-        console.log("<-----");
-
         this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [currentReport] });
 
         this.modalClose();
     }
 
     showDialogElementAdditionalThechnicalInfo(obj){
-
-        console.log("func 'showDialogElementAdditionalThechnicalInfo', START...");
-        console.log(obj);
-
         this.setState({
             uuidValue: uuidv4(),
             showDialogElementAdditionalThechnicalInfo: true,
@@ -839,6 +792,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         }
 
         let reportInfo = this.state.listObjectInfo[this.props.showReportId];
+        let outsideSpecificationIsNotExist = ((reportInfo.outside_specification === null) || (typeof reportInfo.outside_specification === "undefined"));
 
         let published = () => {
             if(Date.parse(reportInfo.published) <= 0){
@@ -891,7 +845,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
                             <Row>
                                 <Col md={6}>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">создания</span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">создания</span>
                                 </Col>
                                 <Col md={6} className="text-end">
                                     {helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}
@@ -900,7 +854,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
                             <Row>
                                 <Col md={6} className="pl-4">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">последнего обновления</span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">последнего обновления</span>
                                 </Col>
                                 <Col md={6} className="text-end">
                                     {helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}
@@ -909,7 +863,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
                             <Row>
                                 <Col md={6} className="pl-4">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">публикации</span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">публикации</span>
                                 </Col>
                                 {published()}
                             </Row>
@@ -966,7 +920,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                 </Col>
                             </Row>
 
-                            {((reportInfo.outside_specification.decisions_made_computer_threat === null) || (typeof reportInfo.outside_specification.decisions_made_computer_threat === "undefined"))? 
+                            {((outsideSpecificationIsNotExist) || (reportInfo.outside_specification.decisions_made_computer_threat === null) || (typeof reportInfo.outside_specification.decisions_made_computer_threat === "undefined"))? 
                                 "":
                                 <Row className="mt-3">
                                     <Col md={12}>
@@ -983,7 +937,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                 </Row>
                             }
                                 
-                            {((reportInfo.outside_specification.computer_threat_type === null) || (typeof reportInfo.outside_specification.computer_threat_type === "undefined"))? 
+                            {((outsideSpecificationIsNotExist) || (reportInfo.outside_specification.computer_threat_type === null) || (typeof reportInfo.outside_specification.computer_threat_type === "undefined"))? 
                                 "":
                                 <Row className="mt-3">
                                     <Col md={12}>
@@ -1086,7 +1040,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 uuidValue={this.state.uuidValue}
                 listObjectInfo={this.state.listObjectInfo}
                 handlerExternalReferencesButtonSave={this.handlerExternalReferencesButtonSave} />
-
         </React.Fragment>);
     }
 }
@@ -1168,7 +1121,7 @@ function GetListObjectRefs(props){
                     </Tooltip>);
                 })}
                 <IconButton edge="start" color="inherit" onClick={handlerChangeCurrentSTIXObject.bind(null, "create-new-stix-object")} aria-label="add">
-                    <Tooltip title="добавить новый STIX объект">
+                    <Tooltip title="прикрепить дополнительный объект">
                         <AddCircleOutlineOutlinedIcon/>
                     </Tooltip>
                 </IconButton>
