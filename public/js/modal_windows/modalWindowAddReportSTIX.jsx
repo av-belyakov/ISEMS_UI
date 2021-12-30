@@ -46,9 +46,9 @@ const dataInformationObject = {
     id: newReportId,
     type: "report",
     spec_version: "2.1",
-    created: myDate.toISOString(),
+    created: myDate.toISOString(), // дата создания отстает на 3 часа
     modified: myDate.toISOString(),
-    created_by_ref: "source_isems-ui",
+    created_by_ref: "identity-isems-ui--a463ffb3-1bd9-4d94-b02d-74e4f1658283",
     revoked: false,
     labels: [],
     confidence: 0,
@@ -60,10 +60,11 @@ const dataInformationObject = {
     extensions: {},
     name: "",
     description: "",
-    report_types: [],
-    published: "0001-01-01T00:00:00.000+00:00",
-    object_refs: [],
+    report_types: [ "campaign" ],
+    //published: "0001-01-01T00:00:00.000Z",
+    object_refs: [ "campaign--0bd1475b-02df-4f51-99db-e061b16a6956" ], //НЕ ПУСТОЙ только для ТЕСТА так как пустое значение object_refs не пройдет валидацию
     /*
+    "2021-12-29T07:08:49.753Z"
         ЭТО ТОЛЬКО ДЛЯ ТЕСТА
     object_refs: [
         "campaign--0bd1475b-02df-4f51-99db-e061b16a6956",
@@ -101,6 +102,7 @@ export default function ModalWindowAddReportSTIX(props) {
     let { 
         show, 
         onHide, 
+        changeValueAddNewReport,
         listTypesComputerThreat,
         listTypesDecisionsMadeComputerThreat,
         handlerButtonSave,
@@ -301,11 +303,26 @@ export default function ModalWindowAddReportSTIX(props) {
                         onClick={() => { 
                             onHide();
                             handlerButtonSave(reportInfo[newReportId]);
+
+                            setReportInfo({ [newReportId]: dataInformationObject });
+                            changeValueAddNewReport(true);
                         }}>
                         сохранить
                     </Button>
                 </Toolbar>
             </AppBar>
+
+            {
+                /**
+                             * Не доделал следующие пункты:
+                             * 1. Автоматическое обновление таблицы в createPageReport после добавления нового Доклада, так и не решил
+                             * 2. Время создания нового доклада всегда меньше текущего времени на 3 часа, надо решить
+                             * 3. При успешном создании нового Доклада, если перейти в просмотр информации о новом докладе, то раздел просмотра 
+                             *  информаци о предыдущих состояниях всегда пуст и так как он пуст то там всегда висит "Загрузка..."? надо решить этот вопрос
+                             * 4. Переделать раздел вывода информации об object_refs в список, для возможности просмотра и УДАЛЕНИЯ ссылок на информацию, 
+                             * так и не сделал, а как же нужно сделать возможность удаления ссылок на другие объекты из object_refs и report_types
+                             */ 
+            }
 
             <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
                 <Row className="mt-4">
@@ -515,6 +532,7 @@ ModalWindowAddReportSTIX.propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
+    changeValueAddNewReport: PropTypes.func.isRequired,
     listTypesComputerThreat: PropTypes.object.isRequired,
     listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
