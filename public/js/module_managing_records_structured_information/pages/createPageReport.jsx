@@ -21,6 +21,7 @@ export default class CreatePageReport extends React.Component {
             showModalWindowAddReport: false,
             showModalWindowInformationReport: false,
             showReportId: "",
+            addNewReport: false,
             requestDetails: {
                 paginateParameters: {
                     maxPartSize: 30,
@@ -97,6 +98,7 @@ export default class CreatePageReport extends React.Component {
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
 
+        this.changeValueAddNewReport = this.changeValueAddNewReport.bind(this);
         this.handlerRequestNextPageOfTable = this.handlerRequestNextPageOfTable.bind(this);
         this.handlerShowModalWindowAddReport = this.handlerShowModalWindowAddReport.bind(this);
         this.handlerCloseModalWindowAddReport = this.handlerCloseModalWindowAddReport.bind(this);
@@ -188,11 +190,17 @@ export default class CreatePageReport extends React.Component {
 
             //запрос полной информации по заданным параметрам
             this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: this.state.requestDetails });
+        
+            console.log("запрос полной информации по заданным параметрам...");
         }, 1500);
     }
 
     isDisabledNewReport(){
         return !this.props.receivedData.userPermissions.create.status;
+    }
+
+    changeValueAddNewReport(value){
+        this.setState({ addNewReport: value });
     }
 
     render(){
@@ -212,13 +220,16 @@ export default class CreatePageReport extends React.Component {
 
             {/** основная таблица страницы */}
             <CreateMainTableReport 
-                socketIo={this.props.socketIo} 
+                socketIo={this.props.socketIo}
+                addNewReport={this.state.addNewReport}
+                changeValueAddNewReport={this.changeValueAddNewReport}
                 handlerRequestNextPageOfTable={this.handlerRequestNextPageOfTable}
                 handlerShowModalWindowInformationReport={this.handlerShowModalWindowInformationReport} />
 
             <ModalWindowAddReportSTIX
                 show={this.state.showModalWindowAddReport}
                 onHide={this.handlerCloseModalWindowAddReport}
+                changeValueAddNewReport={this.changeValueAddNewReport}
                 listTypesComputerThreat={this.props.listTypesComputerThreat}
                 listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat}
                 handlerButtonSave={this.handlerButtonSaveModalWindowAddReportSTIX.bind(this)}

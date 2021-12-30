@@ -741,6 +741,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             delete currentReport.kill_chain_phases;
         }
 
+        console.log(currentReport);
+
         this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [currentReport] });
 
         this.modalClose();
@@ -885,6 +887,13 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                 </Col>  
                             </Row>
 
+                            {/**
+                             *              !!!!!!
+                             * Наверное надо сделать вывод списка ссылок на объекты STIX из object_refs подобные выводу в 
+                             * модальном окне создания нового Доклада, так как нужно иметь возможность не только редактировать и
+                             * создавать новые объекты, но и УДАЛЯТЬ ссылки на STIX объекты из object_refs
+                             *              !!!!!!
+                             */}
                             <GetListObjectRefs
                                 listObjectRef={reportInfo.object_refs} 
                                 handlerChangeCurrentSTIXObject={this.handlerChangeCurrentAdditionalIdSTIXObject} />

@@ -76,6 +76,11 @@ export default class CreateMainTableForReport extends React.Component {
             }
 
             if(data.section === "send search request, table page report"){
+
+                console.log("Get new information table page report START");
+                console.log(data.information.additional_parameters);
+                console.log("Get new information table page report END");
+
                 if((typeof data.information === "undefined") || (data.information === null)){
                     return;
                 }
@@ -90,14 +95,19 @@ export default class CreateMainTableForReport extends React.Component {
 
                 let listReportsTmp = [],
                     listIdReport = [];
-                for(let item of this.state.listReports){
-                    listReportsTmp.push(item);
+                if(this.props.addNewReport){
+                    listReportsTmp = this.state.listReports.slice();
+
+                    this.props.changeValueAddNewReport(false);
                 }
 
                 for(let item of data.information.additional_parameters.transmitted_data){
                     listReportsTmp.push(item);
                     listIdReport.push(item.id);
                 }
+
+                console.log("--- listReportsTmp ---");
+                console.log(listReportsTmp);
 
                 this.props.socketIo.emit("isems-mrsi ui request: get short information about groups which report available", { arguments: listIdReport });
 
@@ -113,13 +123,13 @@ export default class CreateMainTableForReport extends React.Component {
                     return;
                 }
 
-                let tmp = [];
-                for(let item of this.state.listGroupsWhichReportAvailable){
-                    tmp.push(item);
-                }
-
+                let tmp = this.state.listGroupsWhichReportAvailable.slice();
                 for(let item of data.information.additional_parameters){
-                    tmp.push(item);
+                    if(typeof tmp.find((elem) => {
+                        return (elem.group_name === item.group_name && elem.object_id === item.object_id);
+                    }) === "undefined"){
+                        tmp.push(item);
+                    }
                 }
 
                 this.setState({ listGroupsWhichReportAvailable: tmp });
@@ -192,6 +202,8 @@ export default class CreateMainTableForReport extends React.Component {
 
 CreateMainTableForReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    addNewReport: PropTypes.bool.isRequired,
+    changeValueAddNewReport: PropTypes.func.isRequired,
     handlerRequestNextPageOfTable: PropTypes.func.isRequired,
     handlerShowModalWindowInformationReport: PropTypes.func.isRequired,
 };
