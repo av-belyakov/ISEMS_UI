@@ -183,6 +183,17 @@ export default function ModalWindowAddReportSTIX(props) {
 
             setReportInfo(reportInfoTmp);
         },
+        //пункт "Идентификаторы объектов связанных с Докладом"
+        handlerDeleteObjectRef = (key) => {
+            let listObjectInfoTmp = _.cloneDeep(reportInfo);
+            let refElemTmp = listObjectInfoTmp[newReportId].object_refs.splice(key, 1);
+            let refElem = refElemTmp[0].split("--");
+            let listReportTypes = listObjectInfoTmp[newReportId].report_types.filter((item) => item !== refElem[0]);
+    
+            listObjectInfoTmp[newReportId].report_types = listReportTypes;
+    
+            setReportInfo(listObjectInfoTmp);
+        },
         handlerExternalReferencesButtonSave = (obj) => {
             let reportInfoTmp = _.cloneDeep(reportInfo);
 
@@ -315,13 +326,18 @@ export default function ModalWindowAddReportSTIX(props) {
             {
                 /**
                              * Не доделал следующие пункты:
-                             * 1. Автоматическое обновление таблицы в createPageReport после добавления нового Доклада, так и не решил
+                             * + 1. Автоматическое обновление таблицы в createPageReport после добавления нового Доклада, так и не решил
                              * 2. Время создания нового доклада всегда меньше текущего времени на 3 часа, надо решить
-                             * 3. При успешном создании нового Доклада, если перейти в просмотр информации о новом докладе, то раздел просмотра 
+                             * + 3. При успешном создании нового Доклада, если перейти в просмотр информации о новом докладе, то раздел просмотра 
                              *  информаци о предыдущих состояниях всегда пуст и так как он пуст то там всегда висит "Загрузка..."? надо решить этот вопрос
-                             * 4. Переделать раздел вывода информации об object_refs в список, для возможности просмотра и УДАЛЕНИЯ ссылок на информацию, 
+                             * + 4. Переделать раздел вывода информации об object_refs в список, для возможности просмотра и УДАЛЕНИЯ ссылок на информацию, 
                              * так и не сделал, а как же нужно сделать возможность удаления ссылок на другие объекты из object_refs и report_types
-                             */ 
+                             * 5. Ошибка при сохранении объекта типа Report при изменении параметра в 'определены ли данные содержащиеся в объекте' 
+                             *  с нет на да, надо разобратся
+                             * 6. Возможность удаления ссылок из object_refs для объекта типа Report нужно сделать только до тех пор пока 
+                             *  в объекте object_refs есть больше одного элемента. Это возможно сделать путем кнопки "сохранить".
+                             * 
+                */ 
             }
 
             <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
@@ -369,13 +385,28 @@ export default function ModalWindowAddReportSTIX(props) {
                                 return "";
                             }
 
-                            /**
-                             * 
-                             * Для элементов object_refs нужно сделать просмотр и удаление элементов,
-                             * добавленых через кнопку 'прикрепить дополнительный объект'
-                             * 
-                             */
+                            return (<Row key={`key_object_ref_${key}`}>
+                                <Col md={12}>
+                                    <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
+                                        <Button onClick={() => {
+                                            console.log("click to button STIX object");
+                                        }}>
+                                            <img 
+                                                key={`key_object_ref_type_${key}`} 
+                                                src={`/images/stix_object/${objectElem.link}`} 
+                                                width="35" 
+                                                height="35" />
+                                                &nbsp;{item}&nbsp;
+                                        </Button>
+                                    </Tooltip>
 
+                                    <IconButton aria-label="delete" onClick={handlerDeleteObjectRef.bind(null, key)}>
+                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                    </IconButton>
+                                </Col>
+                            </Row>);
+
+                            /**
                             return (<Row key={`key_object_ref_${key}`}>
                                 <Col md={12}>
                                     <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
@@ -397,6 +428,7 @@ export default function ModalWindowAddReportSTIX(props) {
                                     </IconButton>
                                 </Col>
                             </Row>);
+                             */
                         })}
                     </Col>
                 </Row>

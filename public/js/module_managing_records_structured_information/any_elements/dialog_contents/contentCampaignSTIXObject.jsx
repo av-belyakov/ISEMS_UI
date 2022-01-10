@@ -259,6 +259,7 @@ export default function CreateDialogContentCampaignSTIXObject(props){
                         socketIo={socketIo} 
                         searchObjectId={currentIdSTIXObject}
                         optionsPreviousState={optionsPreviousState}
+                        showListPreviousState={false}
                         listPreviousState={listPreviousState} /> 
                 </Grid>
             </Grid>            

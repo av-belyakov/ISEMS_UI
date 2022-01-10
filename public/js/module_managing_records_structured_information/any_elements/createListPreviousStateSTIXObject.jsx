@@ -107,13 +107,19 @@ const showInformationInCycle = (data, num) => {
 };
 
 export default function CreateListPreviousStateSTIXObject(props){
-    let { socketIo, searchObjectId, optionsPreviousState, listPreviousState } = props;
+    let { 
+        socketIo, 
+        searchObjectId, 
+        optionsPreviousState, 
+        showListPreviousState,
+        listPreviousState, 
+    } = props;
     let [ hasMore, setHasMore ] = React.useState(true);
 
     let createFrame = () => {
         return (<InfiniteScroll
             height={1000}
-            loader={<div className="text-center"><h5>загрузка...</h5></div>}
+            loader={(showListPreviousState)? <span></span>: <div className="text-center"><h5>загрузка...</h5></div>}
             dataLength={listPreviousState.length}
             hasMore={hasMore}
             next={()=> {
@@ -205,5 +211,6 @@ CreateListPreviousStateSTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
     searchObjectId: PropTypes.string.isRequired,
     optionsPreviousState: PropTypes.object.isRequired,
+    showListPreviousState: PropTypes.bool.isRequired,
     listPreviousState: PropTypes.array.isRequired,
 };

@@ -227,6 +227,7 @@ class CreateHeaderMenu extends React.Component {
                     <Navbar.Text>{this.listItems.userName}</Navbar.Text>
                         &nbsp;&nbsp;
                     <Button variant="outline-info" size="sm" href="logout">ВЫХОД</Button>
+                        &nbsp;&nbsp;
                 </Navbar.Collapse>
             </Navbar>
 

@@ -95,7 +95,7 @@ export default class CreateMainTableForReport extends React.Component {
 
                 let listReportsTmp = [],
                     listIdReport = [];
-                if(this.props.addNewReport){
+                if(this.props.paginateParameters.currentPartNumber > 1){
                     listReportsTmp = this.state.listReports.slice();
 
                     this.props.changeValueAddNewReport(false);
@@ -203,6 +203,7 @@ export default class CreateMainTableForReport extends React.Component {
 CreateMainTableForReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
     addNewReport: PropTypes.bool.isRequired,
+    paginateParameters: PropTypes.object.isRequired,
     changeValueAddNewReport: PropTypes.func.isRequired,
     handlerRequestNextPageOfTable: PropTypes.func.isRequired,
     handlerShowModalWindowInformationReport: PropTypes.func.isRequired,

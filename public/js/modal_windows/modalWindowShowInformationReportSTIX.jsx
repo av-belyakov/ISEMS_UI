@@ -19,8 +19,9 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
-import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import { teal, purple, grey, orange } from "@material-ui/core/colors";
+import AddIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
+import { teal, purple, grey, green, orange, red } from "@material-ui/core/colors";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
@@ -100,6 +101,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             currentGroupAccessToReport: "select_group",
             reportAcceptedInformation: {},
             currentAdditionalIdSTIXObject: "",
+            showListPreviousStateReport: false,
             showDialogElementAdditionalSTIXObject: false,
             showDialogElementAdditionalThechnicalInfo: false,
             objectDialogElementAdditionalThechnicalInfo: {},
@@ -111,6 +113,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handlerReportSave = this.handlerReportSave.bind(this);
         this.handelrDialogClose = this.handelrDialogClose.bind(this);
         this.handlerDialogButton = this.handlerDialogButton.bind(this);
+        this.handlerDeleteObjectRef = this.handlerDeleteObjectRef.bind(this);
         this.handlerOnChangeDescription = this.handlerOnChangeDescription.bind(this);
         this.handlerManagingAccessToReport = this.handlerManagingAccessToReport.bind(this);
         this.handlerNewAdditionalSTIXObject = this.handlerNewAdditionalSTIXObject.bind(this);
@@ -275,6 +278,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 break;
 
             case "isems-mrsi ui request: send search request, list different objects STIX object for id":
+                this.setState({ showListPreviousStateReport: true });
+
+                console.log("isems-mrsi ui request: send search request, list different objects STIX object for id");
+                console.log(data.information.additional_parameters.transmitted_data);
+
                 if(data.information.additional_parameters.transmitted_data.length === 0){
                     return;
                 }
@@ -325,7 +333,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part;
     
                     this.setState({ 
-                        listPreviousState: listPreviousState,
+                        listPreviousStateReport: listPreviousState,
                         optionsPreviousState: optionsPreviousStateTmp 
                     });
                 }
@@ -700,6 +708,21 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         });
     }
 
+    handlerDeleteObjectRef(key){
+        if(this.state.listObjectInfo[this.props.showReportId].object_refs.length <= 1){
+            return;
+        }
+
+        let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+        let refElemTmp = listObjectInfoTmp[this.props.showReportId].object_refs.splice(key, 1);
+        let refElem = refElemTmp[0].split("--");
+        let listReportTypes = listObjectInfoTmp[this.props.showReportId].report_types.filter((item) => item !== refElem[0]);
+
+        listObjectInfoTmp[this.props.showReportId].report_types = listReportTypes;
+
+        this.setState({ listObjectInfo: listObjectInfoTmp });
+    }
+
     handlerDialogButton(){
         console.log("func 'handlerDialogButton', START...\n'BUTTON DIALOG BUTTON'");
 
@@ -772,7 +795,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.setState({
             reportInfo: {},
             availableForGroups: [],
+            listPreviousStateReport: [],
             listGroupAccessToReport: [],
+            showListPreviousStateReport: false,
         });
     }
 
@@ -823,15 +848,24 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             <Dialog 
                 fullScreen 
                 open={this.props.show} 
-                onClose={this.modalClose} >
+                onClose={() => { 
+                    this.setState({ showListPreviousStateReport: false });
+                    this.modalClose();
+                }} >
 
                 <CreateAppBar 
                     title={reportInfo.id}
                     nameDialogButton="сохранить"
                     reportAcceptedInformation={this.state.reportAcceptedInformation}
                     reportChangeableInformation={reportInfo}
-                    handelrDialogClose={this.modalClose}
-                    handlerDialogButton={this.handlerReportSave} />
+                    handelrDialogClose={() => { 
+                        this.setState({ showListPreviousStateReport: false });
+                        this.modalClose();
+                    }}
+                    handlerDialogButton={() => { 
+                        this.setState({ showListPreviousStateReport: false });
+                        this.handlerReportSave();
+                    }} />
 
                 <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
                     <Row>
@@ -887,15 +921,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                 </Col>  
                             </Row>
 
-                            {/**
-                             *              !!!!!!
-                             * Наверное надо сделать вывод списка ссылок на объекты STIX из object_refs подобные выводу в 
-                             * модальном окне создания нового Доклада, так как нужно иметь возможность не только редактировать и
-                             * создавать новые объекты, но и УДАЛЯТЬ ссылки на STIX объекты из object_refs
-                             *              !!!!!!
-                             */}
                             <GetListObjectRefs
                                 listObjectRef={reportInfo.object_refs} 
+                                handlerDeleteObjectRef={this.handlerDeleteObjectRef}
                                 handlerChangeCurrentSTIXObject={this.handlerChangeCurrentAdditionalIdSTIXObject} />
 
                             <Row className="mt-1">
@@ -1025,6 +1053,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                                 socketIo={this.props.socketIo} 
                                 searchObjectId={this.props.showReportId}
                                 optionsPreviousState={this.state.optionsPreviousStateReport}
+                                showListPreviousState={this.state.showListPreviousStateReport}
                                 listPreviousState={this.state.listPreviousStateReport} /> 
                         </Col>
                     </Row>
@@ -1102,7 +1131,7 @@ CreateAppBar.propTypes = {
 };
 
 function GetListObjectRefs(props){
-    let { listObjectRef, handlerChangeCurrentSTIXObject } = props;
+    let { listObjectRef, handlerDeleteObjectRef, handlerChangeCurrentSTIXObject } = props;
 
     return (<React.Fragment>
         <Grid container direction="row" className="mt-4">
@@ -1119,21 +1148,35 @@ function GetListObjectRefs(props){
                         return "";
                     }
 
-                    return (<Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                        <IconButton onClick={handlerChangeCurrentSTIXObject.bind(null, item)}>
-                            <img 
-                                key={`key_object_ref_type_${key}`} 
-                                src={`/images/stix_object/${objectElem.link}`} 
-                                width="35" 
-                                height="35" />
-                        </IconButton>
-                    </Tooltip>);
+                    return (<Grid container direction="row" className="pb-2" key={`key_tooltip_object_ref_${key}`}>
+                        <Grid item md={12} className="text-right">
+                            <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
+                                <Button onClick={handlerChangeCurrentSTIXObject.bind(null, item)}>
+                                    <img 
+                                        key={`key_object_ref_type_${key}`} 
+                                        src={`/images/stix_object/${objectElem.link}`} 
+                                        width="35" 
+                                        height="35" />
+                                        &nbsp;{item}&nbsp;
+                                </Button>
+                            </Tooltip>
+
+                            <IconButton aria-label="delete" onClick={ handlerDeleteObjectRef.bind(null, key) }>
+                                <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                            </IconButton>
+                        </Grid>
+                    </Grid>);
                 })}
-                <IconButton edge="start" color="inherit" onClick={handlerChangeCurrentSTIXObject.bind(null, "create-new-stix-object")} aria-label="add">
-                    <Tooltip title="прикрепить дополнительный объект">
-                        <AddCircleOutlineOutlinedIcon/>
-                    </Tooltip>
-                </IconButton>
+                <Row>
+                    <Col md={12} className="text-end">
+                        <Button
+                            size="small"
+                            startIcon={<AddIcon style={{ color: green[500] }} />}
+                            onClick={handlerChangeCurrentSTIXObject.bind(null, "create-new-stix-object")} >
+                            прикрепить дополнительный объект
+                        </Button>
+                    </Col>
+                </Row>
             </Grid>
         </Grid>
     </React.Fragment>);
@@ -1141,6 +1184,7 @@ function GetListObjectRefs(props){
 
 GetListObjectRefs.propTypes = {
     listObjectRef: PropTypes.array.isRequired,
+    handlerDeleteObjectRef: PropTypes.func.isRequired,
     handlerChangeCurrentSTIXObject: PropTypes.func.isRequired,
 };
 

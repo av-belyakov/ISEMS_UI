@@ -222,6 +222,7 @@ export default class CreatePageReport extends React.Component {
             <CreateMainTableReport 
                 socketIo={this.props.socketIo}
                 addNewReport={this.state.addNewReport}
+                paginateParameters={this.state.requestDetails.paginateParameters}
                 changeValueAddNewReport={this.changeValueAddNewReport}
                 handlerRequestNextPageOfTable={this.handlerRequestNextPageOfTable}
                 handlerShowModalWindowInformationReport={this.handlerShowModalWindowInformationReport} />

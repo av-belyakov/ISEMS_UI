@@ -311,6 +311,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                         socketIo={socketIo} 
                         searchObjectId={currentIdSTIXObject}
                         optionsPreviousState={optionsPreviousState}
+                        showListPreviousState={false}
                         listPreviousState={listPreviousState} /> 
                 </Grid>
             </Grid>            
