@@ -29,6 +29,7 @@ import { helpers } from "../common_helpers/helpers";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
 import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
+import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
 import CreateListPreviousStateSTIXObject from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIXObject.jsx";
 import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
@@ -102,6 +103,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             reportAcceptedInformation: {},
             currentAdditionalIdSTIXObject: "",
             showListPreviousStateReport: false,
+            showDialogNewSTIXObject: false,
             showDialogElementAdditionalSTIXObject: false,
             showDialogElementAdditionalThechnicalInfo: false,
             objectDialogElementAdditionalThechnicalInfo: {},
@@ -116,8 +118,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handlerDeleteObjectRef = this.handlerDeleteObjectRef.bind(this);
         this.handlerOnChangeDescription = this.handlerOnChangeDescription.bind(this);
         this.handlerManagingAccessToReport = this.handlerManagingAccessToReport.bind(this);
+        this.handlerShowDialogNewSTIXObject = this.handlerShowDialogNewSTIXObject.bind(this);
         this.handlerNewAdditionalSTIXObject = this.handlerNewAdditionalSTIXObject.bind(this);
+        this.handlerCloseDialogNewSTIXObject = this.handlerCloseDialogNewSTIXObject.bind(this);
         this.handlerOnChangeAccessGroupToReport = this.handlerOnChangeAccessGroupToReport.bind(this);
+        this.handlerDialogSaveDialogNewSTIXObject = this.handlerDialogSaveDialogNewSTIXObject.bind(this);
         this.handlerOutsideSpecificationAdditionalName = this.handlerOutsideSpecificationAdditionalName.bind(this);
         this.handlerChangeCurrentAdditionalIdSTIXObject = this.handlerChangeCurrentAdditionalIdSTIXObject.bind(this);
         this.handlerDeleteChipFromListGroupAccessToReport = this.handlerDeleteChipFromListGroupAccessToReport.bind(this);
@@ -200,7 +205,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             let objectId = "", 
                 reportInfo = {},
                 listObjectInfoTmp = {},
-                listPreviousState = [],
+                listPreviousStateTmp = [],
                 optionsPreviousStateTmp = {};
 
             switch(data.section){
@@ -280,9 +285,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             case "isems-mrsi ui request: send search request, list different objects STIX object for id":
                 this.setState({ showListPreviousStateReport: true });
 
-                console.log("isems-mrsi ui request: send search request, list different objects STIX object for id");
-                console.log(data.information.additional_parameters.transmitted_data);
-
                 if(data.information.additional_parameters.transmitted_data.length === 0){
                     return;
                 }
@@ -291,50 +293,53 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
                 if(objectId.startsWith("report")){
                     if(this.state.listPreviousStateReport.length === 0){
-                        listPreviousState = (data.information.additional_parameters.transmitted_data.length === 0)? 
+                        listPreviousStateTmp = (data.information.additional_parameters.transmitted_data.length === 0)? 
                             [{}]: 
                             data.information.additional_parameters.transmitted_data;
                     } else {
-                        listPreviousState = this.state.listPreviousStateReport.slice();
+                        listPreviousStateTmp = this.state.listPreviousStateReport.slice();
     
                         for(let item of data.information.additional_parameters.transmitted_data){
-                            if(!listPreviousState.find((elem) => elem.modified_time === item.modified_time)){
-                                listPreviousState.push(item);
+                            if(!listPreviousStateTmp.find((elem) => elem.modified_time === item.modified_time)){
+                                listPreviousStateTmp.push(item);
                             }
                         }
     
-                        listPreviousState.sort(sortDateFunc);                
+                        listPreviousStateTmp.sort(sortDateFunc);                
                     }
-    
-                    optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousState);
+        
+                    optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousStateReport);
                     optionsPreviousStateTmp.objectId = objectId;
-                    optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part;
-    
-                    this.setState({ listPreviousStateReport: listPreviousState });
+                    optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part + optionsPreviousStateTmp.currentPartNumber;
+        
+                    this.setState({ 
+                        listPreviousStateReport: listPreviousStateTmp,
+                        optionsPreviousStateReport: optionsPreviousStateTmp,
+                    });
                 } else {
                     if((this.state.listPreviousState.length === 0) || (this.state.optionsPreviousState.objectId !== objectId)){
-                        listPreviousState = (data.information.additional_parameters.transmitted_data.length === 0)? 
+                        listPreviousStateTmp = (data.information.additional_parameters.transmitted_data.length === 0)? 
                             [{}]: 
                             data.information.additional_parameters.transmitted_data;
                     } else {
-                        listPreviousState = this.state.listPreviousState.slice();
+                        listPreviousStateTmp = this.state.listPreviousState.slice();
     
                         for(let item of data.information.additional_parameters.transmitted_data){
-                            if(!listPreviousState.find((elem) => elem.modified_time === item.modified_time)){
-                                listPreviousState.push(item);
+                            if(!listPreviousStateTmp.find((elem) => elem.modified_time === item.modified_time)){
+                                listPreviousStateTmp.push(item);
                             }
                         }
     
-                        listPreviousState.sort(sortDateFunc);                
+                        listPreviousStateTmp.sort(sortDateFunc);                
                     }
-    
+
                     optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousState);
                     optionsPreviousStateTmp.objectId = objectId;
-                    optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part;
-    
+                    optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part + optionsPreviousStateTmp.currentPartNumber;
+        
                     this.setState({ 
-                        listPreviousStateReport: listPreviousState,
-                        optionsPreviousState: optionsPreviousStateTmp 
+                        listPreviousState: listPreviousStateTmp,
+                        optionsPreviousState: optionsPreviousStateTmp,
                     });
                 }
 
@@ -639,7 +644,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     handlerElementDefanged(obj){
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
-        listObjectInfoTmp[obj.objectId].defanged = obj.data;
+        listObjectInfoTmp[obj.objectId].defanged = (obj.data === "true");
         this.setState({ listObjectInfo: listObjectInfoTmp });
     }
 
@@ -726,6 +731,21 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     handlerDialogButton(){
         console.log("func 'handlerDialogButton', START...\n'BUTTON DIALOG BUTTON'");
 
+    }
+
+    handlerDialogSaveDialogNewSTIXObject(obj){
+        console.log("func 'handlerDialogSaveDialogNewSTIXObject', START");
+        console.log("Information: ", JSON.stringify(obj));
+
+        this.setState({ showDialogNewSTIXObject: false });
+    }
+
+    handlerCloseDialogNewSTIXObject(){
+        this.setState({ showDialogNewSTIXObject: false });
+    }
+
+    handlerShowDialogNewSTIXObject(){
+        this.setState({ showDialogNewSTIXObject: true });
     }
 
     handlerReportSave(){
@@ -924,6 +944,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                             <GetListObjectRefs
                                 listObjectRef={reportInfo.object_refs} 
                                 handlerDeleteObjectRef={this.handlerDeleteObjectRef}
+                                handlerShowDialogNewSTIXObject={this.handlerShowDialogNewSTIXObject}
                                 handlerChangeCurrentSTIXObject={this.handlerChangeCurrentAdditionalIdSTIXObject} />
 
                             <Row className="mt-1">
@@ -1060,6 +1081,30 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 </Container>
             </Dialog>
 
+            <Dialog 
+                fullWidth
+                maxWidth="xl"
+                scroll="paper"
+                open={this.state.showDialogNewSTIXObject} >
+                <DialogTitle>
+                    <Grid item container md={12} justifyContent="flex-end">
+                        <IconButton edge="start" color="inherit" onClick={this.handlerCloseDialogNewSTIXObject} aria-label="close">
+                            <CloseIcon />
+                        </IconButton>
+                    </Grid>
+                </DialogTitle>
+                <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22}}>Загрузка...</div>}>
+                    <ContentCreateNewSTIXObject 
+                        listObjectInfo={reportInfo}
+                        currentIdSTIXObject={this.props.showReportId} 
+                        socketIo={this.props.socketIo}
+                        handlerDialog={this.handlerDialogSaveDialogNewSTIXObject}
+                        handelrDialogClose={this.handlerCloseDialogNewSTIXObject}
+                        isNotDisabled={true}
+                    />
+                </Suspense>
+            </Dialog>
+
             <CreateAnyModalWindowSTIXObject
                 socketIo={this.props.socketIo}
                 listObjectInfo={this.state.listObjectInfo}
@@ -1131,7 +1176,13 @@ CreateAppBar.propTypes = {
 };
 
 function GetListObjectRefs(props){
-    let { listObjectRef, handlerDeleteObjectRef, handlerChangeCurrentSTIXObject } = props;
+    let { 
+        listObjectRef, 
+        handlerDeleteObjectRef, 
+        handlerShowDialogNewSTIXObject,
+        handlerChangeCurrentSTIXObject 
+    } = props;
+    let isDisabled = listObjectRef.length <= 1;
 
     return (<React.Fragment>
         <Grid container direction="row" className="mt-4">
@@ -1161,7 +1212,7 @@ function GetListObjectRefs(props){
                                 </Button>
                             </Tooltip>
 
-                            <IconButton aria-label="delete" onClick={ handlerDeleteObjectRef.bind(null, key) }>
+                            <IconButton aria-label="delete" disabled={isDisabled} onClick={ handlerDeleteObjectRef.bind(null, key) }>
                                 <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                             </IconButton>
                         </Grid>
@@ -1172,7 +1223,7 @@ function GetListObjectRefs(props){
                         <Button
                             size="small"
                             startIcon={<AddIcon style={{ color: green[500] }} />}
-                            onClick={handlerChangeCurrentSTIXObject.bind(null, "create-new-stix-object")} >
+                            onClick={handlerShowDialogNewSTIXObject} >
                             прикрепить дополнительный объект
                         </Button>
                     </Col>
@@ -1185,6 +1236,7 @@ function GetListObjectRefs(props){
 GetListObjectRefs.propTypes = {
     listObjectRef: PropTypes.array.isRequired,
     handlerDeleteObjectRef: PropTypes.func.isRequired,
+    handlerShowDialogNewSTIXObject: PropTypes.func.isRequired,
     handlerChangeCurrentSTIXObject: PropTypes.func.isRequired,
 };
 
@@ -1220,9 +1272,6 @@ function CreateAnyModalWindowSTIXObject(props){
 
     let getMyModule = (name) => {
         switch(name){
-        case "create-new-stix-object": 
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx")); 
-
         case "artifact":
             return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentArtifactSTIXObject.jsx")); 
         
@@ -1347,7 +1396,7 @@ function CreateAnyModalWindowSTIXObject(props){
 
     let MyModule = getMyModule(idSTIXObject);
 
-    const handlerDialogButtonSaveOrAdd = (data) => {
+    const handlerDialogButtonSave = (data) => {
         handlerNewAdditionalSTIXObject(data);
 
         handelrDialogClose();
@@ -1376,7 +1425,7 @@ function CreateAnyModalWindowSTIXObject(props){
                     optionsPreviousState={optionsPreviousState}
                     currentIdSTIXObject={currentAdditionalIdSTIXObject} 
                     socketIo={socketIo}
-                    handlerDialog={handlerDialogButtonSaveOrAdd}
+                    handlerDialog={handlerDialogButtonSave}
                     handelrDialogClose={handelrDialogClose}
                     isNotDisabled={isNotDisabled}
                 />:

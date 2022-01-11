@@ -11,8 +11,8 @@ import {
     TextField,
     Toolbar,
     Tooltip,
-    IconButton,
     Typography,
+    IconButton,
     Grid,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -30,7 +30,8 @@ import ContentCreateNewSTIXObject from "../module_managing_records_structured_in
 import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
 import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 
-const myDate = new Date();
+const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+const myDate = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
 const newReportId = `report--${uuidv4()}`;
 const defaultOptionsDEATI = {
     uuidValue: "",
@@ -46,8 +47,8 @@ const dataInformationObject = {
     id: newReportId,
     type: "report",
     spec_version: "2.1",
-    created: myDate.toISOString(), // дата создания отстает на 3 часа
-    modified: myDate.toISOString(),
+    created: myDate,
+    modified: myDate,
     created_by_ref: "identity-isems-ui--a463ffb3-1bd9-4d94-b02d-74e4f1658283",
     revoked: false,
     labels: [],
@@ -130,8 +131,13 @@ export default function ModalWindowAddReportSTIX(props) {
                 setButtonReportSave(true);
                 setValuesIsInvalideReportName(true);
             } else {
-                setButtonReportSave(false);
                 setValuesIsInvalideReportName(false);
+
+                if(reportInfoTmp[newReportId].object_refs.length === 0){
+                    setButtonReportSave(true);
+                } else {
+                    setButtonReportSave(false);
+                }
             }
         },
         handlerDescription = (e) => {
@@ -168,7 +174,7 @@ export default function ModalWindowAddReportSTIX(props) {
         //пункт "определены ли данные содержащиеся в объекте"
         handlerElementDefanged = (obj) => {
             let reportInfoTmp = _.cloneDeep(reportInfo);
-            reportInfoTmp[newReportId].defanged = obj.data;
+            reportInfoTmp[newReportId].defanged = (obj.data === "true");
 
             setReportInfo(reportInfoTmp);
         },
@@ -191,7 +197,12 @@ export default function ModalWindowAddReportSTIX(props) {
             let listReportTypes = listObjectInfoTmp[newReportId].report_types.filter((item) => item !== refElem[0]);
     
             listObjectInfoTmp[newReportId].report_types = listReportTypes;
-    
+            if(listObjectInfoTmp[newReportId].object_refs.length === 0){
+                setButtonReportSave(true);
+            } else {
+                setButtonReportSave(false);
+            }
+
             setReportInfo(listObjectInfoTmp);
         },
         handlerExternalReferencesButtonSave = (obj) => {
@@ -291,9 +302,21 @@ export default function ModalWindowAddReportSTIX(props) {
 
             setReportInfo(reportInfoTmp);
         },
-        handelrCloseDialogNewSTIXObject = () => {
+        handlerDialogSaveDialogNewSTIXObject = (obj) => {
+            console.log("func 'handlerDialogSaveDialogNewSTIXObject', START");
+            console.log("Information: ", JSON.stringify(obj));
+
+            //так как при выполнении данной функции мы добавляем ссылку на новый или существующий STIX объект
+            // то мы можем утверждать что ссылка на объект в параметре obj.object_ref уже есть, а значит можно
+            // разрешить сохранение нового объекта типа Доклад
+            setButtonReportSave(false);
+
+        },
+        handlerCloseDialogNewSTIXObject = () => {
             setShowDialogNewSTIXObject(false);
         };
+
+    console.log("func 'ModalWindowAddReportSTIX', current data: ", (new Date).toISOString(), " modified data: ", (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1));
 
     return (<React.Fragment>
         <Dialog 
@@ -303,7 +326,13 @@ export default function ModalWindowAddReportSTIX(props) {
 
             <AppBar className={classes.appBar}>
                 <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={() => { onHide(); }} aria-label="close">
+                    <IconButton edge="start" color="inherit" onClick={() => { 
+                        onHide(); 
+
+                        setReportInfo({ [newReportId]: dataInformationObject });
+                        setButtonReportSave(true);
+                        setValuesIsInvalideReportName(true);
+                    }} aria-label="close">
                         <CloseIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>{`Новый доклад (${newReportId})`}</Typography>
@@ -332,11 +361,11 @@ export default function ModalWindowAddReportSTIX(props) {
                              *  информаци о предыдущих состояниях всегда пуст и так как он пуст то там всегда висит "Загрузка..."? надо решить этот вопрос
                              * + 4. Переделать раздел вывода информации об object_refs в список, для возможности просмотра и УДАЛЕНИЯ ссылок на информацию, 
                              * так и не сделал, а как же нужно сделать возможность удаления ссылок на другие объекты из object_refs и report_types
-                             * 5. Ошибка при сохранении объекта типа Report при изменении параметра в 'определены ли данные содержащиеся в объекте' 
+                             * + 5. Ошибка при сохранении объекта типа Report при изменении параметра в 'определены ли данные содержащиеся в объекте' 
                              *  с нет на да, надо разобратся
-                             * 6. Возможность удаления ссылок из object_refs для объекта типа Report нужно сделать только до тех пор пока 
+                             * + 6. Возможность удаления ссылок из object_refs для объекта типа Report нужно сделать только до тех пор пока 
                              *  в объекте object_refs есть больше одного элемента. Это возможно сделать путем кнопки "сохранить".
-                             * 
+                             * 7. Надо сделать возможность просмотра и редактирования добавленных в Доклад ссылок на STIX объекты
                 */ 
             }
 
@@ -377,59 +406,41 @@ export default function ModalWindowAddReportSTIX(props) {
 
                 <Row>
                     <Col md={12}>
-                        {reportInfo[newReportId].object_refs.map((item, key) => {
-                            let type = item.split("--");
-                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+                        {(reportInfo[newReportId].object_refs.length === 0)? 
+                            <Typography variant="caption">
+                                <span  style={{ color: red[800] }}>
+                                    * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Докладом
+                                </span>
+                            </Typography>:
+                            reportInfo[newReportId].object_refs.map((item, key) => {
+                                let type = item.split("--");
+                                let objectElem = helpers.getLinkImageSTIXObject(type[0]);
                     
-                            if(typeof objectElem === "undefined" ){
-                                return "";
-                            }
+                                if(typeof objectElem === "undefined" ){
+                                    return "";
+                                }
 
-                            return (<Row key={`key_object_ref_${key}`}>
-                                <Col md={12}>
-                                    <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                                        <Button onClick={() => {
-                                            console.log("click to button STIX object");
-                                        }}>
-                                            <img 
-                                                key={`key_object_ref_type_${key}`} 
-                                                src={`/images/stix_object/${objectElem.link}`} 
-                                                width="35" 
-                                                height="35" />
+                                return (<Row key={`key_object_ref_${key}`}>
+                                    <Col md={12}>
+                                        <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
+                                            <Button onClick={() => {
+                                                console.log("click to button STIX object");
+                                            }}>
+                                                <img 
+                                                    key={`key_object_ref_type_${key}`} 
+                                                    src={`/images/stix_object/${objectElem.link}`} 
+                                                    width="35" 
+                                                    height="35" />
                                                 &nbsp;{item}&nbsp;
-                                        </Button>
-                                    </Tooltip>
+                                            </Button>
+                                        </Tooltip>
 
-                                    <IconButton aria-label="delete" onClick={handlerDeleteObjectRef.bind(null, key)}>
-                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                                    </IconButton>
-                                </Col>
-                            </Row>);
-
-                            /**
-                            return (<Row key={`key_object_ref_${key}`}>
-                                <Col md={12}>
-                                    <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                                        <IconButton onClick={() => {
-                                            console.log("click to button STIX object");
-                                        }}>
-                                            <img 
-                                                key={`key_object_ref_type_${key}`} 
-                                                src={`/images/stix_object/${objectElem.link}`} 
-                                                width="35" 
-                                                height="35" />
+                                        <IconButton aria-label="delete" onClick={handlerDeleteObjectRef.bind(null, key)}>
+                                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                                         </IconButton>
-                                    </Tooltip>
-                                    {item}&nbsp;
-                                    <IconButton aria-label="delete" onClick={()=>{ 
-                                    //handlerElementDelete({ itemType: "external_references", item: sourceName, objectId: objectId, orderNumber: key }); 
-                                    }}>
-                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                                    </IconButton>
-                                </Col>
-                            </Row>);
-                             */
-                        })}
+                                    </Col>
+                                </Row>);
+                            })}
                     </Col>
                 </Row>
                 <Row>
@@ -538,7 +549,7 @@ export default function ModalWindowAddReportSTIX(props) {
             open={showDialogNewSTIXObject} >
             <DialogTitle>
                 <Grid item container md={12} justifyContent="flex-end">
-                    <IconButton edge="start" color="inherit" onClick={handelrCloseDialogNewSTIXObject} aria-label="close">
+                    <IconButton edge="start" color="inherit" onClick={handlerCloseDialogNewSTIXObject} aria-label="close">
                         <CloseIcon />
                     </IconButton>
                 </Grid>
@@ -548,11 +559,8 @@ export default function ModalWindowAddReportSTIX(props) {
                     listObjectInfo={reportInfo}
                     currentIdSTIXObject={newReportId} 
                     socketIo={socketIo}
-                    handlerDialog={(obj) => {
-                        console.log("func 'handlerDialog', START");
-                        console.log(obj);
-                    }}
-                    handelrDialogClose={handelrCloseDialogNewSTIXObject}
+                    handlerDialog={handlerDialogSaveDialogNewSTIXObject}
+                    handelrDialogClose={handlerCloseDialogNewSTIXObject}
                     isNotDisabled={true}
                 />
             </Suspense>

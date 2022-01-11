@@ -135,13 +135,12 @@ export default function CreateListPreviousStateSTIXObject(props){
                     return;
                 }
 
-                let currentPartNumber = optionsPreviousState.currentPartNumber+1;
                 socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { 
                     arguments: { 
                         "documentId": searchObjectId,
                         "paginateParameters": {
                             "max_part_size": optionsPreviousState.sizePart,
-                            "current_part_number": currentPartNumber,
+                            "current_part_number": optionsPreviousState.currentPartNumber,
                         } 
                     }});
             }} >

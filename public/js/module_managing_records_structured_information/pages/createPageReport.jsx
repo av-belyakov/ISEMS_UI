@@ -172,16 +172,6 @@ export default class CreatePageReport extends React.Component {
         console.log("func 'handlerButtonSaveModalWindowAddReportSTIX', START");
         console.log(obj);
 
-        /**
-         * 
-         * 
-         * 
-         * Надо протестировать добавление нового Доклада, так как я сделал но не пробовал
-         * 
-         * 
-         * 
-         */
-
         this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
 
         setTimeout(() => {

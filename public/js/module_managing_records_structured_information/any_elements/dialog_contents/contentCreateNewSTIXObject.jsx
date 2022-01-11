@@ -71,7 +71,9 @@ export default function CreateDialogContentNewSTIXObject(props){
             <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
             <Button 
                 //disabled={_.isEqual(dataPatterElement, listObjectInfo[currentIdSTIXObject])}
-                onClick={() => {}}
+                onClick={() => {
+                    handlerDialog({});
+                }}
                 color="primary">
                 сохранить
             </Button>
