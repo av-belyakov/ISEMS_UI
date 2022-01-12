@@ -1,18 +1,12 @@
 "use strict";
 
 import React from "react";
-import { Col, Row } from "react-bootstrap";
-/*import { 
-    AppBar,
-    Button,
-    Container,
-    Dialog,
-    Toolbar,
-    Typography,
-} from "@material-ui/core";*/
+import { 
+    DialogContent,
+    Grid,
+} from "@material-ui/core";
 import { teal, grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
-//import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -46,14 +40,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateDialogContentAuxiliarySTIXObject(props){
-    return (<React.Fragment>
-        <Row className="mt-2">
-            <Col md={12} className="pl-3 pr-3">
+    return (<DialogContent>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="center" className="pb-3">
                 Данный STIX объект является вспомогательным или связующим объектом, просмотр и редактирование подобных объектов доступен 
                 только из родительских STIX объектов.
-            </Col>
-        </Row>
-    </React.Fragment>);
+            </Grid>
+        </Grid>
+    </DialogContent>);
 }
 
 CreateDialogContentAuxiliarySTIXObject.propTypes = {

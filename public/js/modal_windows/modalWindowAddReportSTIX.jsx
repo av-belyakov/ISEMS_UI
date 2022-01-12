@@ -27,11 +27,12 @@ import PropTypes from "prop-types";
 import { helpers } from "../common_helpers/helpers";
 import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
 import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx"; 
+import CreateAnyModalWindowSTIXObject from "../module_managing_records_structured_information/any_elements/createAnyModalWindowSTIXObject.jsx";
 import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
 import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 
 const tzoffset = (new Date()).getTimezoneOffset() * 60000;
-const myDate = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
+const myDate = (new Date(Date.now() - tzoffset)).toISOString();
 const newReportId = `report--${uuidv4()}`;
 const defaultOptionsDEATI = {
     uuidValue: "",
@@ -80,6 +81,7 @@ const dataInformationObject = {
     },
 };
 
+const SizePart = 15;
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: "fixed",
@@ -106,6 +108,7 @@ export default function ModalWindowAddReportSTIX(props) {
         changeValueAddNewReport,
         listTypesComputerThreat,
         listTypesDecisionsMadeComputerThreat,
+        userPermissions,
         handlerButtonSave,
         socketIo,
     } = props;
@@ -119,8 +122,103 @@ export default function ModalWindowAddReportSTIX(props) {
     let [ showDialogElementAdditionalThechnicalInfo, setShowDialogElementAdditionalThechnicalInfo ] = React.useState(false);
     let [ optionsDialogElementAdditionalThechnicalInfo, setOptionsDialogElementAdditionalThechnicalInfo ] = React.useState(defaultOptionsDEATI);
 
-    //let outsideSpecificationIsNotExist = ((reportInfo.outside_specification === null) || (typeof reportInfo.outside_specification === "undefined"));
+    let [ listObjectInfo, setListObjectInfo ] = React.useState({});
+    let [ listPreviousState, setListPreviousState ] = React.useState([]);
+    let [ optionsPreviousState, setOptionsPreviousState ] = React.useState({
+        sizePart: SizePart,
+        countFoundDocuments: 0,
+        objectId: "",
+        currentPartNumber: 1,
+    });
+    let [ showDialogElementAdditionalSTIXObject, setShowDialogElementAdditionalSTIXObject ] = React.useState(false);
+    let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
+
+    (() => {
+        socketIo.on("isems-mrsi response ui", (data) => {
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
+            }
+
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
+
+            let objectId = "", 
+                listObjectInfoTmp = {},
+                listPreviousStateTmp = [],
+                optionsPreviousStateTmp = {};
+
+            switch(data.section){
+            case "isems-mrsi ui request: send search request, get STIX object for id":
+                if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                    break;
+                }
+
+                if(data.information.additional_parameters.transmitted_data.length === 0){
+                    break;
+                }
+
+                listObjectInfoTmp = _.cloneDeep(listObjectInfo);
+                for(let obj of data.information.additional_parameters.transmitted_data){
+                    listObjectInfoTmp[obj.id] = obj;
+                }
+
+                setListObjectInfo(listObjectInfoTmp);
+
+                break;
+
+            case "isems-mrsi ui request: send search request, list different objects STIX object for id":
+                if(data.information.additional_parameters.transmitted_data.length === 0){
+                    return;
+                }
+
+                objectId = (data.information.additional_parameters.transmitted_data.length > 1)? data.information.additional_parameters.transmitted_data[0].document_id: "";
+
+                if((listPreviousState.length === 0) || (optionsPreviousState.objectId !== objectId)){
+                    listPreviousStateTmp = (data.information.additional_parameters.transmitted_data.length === 0)? 
+                        [{}]: 
+                        data.information.additional_parameters.transmitted_data;
+                } else {
+                    listPreviousStateTmp = listPreviousState.slice();
+    
+                    for(let item of data.information.additional_parameters.transmitted_data){
+                        if(!listPreviousStateTmp.find((elem) => elem.modified_time === item.modified_time)){
+                            listPreviousStateTmp.push(item);
+                        }
+                    }
+    
+                    listPreviousStateTmp.sort((a, b) => {
+                        let timeA = +new Date(a.modified_time);
+                        let timeB = +new Date(b.modified_time);
+                    
+                        if(timeA > timeB) return -1;
+                        if(timeA === timeB) return 0;
+                        if(timeA < timeB) return 1;
+                    });                
+                }
+
+                setListPreviousState(listPreviousStateTmp);
+
+                optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
+                optionsPreviousStateTmp.objectId = objectId;
+                optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part + optionsPreviousStateTmp.currentPartNumber;
         
+                setOptionsPreviousState(optionsPreviousStateTmp);
+
+                break;
+
+            case "isems-mrsi ui request: send search request, count list different objects STIX object for id":
+                optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
+                optionsPreviousStateTmp.objectId = data.information.additional_parameters.document_id;
+                optionsPreviousStateTmp.countFoundDocuments = data.information.additional_parameters.number_documents_found;
+    
+                setOptionsPreviousState(optionsPreviousStateTmp);
+
+                break;
+            }
+        });
+    })();
+
     let handlerName = (e) => {
             let reportInfoTmp = _.cloneDeep(reportInfo);
             reportInfoTmp[newReportId].name = e.target.value;
@@ -302,6 +400,55 @@ export default function ModalWindowAddReportSTIX(props) {
 
             setReportInfo(reportInfoTmp);
         },
+        handlerShowObjectRefSTIXObject = (currentObjectId) => {
+
+            console.log("func 'handlerShowObjectRefSTIXObject', obejct id: ", currentObjectId);
+
+            setCurrentAdditionalIdSTIXObject(currentObjectId);
+            setShowDialogElementAdditionalSTIXObject(true);
+
+            let optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
+            optionsPreviousStateTmp.objectId = currentObjectId;
+    
+            setOptionsPreviousState(optionsPreviousStateTmp);
+
+            //запрос на получение количества документов о предыдущем состоянии STIX объектов
+            socketIo.emit("isems-mrsi ui request: send search request, get count different objects STIX object for id", {
+                arguments: { "documentId": currentObjectId },
+            });
+
+            //запрос на получение дополнительной информации о предыдущем состоянии STIX объектов
+            socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { 
+                arguments: { 
+                    "documentId": currentObjectId,
+                    "paginateParameters": {
+                        "max_part_size": optionsPreviousState.sizePart,
+                        "current_part_number": optionsPreviousState.currentPartNumber,
+                    } 
+                }});
+
+            //проверяем наличие информации об запрашиваемом STIX объекте
+            if((listObjectInfo[currentObjectId] !== null) && (typeof listObjectInfo[currentObjectId] !== "undefined")){
+                return;
+            }
+
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentObjectId,
+                parentObjectId: newReportId,
+            }});
+        },
+        handelrDialogClose = () => {
+            setShowDialogElementAdditionalSTIXObject(false);
+        },
+        handelrDialogSaveAnySTIXObject = (newSTIXObject) => {
+            console.log("func 'modalWindowAddReportSTIX', func 'handelrDialogSaveAnySTIXObject', START...");
+            console.log(newSTIXObject);
+
+            let listObjectInfoTmp = _.cloneDeep(listObjectInfo);
+
+            listObjectInfoTmp[newSTIXObject.id] = newSTIXObject;
+            setListObjectInfo(listObjectInfoTmp);
+        },
         handlerDialogSaveDialogNewSTIXObject = (obj) => {
             console.log("func 'handlerDialogSaveDialogNewSTIXObject', START");
             console.log("Information: ", JSON.stringify(obj));
@@ -315,8 +462,6 @@ export default function ModalWindowAddReportSTIX(props) {
         handlerCloseDialogNewSTIXObject = () => {
             setShowDialogNewSTIXObject(false);
         };
-
-    console.log("func 'ModalWindowAddReportSTIX', current data: ", (new Date).toISOString(), " modified data: ", (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1));
 
     return (<React.Fragment>
         <Dialog 
@@ -356,7 +501,7 @@ export default function ModalWindowAddReportSTIX(props) {
                 /**
                              * Не доделал следующие пункты:
                              * + 1. Автоматическое обновление таблицы в createPageReport после добавления нового Доклада, так и не решил
-                             * 2. Время создания нового доклада всегда меньше текущего времени на 3 часа, надо решить
+                             * + 2. Время создания нового доклада всегда меньше текущего времени на 3 часа, надо решить
                              * + 3. При успешном создании нового Доклада, если перейти в просмотр информации о новом докладе, то раздел просмотра 
                              *  информаци о предыдущих состояниях всегда пуст и так как он пуст то там всегда висит "Загрузка..."? надо решить этот вопрос
                              * + 4. Переделать раздел вывода информации об object_refs в список, для возможности просмотра и УДАЛЕНИЯ ссылок на информацию, 
@@ -423,9 +568,7 @@ export default function ModalWindowAddReportSTIX(props) {
                                 return (<Row key={`key_object_ref_${key}`}>
                                     <Col md={12}>
                                         <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                                            <Button onClick={() => {
-                                                console.log("click to button STIX object");
-                                            }}>
+                                            <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item)}>
                                                 <img 
                                                     key={`key_object_ref_type_${key}`} 
                                                     src={`/images/stix_object/${objectElem.link}`} 
@@ -565,6 +708,17 @@ export default function ModalWindowAddReportSTIX(props) {
                 />
             </Suspense>
         </Dialog>
+
+        <CreateAnyModalWindowSTIXObject
+            socketIo={socketIo}
+            listObjectInfo={listObjectInfo}
+            listPreviousState={listPreviousState}
+            optionsPreviousState={optionsPreviousState}
+            showDialogElement={showDialogElementAdditionalSTIXObject}
+            currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
+            handelrDialogClose={handelrDialogClose}
+            handelrDialogSave={handelrDialogSaveAnySTIXObject}
+            isNotDisabled={userPermissions.editing_information.status} />
     </React.Fragment>);
 }
 
@@ -572,6 +726,7 @@ ModalWindowAddReportSTIX.propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
+    userPermissions: PropTypes.object.isRequired,
     changeValueAddNewReport: PropTypes.func.isRequired,
     listTypesComputerThreat: PropTypes.object.isRequired,
     listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,

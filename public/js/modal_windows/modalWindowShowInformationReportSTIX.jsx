@@ -31,6 +31,7 @@ import CreateChipList from "../module_managing_records_structured_information/an
 import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
 import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
+import CreateAnyModalWindowSTIXObject from "../module_managing_records_structured_information/any_elements/createAnyModalWindowSTIXObject.jsx";
 import CreateListPreviousStateSTIXObject from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIXObject.jsx";
 import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
 import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
@@ -119,7 +120,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handlerOnChangeDescription = this.handlerOnChangeDescription.bind(this);
         this.handlerManagingAccessToReport = this.handlerManagingAccessToReport.bind(this);
         this.handlerShowDialogNewSTIXObject = this.handlerShowDialogNewSTIXObject.bind(this);
-        this.handlerNewAdditionalSTIXObject = this.handlerNewAdditionalSTIXObject.bind(this);
+        this.handelrDialogSaveAnySTIXObject = this.handelrDialogSaveAnySTIXObject.bind(this);
         this.handlerCloseDialogNewSTIXObject = this.handlerCloseDialogNewSTIXObject.bind(this);
         this.handlerOnChangeAccessGroupToReport = this.handlerOnChangeAccessGroupToReport.bind(this);
         this.handlerDialogSaveDialogNewSTIXObject = this.handlerDialogSaveDialogNewSTIXObject.bind(this);
@@ -686,9 +687,9 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         }});
     }
 
-    //обрабатывает добавление новых объектов STIX или изменение информации о старых (при этом все равно происходит добавление объекта)
-    handlerNewAdditionalSTIXObject(newSTIXObject){
-        console.log("func 'handlerNewAdditionalSTIXObject', START...");
+    //обрабатывает изменение информации о STIX объектах
+    handelrDialogSaveAnySTIXObject(newSTIXObject){
+        console.log("func 'handelrDialogSaveAnySTIXObject', START...");
         console.log("----- ______ NEW STIX OBJECT ______-----");
         console.log(newSTIXObject);
 
@@ -1113,7 +1114,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 showDialogElement={this.state.showDialogElementAdditionalSTIXObject}
                 currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
                 handelrDialogClose={this.handelrDialogClose}
-                handlerNewAdditionalSTIXObject={this.handlerNewAdditionalSTIXObject}
+                handelrDialogSave={this.handelrDialogSaveAnySTIXObject}
                 isNotDisabled={this.props.userPermissions.editing_information.status} />
 
             <ModalWindowDialogElementAdditionalThechnicalInformation 
@@ -1240,208 +1241,3 @@ GetListObjectRefs.propTypes = {
     handlerChangeCurrentSTIXObject: PropTypes.func.isRequired,
 };
 
-function CreateAnyModalWindowSTIXObject(props){    
-    let { 
-        socketIo,
-        listObjectInfo,
-        listPreviousState,
-        optionsPreviousState,
-        showDialogElement,
-        currentAdditionalIdSTIXObject, 
-        handelrDialogClose,
-        handlerNewAdditionalSTIXObject,
-        isNotDisabled, 
-    } = props;
-
-    let idSTIXObject = currentAdditionalIdSTIXObject;
-    let type = currentAdditionalIdSTIXObject.split("--");
-    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-
-    if(typeof objectElem !== "undefined" ){
-        idSTIXObject = type[0];
-        img = <img 
-            src={`/images/stix_object/${objectElem.link}`} 
-            width="35" 
-            height="35" />;
-    }
-    
-    let titleName = (currentAdditionalIdSTIXObject === "create-new-stix-object")? 
-            "Создание нового объекта или добавление существующего": 
-            `${(typeof objectElem === "undefined")? "": objectElem.description} id: ${currentAdditionalIdSTIXObject}`,
-        img = (typeof objectElem === "undefined")? "": <img src={`/images/stix_object/${objectElem.link}`} width="35" height="35" />;
-
-    let getMyModule = (name) => {
-        switch(name){
-        case "artifact":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentArtifactSTIXObject.jsx")); 
-        
-        case "directory":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentDirectorySTIXObject.jsx")); 
-        
-        case "file":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentFileSTIXObject.jsx")); 
-        
-        case "mutex":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentMutexSTIXObject.jsx")); 
-        
-        case "process":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentProcessSTIXObject.jsx")); 
-        
-        case "software":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentSoftwareSTIXObject.jsx")); 
-        
-        case "url":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentURLSTIXObject.jsx")); 
-        
-        case "windows-registry-key":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentWindowsRegistryKeySTIXObject.jsx")); 
-        
-        case "x509-certificate":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentX509CertificateSTIXObject.jsx")); 
-        
-        case "attack-pattern":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAttackPatternSTIXObject.jsx")); 
-
-        case "autonomous-system":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAutonomousSystemSTIXObject.jsx")); 
-
-        case "campaign":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentCampaignSTIXObject.jsx")); 
-            
-        case "course-of-action":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentCourseOfActionSTIXObject.jsx")); 
-
-        case "domain-name":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentDomainNameSTIXObject.jsx")); 
-
-        case "email-addr":
-            //"email-message"
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentEmailAddrSTIXObject.jsx")); 
-
-        case "grouping":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentGroupingSTIXObject.jsx")); 
-
-        case "identity":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIdentitySTIXObject.jsx")); 
-
-        case "incident":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIncidentSTIXObject.jsx")); 
-
-        case "infrastructure":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentInfrastructureSTIXObject.jsx")); 
-
-        case "intrusion-set":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIntrusionSetSTIXObject.jsx")); 
-
-        case "ipv4-addr":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIPv4AddrSTIXObject.jsx")); 
-
-        case "ipv6-addr":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentIPv6AddrSTIXObject.jsx")); 
-
-        case "location":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentLocationSTIXObject.jsx")); 
-
-        case "mac-addr":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentMacAddrSTIXObject.jsx")); 
-
-        case "malware": 
-        //"malware-analysis": "", напрямую относится к "malware"
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentMalwareSTIXObject.jsx")); 
-
-        case "network-traffic":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentNetworkTrafficSTIXObject.jsx")); 
-
-        case "note":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentNoteSTIXObject.jsx")); 
-
-        case "observed-data":
-        //"indicator": "",зависит от "observed-data"
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentObservedDataSTIXObject.jsx")); 
-
-        case "opinion":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentOpinionSTIXObject.jsx")); 
-
-        case "threat-actor":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentThreatActorSTIXObject.jsx")); 
-
-        case "tool":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentToolSTIXObject.jsx")); 
-
-        case "user-account":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentUserAccountSTIXObject.jsx")); 
-
-        case "vulnerability":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentVulnerabilitySTIXObject.jsx")); 
-
-        case "indicator":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
-
-        case "email-message":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
-
-        case "malware-analysis":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
-
-        case "relationship":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
-
-        case "sighting":
-            return React.lazy(() => import("../module_managing_records_structured_information/any_elements/dialog_contents/contentAuxiliarySTIXObject.jsx"));
-            
-        }
-
-        return null;
-    };
-
-    let MyModule = getMyModule(idSTIXObject);
-
-    const handlerDialogButtonSave = (data) => {
-        handlerNewAdditionalSTIXObject(data);
-
-        handelrDialogClose();
-    };
-
-    return (<Dialog 
-        fullWidth
-        maxWidth="xl"
-        scroll="paper"
-        open={showDialogElement} >
-        <DialogTitle>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={11}>{img}&nbsp;<span className="pt-2">{titleName}</span></Grid>
-                <Grid item container md={1} justifyContent="flex-end">
-                    <IconButton edge="start" color="inherit" onClick={handelrDialogClose} aria-label="close">
-                        <CloseIcon />
-                    </IconButton>
-                </Grid>
-            </Grid> 
-        </DialogTitle>
-        <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22}}>Загрузка...</div>}>
-            {(MyModule)?
-                <MyModule
-                    listObjectInfo={listObjectInfo}
-                    listPreviousState={listPreviousState}
-                    optionsPreviousState={optionsPreviousState}
-                    currentIdSTIXObject={currentAdditionalIdSTIXObject} 
-                    socketIo={socketIo}
-                    handlerDialog={handlerDialogButtonSave}
-                    handelrDialogClose={handelrDialogClose}
-                    isNotDisabled={isNotDisabled}
-                />:
-                ""}
-        </Suspense>
-    </Dialog>);
-}
-
-CreateAnyModalWindowSTIXObject.propTypes = {
-    socketIo: PropTypes.object.isRequired,
-    listPreviousState: PropTypes.array.isRequired,
-    listObjectInfo: PropTypes.object.isRequired,
-    optionsPreviousState: PropTypes.object.isRequired,
-    showDialogElement: PropTypes.bool.isRequired,
-    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
-    handlerNewAdditionalSTIXObject: PropTypes.func.isRequired,
-    isNotDisabled: PropTypes.bool.isRequired,
-};

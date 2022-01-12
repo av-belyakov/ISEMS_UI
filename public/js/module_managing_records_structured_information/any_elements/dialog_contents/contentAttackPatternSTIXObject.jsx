@@ -8,6 +8,7 @@ import {
     Grid,
     TextField,
     IconButton,
+    LinearProgress,
 } from "@material-ui/core";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { red } from "@material-ui/core/colors";
@@ -92,33 +93,28 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         handlerDescription = (obj) => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
             valueAPTmp.description = obj.target.value;
-        
             setAttackPatterElement(valueAPTmp);
         },
         handlerTokenValuesChange = React.useCallback((newTokenValues) => {            
             let valueAPTmp = _.cloneDeep(attackPatterElement);
             valueAPTmp.aliases = newTokenValues;
-        
             setAttackPatterElement(valueAPTmp);
         }, [ setAttackPatterElement, attackPatterElement ]),
         handlerDeleteKillChain = (num) => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
             valueAPTmp.kill_chain_phases.splice(num, 1);
-
             setAttackPatterElement(valueAPTmp);
         },
         //пункт "уверенность создателя в правильности своих данных от 0 до 100"
         handlerElementConfidence = (obj) => { 
             let valueAPTmp = _.cloneDeep(attackPatterElement);
             valueAPTmp.confidence = obj.data;
-        
             setAttackPatterElement(valueAPTmp);
         },
         //пункт "определены ли данные содержащиеся в объекте"
         handlerElementDefanged = (obj) => {
             let valueAPTmp = _.cloneDeep(attackPatterElement);
             valueAPTmp.defanged = (obj.data === "true");
-        
             setAttackPatterElement(valueAPTmp);
         },
         //пункт "набор терминов, используемых для описания данного объекта"        
@@ -130,7 +126,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             }
 
             valueAPTmp.labels = obj.listTokenValue;
-
             setAttackPatterElement(valueAPTmp);
         },
         handlerDeleteElementAdditionalTechnicalInformation = (obj) => {
@@ -142,7 +137,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 }
 
                 valueAPTmp.external_references.splice(obj.orderNumber, 1);
-
                 setAttackPatterElement(valueAPTmp);
             }
 
@@ -152,13 +146,11 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 }
 
                 valueAPTmp.granular_markings.splice(obj.orderNumber, 1);
-
                 setAttackPatterElement(valueAPTmp);
             }
 
             if(obj.itemType === "extensions"){
                 delete valueAPTmp.extensions[obj.item];
-
                 setAttackPatterElement(valueAPTmp);
             }
              
@@ -173,7 +165,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                     }
 
                     valueAPTmp.external_references.push(obj.data);
-            
                     setAttackPatterElement(valueAPTmp);        
                 }
 
@@ -203,7 +194,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 }
 
                 valueAPTmp.granular_markings.push(obj.data);
-            
                 setAttackPatterElement(valueAPTmp);  
             }
             
@@ -213,7 +203,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 }
 
                 valueAPTmp.extensions[obj.data.name] = obj.data.description;
-        
                 setAttackPatterElement(valueAPTmp);  
             }
         },
@@ -249,9 +238,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                 delete valueAPTmp.kill_chain_phases;
             }
 
-            console.log("attack pattern");
-            console.log(valueAPTmp);
-
             setAttackPatterElement(valueAPTmp);
 
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [valueAPTmp] });
@@ -260,9 +246,14 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         };
 
     if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<Grid container direction="row" spacing={3}>
-            <Grid item container md={12}>Поиск информации об STIX объекте типа Шаблон атаки (Attack Pattern DO STIX)</Grid>
-        </Grid>);
+        return (<DialogContent>
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={12} justifyContent="center" className="pb-3">
+                    поиск информации об STIX объекте типа Шаблон атаки (Attack Pattern DO STIX)
+                </Grid>
+            </Grid>
+            <LinearProgress />
+        </DialogContent>);
     }
 
     return (<React.Fragment>

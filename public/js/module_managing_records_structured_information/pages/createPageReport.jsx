@@ -223,6 +223,7 @@ export default class CreatePageReport extends React.Component {
                 changeValueAddNewReport={this.changeValueAddNewReport}
                 listTypesComputerThreat={this.props.listTypesComputerThreat}
                 listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat}
+                userPermissions={this.props.receivedData.userPermissions}
                 handlerButtonSave={this.handlerButtonSaveModalWindowAddReportSTIX.bind(this)}
                 socketIo={this.props.socketIo} />
 

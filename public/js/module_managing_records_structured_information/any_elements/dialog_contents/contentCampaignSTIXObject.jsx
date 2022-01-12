@@ -7,6 +7,7 @@ import {
     DialogContent,
     TextField,
     Grid,
+    LinearProgress,
 } from "@material-ui/core";
 import TokenInput from "react-customize-token-input";
 import DateFnsUtils from "dateIoFnsUtils";
@@ -214,9 +215,14 @@ export default function CreateDialogContentCampaignSTIXObject(props){
         };
 
     if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<Grid container direction="row" spacing={3}>
-            <Grid item container md={12}>Поиск информации об STIX объекте типа Кампания (Campaign DO STIX)</Grid>
-        </Grid>);
+        return (<DialogContent>
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={12} justifyContent="center" className="pb-3">
+                    поиск информации об STIX объекте типа Кампания (Campaign DO STIX)
+                </Grid>
+            </Grid>
+            <LinearProgress />
+        </DialogContent>);
     }
 
     return (<React.Fragment>

@@ -2,14 +2,17 @@
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-/*import { 
-    AppBar,
-    Button,
-    Container,
-    Dialog,
-    Toolbar,
-    Typography,
-} from "@material-ui/core";*/
+import { 
+//    AppBar,
+//    Button,
+//    Container,
+//    Dialog,
+    DialogContent,
+    LinearProgress,
+    Grid,
+//    Toolbar,
+//    Typography,
+} from "@material-ui/core";
 import { teal, grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 //import { v4 as uuidv4 } from "uuid";
@@ -55,22 +58,25 @@ export default function CreateDialogContentDirectorySTIXObject(props){
     } = props;
 
     if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<React.Fragment>
+        return (<DialogContent>
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={12} justifyContent="center" className="pb-3">
+                поиск информации об STIX объекте типа Каталог (Directory СO STIX)
+                </Grid>
+            </Grid>
+            <LinearProgress />
+        </DialogContent>);
+    }
+
+    return (<React.Fragment>
+        <DialogContent>
             <Row className="mt-2">
                 <Col md={12} className="pl-3 pr-3">
             Просмотр и редактирование STIX объекта типа Каталог (Directory СO STIX)
                 </Col>
+                <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
             </Row>
-        </React.Fragment>);
-    }
-
-    return (<React.Fragment>
-        <Row className="mt-2">
-            <Col md={12} className="pl-3 pr-3">
-        Просмотр и редактирование STIX объекта типа Каталог (Directory СO STIX)
-            </Col>
-            <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
-        </Row>
+        </DialogContent>
     </React.Fragment>);
 }
 
