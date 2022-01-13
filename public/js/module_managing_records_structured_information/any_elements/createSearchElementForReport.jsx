@@ -1,131 +1,268 @@
+"use strict";
+
 import React from "react";
-import { Col, Row } from "react-bootstrap";
-//import {  } from "@material-ui/core";
+import { 
+    Grid,
+    Typography, 
+    TextField, 
+    MenuItem,
+} from "@material-ui/core";
+import { red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
-/**
-this.state = {
-            showSpinner: true,
-            showModalWindowAddReport: false,
-            showModalWindowInformationReport: false,
-            showReportId: "",
-            addNewReport: false,
-            requestDetails: {
-                paginateParameters: {
-                    maxPartSize: 30,
-                    currentPartNumber: 1,
-                },
-                sortableField: "data_created",
-                //
-                // между параметрами "id_documents", "type_documents", "created", "modified", "created_by_ref", "specific_search_fields" и 
-                // "outside_specification_search_fields" используется логика "И"
-                //
-                 searchParameters: {            
-                    documentsId: [],
-                    documentsType: ["report"],
-                    //  
-                    // если заполнены оба поля 'created' и 'modified' то тогда для поиска по данным из обоих полей работает логика "ИЛИ"
-                    // значение "0001-01-01T00:00:00.000+00:00" для полей с датами эквивалентно значению пустого поля
-                    //
-                    created: {
-                        start: "0001-01-01T00:00:00.000+00:00",
-                        end: "0001-01-01T00:00:00.000+00:00",
-                    },
-                    modified: {
-                        start: "0001-01-01T00:00:00.000+00:00",
-                        end: "0001-01-01T00:00:00.000+00:00",
-                    }, 
-                    createdByRef: "",
-                    // 
-                    // specific_search_fields содержит специфичные поля объектов STIX (если для поиска используются НЕСКОЛЬКО таких объектов 
-                    // то срабатывает логика "ИЛИ").
-                    // Если в объекте заполнены несколько полей то между ними работает логика "И", со всеми полями кроме полей даты.
-                    // Для поля "Value" выполняется проверка на соответствия одному из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", 
-                    // "ipv6-addr" или "url" 
-                    //
-                    specificSearchFields: [
-                        {
-                            name: "",
-                            aliases: "",
-                            // интервал времени когда информация была обнаружена впервые 
-                            firstSeen: {
-                                start: "0001-01-01T00:00:00.000+00:00",
-                                end: "0001-01-01T00:00:00.000+00:00",
-                            },
-                            // интервал времени когда информация была обнаружена в последний раз 
-                            lastSeen: {
-                                start: "0001-01-01T00:00:00.000+00:00",
-                                end: "0001-01-01T00:00:00.000+00:00",
-                            },
-                            // равно или больше чем заданное пользователем время, когда отчет был опубликован 
-                            published: "0001-01-01T00:00:00.000+00:00",
-                            roles: [],
-                            country: "",
-                            city: "",
-                            numberAutonomousSystem: 0,
-                            //
-                            // может содержать какое либо из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", 
-                            // "ipv6-addr" или "url". Или все эти значения в перемешку. Между значениями в поле 'Value' используется
-                            // логика "ИЛИ".
-                            //
-                            value: [],
-                        }
-                    ],
-                    // 
-                    // содержит поля не входящие в основную спецификацию STIX 2.0 и расширяющие набор некоторых свойств 
-                    // объектов STIX. Логика между ними это "ИЛИ", пустое содержимое полей не учитывается 
-                    //
-                    outsideSpecificationSearchFields: {
-                        decisionsMadeComputerThreat: "", // принятые решения по компьютерной угрозе
-                        computerThreatType: "", // тип компьютерной угрозы
-                    },
-                },
-            },
-        };
- */
+const listSearchTypeElement = [
+    {
+        name: "documentId",
+        description: "id документа",
+        regPattern: "",
+    },
+    {
+        name: "created",
+        description: "дата и время создания документа",
+        regPattern: "",
+    },
+    {
+        name: "modified",
+        description: "дата и время модификации документа",
+        regPattern: "",
+    },
+    {
+        name: "createdByRef",
+        description: "идентификатор источника создавшего доклад",
+        regPattern: "",
+    },
+    {
+        name: "name",
+        description: "наименование",
+        regPattern: "",
+    },
+    {
+        name: "aliases",
+        description: "псевдоним",
+        regPattern: "",
+    },
+    {
+        name: "firstSeen",
+        description: "дата и время первого обнаружения информации",
+        regPattern: "",
+    },
+    {
+        name: "lastSeen",
+        description: "дата и время последнего обнаружения информации",
+        regPattern: "",
+    },
+    {
+        name: "published",
+        description: "дата и время публикации Доклада (начиная от заданной даты до настоящего времени)",
+        regPattern: "",
+    },
+    {
+        name: "roles",
+        description: "роль",
+        regPattern: "",
+    },
+    {
+        name: "country",
+        description: "страна",
+        regPattern: "",
+    },
+    {
+        name: "city",
+        description: "город",
+        regPattern: "",
+    },
+    {
+        name: "numberAutonomousSystem",
+        description: "номер автономной системы",
+        regPattern: "",
+    },
+    {
+        name: "domain-name",
+        description: "доменное имя",
+        regPattern: "",
+    }, 
+    {
+        name: "email-addr",
+        description: "email адрес",
+        regPattern: "",
+    }, 
+    {
+        name: "ipv4-addr",
+        description: "IPv4 адрес",
+        regPattern: "",
+    }, 
+    {
+        name: "ipv6-addr",
+        description: "IPv4 адрес",
+        regPattern: "",
+    },
+    {
+        name: "url",
+        description: "URL",
+        regPattern: "",
+    },
+];
 
-export default class CreateSearchElementReport extends React.Component {
-    constructor(props){
-        super(props);
+export default function CreateSearchElementReport(props){
+    let { 
+        socketIo, 
+        userPermissions,
+        listTypesComputerThreat,
+        listTypesDecisionsMadeComputerThreat,
+    } = props;
+    
+    let listKeysTCT = Object.keys(listTypesComputerThreat),
+        listKeysTDMCT = Object.keys(listTypesDecisionsMadeComputerThreat);
 
-        this.state = {};
+    let [ searchField, setSearchField ] = React.useState("");
+    let [ selectedSearchItem, setSelectedSearchItem ] = React.useState("");
+    //let [ selectedSearchItemName, setSelectedSearchItemName ] = React.useState("");
+    let [ searchParameters, setSearchParameters ] = React.useState({            
+        documentsId: [],
+        documentsType: ["report"],
+        // если заполнены оба поля 'created' и 'modified' то тогда для поиска по данным из обоих полей работает логика "ИЛИ"
+        // значение "0001-01-01T00:00:00.000+00:00" для полей с датами эквивалентно значению пустого поля
+        created: { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" },
+        modified: { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" }, 
+        createdByRef: "",
+        // specific_search_fields содержит специфичные поля объектов STIX (если для поиска используются НЕСКОЛЬКО таких объектов 
+        // то срабатывает логика "ИЛИ").
+        // Если в объекте заполнены несколько полей то между ними работает логика "И", со всеми полями кроме полей даты.
+        // Для поля "Value" выполняется проверка на соответствия одному из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", 
+        // "ipv6-addr" или "url" 
+        specificSearchFields: [
+            {
+                name: "",
+                aliases: "",
+                // интервал времени когда информация была обнаружена впервые 
+                firstSeen: { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" },
+                // интервал времени когда информация была обнаружена в последний раз 
+                lastSeen: { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" },
+                // равно или больше чем заданное пользователем время, когда отчет был опубликован 
+                published: "0001-01-01T00:00:00.000+00:00",
+                roles: [],
+                country: "",
+                city: "",
+                numberAutonomousSystem: 0,
+                // может содержать какое либо из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", "ipv6-addr" или "url".
+                // Или все эти значения в перемешку. Между значениями в поле 'Value' используется логика "ИЛИ".
+                value: [],
+            }
+        ],
+        // содержит поля не входящие в основную спецификацию STIX 2.0 и расширяющие набор некоторых свойств 
+        // объектов STIX. Логика между ними это "ИЛИ", пустое содержимое полей не учитывается 
+        outsideSpecificationSearchFields: {
+            decisionsMadeComputerThreat: "", // принятые решения по компьютерной угрозе
+            computerThreatType: "", // тип компьютерной угрозы
+        },
+    });
 
-        this.handlerEvents.call(this);
-        this.requestEmitter.call(this);
+    let handlerSearchField = () => {
+
+    };
+
+    if(!userPermissions.privileged_group.status){
+        return (<Grid container direction="row">
+            <Grid item container md={12} justifyContent="center" className="pb-3">
+                <Typography variant="caption">
+                    <span  style={{ color: red[800] }}>Поиск информации невозможен. Отсутствуют необходимые права доступа.</span>
+                </Typography>
+            </Grid>
+        </Grid>);
     }
 
-    handlerEvents(){
-        this.props.socketIo.on("", (data) => {
-            console.log(data);
-        });
-    }
+    return (<React.Fragment>
+        <hr/>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={7} justifyContent="flex-end">
+                {(() => {
+                    let listTmp = [
+                        "created",
+                        "modified",
+                        "firstSeen",
+                        "lastSeen",
+                        "published",
+                    ];
 
-    requestEmitter(){
-        this.props.socketIo.emit("", { arguments: {}});
-    }
-
-    /**
- * Может быть сделать елементы поиска в виде выбора из списка типов requestDetails, 
- * особенно из specificSearchFields.
- * При выборе одного из элемента списка, появляется поле вывода или используется одно и тоже поле вывода (кроме поска по дате и времени).
- * Когда выполняется добавление фильтра, например после ввода параметров поиска нужно нажать кнопку 'добавить фильтр' или клавишу энтер на клавиатуре.
- * Чуть ниже будет перечисление параметров фильтров в виде, подобном тому, что перечисляет группы которым доступен для просмотра объект Доклад
- */
-
-    render(){
-        return (
-            <React.Fragment>
-                <hr/>
-                <Row><Col md={12} className="pt-4 text-center"><h3>Область основного набора элементов поиска страницы Report</h3></Col></Row>
-                <Row><Col md={12} className="text-center">{(this.props.userPermissions.privileged_group.status)? 
-                    <span className="text-success">привилегированная группа</span>: 
-                    <span className="text-danger">непривилегированная группа</span>}</Col></Row>
-            </React.Fragment>
-        );
-    }
+                    if(selectedSearchItem === ""){
+                        return;
+                    } else if(listTmp.includes(selectedSearchItem)){
+                        return "поле для ввода даты и времени";
+                    } else {
+                        return (<TextField
+                            id="id-search-field"
+                            label="поле поиска"
+                            value={searchField}
+                            //disabled={(typeof erInfo.source_name !== "undefined")}
+                            //error={valuesIsInvalideReportName}
+                            fullWidth={true}
+                            //helperText="обязательное для заполнения поле"
+                            onChange={handlerSearchField}
+                        />);
+                    }
+                })()}             
+            </Grid>
+            <Grid item container md={5} justifyContent="flex-end">
+                <TextField
+                    id={"select-search-type"}
+                    select
+                    fullWidth
+                    label={"тип искомого значения"}
+                    value={selectedSearchItem}
+                    onChange={(obj) => setSelectedSearchItem(obj.target.value)} >
+                    <MenuItem key="key-search-type-value-empty" value="">пустое значение</MenuItem>
+                    {listSearchTypeElement.map((item, num) => <MenuItem key={`key-search-type-value-${item.name}-${num}`} value={item.name}>{item.description}</MenuItem>)}
+                </TextField>
+            </Grid>
+        </Grid>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={6}>
+                <TextField
+                    id={"select-search-decisions_made_computer_threat"}
+                    select
+                    fullWidth
+                    label={"принятое решение по компьютерной угрозе"}
+                    value={searchParameters.outsideSpecificationSearchFields.decisionsMadeComputerThreat}
+                    onChange={(obj) => { 
+                        let searchParametersTmp = _.cloneDeep(searchParameters);
+                        searchParametersTmp.outsideSpecificationSearchFields.decisionsMadeComputerThreat = obj.target.value;
+                        setSearchParameters(searchParametersTmp);
+                    }} >
+                    <MenuItem key="key-decisions_made_computer_threat-value-empty" value="">пустое значение</MenuItem>
+                    {listKeysTDMCT.map((item) => {
+                        return (<MenuItem key={listTypesDecisionsMadeComputerThreat[item].ID} value={item}>
+                            {listTypesDecisionsMadeComputerThreat[item].Description}
+                        </MenuItem>);
+                    })}
+                </TextField>
+            </Grid>
+            <Grid item container md={6}>
+                <TextField
+                    id={"select-search-computer_threat_type"}
+                    select
+                    fullWidth
+                    label={"тип компьютерной угрозы"}
+                    value={searchParameters.outsideSpecificationSearchFields.computerThreatType}
+                    onChange={(obj) => { 
+                        let searchParametersTmp = _.cloneDeep(searchParameters);
+                        searchParametersTmp.outsideSpecificationSearchFields.computerThreatType = obj.target.value;
+                        setSearchParameters(searchParametersTmp);
+                    }} >
+                    <MenuItem key="key-computer_threat_type-value-empty" value="">пустое значение</MenuItem>
+                    {listKeysTCT.map((item) => {
+                        return (<MenuItem key={listTypesComputerThreat[item].ID} value={item}>
+                            {listTypesComputerThreat[item].Description}
+                        </MenuItem>);
+                    })}
+                </TextField>
+            </Grid>
+        </Grid>
+    </React.Fragment>);
 }
 
 CreateSearchElementReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired,
+    listTypesComputerThreat: PropTypes.object.isRequired,
+    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
 };

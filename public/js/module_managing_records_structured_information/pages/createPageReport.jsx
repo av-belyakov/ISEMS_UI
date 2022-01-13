@@ -206,7 +206,11 @@ export default class CreatePageReport extends React.Component {
             </Row>
 
             {/** элементы поиска информации */}
-            <CreateSearchElementReport socketIo={this.props.socketIo} userPermissions={this.props.receivedData.userPermissions}/>
+            <CreateSearchElementReport 
+                socketIo={this.props.socketIo} 
+                userPermissions={this.props.receivedData.userPermissions}
+                listTypesComputerThreat={this.props.listTypesComputerThreat}
+                listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat} />
 
             {/** основная таблица страницы */}
             <CreateMainTableReport 

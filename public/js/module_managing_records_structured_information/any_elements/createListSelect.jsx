@@ -9,23 +9,16 @@ export default function CreateListSelect(props){
     let { list, label, uniqId, currentItem, handlerChosen, isNotDisabled } = props;
     let listKeys = Object.keys(list);
 
-    return (
-        <TextField
-            id={`select-computer-threat_${uniqId}`}
-            select
-            fullWidth
-            label={label}
-            value={(currentItem === "undefined")? "": currentItem}
-            onChange={handlerChosen}
-            disabled={!isNotDisabled}
-        >
-            {listKeys.map((item) => (
-                <MenuItem key={list[item].ID} value={item}>
-                    {list[item].Description}
-                </MenuItem>
-            ))}
-        </TextField>
-    );
+    return (<TextField
+        id={`select-computer-threat_${uniqId}`}
+        select
+        fullWidth
+        label={label}
+        value={(currentItem === "undefined")? "": currentItem}
+        onChange={handlerChosen}
+        disabled={!isNotDisabled} >
+        {listKeys.map((item) => <MenuItem key={list[item].ID} value={item}>{list[item].Description}</MenuItem>)}
+    </TextField>);
 }
 
 CreateListSelect.propTypes = {

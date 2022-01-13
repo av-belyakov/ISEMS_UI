@@ -19,7 +19,8 @@ export default function CreateAnyModalWindowSTIXObject(props){
         listPreviousState,
         optionsPreviousState,
         showDialogElement,
-        currentAdditionalIdSTIXObject, 
+        currentAdditionalIdSTIXObject,
+        showListPreviousState, 
         handelrDialogClose,
         handelrDialogSave,
         isNotDisabled, 
@@ -195,7 +196,8 @@ export default function CreateAnyModalWindowSTIXObject(props){
                     listObjectInfo={listObjectInfo}
                     listPreviousState={listPreviousState}
                     optionsPreviousState={optionsPreviousState}
-                    currentIdSTIXObject={currentAdditionalIdSTIXObject} 
+                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
+                    showListPreviousState={showListPreviousState}
                     socketIo={socketIo}
                     handlerDialog={handlerDialogButtonSave}
                     handelrDialogClose={handelrDialogClose}
@@ -213,6 +215,7 @@ CreateAnyModalWindowSTIXObject.propTypes = {
     optionsPreviousState: PropTypes.object.isRequired,
     showDialogElement: PropTypes.bool.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+    showListPreviousState: PropTypes.bool.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
     handelrDialogSave: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,

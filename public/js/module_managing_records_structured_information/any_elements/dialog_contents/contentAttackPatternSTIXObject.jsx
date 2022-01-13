@@ -25,6 +25,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         listPreviousState,
         optionsPreviousState,
         currentIdSTIXObject,
+        showListPreviousState,
         socketIo,
         handlerDialog,
         handelrDialogClose,
@@ -302,7 +303,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                         socketIo={socketIo} 
                         searchObjectId={currentIdSTIXObject}
                         optionsPreviousState={optionsPreviousState}
-                        showListPreviousState={false}
+                        showListPreviousState={showListPreviousState}
                         listPreviousState={listPreviousState} /> 
                 </Grid>
             </Grid>            
@@ -324,6 +325,7 @@ CreateDialogContentAttackPatternSTIXObject.propTypes = {
     listPreviousState: PropTypes.array.isRequired,
     optionsPreviousState: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
+    showListPreviousState: PropTypes.bool.isRequired,
     socketIo: PropTypes.object.isRequired,
     handlerDialog: PropTypes.func.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,

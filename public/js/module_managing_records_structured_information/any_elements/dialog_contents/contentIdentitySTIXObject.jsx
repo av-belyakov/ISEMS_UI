@@ -51,7 +51,11 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateDialogContentIdentitySTIXObject(props){
     let { 
         listObjectInfo, 
+        listPreviousState,
+        optionsPreviousState,
         currentIdSTIXObject,
+        showListPreviousState,
+        socketIo,
         handlerDialog,
         handelrDialogClose,
         isNotDisabled,
@@ -61,7 +65,7 @@ export default function CreateDialogContentIdentitySTIXObject(props){
         return (<DialogContent>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={12} justifyContent="center" className="pb-3">
-                        поиск информации об STIX объекте типа Идентичность (Identity DO STIX)
+                    поиск информации об STIX объекте типа Идентичность (Identity DO STIX)
                 </Grid>
             </Grid>
             <LinearProgress />
@@ -72,7 +76,7 @@ export default function CreateDialogContentIdentitySTIXObject(props){
         <DialogContent>
             <Row className="mt-2">
                 <Col md={12} className="pl-3 pr-3">
-        Просмотр и редактирование STIX объекта типа Идентичность (Identity DO STIX)
+                Просмотр и редактирование STIX объекта типа Идентичность (Identity DO STIX)
                 </Col>
                 <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
             </Row>
@@ -82,8 +86,32 @@ export default function CreateDialogContentIdentitySTIXObject(props){
 
 CreateDialogContentIdentitySTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
+    listPreviousState: PropTypes.array.isRequired,
+    optionsPreviousState: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
+    showListPreviousState: PropTypes.bool.isRequired,
+    socketIo: PropTypes.object.isRequired,
     handlerDialog: PropTypes.func.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
+
+/**
+//IdentityDomainObjectsSTIX объект "Identity", по терминалогии STIX, содержит основную идентификационную информацию физичиских лиц, организаций и т.д.
+// Name - имя используемое для идентификации "Identity" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// Description - более подробное описание
+// Roles - список ролей для идентификации действий
+// IdentityClass - одно, из заранее определенных (предложенных) значений физического лица или организации
+// Sectors - заранее определенный (предложенный) перечень отраслей промышленности, к которой принадлежит физическое лицо или организация
+// ContactInformation - любая контактная информация (email, phone number and etc.)
+type IdentityDomainObjectsSTIX struct {
+	CommonPropertiesObjectSTIX
+	CommonPropertiesDomainObjectSTIX
+	Name               string              `json:"name" bson:"name" required:"true"`
+	Description        string              `json:"description" bson:"description"`
+	Roles              []string            `json:"roles" bson:"roles"`
+	IdentityClass      OpenVocabTypeSTIX   `json:"identity_class" bson:"identity_class"`
+	Sectors            []OpenVocabTypeSTIX `json:"sectors" bson:"sectors"`
+	ContactInformation string              `json:"contact_information" bson:"contact_information"`
+}
+ */

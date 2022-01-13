@@ -497,23 +497,6 @@ export default function ModalWindowAddReportSTIX(props) {
                 </Toolbar>
             </AppBar>
 
-            {
-                /**
-                             * Не доделал следующие пункты:
-                             * + 1. Автоматическое обновление таблицы в createPageReport после добавления нового Доклада, так и не решил
-                             * + 2. Время создания нового доклада всегда меньше текущего времени на 3 часа, надо решить
-                             * + 3. При успешном создании нового Доклада, если перейти в просмотр информации о новом докладе, то раздел просмотра 
-                             *  информаци о предыдущих состояниях всегда пуст и так как он пуст то там всегда висит "Загрузка..."? надо решить этот вопрос
-                             * + 4. Переделать раздел вывода информации об object_refs в список, для возможности просмотра и УДАЛЕНИЯ ссылок на информацию, 
-                             * так и не сделал, а как же нужно сделать возможность удаления ссылок на другие объекты из object_refs и report_types
-                             * + 5. Ошибка при сохранении объекта типа Report при изменении параметра в 'определены ли данные содержащиеся в объекте' 
-                             *  с нет на да, надо разобратся
-                             * + 6. Возможность удаления ссылок из object_refs для объекта типа Report нужно сделать только до тех пор пока 
-                             *  в объекте object_refs есть больше одного элемента. Это возможно сделать путем кнопки "сохранить".
-                             * 7. Надо сделать возможность просмотра и редактирования добавленных в Доклад ссылок на STIX объекты
-                */ 
-            }
-
             <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
                 <Row className="mt-4">
                     <Col md={12}>
@@ -716,6 +699,7 @@ export default function ModalWindowAddReportSTIX(props) {
             optionsPreviousState={optionsPreviousState}
             showDialogElement={showDialogElementAdditionalSTIXObject}
             currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
+            showListPreviousState={false}
             handelrDialogClose={handelrDialogClose}
             handelrDialogSave={handelrDialogSaveAnySTIXObject}
             isNotDisabled={userPermissions.editing_information.status} />

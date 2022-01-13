@@ -99,11 +99,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             listPreviousStateReport: [],
             availableForGroups: [],
             listGroupAccessToReport: [],
-            secondBreadcrumbsObjectId: "",
             currentGroupAccessToReport: "select_group",
             reportAcceptedInformation: {},
             currentAdditionalIdSTIXObject: "",
             showListPreviousStateReport: false,
+            showListPreviousStateAnySTIXObject: false,
             showDialogNewSTIXObject: false,
             showDialogElementAdditionalSTIXObject: false,
             showDialogElementAdditionalThechnicalInfo: false,
@@ -266,6 +266,10 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
                 break;
             case "isems-mrsi ui request: send search request, get STIX object for id":
+
+                console.log("isems-mrsi ui request: send search request, get STIX object for id");
+                console.log(data.information.additional_parameters.transmitted_data);
+
                 if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
                     break;
                 }
@@ -285,6 +289,13 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
             case "isems-mrsi ui request: send search request, list different objects STIX object for id":
                 this.setState({ showListPreviousStateReport: true });
+
+                console.log("isems-mrsi ui request: send search request, list different objects STIX object for id");
+                console.log(data.information.additional_parameters.transmitted_data);
+
+                if(this.state.currentAdditionalIdSTIXObject !== ""){
+                    this.setState({ showListPreviousStateAnySTIXObject: true });
+                }
 
                 if(data.information.additional_parameters.transmitted_data.length === 0){
                     return;
@@ -651,16 +662,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     //изменяет выбранный, текущий, дополнительный STIX объект
     handlerChangeCurrentAdditionalIdSTIXObject(currentObjectId){
-        this.setState({ 
-            currentAdditionalIdSTIXObject: currentObjectId,
-            showDialogElementAdditionalSTIXObject: true 
-        });
-
-        let optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousState);
-        optionsPreviousStateTmp.objectId = currentObjectId;
-
-        this.setState({ optionsPreviousState: optionsPreviousStateTmp });
-
         //запрос на получение количества документов о предыдущем состоянии STIX объектов
         this.props.socketIo.emit("isems-mrsi ui request: send search request, get count different objects STIX object for id", {
             arguments: { "documentId": currentObjectId },
@@ -676,6 +677,19 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 } 
             }});
 
+        console.log("SEND -> isems-mrsi ui request: send search request, get count different objects STIX object for id");
+        console.log("SEND -> isems-mrsi ui request: send search request, get different objects STIX object for id");
+
+        this.setState({ 
+            currentAdditionalIdSTIXObject: currentObjectId,
+            showDialogElementAdditionalSTIXObject: true 
+        });
+    
+        let optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousState);
+        optionsPreviousStateTmp.objectId = currentObjectId;
+    
+        this.setState({ optionsPreviousState: optionsPreviousStateTmp });
+    
         //проверяем наличие информации об запрашиваемом STIX объекте
         if((this.state.listObjectInfo[currentObjectId] !== null) && (typeof this.state.listObjectInfo[currentObjectId] !== "undefined")){
             return;
@@ -697,7 +711,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
         listObjectInfoTmp[newSTIXObject.id] = newSTIXObject;
         this.setState({ listObjectInfo: listObjectInfoTmp });
-
     }
 
     handelrDialogClose(){
@@ -750,8 +763,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     handlerReportSave(){
-        console.log("func 'handlerReportSave', START... BUTTON SAVE");
-
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
         let currentReport = listObjectInfoTmp[this.props.showReportId];
 
@@ -784,8 +795,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         if(currentReport.kill_chain_phases === null){
             delete currentReport.kill_chain_phases;
         }
-
-        console.log(currentReport);
 
         this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [currentReport] });
 
@@ -1113,6 +1122,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 optionsPreviousState={this.state.optionsPreviousState}
                 showDialogElement={this.state.showDialogElementAdditionalSTIXObject}
                 currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
+                showListPreviousState={this.state.showListPreviousStateAnySTIXObject}
                 handelrDialogClose={this.handelrDialogClose}
                 handelrDialogSave={this.handelrDialogSaveAnySTIXObject}
                 isNotDisabled={this.props.userPermissions.editing_information.status} />
