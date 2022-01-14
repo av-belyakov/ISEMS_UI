@@ -7,6 +7,8 @@ import {
     TextField, 
     MenuItem,
 } from "@material-ui/core";
+import DateFnsUtils from "dateIoFnsUtils";
+import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import { red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
@@ -103,6 +105,9 @@ const listSearchTypeElement = [
     },
 ];
 
+const dateTimeStartTmp = new Date("2022-01-01"),
+    dateTimeEndTmp = new Date();
+
 export default function CreateSearchElementReport(props){
     let { 
         socketIo, 
@@ -115,6 +120,8 @@ export default function CreateSearchElementReport(props){
         listKeysTDMCT = Object.keys(listTypesDecisionsMadeComputerThreat);
 
     let [ searchField, setSearchField ] = React.useState("");
+    let [ dateTimeEnd, setDateTimeEnd ] = React.useState(dateTimeEndTmp);
+    let [ dateTimeStart, setDateTimeStart ] = React.useState(dateTimeStartTmp);
     let [ selectedSearchItem, setSelectedSearchItem ] = React.useState("");
     //let [ selectedSearchItemName, setSelectedSearchItemName ] = React.useState("");
     let [ searchParameters, setSearchParameters ] = React.useState({            
@@ -157,8 +164,8 @@ export default function CreateSearchElementReport(props){
         },
     });
 
-    let handlerSearchField = () => {
-
+    let handlerSearchField = (obj) => {
+        setSearchField(obj.target.value);
     };
 
     if(!userPermissions.privileged_group.status){
@@ -174,6 +181,18 @@ export default function CreateSearchElementReport(props){
     return (<React.Fragment>
         <hr/>
         <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end">
+                <TextField
+                    id={"select-search-type"}
+                    select
+                    fullWidth
+                    label={"тип искомого значения"}
+                    value={selectedSearchItem}
+                    onChange={(obj) => setSelectedSearchItem(obj.target.value)} >
+                    <MenuItem key="key-search-type-value-empty" value="">пустое значение</MenuItem>
+                    {listSearchTypeElement.map((item, num) => <MenuItem key={`key-search-type-value-${item.name}-${num}`} value={item.name}>{item.description}</MenuItem>)}
+                </TextField>
+            </Grid>
             <Grid item container md={7} justifyContent="flex-end">
                 {(() => {
                     let listTmp = [
@@ -187,7 +206,34 @@ export default function CreateSearchElementReport(props){
                     if(selectedSearchItem === ""){
                         return;
                     } else if(listTmp.includes(selectedSearchItem)){
-                        return "поле для ввода даты и времени";
+                        return <Grid container direction="row" className="pt-6" spacing={3}>
+                            <Grid item container md={6}>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <DateTimePicker
+                                        variant="inline"
+                                        ampm={false}
+                                        value={dateTimeStart}
+                                        minDate={new Date("2000-01-01")}
+                                        maxDate={new Date()}
+                                        onChange={(obj) => setDateTimeStart(obj.target.value)}
+                                        format="dd.MM.yyyy HH:mm"
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </Grid>
+                            <Grid item container md={6}>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <DateTimePicker
+                                        variant="inline"
+                                        ampm={false}
+                                        value={dateTimeEnd}
+                                        minDate={new Date("2000-01-01")}
+                                        maxDate={new Date()}
+                                        onChange={(obj) => setDateTimeEnd(obj.target.value)}
+                                        format="dd.MM.yyyy HH:mm"
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </Grid>
+                        </Grid>;
                     } else {
                         return (<TextField
                             id="id-search-field"
@@ -201,18 +247,6 @@ export default function CreateSearchElementReport(props){
                         />);
                     }
                 })()}             
-            </Grid>
-            <Grid item container md={5} justifyContent="flex-end">
-                <TextField
-                    id={"select-search-type"}
-                    select
-                    fullWidth
-                    label={"тип искомого значения"}
-                    value={selectedSearchItem}
-                    onChange={(obj) => setSelectedSearchItem(obj.target.value)} >
-                    <MenuItem key="key-search-type-value-empty" value="">пустое значение</MenuItem>
-                    {listSearchTypeElement.map((item, num) => <MenuItem key={`key-search-type-value-${item.name}-${num}`} value={item.name}>{item.description}</MenuItem>)}
-                </TextField>
             </Grid>
         </Grid>
         <Grid container direction="row" spacing={3}>

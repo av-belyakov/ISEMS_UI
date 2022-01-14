@@ -138,6 +138,7 @@ export default function CreateDialogContentCampaignSTIXObject(props){
 
                 if(obj.actionType === "update"){
                     valueTmp.external_references[obj.orderNumber] = obj.data;
+
                     setDataPatterElement(valueTmp);        
                 }
 
@@ -147,11 +148,13 @@ export default function CreateDialogContentCampaignSTIXObject(props){
                     }
 
                     valueTmp.external_references[obj.orderNumber].hashes[obj.data.type] = obj.data.hash;
+
                     setDataPatterElement(valueTmp);      
                 }
 
                 if(obj.actionType === "hashes_delete"){
                     delete valueTmp.external_references[obj.orderNumber].hashes[obj.hashName];
+                    
                     setDataPatterElement(valueTmp);  
                 }
             }
