@@ -112,7 +112,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
         this.modalClose = this.modalClose.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.handlePublished = this.handlePublished.bind(this);
+        this.handlerPublished = this.handlerPublished.bind(this);
         this.handlerReportSave = this.handlerReportSave.bind(this);
         this.handelrDialogClose = this.handelrDialogClose.bind(this);
         this.handlerDialogButton = this.handlerDialogButton.bind(this);
@@ -558,7 +558,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     //пункт "дата и время публикации"
-    handlePublished(){
+    handlerPublished(){
         let requestId = uuidv4();
 
         if((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined")){
@@ -854,7 +854,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         let published = () => {
             if(Date.parse(reportInfo.published) <= 0){
                 return (<Col md={6} className="text-end">
-                    <Link href="#" onClick={this.handlePublished} color="error">
+                    <Link href="#" onClick={this.handlerPublished} color="error">
                         <Typography variant="overline" display="block" gutterBottom>опубликовать</Typography>
                     </Link>
                 </Col>);

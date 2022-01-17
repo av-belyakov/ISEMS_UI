@@ -1,7 +1,9 @@
 "use strict";
 
 import React from "react";
-import { 
+import {
+    Button,
+    Chip, 
     Grid,
     Typography, 
     TextField, 
@@ -9,103 +11,88 @@ import {
 } from "@material-ui/core";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import { red } from "@material-ui/core/colors";
+import { cyan, deepOrange, teal, red, green, orange, pink, purple } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
+
+import { helpers } from "../../common_helpers/helpers";
 
 const listSearchTypeElement = [
     {
         name: "documentId",
         description: "id документа",
-        regPattern: "",
     },
     {
         name: "created",
         description: "дата и время создания документа",
-        regPattern: "",
     },
     {
         name: "modified",
         description: "дата и время модификации документа",
-        regPattern: "",
     },
     {
         name: "createdByRef",
         description: "идентификатор источника создавшего доклад",
-        regPattern: "",
     },
     {
         name: "name",
         description: "наименование",
-        regPattern: "",
     },
     {
         name: "aliases",
         description: "псевдоним",
-        regPattern: "",
     },
     {
         name: "firstSeen",
         description: "дата и время первого обнаружения информации",
-        regPattern: "",
     },
     {
         name: "lastSeen",
         description: "дата и время последнего обнаружения информации",
-        regPattern: "",
     },
     {
         name: "published",
         description: "дата и время публикации Доклада (начиная от заданной даты до настоящего времени)",
-        regPattern: "",
     },
     {
         name: "roles",
         description: "роль",
-        regPattern: "",
     },
     {
         name: "country",
         description: "страна",
-        regPattern: "",
     },
     {
         name: "city",
         description: "город",
-        regPattern: "",
     },
     {
         name: "numberAutonomousSystem",
         description: "номер автономной системы",
-        regPattern: "",
     },
     {
         name: "domain-name",
         description: "доменное имя",
-        regPattern: "",
     }, 
     {
         name: "email-addr",
         description: "email адрес",
-        regPattern: "",
     }, 
     {
         name: "ipv4-addr",
         description: "IPv4 адрес",
-        regPattern: "",
     }, 
     {
         name: "ipv6-addr",
         description: "IPv4 адрес",
-        regPattern: "",
     },
     {
         name: "url",
         description: "URL",
-        regPattern: "",
     },
 ];
 
-const dateTimeStartTmp = new Date("2022-01-01"),
+const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+const dateTimeStartTmp = new Date("2022-01-01 00:00:01"),
     dateTimeEndTmp = new Date();
 
 export default function CreateSearchElementReport(props){
@@ -120,6 +107,7 @@ export default function CreateSearchElementReport(props){
         listKeysTDMCT = Object.keys(listTypesDecisionsMadeComputerThreat);
 
     let [ searchField, setSearchField ] = React.useState("");
+    let [ valuesIsInvalideSearchField, setValuesIsInvalideSearchField ] = React.useState(false);
     let [ dateTimeEnd, setDateTimeEnd ] = React.useState(dateTimeEndTmp);
     let [ dateTimeStart, setDateTimeStart ] = React.useState(dateTimeStartTmp);
     let [ selectedSearchItem, setSelectedSearchItem ] = React.useState("");
@@ -164,8 +152,234 @@ export default function CreateSearchElementReport(props){
         },
     });
 
+    const selectedDateTimeElement = [
+        "created",
+        "modified",
+        "firstSeen",
+        "lastSeen",
+        "published",
+    ];
+
+    const listFunc = {
+        "documentId": {
+            checkFunc: () => (new RegExp("^[a-zA-Z0-9_\\-]{1,}--[a-zA-Z0-9]{1,}$")).test(searchField),
+            addFunc: (searchParametersTmp) => {
+                let myDocumentsId = new Set(searchParametersTmp.documentsId);
+                myDocumentsId.add(searchField);
+
+                searchParametersTmp.documentsId = [];
+                for(let v of myDocumentsId){
+                    searchParametersTmp.documentsId.push(v);
+                }
+
+                setSearchField("");
+                setSelectedSearchItem("");
+                setSearchParameters(searchParametersTmp);
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                searchParametersTmp.documentsId.splice(elemNum, 1);
+                setSearchParameters(searchParametersTmp);
+            },
+        },
+        "created": {
+            checkFunc: () => {},
+            addFunc: (searchParametersTmp) => {
+                searchParametersTmp.created = { 
+                    start: new Date((+new Date(dateTimeStart)) - tzoffset).toISOString(), 
+                    end: new Date((+new Date(dateTimeEnd)) - tzoffset).toISOString() 
+                };
+
+                setSelectedSearchItem("");
+                setSearchParameters(searchParametersTmp);
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                searchParametersTmp.created = { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" };
+                setSearchParameters(searchParametersTmp);
+            },
+        },
+        "modified": {
+            checkFunc: () => {},
+            addFunc: (searchParametersTmp) => {
+                searchParametersTmp.modified = { 
+                    start: new Date((+new Date(dateTimeStart)) - tzoffset).toISOString(), 
+                    end: new Date((+new Date(dateTimeEnd)) - tzoffset).toISOString() 
+                };
+
+                setSelectedSearchItem("");
+                setSearchParameters(searchParametersTmp);
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                searchParametersTmp.modified = { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" };
+                setSearchParameters(searchParametersTmp);
+            },
+        },
+        "createdByRef": {
+            checkFunc: () => (new RegExp("^[a-zA-Z0-9_\\-]{1,}--[a-zA-Z0-9\\-]{1,}$")).test(searchField),
+            addFunc: (searchParametersTmp) => {
+                searchParametersTmp.createdByRef = searchField;
+                setSearchParameters(searchParametersTmp);
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                searchParametersTmp.createdByRef = "";
+                setSearchParameters(searchParametersTmp);
+            },
+        },
+        "name": {
+            checkFunc: () => true,
+            addFunc: (searchParametersTmp) => {
+                searchParametersTmp.specificSearchFields[0].name = searchField;
+                setSearchParameters(searchParametersTmp);
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                searchParametersTmp.specificSearchFields[0].name = "";
+                setSearchParameters(searchParametersTmp);
+            },
+        },
+        "aliases": {
+            checkFunc: () => true,
+            addFunc: (searchParametersTmp) => {
+                searchParametersTmp.specificSearchFields[0].aliases = searchField;
+                setSearchParameters(searchParametersTmp);
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                searchParametersTmp.specificSearchFields[0].aliases = "";
+                setSearchParameters(searchParametersTmp);
+            },
+        },
+        "firstSeen": {
+            checkFunc: () => {},
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        },
+        "lastSeen": {
+            checkFunc: () => {},
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        },
+        "published": {
+            checkFunc: () => {},
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        },
+        "roles": {
+            checkFunc: () => {
+
+            },
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        },
+        "country": {
+            checkFunc: () => {
+
+            },
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        },
+        "city": {
+            checkFunc: () => {
+
+            },
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        },
+        "numberAutonomousSystem": {
+            checkFunc: () => {
+
+            },
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        },
+        "domain-name": {
+            checkFunc: () => {
+
+            },
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        }, 
+        "email-addr": {
+            checkFunc: () => {
+
+            },
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        }, 
+        "ipv4-addr": {
+            checkFunc: () => {
+
+            },
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        }, 
+        "ipv6-addr": {
+            checkFunc: () => {
+
+            },
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        },
+        "url": {
+            checkFunc: () => {
+
+            },
+            addFunc: (searchParametersTmp) => {
+
+            },
+            delFunc: (searchParametersTmp, elemName, elemNum) => {
+                
+            },
+        },
+    };
+
     let handlerSearchField = (obj) => {
         setSearchField(obj.target.value);
+
+        //        console.log("func 'handlerSearchField', selectedSearchItem: ", selectedSearchItem, " test checkFunc: ", listFunc[selectedSearchItem].checkFunc());
+
+        setValuesIsInvalideSearchField(!listFunc[selectedSearchItem].checkFunc());
     };
 
     if(!userPermissions.privileged_group.status){
@@ -178,10 +392,38 @@ export default function CreateSearchElementReport(props){
         </Grid>);
     }
 
+    let buttonAddFilterIsDisabled = ((searchField.length === 0) || (selectedSearchItem === "") || (valuesIsInvalideSearchField));
+
+    if(selectedDateTimeElement.includes(selectedSearchItem)){
+        buttonAddFilterIsDisabled = false;
+    }
+
+    let filterAdd = () => {
+
+            console.log("func 'filterAdd', selectedSearchItem: ", selectedSearchItem);
+
+            if(typeof listFunc[selectedSearchItem] === "undefined"){
+                return;
+            }
+            
+            listFunc[selectedSearchItem].addFunc(_.cloneDeep(searchParameters));
+        },
+        filterDelete = (filterType, elemName = "noname", elemNum = 0) => {
+
+            console.log("func 'filterDelete'");
+            console.log(listFunc[filterType]);
+
+            if(typeof listFunc[filterType] === "undefined"){
+                return;
+            }
+                
+            listFunc[filterType].delFunc(_.cloneDeep(searchParameters), elemName, elemNum);
+        };
+
     return (<React.Fragment>
         <hr/>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end">
+            <Grid item container md={4} justifyContent="flex-end">
                 <TextField
                     id={"select-search-type"}
                     select
@@ -193,21 +435,13 @@ export default function CreateSearchElementReport(props){
                     {listSearchTypeElement.map((item, num) => <MenuItem key={`key-search-type-value-${item.name}-${num}`} value={item.name}>{item.description}</MenuItem>)}
                 </TextField>
             </Grid>
-            <Grid item container md={7} justifyContent="flex-end">
+            <Grid item container md={6} justifyContent="flex-end">
                 {(() => {
-                    let listTmp = [
-                        "created",
-                        "modified",
-                        "firstSeen",
-                        "lastSeen",
-                        "published",
-                    ];
-
                     if(selectedSearchItem === ""){
                         return;
-                    } else if(listTmp.includes(selectedSearchItem)){
-                        return <Grid container direction="row" className="pt-6" spacing={3}>
-                            <Grid item container md={6}>
+                    } else if(selectedDateTimeElement.includes(selectedSearchItem)){
+                        return (<Grid container direction="row" className="mt-1" spacing={3}>
+                            <Grid item container md={6} justifyContent="flex-end">
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <DateTimePicker
                                         variant="inline"
@@ -215,7 +449,7 @@ export default function CreateSearchElementReport(props){
                                         value={dateTimeStart}
                                         minDate={new Date("2000-01-01")}
                                         maxDate={new Date()}
-                                        onChange={(obj) => setDateTimeStart(obj.target.value)}
+                                        onChange={(date) => setDateTimeStart(date)}
                                         format="dd.MM.yyyy HH:mm"
                                     />
                                 </MuiPickersUtilsProvider>
@@ -228,25 +462,28 @@ export default function CreateSearchElementReport(props){
                                         value={dateTimeEnd}
                                         minDate={new Date("2000-01-01")}
                                         maxDate={new Date()}
-                                        onChange={(obj) => setDateTimeEnd(obj.target.value)}
+                                        onChange={(date) => setDateTimeEnd(date)}
                                         format="dd.MM.yyyy HH:mm"
                                     />
                                 </MuiPickersUtilsProvider>
                             </Grid>
-                        </Grid>;
+                        </Grid>);
                     } else {
                         return (<TextField
                             id="id-search-field"
                             label="поле поиска"
                             value={searchField}
                             //disabled={(typeof erInfo.source_name !== "undefined")}
-                            //error={valuesIsInvalideReportName}
+                            error={valuesIsInvalideSearchField}
                             fullWidth={true}
                             //helperText="обязательное для заполнения поле"
                             onChange={handlerSearchField}
                         />);
                     }
                 })()}             
+            </Grid>
+            <Grid item container md={2} justifyContent="flex-end" className="mt-3">
+                <Button size="small" onClick={filterAdd} disabled={buttonAddFilterIsDisabled}>добавить фильтр</Button>
             </Grid>
         </Grid>
         <Grid container direction="row" spacing={3}>
@@ -289,6 +526,87 @@ export default function CreateSearchElementReport(props){
                         </MenuItem>);
                     })}
                 </TextField>
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" className="mt-3">
+            <Grid item container md={12}>
+                { //documentsId filter
+                    (searchParameters.documentsId.length === 0)? 
+                        "":
+                        searchParameters.documentsId.map((item, num) => {
+                            return (<Chip
+                                key={`key_chip_documentId_${num}`}
+                                label={`document_id: ${item}`}
+                                onDelete={filterDelete.bind(null, "documentId", item, num)}
+                                variant="outlined"
+                                style={{ color: purple[400], margin: "2px" }} />);
+                        })}
+
+                { //data created filter
+                    ((searchParameters.created.start === "0001-01-01T00:00:00.000+00:00") || (searchParameters.created.end === "0001-01-01T00:00:00.000+00:00"))? 
+                        "":
+                        <Chip
+                            key={"key_chip_data_created"}
+                            label={`created date: ${helpers.convertDateFromString(searchParameters.created.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.created.end, { monthDescription: "long", dayDescription: "numeric" })}`}
+                            onDelete={filterDelete.bind(null, "created")}
+                            variant="outlined"
+                            style={{ color: deepOrange[400], margin: "2px" }} />}
+
+                { //data modified filter
+                    ((searchParameters.modified.start === "0001-01-01T00:00:00.000+00:00") || (searchParameters.modified.end === "0001-01-01T00:00:00.000+00:00"))? 
+                        "":
+                        <Chip
+                            key={"key_chip_data_modified"}
+                            label={`modified date: ${helpers.convertDateFromString(searchParameters.modified.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.modified.end, { monthDescription: "long", dayDescription: "numeric" })}`}
+                            onDelete={filterDelete.bind(null, "modified")}
+                            variant="outlined"
+                            style={{ color: orange[400], margin: "2px" }} />}
+
+                { //createdByRef filter
+                    (searchParameters.createdByRef === "")? 
+                        "":
+                        <Chip
+                            key={"key_chip_createdByRef"}
+                            label={`source_id: ${searchParameters.createdByRef}`}
+                            onDelete={filterDelete.bind(null, "createdByRef")}
+                            variant="outlined"
+                            style={{ color: pink[400], margin: "2px" }} />}
+
+                { //name filter
+                    (searchParameters.specificSearchFields[0].name === "")? 
+                        "":
+                        <Chip
+                            key={"key_chip_name"}
+                            label={`name: ${searchParameters.specificSearchFields[0].name}`}
+                            onDelete={filterDelete.bind(null, "name")}
+                            variant="outlined"
+                            style={{ color: teal[400], margin: "2px" }} />}
+
+                { //aliases filter
+                    (searchParameters.specificSearchFields[0].aliases === "")? 
+                        "":
+                        <Chip
+                            key={"key_chip_alias"}
+                            label={`alias: ${searchParameters.specificSearchFields[0].aliases}`}
+                            onDelete={filterDelete.bind(null, "aliases")}
+                            variant="outlined"
+                            style={{ color: cyan[400], margin: "2px" }} />}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" className="mt-3">
+            <Grid item container md={12} justifyContent="flex-end">
+                <Button
+                    size="small"
+                    color="secondary"
+                    //style={{ borderColor: red[500] }}
+                    //startIcon={<AddIcon style={{ color: green[500] }} />}
+                    variant="outlined"
+                    //disabled={buttonIsDisabled}
+                    onClick={() => {}}>
+                        поиск
+                </Button>
             </Grid>
         </Grid>
     </React.Fragment>);
