@@ -20,7 +20,7 @@ import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutl
 import { red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import { v4 as uuidv4 } from "uuid";
-import validatejs from "validatejs";
+import validatorjs from "validatorjs";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -106,14 +106,9 @@ export default function ModalWindowDialogElementAdditionalThechnicalInformation(
         valueERTmp.url = obj.target.value;
         
         setValueER(valueERTmp);
-        setValuesIsInvalidURLER(((typeof valueERTmp.url !== "undefined") && (valueERTmp.url !== "") && (typeof validatejs({
-            website: valueERTmp.url,
-        }, {
-            website: { url: { 
-                allowLocal: true, 
-                schemes: [ "http", "https", "ftp" ], 
-            }},
-        }) !== "undefined")));
+        setValuesIsInvalidURLER(((typeof valueERTmp.url !== "undefined") && (valueERTmp.url !== "") && (!validatorjs.isURL(valueERTmp.url, { 
+            protocols: ["http","https","ftp"],
+        }))));
     };
 
     const handlerHashesExternalReferences = (hashes) => {

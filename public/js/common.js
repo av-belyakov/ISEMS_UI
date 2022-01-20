@@ -21,7 +21,7 @@ require("react-infinite-scroll-component");
 require("lodash");
 require("moment");
 require("select2");
-require("validatejs");
+require("validatorjs");
 
 require("react-circle");
 

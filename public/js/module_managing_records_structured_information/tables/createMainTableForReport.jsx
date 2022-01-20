@@ -11,12 +11,14 @@ import {
     TableRow, 
     Tooltip, 
     TablePagination, 
+    Grid,
     Paper, 
     LinearProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers";
+import { CreateButtonNewReport } from "../buttons/createButtonNewReport.jsx";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -76,11 +78,6 @@ export default class CreateMainTableForReport extends React.Component {
             }
 
             if(data.section === "send search request, table page report"){
-
-                console.log("Get new information table page report START");
-                console.log(data.information.additional_parameters);
-                console.log("Get new information table page report END");
-
                 if((typeof data.information === "undefined") || (data.information === null)){
                     return;
                 }
@@ -105,9 +102,6 @@ export default class CreateMainTableForReport extends React.Component {
                     listReportsTmp.push(item);
                     listIdReport.push(item.id);
                 }
-
-                console.log("--- listReportsTmp ---");
-                console.log(listReportsTmp);
 
                 this.props.socketIo.emit("isems-mrsi ui request: get short information about groups which report available", { arguments: listIdReport });
 
@@ -178,9 +172,16 @@ export default class CreateMainTableForReport extends React.Component {
     }
 
     showDocumentCount(){
-        return (<Row>
-            <Col md={12} className="text-left pb-2"><i>{`Всего документов найдено: ${this.state.countSearchReports}`}</i></Col>
-        </Row>);
+        return (<Grid container direction="row">
+            <Grid item container md={8} justifyContent="flex-start" className="text-left pb-2">
+                <i>{`Всего документов найдено: ${this.state.countSearchReports}`}</i>
+            </Grid>
+            <Grid item container md={4} justifyContent="flex-end">
+                <CreateButtonNewReport 
+                    buttonIsDisabled={this.props.buttonAddNewReportIsDisabled}
+                    handlerShowModalWindow={this.props.handlerShowModalWindowAddNewReport}/>
+            </Grid>
+        </Grid>);
     }
 
     render(){
@@ -205,7 +206,9 @@ CreateMainTableForReport.propTypes = {
     addNewReport: PropTypes.bool.isRequired,
     paginateParameters: PropTypes.object.isRequired,
     changeValueAddNewReport: PropTypes.func.isRequired,
+    buttonAddNewReportIsDisabled: PropTypes.bool.isRequired,
     handlerRequestNextPageOfTable: PropTypes.func.isRequired,
+    handlerShowModalWindowAddNewReport: PropTypes.func.isRequired,
     handlerShowModalWindowInformationReport: PropTypes.func.isRequired,
 };
 

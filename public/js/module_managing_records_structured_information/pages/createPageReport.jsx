@@ -10,8 +10,6 @@ import CreateSearchElementReport from "../any_elements/createSearchElementForRep
 import ModalWindowAddReportSTIX from "../../modal_windows/modalWindowAddReportSTIX.jsx";
 import ModalWindowShowInformationReportSTIX from "../../modal_windows/modalWindowShowInformationReportSTIX.jsx";
 
-import { CreateButtonNewReport } from "../buttons/createButtonNewReport.jsx";
-
 export default class CreatePageReport extends React.Component {
     constructor(props){
         super(props);
@@ -197,14 +195,6 @@ export default class CreatePageReport extends React.Component {
         return (<React.Fragment>
             <CreateWidgetsPageReport socketIo={this.props.socketIo}/>
 
-            <Row>
-                <Col md={12} className="text-end pt-2">
-                    <CreateButtonNewReport 
-                        buttonIsDisabled={this.isDisabledNewReport.call(this)}
-                        handlerShowModalWindow={this.handlerShowModalWindowAddReport}/>
-                </Col>
-            </Row>
-
             {/** элементы поиска информации */}
             <CreateSearchElementReport 
                 socketIo={this.props.socketIo} 
@@ -218,7 +208,9 @@ export default class CreatePageReport extends React.Component {
                 addNewReport={this.state.addNewReport}
                 paginateParameters={this.state.requestDetails.paginateParameters}
                 changeValueAddNewReport={this.changeValueAddNewReport}
+                buttonAddNewReportIsDisabled={this.isDisabledNewReport.call(this)}
                 handlerRequestNextPageOfTable={this.handlerRequestNextPageOfTable}
+                handlerShowModalWindowAddNewReport={this.handlerShowModalWindowAddReport}
                 handlerShowModalWindowInformationReport={this.handlerShowModalWindowInformationReport} />
 
             <ModalWindowAddReportSTIX

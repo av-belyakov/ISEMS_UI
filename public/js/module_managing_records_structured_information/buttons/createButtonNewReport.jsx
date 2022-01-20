@@ -9,12 +9,11 @@ export function CreateButtonNewReport(props){
 
     return (<Button
         size="small"
-        style={{ borderColor: green[500] }}
+        style={{ color: green[500] }}
         startIcon={<AddIcon style={{ color: green[500] }} />}
-        variant="outlined"
         disabled={buttonIsDisabled}
         onClick={handlerShowModalWindow}>
-            создать доклад
+            создать новый доклад
     </Button>);
 }
 

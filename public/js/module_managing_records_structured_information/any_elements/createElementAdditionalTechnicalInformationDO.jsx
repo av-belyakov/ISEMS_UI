@@ -27,7 +27,7 @@ import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutl
 import TokenInput from "react-customize-token-input";
 import { grey, green, red } from "@material-ui/core/colors";
 import { v4 as uuidv4 } from "uuid";
-import validatejs from "validatejs";
+import validatorjs from "validatorjs";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -216,14 +216,9 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                             valueERTmp.url = e.target.value;
 
                             setValueER(valueERTmp);
-                            setValuesIsInvalidURLER(((typeof valueERTmp.url !== "undefined") && (valueERTmp.url !== "") && (typeof validatejs({
-                                website: valueERTmp.url,
-                            }, {
-                                website: { url: { 
-                                    allowLocal: true, 
-                                    schemes: [ "http", "https", "ftp" ], 
-                                }},
-                            }) !== "undefined")));
+                            setValuesIsInvalidURLER(((typeof valueERTmp.url !== "undefined") && (valueERTmp.url !== "") && (!validatorjs.isURL(valueERTmp.url, { 
+                                protocols: ["http","https","ftp"],
+                            }))));
                         }}
                     />
                 </Grid>
@@ -362,14 +357,9 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         }
                     }
 
-                    let isInvalidURL = ((typeof item.url !== "undefined") && (item.url !== "") && (typeof validatejs({
-                        website: item.url,
-                    }, {
-                        website: { url: { 
-                            allowLocal: true, 
-                            schemes: [ "http", "https", "ftp" ], 
-                        }},
-                    }) !== "undefined"));
+                    let isInvalidURL = ((typeof item.url !== "undefined") && (item.url !== "") && (!validatorjs.isURL(item.url, { 
+                        protocols: ["http","https","ftp"],
+                    })));
 
                     return (<Card className={classes.customPaper} key={`key_external_references_${key}_fragment`}>
                         <CardHeader 
