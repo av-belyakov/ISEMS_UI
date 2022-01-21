@@ -32,6 +32,7 @@ import PropTypes from "prop-types";
 import validatorjs from "validatorjs";
 
 import { helpers } from "../../common_helpers/helpers";
+import CreatePatternSearchFilters from "./createPatternSearchFilters.jsx";
 
 const listSearchTypeElement = [
     {
@@ -619,6 +620,15 @@ export default function CreateSearchElementReport(props){
             </Grid>
         </Grid>
 
+        <CreatePatternSearchFilters 
+            patternFilters={searchParameters} 
+            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
+            handlerDeleteFilters={filterDelete} />
+
+        <Grid container direction="row" className="mt-3">
+            <Grid item container md={12}>Внимание!!! Все фильтры перечисленные ниже, лишь временное решение, потом основные будут те что выше, а эти надо будет удалить!</Grid>
+        </Grid>
+        
         <Grid container direction="row" className="mt-3">
             <Grid item container md={12}>
                 { //documentsId filter
@@ -627,7 +637,6 @@ export default function CreateSearchElementReport(props){
                         searchParameters.documentsId.map((item, num) => {
                             return (<Chip
                                 key={`key_chip_documentId_${num}`}
-                                //label={`document_id: ${item}`}
                                 label={`id документа: ${item}`}
                                 onDelete={filterDelete.bind(null, "documentId", item, num)}
                                 variant="outlined"
@@ -639,7 +648,6 @@ export default function CreateSearchElementReport(props){
                         "":
                         <Chip
                             key={"key_chip_data_created"}
-                            //label={`created date: ${helpers.convertDateFromString(searchParameters.created.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.created.end, { monthDescription: "long", dayDescription: "numeric" })}`}
                             label={`дата создания: ${helpers.convertDateFromString(searchParameters.created.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.created.end, { monthDescription: "long", dayDescription: "numeric" })}`}
                             onDelete={filterDelete.bind(null, "created")}
                             variant="outlined"
@@ -650,7 +658,6 @@ export default function CreateSearchElementReport(props){
                         "":
                         <Chip
                             key={"key_chip_data_modified"}
-                            //label={`modified date: ${helpers.convertDateFromString(searchParameters.modified.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.modified.end, { monthDescription: "long", dayDescription: "numeric" })}`}
                             label={`дата изменения: ${helpers.convertDateFromString(searchParameters.modified.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.modified.end, { monthDescription: "long", dayDescription: "numeric" })}`}
                             onDelete={filterDelete.bind(null, "modified")}
                             variant="outlined"
@@ -661,7 +668,6 @@ export default function CreateSearchElementReport(props){
                         "":
                         <Chip
                             key={"key_chip_createdByRef"}
-                            //label={`source_id: ${searchParameters.createdByRef}`}
                             label={`id источника: ${searchParameters.createdByRef}`}
                             onDelete={filterDelete.bind(null, "createdByRef")}
                             variant="outlined"
@@ -672,7 +678,6 @@ export default function CreateSearchElementReport(props){
                         "":
                         <Chip
                             key={"key_chip_name"}
-                            //label={`name: ${searchParameters.specificSearchFields[0].name}`}
                             label={`наименование: ${searchParameters.specificSearchFields[0].name}`}
                             onDelete={filterDelete.bind(null, "name")}
                             variant="outlined"
@@ -684,7 +689,6 @@ export default function CreateSearchElementReport(props){
                         searchParameters.specificSearchFields[0].aliases.map((item, num) => {
                             return (<Chip
                                 key={`key_chip_alias_${num}`}
-                                //label={`alias: ${searchParameters.specificSearchFields[0].aliases}`}
                                 label={`псевдоним: ${item}`}
                                 onDelete={filterDelete.bind(null, "aliases", item, num)}
                                 variant="outlined"
@@ -696,7 +700,6 @@ export default function CreateSearchElementReport(props){
                         "":
                         <Chip
                             key={"key_chip_data_firstSeen"}
-                            //label={`first seen date: ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].firstSeen.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].firstSeen.end, { monthDescription: "long", dayDescription: "numeric" })}`}
                             label={`обнаружено впервые: ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].firstSeen.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].firstSeen.end, { monthDescription: "long", dayDescription: "numeric" })}`}
                             onDelete={filterDelete.bind(null, "firstSeen")}
                             variant="outlined"
@@ -707,7 +710,6 @@ export default function CreateSearchElementReport(props){
                         "":
                         <Chip
                             key={"key_chip_data_lastSeen"}
-                            //label={`last seen date: ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].lastSeen.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].lastSeen.end, { monthDescription: "long", dayDescription: "numeric" })}`}
                             label={`последняя фиксация: ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].lastSeen.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].lastSeen.end, { monthDescription: "long", dayDescription: "numeric" })}`}
                             onDelete={filterDelete.bind(null, "lastSeen")}
                             variant="outlined"
@@ -718,7 +720,6 @@ export default function CreateSearchElementReport(props){
                         "":
                         <Chip
                             key={"key_chip_data_published"}
-                            //label={`published date: ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].published, { monthDescription: "long", dayDescription: "numeric" })}`}
                             label={`опубликовано: ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].published, { monthDescription: "long", dayDescription: "numeric" })}`}
                             onDelete={filterDelete.bind(null, "published")}
                             variant="outlined"
@@ -730,7 +731,6 @@ export default function CreateSearchElementReport(props){
                         searchParameters.specificSearchFields[0].roles.map((item, num) => {
                             return (<Chip
                                 key={`key_chip_role_${num}`}
-                                //label={`role: ${searchParameters.specificSearchFields[0].aliases}`}
                                 label={`роль: ${item}`}
                                 onDelete={filterDelete.bind(null, "roles", item, num)}
                                 variant="outlined"

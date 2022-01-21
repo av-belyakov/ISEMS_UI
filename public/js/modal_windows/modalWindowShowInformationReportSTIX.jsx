@@ -19,7 +19,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
-import AddIcon from "@material-ui/icons/AddCircleOutlineOutlined";
+import AddIcon from "@material-ui/icons/Add";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { teal, purple, grey, green, orange, red } from "@material-ui/core/colors";
 import { v4 as uuidv4 } from "uuid";
@@ -135,63 +135,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.requestEmitter.call(this);
     }
 
-    /** TEST ONLY */
-    testWriteAdditionalInfoForListObjectInfo(){
-        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
-
-        console.log("func 'testWriteAdditionalInfoForListObjectInfo', START...");
-        console.log(listObjectTmp);
-
-        // *** для теста "Дополнительных внешних ссылок" START ***
-        listObjectTmp[this.props.showReportId].external_references = [
-            {
-                source_name: "external references 1",
-                description: "common description external references 1 to read people",
-                url: "html://external-references-example-1.net/watch?v=BSoHDCWze7E",
-                hashes: {"md5": "dvyw7f37fggug8fg88g84fg8877e7fe", "sha256": "bcu48gc7g7848f48g88g85g8rfgh8rh84h8h8r8rh8rh8r"},
-                external_id: "ex-ref--vueueuf8egfurggrg7gd7fe",
-            },
-            {
-                source_name: "external references 2",
-                description: "common description external references 2 to read people",
-                url: "html://external-references-example-2222.net/watch?v=BSoHDCWze7E",
-                hashes: {"md5": "dvyw7f37fggug8fg88g84fg8877e7fe", "sha128": "nbeiuu37fg7g4f7g84g8gd8fg8eg8egf8e", "sha256": "bcu48gc7g7848f48g88g85g8rfgh8rh84h8h8r8rh8rh8r"},
-                external_id: "ex-ref--beg77e7fd3f377gr7eg7efg7",
-            },
-            {
-                source_name: "external references 3",
-                url: "html://external-references-example-2222.net/watch?v=BSoHDCWze7E",
-                external_id: "ex-ref--cbscvsvcvdvucvduvduvcduvbduv",
-            },
-        ];
-        // *** для теста "Дополнительных внешних ссылок" END ***
-
-        // *** для теста "Дополниельные 'гранулярные метки'" START ***
-        listObjectTmp[this.props.showReportId].granular_markings = [
-            {
-                lang: "CH",
-                marking_ref: "marking--bubdu8eeugfuegfe8fefhefe",
-                selectors: ["selectors_suvnid_1", "selectors_cvbi_2"],
-            },
-            {
-                lang: "US",
-                marking_ref: "marking-- cscusuudbsfubdufbudbfueubue",
-                selectors: ["selectors-11", "selectors-22", "selectors-33"],
-            },
-            {
-                lang: "RU",
-                selectors: ["selectors-bdufbdubudfud", "selectors-sufuwu3fueuef", "selectors-dufveufueufuefu"],
-            },
-        ];
-        // *** для теста "Дополниельные 'гранулярные метки'" END ***
-
-        // *** для теста "Любая дополнительная информация" START ***
-        listObjectTmp[this.props.showReportId].extensions = { "test element": "budbuufbduf fndufbud ufbdgufgur", "test element 1": "bvbibevi484negfgrgiurg" };
-        // *** для теста "Любая дополнительная информация" END ***
-
-        this.setState({ listObjectInfo: listObjectTmp });
-    }
-
     handlerEvents(){
         //обработка события связанного с приемом списка групп которым разрешен доступ к данному докладу
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
@@ -242,13 +185,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     listObjectInfo: listObjectInfoTmp,
                     reportAcceptedInformation: reportInfo,
                 });
-
-                /*
-                *              ВНИМАНИЕ только для тестов!!!
-                * Функция testWriteAdditionalInfoForListObjectInfo осуществляет ДОПОЛНИТЕЛЬНОЕ наполнение ТЕСТОВОЙ информацией объекта
-                * listObjectInfo
-                **/
-                //this.testWriteAdditionalInfoForListObjectInfo.call(this);
         
                 break;
             case "list of groups to which the report is available":
