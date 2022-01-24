@@ -183,6 +183,28 @@ export default class CreatePageReport extends React.Component {
         }, 1500);
     }
 
+    handlerSendSearchRequest(searchParameters){
+        console.log("func 'handlerSendSearchRequest', searchParameters:");
+        console.log(searchParameters);
+
+        let searchReguest = {
+            paginateParameters: {
+                maxPartSize: 30,
+                currentPartNumber: 1,
+            },
+            sortableField: "data_created",
+            searchParameters: searchParameters,
+        };
+
+        //запрос краткой информации (количество) по заданным параметрам
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
+
+        //запрос полной информации по заданным параметрам
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
+
+        this.setState({ requestDetails: searchReguest });
+    }
+
     isDisabledNewReport(){
         return !this.props.receivedData.userPermissions.create.status;
     }
@@ -199,6 +221,7 @@ export default class CreatePageReport extends React.Component {
             <CreateSearchElementReport 
                 socketIo={this.props.socketIo} 
                 userPermissions={this.props.receivedData.userPermissions}
+                handlerSendSearchRequest={this.handlerSendSearchRequest.bind(this)}
                 listTypesComputerThreat={this.props.listTypesComputerThreat}
                 listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat} />
 

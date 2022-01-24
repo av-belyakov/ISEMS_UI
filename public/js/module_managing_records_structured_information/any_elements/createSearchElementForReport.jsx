@@ -157,6 +157,7 @@ export default function CreateSearchElementReport(props){
     let { 
         socketIo, 
         userPermissions,
+        handlerSendSearchRequest,
         listTypesComputerThreat,
         listTypesDecisionsMadeComputerThreat,
     } = props;
@@ -169,7 +170,6 @@ export default function CreateSearchElementReport(props){
     let [ dateTimeEnd, setDateTimeEnd ] = React.useState(dateTimeEndTmp);
     let [ dateTimeStart, setDateTimeStart ] = React.useState(dateTimeStartTmp);
     let [ selectedSearchItem, setSelectedSearchItem ] = React.useState("");
-    //let [ selectedSearchItemName, setSelectedSearchItemName ] = React.useState("");
     let [ searchParameters, setSearchParameters ] = React.useState(patternSearchParameters);
 
     let supportFuncAddValue = (searchParametersTmp) => {
@@ -609,9 +609,32 @@ export default function CreateSearchElementReport(props){
                     onClick={() => {
                         console.log(searchParameters);
 
+                        handlerSendSearchRequest(searchParameters);
+
                         /**
-                         * тут нужно отправлять запрос в back-end
-                         */
+     * 
+     * Похоже что нужно пробрасывать данные о заданных шаблонах фильтрации в createPageReport, потому что на странице PageReport нужно
+     * иметь возможность обновлять данные в таблице с помощью пагинаторов, для этого нужно сохранить заданные параметры поиска. Может
+     * быть через кнопку ПОИСК и вспомогательную функцию пробрасывать параметры поиска на старницу PageReport?
+     * И еще, может быть визуализировать, для пользователя, параметры поиска, до тех пор пока они не будут удалены? 
+     * 
+     */
+
+
+                        /*let searchReguest = {
+                            paginateParameters: {
+                                maxPartSize: 30,
+                                currentPartNumber: 1,
+                            },
+                            sortableField: "data_created",
+                            searchParameters: searchParameters,
+                        };*/
+
+                        //запрос краткой информации (количество) по заданным параметрам
+                        //socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
+
+                        //запрос полной информации по заданным параметрам
+                        //socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
 
                         setSearchParameters(patternSearchParameters);
                     }}>
@@ -624,202 +647,13 @@ export default function CreateSearchElementReport(props){
             patternFilters={searchParameters} 
             listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
             handlerDeleteFilters={filterDelete} />
-
-        <Grid container direction="row" className="mt-3">
-            <Grid item container md={12}>Внимание!!! Все фильтры перечисленные ниже, лишь временное решение, потом основные будут те что выше, а эти надо будет удалить!</Grid>
-        </Grid>
-        
-        <Grid container direction="row" className="mt-3">
-            <Grid item container md={12}>
-                { //documentsId filter
-                    (searchParameters.documentsId.length === 0)? 
-                        "":
-                        searchParameters.documentsId.map((item, num) => {
-                            return (<Chip
-                                key={`key_chip_documentId_${num}`}
-                                label={`id документа: ${item}`}
-                                onDelete={filterDelete.bind(null, "documentId", item, num)}
-                                variant="outlined"
-                                style={{ color: purple[400], margin: "2px" }} />);
-                        })}
-
-                { //data created filter
-                    ((searchParameters.created.start === "0001-01-01T00:00:00.000+00:00") || (searchParameters.created.end === "0001-01-01T00:00:00.000+00:00"))? 
-                        "":
-                        <Chip
-                            key={"key_chip_data_created"}
-                            label={`дата создания: ${helpers.convertDateFromString(searchParameters.created.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.created.end, { monthDescription: "long", dayDescription: "numeric" })}`}
-                            onDelete={filterDelete.bind(null, "created")}
-                            variant="outlined"
-                            style={{ color: deepOrange[400], margin: "2px" }} />}
-
-                { //data modified filter
-                    ((searchParameters.modified.start === "0001-01-01T00:00:00.000+00:00") || (searchParameters.modified.end === "0001-01-01T00:00:00.000+00:00"))? 
-                        "":
-                        <Chip
-                            key={"key_chip_data_modified"}
-                            label={`дата изменения: ${helpers.convertDateFromString(searchParameters.modified.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.modified.end, { monthDescription: "long", dayDescription: "numeric" })}`}
-                            onDelete={filterDelete.bind(null, "modified")}
-                            variant="outlined"
-                            style={{ color: orange[400], margin: "2px" }} />}
-
-                { //createdByRef filter
-                    (searchParameters.createdByRef === "")? 
-                        "":
-                        <Chip
-                            key={"key_chip_createdByRef"}
-                            label={`id источника: ${searchParameters.createdByRef}`}
-                            onDelete={filterDelete.bind(null, "createdByRef")}
-                            variant="outlined"
-                            style={{ color: pink[400], margin: "2px" }} />}
-
-                { //name filter
-                    (searchParameters.specificSearchFields[0].name === "")? 
-                        "":
-                        <Chip
-                            key={"key_chip_name"}
-                            label={`наименование: ${searchParameters.specificSearchFields[0].name}`}
-                            onDelete={filterDelete.bind(null, "name")}
-                            variant="outlined"
-                            style={{ color: teal[400], margin: "2px" }} />}
-
-                { //aliases filter
-                    (searchParameters.specificSearchFields[0].aliases.length === 0)? 
-                        "":
-                        searchParameters.specificSearchFields[0].aliases.map((item, num) => {
-                            return (<Chip
-                                key={`key_chip_alias_${num}`}
-                                label={`псевдоним: ${item}`}
-                                onDelete={filterDelete.bind(null, "aliases", item, num)}
-                                variant="outlined"
-                                style={{ color: cyan[400], margin: "2px" }} />);
-                        })}
-
-                { //data firstSeen filter
-                    ((searchParameters.specificSearchFields[0].firstSeen.start === "0001-01-01T00:00:00.000+00:00") || (searchParameters.specificSearchFields[0].firstSeen.end === "0001-01-01T00:00:00.000+00:00"))? 
-                        "":
-                        <Chip
-                            key={"key_chip_data_firstSeen"}
-                            label={`обнаружено впервые: ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].firstSeen.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].firstSeen.end, { monthDescription: "long", dayDescription: "numeric" })}`}
-                            onDelete={filterDelete.bind(null, "firstSeen")}
-                            variant="outlined"
-                            style={{ color: amber[700], margin: "2px" }} />}
-
-                { //data lastSeen filter
-                    ((searchParameters.specificSearchFields[0].lastSeen.start === "0001-01-01T00:00:00.000+00:00") || (searchParameters.specificSearchFields[0].lastSeen.end === "0001-01-01T00:00:00.000+00:00"))? 
-                        "":
-                        <Chip
-                            key={"key_chip_data_lastSeen"}
-                            label={`последняя фиксация: ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].lastSeen.start, { monthDescription: "long", dayDescription: "numeric" })} - ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].lastSeen.end, { monthDescription: "long", dayDescription: "numeric" })}`}
-                            onDelete={filterDelete.bind(null, "lastSeen")}
-                            variant="outlined"
-                            style={{ color: yellow[900], margin: "2px" }} />}
-
-                { //data published filter
-                    (searchParameters.specificSearchFields[0].published === "0001-01-01T00:00:00.000+00:00")? 
-                        "":
-                        <Chip
-                            key={"key_chip_data_published"}
-                            label={`опубликовано: ${helpers.convertDateFromString(searchParameters.specificSearchFields[0].published, { monthDescription: "long", dayDescription: "numeric" })}`}
-                            onDelete={filterDelete.bind(null, "published")}
-                            variant="outlined"
-                            style={{ color: yellow[700], margin: "2px" }} />}
-
-                { //roles filter
-                    (searchParameters.specificSearchFields[0].roles.length === 0)? 
-                        "":
-                        searchParameters.specificSearchFields[0].roles.map((item, num) => {
-                            return (<Chip
-                                key={`key_chip_role_${num}`}
-                                label={`роль: ${item}`}
-                                onDelete={filterDelete.bind(null, "roles", item, num)}
-                                variant="outlined"
-                                style={{ color: blueGrey[400], margin: "2px" }} />);
-                        })}
-
-                { //country filter
-                    (searchParameters.specificSearchFields[0].country === "")? 
-                        "":
-                        <Chip
-                            key={"key_chip_country"}
-                            label={`страна: ${searchParameters.specificSearchFields[0].country}`}
-                            onDelete={filterDelete.bind(null, "country")}
-                            variant="outlined"
-                            style={{ color: deepPurple[400], margin: "2px" }} />}
-
-                { //city filter
-                    (searchParameters.specificSearchFields[0].city === "")? 
-                        "":
-                        <Chip
-                            key={"key_chip_city"}
-                            label={`город: ${searchParameters.specificSearchFields[0].city}`}
-                            onDelete={filterDelete.bind(null, "city")}
-                            variant="outlined"
-                            style={{ color: deepPurple[800], margin: "2px" }} />}
-
-                { //numberAutonomousSystem filter
-                    (searchParameters.specificSearchFields[0].numberAutonomousSystem === 0)? 
-                        "":
-                        <Chip
-                            key={"key_chip_numberAutonomousSystem"}
-                            label={`автономная система № ${searchParameters.specificSearchFields[0].numberAutonomousSystem}`}
-                            onDelete={filterDelete.bind(null, "numberAutonomousSystem")}
-                            variant="outlined"
-                            style={{ color: brown[400], margin: "2px" }} />}
-
-                { //value filter
-                    (searchParameters.specificSearchFields[0].value.length === 0)? 
-                        "":
-                        searchParameters.specificSearchFields[0].value.map((item, num) => {
-                            //"domain-name", "email-addr", "ipv4-addr", "ipv6-addr" или "url"
-                            
-                            if(validatorjs.isIP(item, 4)){
-                                return (<Chip
-                                    key={`key_chip_value_IPv4_${num}`}
-                                    label={`IPv4: ${item}`}
-                                    onDelete={filterDelete.bind(null, "ipv4-addr", item, num)}
-                                    variant="outlined"
-                                    style={{ color: green[400], margin: "2px" }} />);
-                            } else if(validatorjs.isIP(item, 6)){
-                                return (<Chip
-                                    key={`key_chip_value_IPv6_${num}`}
-                                    label={`IPv6: ${item}`}
-                                    onDelete={filterDelete.bind(null, "ipv6-addr", item, num)}
-                                    variant="outlined"
-                                    style={{ color: green[600], margin: "2px" }} />);
-                            } else if(validatorjs.isEmail(item)){
-                                return (<Chip
-                                    key={`key_chip_value_email-addr_${num}`}
-                                    label={`email: ${item}`}
-                                    onDelete={filterDelete.bind(null, "email-addr", item, num)}
-                                    variant="outlined"
-                                    style={{ color: teal[600], margin: "2px" }} />);
-                            } else if(validatorjs.isURL(item, { 
-                                protocols: ["http","https","ftp"],
-                            }) && ((item.startsWith("http") || (item.startsWith("https")) || (item.startsWith("ftp"))))){
-                                return (<Chip
-                                    key={`key_chip_value_url_${num}`}
-                                    label={`url: ${item}`}
-                                    onDelete={filterDelete.bind(null, "url", item, num)}
-                                    variant="outlined"
-                                    style={{ color: blue[600], margin: "2px" }} />);
-                            } else {
-                                return (<Chip
-                                    key={`key_chip_value_domain-name_${num}`}
-                                    label={`доменное имя: ${item}`}
-                                    onDelete={filterDelete.bind(null, "domain-name", item, num)}
-                                    variant="outlined"
-                                    style={{ color: lightBlue[600], margin: "2px" }} />);
-                            }
-                        })}
-            </Grid>
-        </Grid>
     </React.Fragment>);
 }
 
 CreateSearchElementReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired,
+    handlerSendSearchRequest: PropTypes.func.isRequired,
     listTypesComputerThreat: PropTypes.object.isRequired,
     listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
 };
