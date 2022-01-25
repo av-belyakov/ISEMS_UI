@@ -7,9 +7,17 @@ module.exports.getRequestPattern = function(reqData){
         },
         listSortableField = ["document_type", "data_created", "data_modified", "data_first_seen", "data_last_seen", "ipv4", "ipv6", "country"],
         listDocumentsType = [
-            "attack-pattern", 
+            "attack-pattern",
+            "artifact",
+            "autonomous-system", 
             "campaign", 
-            "course-of-action",  
+            "course-of-action",
+            "directory",
+            "domain-name",
+            "email-addr",
+            "file",
+            "ipv4-addr",
+            "ipv6-addr",
             "grouping",
             "identity",
             "indicator",
@@ -18,13 +26,23 @@ module.exports.getRequestPattern = function(reqData){
             "location",
             "malware",
             "malware-analysis",
+            "mac-addr",
+            "mutex",
             "note",
+            "network-traffic",
             "observed-data",
             "opinion",
+            "process",
+            "software",
             "report",
             "threat-actor",
+            "url",
+            "user-account",
             "tool",
-            "vulnerability"],
+            "vulnerability",
+            "windows-registry-key",
+            "x509-certificate",
+        ],
         msg = {
             collection_name: "stix object",
             paginate_parameters: {
@@ -72,8 +90,8 @@ module.exports.getRequestPattern = function(reqData){
     }
     
     // --- поисковые параметры запроса ---
-    if((typeof reqData.arguments.searchParameters.documentId !== "undefined") && (reqData.arguments.searchParameters.documentId.length > 0)){
-        msg.search_parameters.document_id = reqData.arguments.searchParameters.documentId;
+    if((typeof reqData.arguments.searchParameters.documentsId !== "undefined") && (reqData.arguments.searchParameters.documentsId.length > 0)){
+        msg.search_parameters.documents_id = reqData.arguments.searchParameters.documentsId;
     }
 
     if((typeof reqData.arguments.searchParameters.documentsType !== "undefined") && (reqData.arguments.searchParameters.documentsType.length > 0)){
@@ -113,18 +131,30 @@ module.exports.getRequestPattern = function(reqData){
 
     for(let i = 0; i < countSpecificSearchFields; i++){
         let item = reqData.arguments.searchParameters.specificSearchFields[i];
+
         if((typeof item.firstSeen === "undefined") || (isNaN(Date.parse(item.firstSeen.start))) || (isNaN(Date.parse(item.firstSeen.end)))){
             reqData.arguments.searchParameters.specificSearchFields[i].firstSeen = timeSeen;
+           
         }
 
         if((typeof item.lastSeen === "undefined") || (isNaN(Date.parse(item.lastSeen.start))) || (isNaN(Date.parse(item.lastSeen.end)))){
             reqData.arguments.searchParameters.specificSearchFields[i].lastSeen = timeSeen;
         }
 
-        if((typeof item.published === "undefined") || (isNaN(Date.parse(item.published)))){
+        if((typeof item.published === "undefined") || isNaN(Date.parse(item.published))){
             reqData.arguments.searchParameters.specificSearchFields[i].published = timeSeen.start;
         }
     }
+
+    let specificSearchFieldsTmp = reqData.arguments.searchParameters.specificSearchFields[0];
+
+    delete specificSearchFieldsTmp.published;
+
+    console.log("___________");
+    console.log(specificSearchFieldsTmp);
+    console.log("___________");
+
+    msg.search_parameters.specific_search_fields.push(specificSearchFieldsTmp);
 
     return msg;
 };

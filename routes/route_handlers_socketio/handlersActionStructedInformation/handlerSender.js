@@ -34,65 +34,40 @@ module.exports.sendSearchRequestPageReport = function(socketIo, data){
                 throw new MyError("management auth", "Пользователь не авторизован.");
             }
 
-            return authData.document.userName;
-        }).then((un) => {
+            return authData;
+        }).then((authData) => {
             return new Promise((resolve, reject) => {
                 getSessionId("socketIo", socketIo, (err, sid) => {
                     if (err) reject(err);
-                    else resolve({ userName: un, sessionId: sid });
+                    else resolve({ 
+                        userName: authData.document.userName, 
+                        sessionId: sid,
+                        isPrivilegedGroup: authData.document.groupSettings.management_security_event_management.element_settings.privileged_group.status
+                    });
                 });
             });
         }).then((result) => {            
+
+            debug("Group is privileged: ", result.isPrivilegedGroup);
+
             if(!result.isPrivilegedGroup){
-                /*return new Promise((resolve, reject) => {
-                    let countElements = 0;
-
-                    mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
-                        query: { group_name: result.userGroup },
-                        select: { _id: 0, __v: 0 }
-                    }, (err, queryResult) => {
-                        if(err) {
-                            reject(err);
-                        }
-
-                        if(!isNull(queryResult)){
-                            countElements = queryResult.length;
-                        }
-
-                        let msg = {
-                            task_id: createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`),
-                            section: "handling search requests",
-                            additional_parameters: { number_documents_found: countElements },
-                        };
-
-                        helpersFunc.sendMessageByUserSocketIo(socketIo.id, "isems-mrsi response ui", { 
-                            section: section,
-                            eventForWidgets: false,
-                            information: msg,
-                        });
-
-                        resolve();
-                    });
-                });*/
+                throw new MyError("management auth", "Невозможно выполнить действие, группа пользователя является непривилегированной.");
             }
 
             return new Promise((resolve, reject) => {
-
-                /**
-                 *          !!!!!!!!!!!!!!!!
-                 * Основываясь на статусе пользователя, разрешается ли ему поиск и просмотр всех существующих в БД
-                 * STIX объектов или только тех, просмотр которых ему разрешили более привелегерованные пользователи,
-                 * здесь должен быть выбор, отправлять типовой запрос на поиск информации или запрос который содержит
-                 * только перечень разрешенных для просмотра ID.
-                 *          !!!!!!!!!!!!!!!!
-                 */
-
                 process.nextTick(() => {
                     try {
                         let dataReq = localHelpersFunc.getRequestPattern(data);
 
                         debug("------- sendSearchRequestPageReport -----");
+                        debug("==== data.arguments:");
+                        debug(data.arguments);
+                        debug("==== data.arguments.searchParameters.specificSearchFields:");
+                        debug(data.arguments.searchParameters.specificSearchFields);
+                        debug("==== dataReq:");
                         debug(dataReq);
+                        debug("==== dataReq.search_parameters.specific_search_fields:");
+                        debug(dataReq.search_parameters.specific_search_fields);
 
                         if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
                             return reject(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));

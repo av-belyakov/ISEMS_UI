@@ -82,6 +82,10 @@ export default class CreateMainTableForReport extends React.Component {
             }
 
             if(data.section === "send search request, table page report"){
+                
+                console.log("func 'createMainTableForReport', handlerEvents");
+                console.log(data);
+
                 if((typeof data.information === "undefined") || (data.information === null)){
                     return;
                 }
@@ -271,36 +275,34 @@ function CreateTable(props){
                         }
 
                         if((num >= (countShowReportsPerPage * numCurrentPagePagination)) && (num < (countShowReportsPerPage * (numCurrentPagePagination + 1)))){
-                            return (
-                                <TableRow 
-                                    key={`table_row_${item.id}`} 
-                                    hover role="checkbox" tabIndex={-1} 
-                                    onClick={(elem) => { handlerTableOnClick(elem, item.id); }}>
-                                    <TableCell>{`${++num}.`}</TableCell>
-                                    <TableCell align="center">{imgTypeSTIX}</TableCell>
-                                    <TableCell >{getChipForGroups(item.id)}</TableCell>
-                                    <TableCell>{helpers.convertDateFromString(item.created, {})}</TableCell>
-                                    <TableCell>{helpers.convertDateFromString(item.modified, {})}</TableCell>
-                                    <TableCell>{timePublished}</TableCell>
-                                    <TableCell>{item.name}</TableCell>
-                                    <TableCell align="right">{item.report_types.map((elem) => {
-                                        let linkImage = helpers.getLinkImageSTIXObject(elem);
+                            return (<TableRow 
+                                key={`table_row_${item.id}`} 
+                                hover role="checkbox" tabIndex={-1} 
+                                onClick={(elem) => { handlerTableOnClick(elem, item.id); }}>
+                                <TableCell>{`${++num}.`}</TableCell>
+                                <TableCell align="center">{imgTypeSTIX}</TableCell>
+                                <TableCell >{getChipForGroups(item.id)}</TableCell>
+                                <TableCell>{helpers.convertDateFromString(item.created, {})}</TableCell>
+                                <TableCell>{helpers.convertDateFromString(item.modified, {})}</TableCell>
+                                <TableCell>{timePublished}</TableCell>
+                                <TableCell>{item.name}</TableCell>
+                                <TableCell align="right">{item.report_types.map((elem) => {
+                                    let linkImage = helpers.getLinkImageSTIXObject(elem);
     
-                                        if(typeof linkImage === "undefined"){
-                                            return;
-                                        }
+                                    if(typeof linkImage === "undefined"){
+                                        return;
+                                    }
     
-                                        return (<Tooltip title={linkImage.description} key={`key_tooltip_report_type_${elem}`}>
-                                            <img 
-                                                key={`key_report_type_${elem}`} 
-                                                src={`/images/stix_object/${linkImage.link}`} 
-                                                width="35" 
-                                                height="35" />
-                                        </Tooltip>);
-                                    })}
-                                    </TableCell>
-                                </TableRow>
-                            );
+                                    return (<Tooltip title={linkImage.description} key={`key_tooltip_report_type_${elem}`}>
+                                        <img 
+                                            key={`key_report_type_${elem}`} 
+                                            src={`/images/stix_object/${linkImage.link}`} 
+                                            width="35" 
+                                            height="35" />
+                                    </Tooltip>);
+                                })}
+                                </TableCell>
+                            </TableRow>);
                         }
                     })}
                 </TableBody>

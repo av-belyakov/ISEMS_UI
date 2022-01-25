@@ -1,7 +1,4 @@
 import React from "react";
-import { Col, Row } from "react-bootstrap";
-//import { Button } from "@material-ui/core";
-//import lodash from "lodash";
 import PropTypes from "prop-types";
 
 import CreateMainTableReport from "../tables/createMainTableForReport.jsx";
@@ -56,7 +53,7 @@ export default class CreatePageReport extends React.Component {
                     specificSearchFields: [
                         {
                             name: "",
-                            aliases: "",
+                            aliases: [],
                             /* интервал времени когда информация была обнаружена впервые */
                             firstSeen: {
                                 start: "0001-01-01T00:00:00.000+00:00",
