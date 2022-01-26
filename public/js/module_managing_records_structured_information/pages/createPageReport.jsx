@@ -65,7 +65,7 @@ export default class CreatePageReport extends React.Component {
                                 end: "0001-01-01T00:00:00.000+00:00",
                             },
                             /* равно или больше чем заданное пользователем время, когда отчет был опубликован */
-                            published: "0001-01-01T00:00:00.000+00:00",
+                            published: "1970-01-01T00:00:00.000+00:00",
                             roles: [],
                             country: "",
                             city: "",

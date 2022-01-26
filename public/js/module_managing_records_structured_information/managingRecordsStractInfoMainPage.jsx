@@ -1,7 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Col, Row } from "react-bootstrap";
-import { CssBaseline, Drawer, Tab, Tabs, Tooltip, LinearProgress } from "@material-ui/core";
+import { 
+    CssBaseline, 
+    Drawer,
+    Grid, 
+    Tab, 
+    Tabs, 
+    Tooltip, 
+    LinearProgress 
+} from "@material-ui/core";
 import PropTypes from "prop-types";
 import { BrowserRouter, Link as LinkRouter } from "react-router-dom";
 import { Alert } from "material-ui-lab";
@@ -19,7 +27,7 @@ import CreatePageChangeLog from "./pages/createPageChangeLog.jsx";
 import CreatePageFinalDocuments from "./pages/createPageFinalDocuments.jsx";
 import CreatePageReportingMaterials from "./pages/createPageReportingMaterials.jsx";
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
@@ -45,23 +53,21 @@ const useStyles = makeStyles((theme) => ({
 function LeftElements(props){
     const classes = useStyles();
 
-    return (
-        <React.Fragment>
-            <Drawer
-                className={classes.drawer}
-                variant="permanent"
-                classes={{paper: classes.drawerPaper}}
-                anchor="left">
-                <Tabs
-                    value={props.handler()}
-                    indicatorcolor="primary"
-                    orientation="vertical"
-                    variant="scrollable">
-                    {props.list}
-                </Tabs>
-            </Drawer>
-        </React.Fragment>
-    );
+    return (<nav className={classes.drawer}>
+        <Drawer
+            className={classes.drawer}
+            variant="permanent"
+            classes={{ paper: classes.drawerPaper }}
+            anchor="left">
+            <Tabs
+                value={props.handler()}
+                indicatorcolor="primary"
+                orientation="vertical"
+                variant="scrollable">
+                {props.list}
+            </Tabs>
+        </Drawer>
+    </nav>);
 }
 
 LeftElements.propTypes = {
@@ -72,48 +78,62 @@ LeftElements.propTypes = {
 function ChildElements(props){
     let url = new URL(window.location.href),
         name = url.searchParams.get("name"),
-        { socketIo, receivedData, listTypesComputerThreat, listTypesDecisionsMadeComputerThreat } = props;
+        { 
+            socketIo, 
+            receivedData, 
+            listTypesComputerThreat, 
+            listTypesDecisionsMadeComputerThreat 
+        } = props;
+    let currentElement = <CreatePageReport 
+        socketIo={socketIo} 
+        receivedData={receivedData}
+        listTypesComputerThreat={listTypesComputerThreat}
+        listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat} />;
 
     switch(name){
-    case "":
-        return <CreatePageReport 
-            socketIo={socketIo} 
-            receivedData={receivedData}
-            listTypesComputerThreat={listTypesComputerThreat}
-            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat} />;
-    case "reports":
-        return <CreatePageReport 
-            socketIo={socketIo} 
-            receivedData={receivedData}
-            listTypesComputerThreat={listTypesComputerThreat}
-            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat} />;
     case "observed_data":
-        return <CreatePageObservedData socketIo={socketIo} receivedData={receivedData}/>;
+        currentElement = <CreatePageObservedData socketIo={socketIo} receivedData={receivedData}/>;
+
+        break;
     case "malware":
-        return <CreatePageMalware socketIo={socketIo} receivedData={receivedData}/>;
+        currentElement = <CreatePageMalware socketIo={socketIo} receivedData={receivedData}/>;
+    
+        break;
     case "vulnerability":
-        return <CreatePageVulnerability socketIo={socketIo} receivedData={receivedData}/>;
+        currentElement = <CreatePageVulnerability socketIo={socketIo} receivedData={receivedData}/>;
+    
+        break;
     case "threat_actor":
-        return <CreatePageThreatActor socketIo={socketIo} receivedData={receivedData}/>;
+        currentElement = <CreatePageThreatActor socketIo={socketIo} receivedData={receivedData}/>;
+    
+        break;
     case "infrastructure":
-        return <CreatePageInfrastructure socketIo={socketIo} receivedData={receivedData}/>;
+        currentElement = <CreatePageInfrastructure socketIo={socketIo} receivedData={receivedData}/>;
+    
+        break;
     case "tools":
-        return <CreatePageTools socketIo={socketIo} receivedData={receivedData}/>;
+        currentElement = <CreatePageTools socketIo={socketIo} receivedData={receivedData}/>;
+    
+        break;
     case "statistic":
-        return <CreatePageStatistic socketIo={socketIo} receivedData={receivedData}/>;
+        currentElement = <CreatePageStatistic socketIo={socketIo} receivedData={receivedData}/>;
+
+        break;
     case "change_log":
-        return <CreatePageChangeLog socketIo={socketIo} receivedData={receivedData}/>;
+        currentElement = <CreatePageChangeLog socketIo={socketIo} receivedData={receivedData}/>;
+    
+        break;
     case "final_documents":
-        return <CreatePageFinalDocuments socketIo={socketIo} receivedData={receivedData}/>;
+        currentElement = <CreatePageFinalDocuments socketIo={socketIo} receivedData={receivedData}/>;
+    
+        break;
     case "reporting_materials":
-        return <CreatePageReportingMaterials socketIo={socketIo} receivedData={receivedData}/>;
-    default:
-        return <CreatePageReport 
-            socketIo={socketIo} 
-            receivedData={receivedData}
-            listTypesComputerThreat={listTypesComputerThreat}
-            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat} />;
+        currentElement = <CreatePageReportingMaterials socketIo={socketIo} receivedData={receivedData}/>;
+
+        break;
     }
+
+    return <main style={{ flexGrow: 1 }}>{currentElement}</main>;
 }
 
 ChildElements.propTypes = {
@@ -216,11 +236,6 @@ class CreateMainPage extends React.Component {
 
         //обработка события связанного с приемом списка групп которым разрешен доступ к данному докладу
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
-
-            //console.log("class 'CreateMainPage', func 'handlerEvents'");
-            //console.log(`sections: ${data.section}`);
-            //console.log(data.information.additional_parameters);
-
             if((data.information === null) || (typeof data.information === "undefined")){
                 return;
             }
@@ -243,22 +258,20 @@ class CreateMainPage extends React.Component {
     }
 
     showModuleConnectionError() {
-        return (
-            <React.Fragment>
-                <Row className="mt-2">
-                    <Col md={12}>
-                        <Alert variant="filled" severity="error">
-                            <strong>Ошибка!</strong> Отсутствует доступ к модулю управления структурированной информации. Пытаемся установить соединение...
-                        </Alert>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12}>
-                        <LinearProgress color="secondary" />
-                    </Col>
-                </Row>
-            </React.Fragment>
-        );
+        return (<React.Fragment>
+            <Row className="mt-2">
+                <Col md={12}>
+                    <Alert variant="filled" severity="error">
+                        <strong>Ошибка!</strong> Отсутствует доступ к модулю управления структурированной информации. Пытаемся установить соединение...
+                    </Alert>
+                </Col>
+            </Row>
+            <Row>
+                <Col md={12}>
+                    <LinearProgress color="secondary" />
+                </Col>
+            </Row>
+        </React.Fragment>);
     }
 
     getSelectedMenuItem(){
@@ -290,20 +303,19 @@ class CreateMainPage extends React.Component {
 
         return (<BrowserRouter>
             <CssBaseline />
-            <Row>
-                <Col md={2}>
-                    <LeftElements menuItem={this.menuItem} list={list} handler={this.getSelectedMenuItem}/>
-                </Col>
-                <Col md={10}>
-                    {(!this.state.connectModuleMRSICT) ? 
-                        this.showModuleConnectionError.call(this):  
-                        <ChildElements 
-                            socketIo={this.props.socketIo} 
-                            receivedData={this.props.receivedData} 
-                            listTypesComputerThreat={this.state.listTypesComputerThreat}
-                            listTypesDecisionsMadeComputerThreat={this.state.listTypesDecisionsMadeComputerThreat} />}
-                </Col>
-            </Row>
+
+            <div style={{ display: "flex" }}>
+                <LeftElements menuItem={this.menuItem} list={list} handler={this.getSelectedMenuItem}/>
+                
+                {(!this.state.connectModuleMRSICT) ? 
+                    this.showModuleConnectionError.call(this):  
+                    <ChildElements 
+                        socketIo={this.props.socketIo} 
+                        receivedData={this.props.receivedData} 
+                        listTypesComputerThreat={this.state.listTypesComputerThreat}
+                        listTypesDecisionsMadeComputerThreat={this.state.listTypesDecisionsMadeComputerThreat} />}
+            </div>    
+                
         </BrowserRouter>);
     }
 

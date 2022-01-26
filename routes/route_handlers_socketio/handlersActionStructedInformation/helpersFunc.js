@@ -142,17 +142,11 @@ module.exports.getRequestPattern = function(reqData){
         }
 
         if((typeof item.published === "undefined") || isNaN(Date.parse(item.published))){
-            reqData.arguments.searchParameters.specificSearchFields[i].published = timeSeen.start;
+            reqData.arguments.searchParameters.specificSearchFields[i].published = "1970-01-01T00:00:00.000+00:00";
         }
     }
 
     let specificSearchFieldsTmp = reqData.arguments.searchParameters.specificSearchFields[0];
-
-    delete specificSearchFieldsTmp.published;
-
-    console.log("___________");
-    console.log(specificSearchFieldsTmp);
-    console.log("___________");
 
     msg.search_parameters.specific_search_fields.push(specificSearchFieldsTmp);
 

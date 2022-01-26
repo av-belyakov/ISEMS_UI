@@ -26,9 +26,11 @@ body {
 }
 
 .content-wrapper {
-    margin-top: 60px;
+    /*margin-top: 60px;*/
+    margin-top: 20px;
     min-height: 900px;
-    padding-bottom: 90px;
+    margin-bottom: 50px;
+    /*padding-bottom: 90px;*/
 }
 
 .header-line {
@@ -41,7 +43,6 @@ body {
 .pad-botm {
     padding-bottom: 30px;
 }
-
 
 /* =============================================================
    NAVBAR & MENU STYLES
@@ -237,12 +238,15 @@ body {
  ============================================================ */
 
 .footer-section {
-    padding: 25px 50px 25px 50px;
+    padding: 15px 35px 13px 35px;
     color: #ffffff;
     font-size: 13px;
     background-color: #343a40;
     text-align: right;
     border-top: 5px solid #7C872F;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     /*border-top: 5px solid #9170E4;*/
 }
 

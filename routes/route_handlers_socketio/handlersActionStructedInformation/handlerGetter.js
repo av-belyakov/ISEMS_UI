@@ -196,7 +196,7 @@ module.exports.getCountPublishedReports = function(socketIo, data){
 };
 
 /**
- * Обработчик запроса на получение общего количества опубликованных документов типа 'reports'
+ * Обработчик запроса на получение общего количества документов типа Report со статусом "types decisions made computer threat"
  * 
  * @param {*} socketIo - дескриптор websocket соединения
  * @param {*} data - данные 

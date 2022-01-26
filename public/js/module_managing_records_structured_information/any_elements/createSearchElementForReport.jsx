@@ -2,32 +2,18 @@
 
 import React from "react";
 import {
+    Box,
     Button,
-    Chip, 
     Grid,
+    Paper,
     Typography, 
     TextField, 
     MenuItem,
 } from "@material-ui/core";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import { 
-    amber, 
-    blue,
-    blueGrey,
-    brown, 
-    cyan, 
-    deepOrange, 
-    deepPurple, 
-    teal, 
-    red, 
-    green, 
-    orange, 
-    pink, 
-    purple,
-    lightBlue, 
-    yellow, 
-} from "@material-ui/core/colors";
+import SearchIcon from "@material-ui/icons/Search";
+import { red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 import validatorjs from "validatorjs";
 
@@ -109,78 +95,13 @@ const listSearchTypeElement = [
     },
 ];
 
-/**
-search_parameters: {
-            // между параметрами "id_documents", "type_documents", "created", "modified", "created_by_ref", "specific_search_fields" и 
-            "outside_specification_search_fields" используется логика "И"
-            
-            documents_id: [STRING] // список идентификаторов документов STIX (если данный параметр СОДЕРЖИТ список идентификаторов то остальные параметры
-                                   // НЕ УЧИТЫВАЮТСЯ в ходе выполнения поискового запроса)
-            documents_type: [STRING] // наименования типа документов STIX объектов, название которых содержится в поле "type" любого STIX документа
-            
-            // если заполнены оба поля 'created' и 'modified' то тогда для поиска по данным из обоих полей работает логика "ИЛИ" 
-            // время создания объекта, в формате "2016-05-12T08:17:27.000Z" (только для DO или RO STIX) 
-            created: {
-                start: STRING типа time // в формате "2016-05-12T08:17:27.000Z"
-                end: STRING типа time // в формате "2016-05-12T08:17:27.000Z"
-            }
-        // время модификации объекта, в формате "2016-05-12T08:17:27.000Z" (только для DO или RO STIX) 
-        modified: {
-                start: STRING типа time // в формате "2016-05-12T08:17:27.000Z"
-                end: STRING типа time // в формате "2016-05-12T08:17:27.000Z"
-            } 
-        created_by_ref: STRING // содержит идентификатор источника создавшего данный объект (только для DO STIX)
-
-        // 
-        specific_search_fields содержит специфичные поля объектов STIX (если для поиска используются НЕСКОЛЬКО таких объектов 
-        то срабатывает логика "ИЛИ").
-        Если в объекте заполнены несколько полей то между ними работает логика "И", со всеми полями кроме полей даты.
-        Для поля "Value" выполняется проверка на соответствия одному из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", 
-        "ipv6-addr" или "url" 
-
-        specific_search_fields: [
-            {
-                name: STRING // имя используемое для идентификации искомого типа
-                aliases: [STRING] // альтернативные имена
-                // интервал времени когда информация была обнаружена впервые 
-                first_seen: {
-                    start: STRING типа time // в формате "2016-05-12T08:17:27.000Z"
-                    end: STRING типа time // в формате "2016-05-12T08:17:27.000Z"
-                },
-                // интервал времени когда информация была обнаружена в последний раз 
-                last_seen: {
-                    start: STRING типа time // в формате "2016-05-12T08:17:27.000Z"
-                    end: STRING типа time // в формате "2016-05-12T08:17:27.000Z"
-                },
-                // равно или больше чем заданное пользователем время, когда отчет был опубликован 
-                published: STRING типа time // в формате "2016-05-12T08:17:27.000Z"
-                roles: [STRING] // список ролей
-                country: STRING // наименование страны
-                city: STRING // наименование города
-                number_autonomous_system: INT // номер для идентификации Автономной системы
-                value: [STRING] // может содержать какое либо из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", 
-                                   "ipv6-addr" или "url". Или все эти значения в перемешку. Между значениями в поле 'Value' используется
-                                   логика "ИЛИ".
-            }
-        ]
-
-        outside_specification_search_fields: {} // содержит поля не входящие в основную спецификацию STIX 2.0 и расширяющие набор некоторых свойств 
-         объектов STIX. Логика между ними это "ИЛИ", пустое содержимое полей не учитывается 
-
-        outside_specification_search_fields: {
-            decisions_made_computer_threat: STRING // принятые решения по компьютерной угрозе
-            computer_threat_type: STRING // тип компьютерной угрозы
-        }
-    }
- */
-
 const patternSearchParameters = {            
     documentsId: [],
     documentsType: ["report"],
     // если заполнены оба поля 'created' и 'modified' то тогда для поиска по данным из обоих полей работает логика "ИЛИ"
     // значение "0001-01-01T00:00:00.000Z" для полей с датами эквивалентно значению пустого поля
-    created: { start: "0001-01-01T00:00:00.000Z", end: "0001-01-01T00:00:00.000Z" },
-    modified: { start: "0001-01-01T00:00:00.000Z", end: "0001-01-01T00:00:00.000Z" }, 
+    created: { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" },
+    modified: { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" }, 
     createdByRef: "",
     // specific_search_fields содержит специфичные поля объектов STIX (если для поиска используются НЕСКОЛЬКО таких объектов 
     // то срабатывает логика "ИЛИ").
@@ -192,11 +113,11 @@ const patternSearchParameters = {
             name: "",
             aliases: [],
             // интервал времени когда информация была обнаружена впервые 
-            firstSeen: { start: "0001-01-01T00:00:00.000Z", end: "0001-01-01T00:00:00.000Z" },
+            firstSeen: { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" },
             // интервал времени когда информация была обнаружена в последний раз 
-            lastSeen: { start: "0001-01-01T00:00:00.000Z", end: "0001-01-01T00:00:00.000Z" },
+            lastSeen: { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" },
             // равно или больше чем заданное пользователем время, когда отчет был опубликован 
-            published: "0001-01-01T00:00:00.000Z",
+            published: "1970-01-01T00:00:00.000+00:00", // при значении "1970-01-01T00:00:00.000+00:00" параметр не учитывается
             roles: [],
             country: "",
             city: "",
@@ -217,6 +138,7 @@ const patternSearchParameters = {
 const tzoffset = (new Date()).getTimezoneOffset() * 60000;
 const dateTimeStartTmp = new Date("2022-01-01 00:00:01"),
     dateTimeEndTmp = new Date();
+const defaultDateTime = "0001-01-01T00:00:00.000+00:00";
 
 export default function CreateSearchElementReport(props){
     let { 
@@ -294,7 +216,7 @@ export default function CreateSearchElementReport(props){
                 setSearchParameters(searchParametersTmp);
             },
             delFunc: (searchParametersTmp, elemName, elemNum) => {
-                searchParametersTmp.created = { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" };
+                searchParametersTmp.created = { start: defaultDateTime, end: defaultDateTime };
                 setSearchParameters(searchParametersTmp);
             },
         },
@@ -310,7 +232,7 @@ export default function CreateSearchElementReport(props){
                 setSearchParameters(searchParametersTmp);
             },
             delFunc: (searchParametersTmp, elemName, elemNum) => {
-                searchParametersTmp.modified = { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" };
+                searchParametersTmp.modified = { start: defaultDateTime, end: defaultDateTime };
                 setSearchParameters(searchParametersTmp);
             },
         },
@@ -374,7 +296,7 @@ export default function CreateSearchElementReport(props){
                 setSearchParameters(searchParametersTmp);
             },
             delFunc: (searchParametersTmp, elemName, elemNum) => {
-                searchParametersTmp.specificSearchFields[0].firstSeen = { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" };
+                searchParametersTmp.specificSearchFields[0].firstSeen = { start: defaultDateTime, end: defaultDateTime };
                 setSearchParameters(searchParametersTmp);
             },
         },
@@ -390,7 +312,7 @@ export default function CreateSearchElementReport(props){
                 setSearchParameters(searchParametersTmp);
             },
             delFunc: (searchParametersTmp, elemName, elemNum) => {
-                searchParametersTmp.specificSearchFields[0].lastSeen = { start: "0001-01-01T00:00:00.000+00:00", end: "0001-01-01T00:00:00.000+00:00" };
+                searchParametersTmp.specificSearchFields[0].lastSeen = { start: defaultDateTime, end: defaultDateTime };
                 setSearchParameters(searchParametersTmp);
             },
         },
@@ -403,7 +325,7 @@ export default function CreateSearchElementReport(props){
                 setSearchParameters(searchParametersTmp);
             },
             delFunc: (searchParametersTmp, elemName, elemNum) => {
-                searchParametersTmp.specificSearchFields[0].published = "0001-01-01T00:00:00.000+00:00";
+                searchParametersTmp.specificSearchFields[0].published = "1970-01-01T00:00:00.000+00:00";
                 setSearchParameters(searchParametersTmp);
             },
         },
@@ -534,165 +456,149 @@ export default function CreateSearchElementReport(props){
             listFunc[filterType].delFunc(_.cloneDeep(searchParameters), elemName, elemNum);
         };
 
-    return (<React.Fragment>
-        <Grid container direction="row" className="mt-3" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end">
-                <TextField
-                    id={"select-search-type"}
-                    select
-                    fullWidth
-                    label={"тип искомого значения"}
-                    value={selectedSearchItem}
-                    onChange={(obj) => setSelectedSearchItem(obj.target.value)} >
-                    <MenuItem key="key-search-type-value-empty" value="">пустое значение</MenuItem>
-                    {(searchParameters.documentsId.length > 0)?
-                        <MenuItem key={"key-search-type-value-documentId"} value="documentId">
+    return (<Paper elevation={3}>
+        <Box m={2} pb={2}>
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={4} justifyContent="flex-end">
+                    <TextField
+                        id={"select-search-type"}
+                        select
+                        fullWidth
+                        label={"тип искомого значения"}
+                        value={selectedSearchItem}
+                        onChange={(obj) => setSelectedSearchItem(obj.target.value)} >
+                        <MenuItem key="key-search-type-value-empty" value="">пустое значение</MenuItem>
+                        {(searchParameters.documentsId.length > 0)?
+                            <MenuItem key={"key-search-type-value-documentId"} value="documentId">
                             id документа
-                        </MenuItem>:
-                        (listSearchTypeElement.map((item, num) => <MenuItem key={`key-search-type-value-${item.name}-${num}`} value={item.name}>
-                            {item.description}
-                        </MenuItem>))}
-                </TextField>
+                            </MenuItem>:
+                            (listSearchTypeElement.map((item, num) => <MenuItem key={`key-search-type-value-${item.name}-${num}`} value={item.name}>
+                                {item.description}
+                            </MenuItem>))}
+                    </TextField>
+                </Grid>
+                <Grid item container md={6} justifyContent="flex-end">
+                    {(() => {
+                        if(selectedSearchItem === ""){
+                            return;
+                        } else if(selectedDateTimeElement.includes(selectedSearchItem)){
+                            return (<Grid container direction="row" className="mt-1" spacing={3}>
+                                <Grid item container md={6} justifyContent="flex-end">
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <DateTimePicker
+                                            variant="inline"
+                                            ampm={false}
+                                            value={dateTimeStart}
+                                            minDate={new Date("2000-01-01")}
+                                            maxDate={new Date()}
+                                            onChange={(date) => setDateTimeStart(date)}
+                                            format="dd.MM.yyyy HH:mm"
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                </Grid>
+                                <Grid item container md={6}>
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <DateTimePicker
+                                            variant="inline"
+                                            ampm={false}
+                                            value={dateTimeEnd}
+                                            minDate={new Date("2000-01-01")}
+                                            maxDate={new Date()}
+                                            onChange={(date) => setDateTimeEnd(date)}
+                                            format="dd.MM.yyyy HH:mm"
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                </Grid>
+                            </Grid>);
+                        } else if(selectedSearchItem === "published") {
+                            return (<Grid container direction="row" className="mt-1" spacing={3}>
+                                <Grid item container md={6} justifyContent="flex-end">
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <DateTimePicker
+                                            variant="inline"
+                                            ampm={false}
+                                            value={dateTimeStart}
+                                            minDate={new Date("2000-01-01")}
+                                            maxDate={new Date()}
+                                            onChange={(date) => setDateTimeStart(date)}
+                                            format="dd.MM.yyyy HH:mm"
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                </Grid>
+                            </Grid>);
+                        } else {
+                            return (<TextField
+                                id="id-search-field"
+                                label="поле поиска"
+                                value={searchField}
+                                //disabled={(typeof erInfo.source_name !== "undefined")}
+                                error={valuesIsInvalideSearchField}
+                                fullWidth={true}
+                                //helperText="обязательное для заполнения поле"
+                                onChange={handlerSearchField}
+                            />);
+                        }
+                    })()}             
+                </Grid>
+                <Grid item container md={2} justifyContent="flex-end" className="mt-3">
+                    <Button size="small" onClick={filterAdd} disabled={buttonAddFilterIsDisabled}>добавить фильтр</Button>
+                </Grid>
             </Grid>
-            <Grid item container md={6} justifyContent="flex-end">
-                {(() => {
-                    if(selectedSearchItem === ""){
-                        return;
-                    } else if(selectedDateTimeElement.includes(selectedSearchItem)){
-                        return (<Grid container direction="row" className="mt-1" spacing={3}>
-                            <Grid item container md={6} justifyContent="flex-end">
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DateTimePicker
-                                        variant="inline"
-                                        ampm={false}
-                                        value={dateTimeStart}
-                                        minDate={new Date("2000-01-01")}
-                                        maxDate={new Date()}
-                                        onChange={(date) => setDateTimeStart(date)}
-                                        format="dd.MM.yyyy HH:mm"
-                                    />
-                                </MuiPickersUtilsProvider>
-                            </Grid>
-                            <Grid item container md={6}>
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DateTimePicker
-                                        variant="inline"
-                                        ampm={false}
-                                        value={dateTimeEnd}
-                                        minDate={new Date("2000-01-01")}
-                                        maxDate={new Date()}
-                                        onChange={(date) => setDateTimeEnd(date)}
-                                        format="dd.MM.yyyy HH:mm"
-                                    />
-                                </MuiPickersUtilsProvider>
-                            </Grid>
-                        </Grid>);
-                    } else if(selectedSearchItem === "published") {
-                        return (<Grid container direction="row" className="mt-1" spacing={3}>
-                            <Grid item container md={6} justifyContent="flex-end">
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DateTimePicker
-                                        variant="inline"
-                                        ampm={false}
-                                        value={dateTimeStart}
-                                        minDate={new Date("2000-01-01")}
-                                        maxDate={new Date()}
-                                        onChange={(date) => setDateTimeStart(date)}
-                                        format="dd.MM.yyyy HH:mm"
-                                    />
-                                </MuiPickersUtilsProvider>
-                            </Grid>
-                        </Grid>);
-                    } else {
-                        return (<TextField
-                            id="id-search-field"
-                            label="поле поиска"
-                            value={searchField}
-                            //disabled={(typeof erInfo.source_name !== "undefined")}
-                            error={valuesIsInvalideSearchField}
-                            fullWidth={true}
-                            //helperText="обязательное для заполнения поле"
-                            onChange={handlerSearchField}
-                        />);
-                    }
-                })()}             
-            </Grid>
-            <Grid item container md={2} justifyContent="flex-end" className="mt-3">
-                <Button size="small" onClick={filterAdd} disabled={buttonAddFilterIsDisabled}>добавить фильтр</Button>
-            </Grid>
-        </Grid>
 
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={5}>
-                <TextField
-                    id={"select-search-decisions_made_computer_threat"}
-                    select
-                    fullWidth
-                    label={"принятое решение по компьютерной угрозе"}
-                    value={searchParameters.outsideSpecificationSearchFields.decisionsMadeComputerThreat}
-                    onChange={(obj) => { 
-                        let searchParametersTmp = _.cloneDeep(searchParameters);
-                        searchParametersTmp.outsideSpecificationSearchFields.decisionsMadeComputerThreat = obj.target.value;
-                        setSearchParameters(searchParametersTmp);
-                    }} >
-                    <MenuItem key="key-decisions_made_computer_threat-value-empty" value="">пустое значение</MenuItem>
-                    {listKeysTDMCT.map((item) => {
-                        return (<MenuItem key={listTypesDecisionsMadeComputerThreat[item].ID} value={item}>
-                            {listTypesDecisionsMadeComputerThreat[item].Description}
-                        </MenuItem>);
-                    })}
-                </TextField>
-            </Grid>
-            <Grid item container md={5}>
-                <TextField
-                    id={"select-search-computer_threat_type"}
-                    select
-                    fullWidth
-                    label={"тип компьютерной угрозы"}
-                    value={searchParameters.outsideSpecificationSearchFields.computerThreatType}
-                    onChange={(obj) => { 
-                        let searchParametersTmp = _.cloneDeep(searchParameters);
-                        searchParametersTmp.outsideSpecificationSearchFields.computerThreatType = obj.target.value;
-                        setSearchParameters(searchParametersTmp);
-                    }} >
-                    <MenuItem key="key-computer_threat_type-value-empty" value="">пустое значение</MenuItem>
-                    {listKeysTCT.map((item) => {
-                        return (<MenuItem key={listTypesComputerThreat[item].ID} value={item}>
-                            {listTypesComputerThreat[item].Description}
-                        </MenuItem>);
-                    })}
-                </TextField>
-            </Grid>
-            <Grid item container md={2} justifyContent="flex-end" className="mt-3">
-                <Button
-                    size="small"
-                    color="secondary"
-                    style={{ color: red[500] }}
-                    //startIcon={<AddIcon style={{ color: green[500] }} />}
-                    //disabled={buttonIsDisabled}
-                    onClick={() => {
-                        console.log(searchParameters);
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={5}>
+                    <TextField
+                        id={"select-search-decisions_made_computer_threat"}
+                        select
+                        fullWidth
+                        label={"принятое решение по компьютерной угрозе"}
+                        value={searchParameters.outsideSpecificationSearchFields.decisionsMadeComputerThreat}
+                        onChange={(obj) => { 
+                            let searchParametersTmp = _.cloneDeep(searchParameters);
+                            searchParametersTmp.outsideSpecificationSearchFields.decisionsMadeComputerThreat = obj.target.value;
+                            setSearchParameters(searchParametersTmp);
+                        }} >
+                        <MenuItem key="key-decisions_made_computer_threat-value-empty" value="">пустое значение</MenuItem>
+                        {listKeysTDMCT.map((item) => {
+                            return (<MenuItem key={listTypesDecisionsMadeComputerThreat[item].ID} value={item}>
+                                {listTypesDecisionsMadeComputerThreat[item].Description}
+                            </MenuItem>);
+                        })}
+                    </TextField>
+                </Grid>
+                <Grid item container md={5}>
+                    <TextField
+                        id={"select-search-computer_threat_type"}
+                        select
+                        fullWidth
+                        label={"тип компьютерной угрозы"}
+                        value={searchParameters.outsideSpecificationSearchFields.computerThreatType}
+                        onChange={(obj) => { 
+                            let searchParametersTmp = _.cloneDeep(searchParameters);
+                            searchParametersTmp.outsideSpecificationSearchFields.computerThreatType = obj.target.value;
+                            setSearchParameters(searchParametersTmp);
+                        }} >
+                        <MenuItem key="key-computer_threat_type-value-empty" value="">пустое значение</MenuItem>
+                        {listKeysTCT.map((item) => {
+                            return (<MenuItem key={listTypesComputerThreat[item].ID} value={item}>
+                                {listTypesComputerThreat[item].Description}
+                            </MenuItem>);
+                        })}
+                    </TextField>
+                </Grid>
+                <Grid item container md={2} justifyContent="flex-end" className="mt-3">
+                    <Button
+                        size="small"
+                        color="secondary"
+                        style={{ color: red[500] }}
+                        startIcon={<SearchIcon style={{ color: red[500] }} />}
+                        //disabled={buttonIsDisabled}
+                        onClick={() => {
+                            console.log(searchParameters);
 
-                        handlerSendSearchRequest(searchParameters);
+                            handlerSendSearchRequest(searchParameters);
 
-                        /**
-     * 
-     * Похоже что нужно пробрасывать данные о заданных шаблонах фильтрации в createPageReport, потому что на странице PageReport нужно
-     * иметь возможность обновлять данные в таблице с помощью пагинаторов, для этого нужно сохранить заданные параметры поиска. Может
-     * быть через кнопку ПОИСК и вспомогательную функцию пробрасывать параметры поиска на старницу PageReport?
-     * И еще, может быть визуализировать, для пользователя, параметры поиска, до тех пор пока они не будут удалены? 
-     * 
-     */
-
-
-                        /**
-                         * 
-                         * Какие то проблеммы с поиском, в том числе и без параметров, вместо 34 объектов Report находится только 31
-                         * объекты опубликованные не находятся!!!!
-                         * 
-                         */
-
-                        /*let searchReguest = {
+                            /*let searchReguest = {
                             paginateParameters: {
                                 maxPartSize: 30,
                                 currentPartNumber: 1,
@@ -701,24 +607,25 @@ export default function CreateSearchElementReport(props){
                             searchParameters: searchParameters,
                         };*/
 
-                        //запрос краткой информации (количество) по заданным параметрам
-                        //socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
+                            //запрос краткой информации (количество) по заданным параметрам
+                            //socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
 
-                        //запрос полной информации по заданным параметрам
-                        //socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
+                            //запрос полной информации по заданным параметрам
+                            //socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
 
-                        setSearchParameters(patternSearchParameters);
-                    }}>
+                            setSearchParameters(patternSearchParameters);
+                        }}>
                         поиск
-                </Button>
+                    </Button>
+                </Grid>
             </Grid>
-        </Grid>
 
-        <CreatePatternSearchFilters 
-            patternFilters={searchParameters} 
-            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
-            handlerDeleteFilters={filterDelete} />
-    </React.Fragment>);
+            <CreatePatternSearchFilters 
+                patternFilters={searchParameters} 
+                listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
+                handlerDeleteFilters={filterDelete} />
+        </Box>
+    </Paper>);
 }
 
 CreateSearchElementReport.propTypes = {

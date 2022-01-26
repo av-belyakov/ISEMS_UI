@@ -264,7 +264,7 @@ export default function CreatePatternSearchFilters(props){
             }
 
             //равно или больше чем заданное пользователем время, когда отчет был опубликован
-            if(patternFilters.specificSearchFields[0].published !== "0001-01-01T00:00:00.000+00:00"){
+            if(patternFilters.specificSearchFields[0].published !== "1970-01-01T00:00:00.000+00:00"){
                 listFilter.push(<Chip
                     key={"key_chip_data_published"}
                     label={`опубликован c ${helpers.convertDateFromString(patternFilters.specificSearchFields[0].published, { monthDescription: "long", dayDescription: "numeric" })} по настоящее время`}

@@ -2,6 +2,7 @@ import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
     Avatar,
+    Box,
     Chip,
     Table, 
     TableBody, 
@@ -180,8 +181,8 @@ export default class CreateMainTableForReport extends React.Component {
     }
 
     showDocumentCount(){
-        return (<Grid container direction="row">
-            <Grid item container md={8} justifyContent="flex-start" className="text-left pb-2">
+        return (<Grid container direction="row" className="pb-2">
+            <Grid item container md={8} justifyContent="flex-start">
                 <i>{`Всего документов найдено: ${this.state.countSearchReports}`}</i>
             </Grid>
             <Grid item container md={4} justifyContent="flex-end">
@@ -193,19 +194,20 @@ export default class CreateMainTableForReport extends React.Component {
     }
 
     render(){
-        return (<React.Fragment>
-            <hr/>
-            {this.showDocumentCount.call(this)}
-            <CreateTable 
-                listReports={this.state.listReports} 
-                countSearchReports={this.state.countSearchReports} 
-                numCurrentPagePagination={this.state.numCurrentPagePagination}
-                countShowReportsPerPage={this.state.countShowReportsPerPage} 
-                handlerTableOnClick={this.handlerTableOnClick}
-                handlerOnPageChange={this.handlerOnPageChange}
-                handlerOnRowsPerPageChange={this.handlerOnRowsPerPageChange}
-                getChipForGroups={this.getChipForGroups} />
-        </React.Fragment>);
+        return (<Paper elevation={3}>
+            <Box m={2} mb={2} pt={2} pb={2}>
+                {this.showDocumentCount.call(this)}
+                <CreateTable 
+                    listReports={this.state.listReports} 
+                    countSearchReports={this.state.countSearchReports} 
+                    numCurrentPagePagination={this.state.numCurrentPagePagination}
+                    countShowReportsPerPage={this.state.countShowReportsPerPage} 
+                    handlerTableOnClick={this.handlerTableOnClick}
+                    handlerOnPageChange={this.handlerOnPageChange}
+                    handlerOnRowsPerPageChange={this.handlerOnRowsPerPageChange}
+                    getChipForGroups={this.getChipForGroups} />
+            </Box>
+        </Paper>);
     }
 }
 
