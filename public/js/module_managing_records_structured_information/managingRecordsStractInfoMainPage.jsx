@@ -156,7 +156,7 @@ class CreateMainPage extends React.Component {
         this.menuItem = {
             "/security_event_management?name=reports": { 
                 "num": 0, 
-                "label": "доклады", 
+                "label": "отчёты", 
                 "title": "совокупность данных об угрозах, сосредоточенных на одной или нескольких темах" },
             "/security_event_management?name=observed_data": { 
                 "num": 1, 
@@ -196,8 +196,8 @@ class CreateMainPage extends React.Component {
                 "title": "формирование файлов итоговых документов" },
             "/security_event_management?name=reporting_materials": { 
                 "num": 10, 
-                "label": "отчетные материалы", 
-                "title": "формирование файлов отчетных материалов" },
+                "label": "сводки", 
+                "title": "формирование файлов-сводок" },
         };
 
         this.handlerEvents = this.handlerEvents.call(this);
@@ -234,7 +234,7 @@ class CreateMainPage extends React.Component {
             }
         });
 
-        //обработка события связанного с приемом списка групп которым разрешен доступ к данному докладу
+        //обработка события связанного с приемом списка групп которым разрешен доступ к данному Отчёту
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
             if((data.information === null) || (typeof data.information === "undefined")){
                 return;

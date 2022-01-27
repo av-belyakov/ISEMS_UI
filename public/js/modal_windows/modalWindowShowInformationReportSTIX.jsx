@@ -136,7 +136,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     handlerEvents(){
-        //обработка события связанного с приемом списка групп которым разрешен доступ к данному докладу
+        //обработка события связанного с приемом списка групп которым разрешен доступ к данному Отчёту
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
             if((data.information === null) || (typeof data.information === "undefined")){
                 return;
@@ -1133,7 +1133,7 @@ function GetListObjectRefs(props){
 
     return (<React.Fragment>
         <Grid container direction="row" className="mt-4">
-            <Grid item md={12}><span className="text-muted">Идентификаторы объектов связанных с Докладом</span></Grid>
+            <Grid item md={12}><span className="text-muted">Идентификаторы объектов связанных с Отчётом</span></Grid>
         </Grid>
 
         <Grid container direction="row" className="pb-2">

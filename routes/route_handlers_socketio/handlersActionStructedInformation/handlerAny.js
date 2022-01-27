@@ -15,7 +15,7 @@ const mongodbQueryProcessor = require("../../../middleware/mongodbQueryProcessor
 const checkUserAuthentication = require("../../../libs/check/checkUserAuthentication");
 
 /**
- * Обработчик запроса для добавления разрешения на просмотр доклада непривилегированной группе
+ * Обработчик запроса для добавления разрешения на просмотр Отчёта непривилегированной группе
  * 
  * @param {*} socketIo 
  * @param {*} data 
@@ -107,7 +107,7 @@ module.exports.allowGroupAccessReport = function(socketIo, data){
 };
 
 /**
- * Обработчик запроса для отзыва разрешения на просмотр доклада непривилегированной группе
+ * Обработчик запроса для отзыва разрешения на просмотр Отчёта непривилегированной группе
  * 
  * @param {*} socketIo 
  * @param {*} data 

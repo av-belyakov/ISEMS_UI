@@ -308,7 +308,7 @@ let helpers = {
             },
             "report": {
                 "link": "report-square-dark-300-dpi.png",
-                "description": "Доклад (Report DO STIX)",
+                "description": "Отчёт (Report DO STIX)",
             },
             "sighting": {
                 "link": "sighting-square-dark-300-dpi.png",

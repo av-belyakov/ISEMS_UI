@@ -277,7 +277,7 @@ module.exports.getCountStatusesDecisionsMadeComputerThreats = function(socketIo,
 };
 
 /**
- * Обработчик запроса для получения списка групп которым доступен доклад с определенным ID
+ * Обработчик запроса для получения списка групп которым доступен Отчёт с определенным ID
  * 
  * @param {*} socketIo 
  * @param {*} data 
@@ -538,7 +538,7 @@ module.exports.getListTypesDecisionsMadeComputerThreat = function(socketIo, data
 };
 
 /**
- * Обработчик запроса для получения краткой информации о группах, которым доступен просмотр докладов с определенным набором ID
+ * Обработчик запроса для получения краткой информации о группах, которым доступен просмотр Отчётов с определенным набором ID
  * 
  * @param {*} socketIo - дескриптор websocket соединения
  * @param {*} data - данные 

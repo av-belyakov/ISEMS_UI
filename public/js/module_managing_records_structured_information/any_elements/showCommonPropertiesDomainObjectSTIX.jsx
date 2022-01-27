@@ -161,7 +161,7 @@ export default function ShowCommonPropertiesDomainObjectSTIX(props) {
 
         {((typeof reportInfo.created_by_ref !== "undefined") && (reportInfo.created_by_ref !== null) && (reportInfo.created_by_ref.length !== 0)) ? 
             <Grid container direction="row">
-                <Grid item md={6}><span className="text-muted">идентификатор источника создавшего доклад</span>:</Grid>
+                <Grid item md={6}><span className="text-muted">идентификатор источника создавшего Отчёт</span>:</Grid>
                 <Grid item md={6}><i>{reportInfo.created_by_ref}</i></Grid>
             </Grid> : ""}
 

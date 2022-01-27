@@ -43,7 +43,7 @@ const listSearchTypeElement = [
     },
     {
         name: "createdByRef",
-        description: "идентификатор источника создавшего доклад",
+        description: "идентификатор источника создавшего Отчёт",
     },
     {
         name: "name",
@@ -63,7 +63,7 @@ const listSearchTypeElement = [
     },
     {
         name: "published",
-        description: "дата и время публикации Доклада (начиная от заданной даты до настоящего времени)",
+        description: "дата и время публикации Отчёта (начиная от заданной даты до настоящего времени)",
     },
     {
         name: "roles",

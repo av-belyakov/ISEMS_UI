@@ -821,7 +821,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
 
         {((typeof reportInfo.created_by_ref !== "undefined") && (reportInfo.created_by_ref !== null) && (reportInfo.created_by_ref.length !== 0)) ? 
             <Grid container direction="row" className="mt-1 pl-4">
-                <Grid item md={6}><span className="text-muted">идентификатор источника создавшего доклад</span>:</Grid>
+                <Grid item md={6}><span className="text-muted">идентификатор источника создавшего Отчёт</span>:</Grid>
                 <Grid item md={6}>
                     <TextField size="small" defaultValue={reportInfo.created_by_ref} disabled fullWidth/>
                 </Grid>

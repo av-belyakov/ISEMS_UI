@@ -55,8 +55,8 @@ export default class CreateWidgetsPageReport extends React.Component {
         super(props);
 
         this.state = {
-            openReports: { num: 0, show: false }, //количество докладов ожидающих обработки (не опубликованных)
-            publishedReports: { num: 0, show: false }, //количество опубликованных докладов
+            openReports: { num: 0, show: false }, //количество Отчётов ожидающих обработки (не опубликованных)
+            publishedReports: { num: 0, show: false }, //количество опубликованных Отчётов
             successfullyImplementedComputerThreat: { num: 0, show: false }, //успешно реализованные компьютерные угрозы
             computerThreatNotSuccessful: { num: 0, show: false }, //компьютерные угрозы не являющиеся успешными
             unconfirmedComputerThreat: { num: 0, show: false }, //не подтвердившиеся компьютерные угрозы
@@ -164,7 +164,7 @@ export default class CreateWidgetsPageReport extends React.Component {
                             avatarText="д"
                             text="обрабатываемые"
                             show={this.state.openReports.show}
-                            titleText="количество докладов ожидающих обработки" />
+                            titleText="количество Отчётов ожидающих обработки" />
                     </Col>
                     <Col md={2}>
                         <CardElement 
@@ -173,7 +173,7 @@ export default class CreateWidgetsPageReport extends React.Component {
                             avatarText="д"
                             text="опубликованные"
                             show={this.state.publishedReports.show}
-                            titleText="количество опубликованных докладов" />
+                            titleText="количество опубликованных Отчётов" />
                     </Col>
                     <Col md={2}>
                         <CardElement 
@@ -182,7 +182,7 @@ export default class CreateWidgetsPageReport extends React.Component {
                             avatarText="д"
                             text="всего"
                             show={showNumTotalReports}
-                            titleText="общее количество докладов" />
+                            titleText="общее количество Отчётов" />
                     </Col>
                     <Col md={2}>
                         <CardElement 

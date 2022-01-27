@@ -287,7 +287,7 @@ export default function ModalWindowAddReportSTIX(props) {
 
             setReportInfo(reportInfoTmp);
         },
-        //пункт "Идентификаторы объектов связанных с Докладом"
+        //пункт "Идентификаторы объектов связанных с Отчётом"
         handlerDeleteObjectRef = (key) => {
             let listObjectInfoTmp = _.cloneDeep(reportInfo);
             let refElemTmp = listObjectInfoTmp[newReportId].object_refs.splice(key, 1);
@@ -455,7 +455,7 @@ export default function ModalWindowAddReportSTIX(props) {
 
             //так как при выполнении данной функции мы добавляем ссылку на новый или существующий STIX объект
             // то мы можем утверждать что ссылка на объект в параметре obj.object_ref уже есть, а значит можно
-            // разрешить сохранение нового объекта типа Доклад
+            // разрешить сохранение нового объекта типа Отчёт
             setButtonReportSave(false);
 
         },
@@ -480,7 +480,7 @@ export default function ModalWindowAddReportSTIX(props) {
                     }} aria-label="close">
                         <CloseIcon />
                     </IconButton>
-                    <Typography variant="h6" className={classes.title}>{`Новый доклад (${newReportId})`}</Typography>
+                    <Typography variant="h6" className={classes.title}>{`Новый отчёт (${newReportId})`}</Typography>
                     <Button 
                         size="small"
                         disabled={buttonReportSave} 
@@ -529,7 +529,7 @@ export default function ModalWindowAddReportSTIX(props) {
                 </Row>
 
                 <Row className="mt-4">
-                    <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с Докладом</span></Col>
+                    <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с Отчётом</span></Col>
                 </Row>
 
                 <Row>
@@ -537,7 +537,7 @@ export default function ModalWindowAddReportSTIX(props) {
                         {(reportInfo[newReportId].object_refs.length === 0)? 
                             <Typography variant="caption">
                                 <span  style={{ color: red[800] }}>
-                                    * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Докладом
+                                    * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Отчётом
                                 </span>
                             </Typography>:
                             reportInfo[newReportId].object_refs.map((item, key) => {

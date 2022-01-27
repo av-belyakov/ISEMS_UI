@@ -13,7 +13,7 @@ export function CreateButtonNewReport(props){
         startIcon={<AddIcon style={{ color: green[500] }} />}
         disabled={buttonIsDisabled}
         onClick={handlerShowModalWindow}>
-            создать новый доклад
+            создать новый Отчёт
     </Button>);
 }
 

@@ -19,7 +19,7 @@ const checkUserAuthentication = require("../../../libs/check/checkUserAuthentica
 const { isNull } = require("lodash");
 
 /**
- * Обработчик запроса для поиска информации на странице 'доклады' (STIX тип 'reports')
+ * Обработчик запроса для поиска информации на странице 'Отчёты' (STIX тип 'reports')
  * 
  * @param {*} socketIo - дескриптор websocket соединения
  * @param {*} data - данные 
@@ -123,7 +123,7 @@ module.exports.sendSearchRequestPageReport = function(socketIo, data){
 };
 
 /**
- * Обработчик запроса для получения количества найденной информации на странице 'доклады' (STIX тип 'reports')
+ * Обработчик запроса для получения количества найденной информации на странице 'Отчёты' (STIX тип 'reports')
  * 
  * @param {*} socketIo - дескриптор websocket соединения
  * @param {*} data - данные 
@@ -248,7 +248,7 @@ module.exports.sendSearchRequestCountFoundElemPageReport = function(socketIo, da
 };
 
 /**
- * Обработчик запроса для получения количества найденной информации на странице 'доклады' (STIX тип 'reports')
+ * Обработчик запроса для получения количества найденной информации на странице 'Отчёты' (STIX тип 'reports')
  * 
  * @param {*} socketIo - дескриптор websocket соединения
  * @param {*} data - данные 
@@ -315,7 +315,7 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
             if(!result.isPrivilegedGroup){
                 //не привилегированная группа
                 return new Promise((resolve, reject) => {
-                    //проверяем разрешен ли доступ группы к данному докладу
+                    //проверяем разрешен ли доступ группы к данному Отчёту
                     mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
                         query: { group_name: result.userGroup, object_id: elemId },
                         select: { _id: 0, __v: 0 }
@@ -325,7 +325,7 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
                         }
 
                         if(isNull(queryResult)){
-                            //доступ к докладу данной группе запрещен
+                            //доступ к Отчёту данной группе запрещен
                             return resolve();
                         }
 
@@ -364,7 +364,7 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
 
             //привилегированная группа
             async.parallel([
-                //запрос списка групп которым доступен доступ к данному докладу
+                //запрос списка групп которым доступен доступ к данному Отчёту
                 (callback) => {
                     mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
                         query: { object_id: elemId },
@@ -385,7 +385,7 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
                         });    
                     });
                 },
-                //запрос всей информации по докладу (тип Report STIX)
+                //запрос всей информации по Отчёту (тип Report STIX)
                 (callback) => {
                     if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
                         return callback(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
@@ -436,7 +436,7 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
 };
 
 /**
- * Обработчик запроса для получения количества найденной информации на странице 'доклады' (STIX тип 'reports')
+ * Обработчик запроса для получения количества найденной информации на странице 'Отчёты' (STIX тип 'reports')
  * 
  * @param {*} socketIo - дескриптор websocket соединения
  * @param {*} data - данные 
@@ -513,7 +513,7 @@ module.exports.sendSearchRequestGetSTIXObjectForId = function(socketIo, data){
                         resolve();
                     }
                 
-                    //проверяем разрешен ли доступ группы к STIX объектам, родительским докладом которых является Доклад с id data.arguments.parentObjectId
+                    //проверяем разрешен ли доступ группы к STIX объектам, родительским Отчётом которых является Отчёт с id data.arguments.parentObjectId
                     mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
                         query: { group_name: result.userGroup, object_id: data.arguments.parentObjectId },
                         select: { _id: 0, __v: 0 }
@@ -525,7 +525,7 @@ module.exports.sendSearchRequestGetSTIXObjectForId = function(socketIo, data){
                         console.log(`func '${funcName}', queryResult: '${queryResult}'`);
 
                         if(isNull(queryResult)){
-                        //доступ к докладу данной группе запрещен
+                        //доступ к Отчёту данной группе запрещен
                             return resolve();
                         }
 
