@@ -4,21 +4,29 @@ import React from "react";
 import {
     Box,
     Button,
+    Divider,
+    OutlinedInput,
+    FilledInput,
     Grid,
     Paper,
     Typography, 
     TextField, 
     MenuItem,
+    InputBase,
+    IconButton,
 } from "@material-ui/core";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import SearchIcon from "@material-ui/icons/Search";
-import { red } from "@material-ui/core/colors";
+import { red, green } from "@material-ui/core/colors";
+import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import validatorjs from "validatorjs";
 
 import { helpers } from "../../common_helpers/helpers";
 import CreatePatternSearchFilters from "./createPatternSearchFilters.jsx";
+import { getDropdownMenuPlacement } from "react-bootstrap/esm/DropdownMenu";
 
 const listSearchTypeElement = [
     {
@@ -140,6 +148,26 @@ const dateTimeStartTmp = new Date("2022-01-01 00:00:01"),
     dateTimeEndTmp = new Date();
 const defaultDateTime = "0001-01-01T00:00:00.000+00:00";
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        padding: "2px 4px",
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
+    },
+    input: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    iconButton: {
+        padding: 10,
+    },
+    divider: {
+        height: 28,
+        margin: 4,
+    },
+}));
+
 export default function CreateSearchElementReport(props){
     let { 
         userPermissions,
@@ -157,6 +185,8 @@ export default function CreateSearchElementReport(props){
     let [ dateTimeStart, setDateTimeStart ] = React.useState(dateTimeStartTmp);
     let [ selectedSearchItem, setSelectedSearchItem ] = React.useState("");
     let [ searchParameters, setSearchParameters ] = React.useState(patternSearchParameters);
+
+    const classes = useStyles();
 
     let supportFuncAddValue = (searchParametersTmp) => {
             let myValue = new Set(searchParametersTmp.specificSearchFields[0].value);
@@ -436,6 +466,7 @@ export default function CreateSearchElementReport(props){
     }
 
     let buttonAddFilterIsDisabled = ((searchField.length === 0) || (selectedSearchItem === "") || (valuesIsInvalideSearchField));
+    let buttonSearchIsDisabled = _.isEqual(searchParameters, patternSearchParameters);
 
     if((selectedDateTimeElement.includes(selectedSearchItem) || (selectedSearchItem === "published"))){
         buttonAddFilterIsDisabled = false;
@@ -459,7 +490,7 @@ export default function CreateSearchElementReport(props){
     return (<Paper elevation={3}>
         <Box m={2} pb={2}>
             <Grid container direction="row" spacing={3}>
-                <Grid item container md={4} justifyContent="flex-end">
+                <Grid item container md={3}>
                     <TextField
                         id={"select-search-type"}
                         select
@@ -469,21 +500,20 @@ export default function CreateSearchElementReport(props){
                         onChange={(obj) => setSelectedSearchItem(obj.target.value)} >
                         <MenuItem key="key-search-type-value-empty" value="">пустое значение</MenuItem>
                         {(searchParameters.documentsId.length > 0)?
-                            <MenuItem key={"key-search-type-value-documentId"} value="documentId">
-                            id документа
-                            </MenuItem>:
+                            <MenuItem key={"key-search-type-value-documentId"} value="documentId">id документа</MenuItem>:
                             (listSearchTypeElement.map((item, num) => <MenuItem key={`key-search-type-value-${item.name}-${num}`} value={item.name}>
                                 {item.description}
                             </MenuItem>))}
                     </TextField>
                 </Grid>
-                <Grid item container md={6} justifyContent="flex-end">
+
+                <Grid item container md={5}>
                     {(() => {
                         if(selectedSearchItem === ""){
                             return;
                         } else if(selectedDateTimeElement.includes(selectedSearchItem)){
                             return (<Grid container direction="row" className="mt-1" spacing={3}>
-                                <Grid item container md={6} justifyContent="flex-end">
+                                <Grid item container md={4} justifyContent="flex-end">
                                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <DateTimePicker
                                             variant="inline"
@@ -496,7 +526,8 @@ export default function CreateSearchElementReport(props){
                                         />
                                     </MuiPickersUtilsProvider>
                                 </Grid>
-                                <Grid item container md={6}>
+
+                                <Grid item container md={4} justifyContent="flex-start">
                                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <DateTimePicker
                                             variant="inline"
@@ -508,6 +539,15 @@ export default function CreateSearchElementReport(props){
                                             format="dd.MM.yyyy HH:mm"
                                         />
                                     </MuiPickersUtilsProvider>
+                                </Grid>
+                                <Grid item container md={4} justifyContent="flex-end">
+                                    <Button 
+                                        size="small" 
+                                        onClick={filterAdd} 
+                                        //style={{ color: green[400] }}
+                                    >
+                                        добавить время
+                                    </Button>
                                 </Grid>
                             </Grid>);
                         } else if(selectedSearchItem === "published") {
@@ -525,33 +565,51 @@ export default function CreateSearchElementReport(props){
                                         />
                                     </MuiPickersUtilsProvider>
                                 </Grid>
+
+                                <Grid item container md={6} justifyContent="flex-start">
+                                    <Button 
+                                        size="small" 
+                                        onClick={filterAdd} 
+                                        //style={{ color: green[400] }}
+                                    >
+                                        добавить время
+                                    </Button>
+                                </Grid>
                             </Grid>);
                         } else {
-                            return (<TextField
-                                id="id-search-field"
-                                label="поле поиска"
-                                value={searchField}
-                                //disabled={(typeof erInfo.source_name !== "undefined")}
-                                error={valuesIsInvalideSearchField}
-                                fullWidth={true}
-                                //helperText="обязательное для заполнения поле"
-                                onChange={handlerSearchField}
-                            />);
+                            return (<Grid container direction="row" className="mt-3">
+                                <Grid item container md={12}>
+                                    <TextField
+                                        className={classes.input}
+                                        placeholder="поле поиска"
+                                        fullWidth={true}
+                                        value={searchField}
+                                        error={valuesIsInvalideSearchField}
+                                        onChange={handlerSearchField}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <IconButton 
+                                                    size="small"
+                                                    onClick={filterAdd} 
+                                                    disabled={buttonAddFilterIsDisabled}
+                                                    aria-label="добавить фильтр">
+                                                    <AddCircleIcon style={{ color: green[400] }} />
+                                                </IconButton>
+                                            )
+                                        }}
+                                    />
+                                </Grid>
+                            </Grid>);
                         }
-                    })()}             
+                    })()}  
                 </Grid>
-                <Grid item container md={2} justifyContent="flex-end" className="mt-3">
-                    <Button size="small" onClick={filterAdd} disabled={buttonAddFilterIsDisabled}>добавить фильтр</Button>
-                </Grid>
-            </Grid>
-
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={5}>
+        
+                <Grid item container md={2}>
                     <TextField
                         id={"select-search-decisions_made_computer_threat"}
                         select
                         fullWidth
-                        label={"принятое решение по компьютерной угрозе"}
+                        label={"принятое решение"}
                         value={searchParameters.outsideSpecificationSearchFields.decisionsMadeComputerThreat}
                         onChange={(obj) => { 
                             let searchParametersTmp = _.cloneDeep(searchParameters);
@@ -566,12 +624,13 @@ export default function CreateSearchElementReport(props){
                         })}
                     </TextField>
                 </Grid>
-                <Grid item container md={5}>
+        
+                <Grid item container md={2}>
                     <TextField
                         id={"select-search-computer_threat_type"}
                         select
                         fullWidth
-                        label={"тип компьютерной угрозы"}
+                        label={"тип ком. угрозы"}
                         value={searchParameters.outsideSpecificationSearchFields.computerThreatType}
                         onChange={(obj) => { 
                             let searchParametersTmp = _.cloneDeep(searchParameters);
@@ -586,32 +645,33 @@ export default function CreateSearchElementReport(props){
                         })}
                     </TextField>
                 </Grid>
-                <Grid item container md={2} justifyContent="flex-end" className="mt-3">
+            </Grid>
+
+            <CreatePatternSearchFilters 
+                patternFilters={searchParameters} 
+                listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
+                handlerDeleteFilters={filterDelete} />
+
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={12} justifyContent="flex-end">
                     <Button
                         size="small"
                         color="secondary"
-                        style={{ color: red[500] }}
-                        startIcon={<SearchIcon style={{ color: red[500] }} />}
-                        //disabled={buttonIsDisabled}
+                        style={{ color: red[400] }}
+                        startIcon={<SearchIcon style={{ color: red[400] }} />}
+                        disabled={buttonSearchIsDisabled}
                         onClick={() => {
                             console.log(searchParameters);
 
                             handlerSendSearchRequest(searchParameters);
 
-                            /*let searchReguest = {
-                            paginateParameters: {
-                                maxPartSize: 30,
-                                currentPartNumber: 1,
-                            },
-                            sortableField: "data_created",
-                            searchParameters: searchParameters,
-                        };*/
-
-                            //запрос краткой информации (количество) по заданным параметрам
-                            //socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
-
-                            //запрос полной информации по заданным параметрам
-                            //socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
+                            /**
+                             * Нужно сделать чтобы параметры фильтрации не очищались, когда полученны результаты фильтрации
+                             * добавить кнупку ОЧИСТИТЬ, а кнопку ПОИСК сделать не активной. Кнопка ОЧИСТИТЬ должна исчезнуть
+                             * вместе с параметрами фильтрации, кнопка ПОИСК должна остатся не активной до тех пор пока не будут
+                             * добавлены новые параметры фильтрации. Кнопка ОЧИСТИТЬ исчезает при добавлении новых параметров,
+                             * кнопка ПОИСК становится активной. 
+                             */
 
                             setSearchParameters(patternSearchParameters);
                         }}>
@@ -619,11 +679,6 @@ export default function CreateSearchElementReport(props){
                     </Button>
                 </Grid>
             </Grid>
-
-            <CreatePatternSearchFilters 
-                patternFilters={searchParameters} 
-                listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
-                handlerDeleteFilters={filterDelete} />
         </Box>
     </Paper>);
 }
