@@ -358,7 +358,7 @@ export default function CreatePatternSearchFilters(props){
         listFilter.push(listOutsideSpecificationSearchFields);
     }         
 
-    return (<Grid container direction="row" className="mt-3">
+    return (<Grid container direction="row" className="mt-3 mb-3">
         <Grid item container md={12}>
             {listFilter.map((item, num) => {
                 return (<span key={`key_filter_element_${num}`}>{item}{getOperatorANDChild(num, listFilter.length)}</span>);

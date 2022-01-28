@@ -1,5 +1,4 @@
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 import { 
     Avatar,
     Box,
@@ -9,12 +8,14 @@ import {
     TableCell, 
     TableContainer, 
     TableHead, 
-    TableRow, 
-    Tooltip, 
+    TableRow,
     TablePagination, 
+    Tooltip, 
+    Typography, 
     Grid,
     Paper, 
     LinearProgress } from "@material-ui/core";
+import { red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
@@ -57,6 +58,7 @@ export default class CreateMainTableForReport extends React.Component {
             countSearchReports: 0,
             numCurrentPagePagination: 0,
             countShowReportsPerPage: 10,
+            isShowProgress: true,
         };
 
         this.getChipForGroups = this.getChipForGroups.bind(this);
@@ -72,20 +74,23 @@ export default class CreateMainTableForReport extends React.Component {
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
             if(data.section === "send search request, count found elem, table page report"){
 
-                console.log("func 'createMainTableForReport', handlerEvents");
-                console.log(data);
+                //console.log("func 'createMainTableForReport', handlerEvents");
+                //console.log(data);
 
                 if(!data.information.is_successful){
                     return;
                 }
 
-                this.setState({ countSearchReports: data.information.additional_parameters.number_documents_found });
+                this.setState({ 
+                    isShowProgress: false,
+                    countSearchReports: data.information.additional_parameters.number_documents_found 
+                });
             }
 
             if(data.section === "send search request, table page report"){
                 
-                console.log("func 'createMainTableForReport', handlerEvents");
-                console.log(data);
+                //console.log("func 'createMainTableForReport', handlerEvents");
+                //console.log(data);
 
                 if((typeof data.information === "undefined") || (data.information === null)){
                     return;
@@ -199,7 +204,8 @@ export default class CreateMainTableForReport extends React.Component {
                 {this.showDocumentCount.call(this)}
                 <CreateTable 
                     listReports={this.state.listReports} 
-                    countSearchReports={this.state.countSearchReports} 
+                    isShowProgress={this.state.isShowProgress}
+                    countSearchReports={this.state.countSearchReports}
                     numCurrentPagePagination={this.state.numCurrentPagePagination}
                     countShowReportsPerPage={this.state.countShowReportsPerPage} 
                     handlerTableOnClick={this.handlerTableOnClick}
@@ -225,6 +231,7 @@ CreateMainTableForReport.propTypes = {
 function CreateTable(props){
     let { 
         listReports, 
+        isShowProgress,
         countSearchReports, 
         numCurrentPagePagination, 
         countShowReportsPerPage,
@@ -241,8 +248,16 @@ function CreateTable(props){
             handlerOnRowsPerPageChange(data.target.value);
         };
 
-    if(listReports.length === 0){
+    if(isShowProgress){
         return <LinearProgress />;
+    }
+
+    if(countSearchReports === 0){
+        return (<Grid container direction="row">
+            <Grid item container md={12} justifyContent="center">
+                <Typography variant="overline" style={{ color: red[400] }}>по заданным параметрам  отчётов не найдено</Typography>
+            </Grid>
+        </Grid>);
     }
 
     return (<Paper className={classes.root}>
@@ -323,6 +338,7 @@ function CreateTable(props){
 
 CreateTable.propTypes = {
     listReports: PropTypes.array.isRequired,
+    isShowProgress: PropTypes.bool.isRequired,
     countSearchReports: PropTypes.number,
     numCurrentPagePagination: PropTypes.number,
     countShowReportsPerPage: PropTypes.number,

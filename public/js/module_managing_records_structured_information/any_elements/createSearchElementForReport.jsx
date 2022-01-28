@@ -18,8 +18,9 @@ import {
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import SearchIcon from "@material-ui/icons/Search";
-import { red, green } from "@material-ui/core/colors";
+import { blue, red, green } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import validatorjs from "validatorjs";
@@ -145,7 +146,7 @@ const patternSearchParameters = {
 
 const tzoffset = (new Date()).getTimezoneOffset() * 60000;
 const dateTimeStartTmp = new Date("2022-01-01 00:00:01"),
-    dateTimeEndTmp = new Date();
+    dateTimeEndTmp = Date.now();
 const defaultDateTime = "0001-01-01T00:00:00.000+00:00";
 
 const useStyles = makeStyles((theme) => ({
@@ -170,6 +171,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateSearchElementReport(props){
     let { 
+        socketIo,
         userPermissions,
         handlerSendSearchRequest,
         listTypesComputerThreat,
@@ -185,6 +187,23 @@ export default function CreateSearchElementReport(props){
     let [ dateTimeStart, setDateTimeStart ] = React.useState(dateTimeStartTmp);
     let [ selectedSearchItem, setSelectedSearchItem ] = React.useState("");
     let [ searchParameters, setSearchParameters ] = React.useState(patternSearchParameters);
+    let [ previousSearchParameters, setPreviousSearchParameters ] = React.useState(patternSearchParameters);
+    let [ showBottonClean, setShowBottonClean ] = React.useState(false);
+
+    let handlerEvent = () => {
+        socketIo.on("isems-mrsi response ui", (data) => {
+            if(data.section === "send search request, count found elem, table page report"){
+                if(!_.isEqual(searchParameters, previousSearchParameters)){
+                    setShowBottonClean(true);
+                }
+
+                if(_.isEqual(searchParameters, patternSearchParameters)){
+                    setShowBottonClean(false);
+                }
+            }
+        });
+    };
+    handlerEvent();
 
     const classes = useStyles();
 
@@ -204,6 +223,8 @@ export default function CreateSearchElementReport(props){
         supportFuncDelValue = (searchParametersTmp, elemNum) => {
             searchParametersTmp.specificSearchFields[0].value.splice(elemNum, 1);
             setSearchParameters(searchParametersTmp);
+
+            return searchParametersTmp;
         };
 
     const selectedDateTimeElement = [
@@ -232,6 +253,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.documentsId.splice(elemNum, 1);
                 setSearchParameters(searchParametersTmp);
+
+                return searchParametersTmp;
             },
         },
         "created": {
@@ -248,6 +271,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.created = { start: defaultDateTime, end: defaultDateTime };
                 setSearchParameters(searchParametersTmp);
+
+                return searchParametersTmp;
             },
         },
         "modified": {
@@ -264,6 +289,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.modified = { start: defaultDateTime, end: defaultDateTime };
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "createdByRef": {
@@ -278,6 +305,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.createdByRef = "";
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "name": {
@@ -292,6 +321,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.specificSearchFields[0].name = "";
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "aliases": {
@@ -312,6 +343,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.specificSearchFields[0].aliases.splice(elemNum, 1);
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "firstSeen": {
@@ -328,6 +361,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.specificSearchFields[0].firstSeen = { start: defaultDateTime, end: defaultDateTime };
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "lastSeen": {
@@ -344,6 +379,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.specificSearchFields[0].lastSeen = { start: defaultDateTime, end: defaultDateTime };
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "published": {
@@ -357,6 +394,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.specificSearchFields[0].published = "1970-01-01T00:00:00.000+00:00";
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "roles": {
@@ -377,6 +416,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.specificSearchFields[0].roles.splice(elemNum, 1);
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "country": {
@@ -391,6 +432,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.specificSearchFields[0].country = "";
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "city": {
@@ -405,6 +448,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.specificSearchFields[0].city = "";
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "numberAutonomousSystem": {
@@ -419,6 +464,8 @@ export default function CreateSearchElementReport(props){
             delFunc: (searchParametersTmp, elemName, elemNum) => {
                 searchParametersTmp.specificSearchFields[0].numberAutonomousSystem = 0;
                 setSearchParameters(searchParametersTmp);
+            
+                return searchParametersTmp;
             },
         },
         "domain-name": {
@@ -467,6 +514,7 @@ export default function CreateSearchElementReport(props){
 
     let buttonAddFilterIsDisabled = ((searchField.length === 0) || (selectedSearchItem === "") || (valuesIsInvalideSearchField));
     let buttonSearchIsDisabled = _.isEqual(searchParameters, patternSearchParameters);
+    buttonSearchIsDisabled = _.isEqual(searchParameters, previousSearchParameters);
 
     if((selectedDateTimeElement.includes(selectedSearchItem) || (selectedSearchItem === "published"))){
         buttonAddFilterIsDisabled = false;
@@ -477,6 +525,7 @@ export default function CreateSearchElementReport(props){
                 return;
             }
             
+            setPreviousSearchParameters(_.cloneDeep(searchParameters));
             listFunc[selectedSearchItem].addFunc(_.cloneDeep(searchParameters));
         },
         filterDelete = (filterType, elemName = "noname", elemNum = 0) => {
@@ -484,7 +533,11 @@ export default function CreateSearchElementReport(props){
                 return;
             }
                 
-            listFunc[filterType].delFunc(_.cloneDeep(searchParameters), elemName, elemNum);
+            let searchParametersTmp = listFunc[filterType].delFunc(_.cloneDeep(searchParameters), elemName, elemNum);
+
+            if(_.isEqual(searchParametersTmp, patternSearchParameters)){
+                setShowBottonClean(false);
+            }
         };
 
     return (<Paper elevation={3}>
@@ -544,7 +597,7 @@ export default function CreateSearchElementReport(props){
                                     <Button 
                                         size="small" 
                                         onClick={filterAdd} 
-                                        //style={{ color: green[400] }}
+                                        style={{ color: green[400] }}
                                     >
                                         добавить время
                                     </Button>
@@ -570,7 +623,7 @@ export default function CreateSearchElementReport(props){
                                     <Button 
                                         size="small" 
                                         onClick={filterAdd} 
-                                        //style={{ color: green[400] }}
+                                        style={{ color: green[400] }}
                                     >
                                         добавить время
                                     </Button>
@@ -595,13 +648,11 @@ export default function CreateSearchElementReport(props){
                                                     aria-label="добавить фильтр">
                                                     <AddCircleIcon style={{ color: green[400] }} />
                                                 </IconButton>
-                                            )
-                                        }}
+                                            )}}
                                     />
                                 </Grid>
                             </Grid>);
-                        }
-                    })()}  
+                        }})()}  
                 </Grid>
         
                 <Grid item container md={2}>
@@ -654,26 +705,27 @@ export default function CreateSearchElementReport(props){
 
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={12} justifyContent="flex-end">
+                    {(showBottonClean)?
+                        <span><Button
+                            size="small"
+                            color="secondary"
+                            style={{ color: red[400] }}
+                            startIcon={<DeleteOutlineIcon style={{ color: red[400] }} />}
+                            onClick={() => {
+                                setShowBottonClean(false);
+                                setSearchParameters(patternSearchParameters);
+                            }}>
+                            очистить
+                        </Button>&nbsp;</span>:""}
                     <Button
                         size="small"
                         color="secondary"
-                        style={{ color: red[400] }}
-                        startIcon={<SearchIcon style={{ color: red[400] }} />}
+                        style={{ color: blue[400] }}
+                        startIcon={<SearchIcon style={{ color: blue[400] }} />}
                         disabled={buttonSearchIsDisabled}
                         onClick={() => {
-                            console.log(searchParameters);
-
                             handlerSendSearchRequest(searchParameters);
-
-                            /**
-                             * Нужно сделать чтобы параметры фильтрации не очищались, когда полученны результаты фильтрации
-                             * добавить кнупку ОЧИСТИТЬ, а кнопку ПОИСК сделать не активной. Кнопка ОЧИСТИТЬ должна исчезнуть
-                             * вместе с параметрами фильтрации, кнопка ПОИСК должна остатся не активной до тех пор пока не будут
-                             * добавлены новые параметры фильтрации. Кнопка ОЧИСТИТЬ исчезает при добавлении новых параметров,
-                             * кнопка ПОИСК становится активной. 
-                             */
-
-                            setSearchParameters(patternSearchParameters);
+                            setPreviousSearchParameters(searchParameters);
                         }}>
                         поиск
                     </Button>
