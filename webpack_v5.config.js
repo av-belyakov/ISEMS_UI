@@ -83,7 +83,10 @@ module.exports = {
         //chunkFilename: "[id].js",
 
         //экспорт каждой точки входа должен попадать в переменную с соответствующем именем
-        library: "[name]"
+        library: "[name]",
+
+        //ассеты будут складываться в dist/assets
+        //assetModuleFilename: "assets/[hash][ext][query]",
     },
 
     watch: NODE_ENV === "development",

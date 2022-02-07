@@ -9,21 +9,32 @@
     },
     "mongoDB": {
         "socket": false,
-        "host": "192.168.13.200",
+        "host": "192.168.9.208",
+        "hostDomain": "test-uchet-db.cloud.gcm",
         "port": "27017",
         "user": "module-isems-ui",
         "password": "jkdds7dfm0",
-        "nameDB": "isems-ui-test",
+        "nameDB": "isems-ui",
         "UnixSocketPath": "../../../../tmp/mongodb.sock"
     },
     "modules": {
         "networkInteraction": {
-            "host": "192.168.13.200",
+            "host": "192.168.9.208",
+            "port": "13314",
+            "token": "udu8e88388eg8d88s8f88w838f3"
+        },
+        "networkInteractionDomainName": {
+            "host": "test-uchet-db.cloud.gcm",
             "port": "13314",
             "token": "udu8e88388eg8d88s8f88w838f3"
         },
         "managingRecordsStructuredInformationAboutComputerThreats": {
-            "host": "192.168.13.3",
+            "host": "192.168.9.208",
+            "port": "13000",
+            "token": "14bb17070e252a0fbcb79c42a0bd7bc0"
+        },
+        "managingRecordsStructuredInformationAboutComputerThreatsDomainName": {
+            "host": "test-uchet-db.cloud.gcm",
             "port": "13000",
             "token": "14bb17070e252a0fbcb79c42a0bd7bc0"
         }
@@ -40,7 +51,8 @@
             "средства массовой информации",
             "наука и образование",
             "коммерческая деятельность",
-            "связь и средства телекоммуникаций"
+            "связь и средства телекоммуникаций",
+            "транспорт"
         ]
     }
 }
