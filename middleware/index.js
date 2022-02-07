@@ -1,6 +1,7 @@
 "use strict";
 
-const ejs = require("ejs-locals");
+const ejs = require("ejs");
+//const ejs = require("ejs-locals");
 const path = require("path");
 
 const helmet = require("helmet");
