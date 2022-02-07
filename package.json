@@ -44,7 +44,6 @@
         "node-targz": "~0.2.0",
         "passport": "^0.4.1",
         "passport-local": "~1.0.0",
-        "popper.js": "^1.16.1",
         "prop-types": "^15.7.2",
         "quoted-printable": "^1.0.1",
         "react-addons-update": "^15.6.3",
