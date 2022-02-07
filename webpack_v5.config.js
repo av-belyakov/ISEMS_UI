@@ -2,7 +2,7 @@
 
 const path = require("path");
 const webpack = require("webpack");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+//const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const NODE_ENV = process.env.NODE_ENV || "development";
 
@@ -165,13 +165,13 @@ module.exports = {
             options: {
                 presets: ["@babel/preset-env", "@babel/preset-react"] // используемые плагины
             }
-        }, {
+        }, /*{
             test: /\.css$/,
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: ["css-loader"]
             })
-        }, {
+        },*/ {
             test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
             include: /\/node_modules\//,
             use: [{
