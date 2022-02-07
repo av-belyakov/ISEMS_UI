@@ -6,7 +6,7 @@
         "start": "node ./app",
         "startWS": "webpack-dev-server --open --mode development",
         "build": "webpack --config=webpack_v5.config.js --mode=development --progress --stats-error-details",
-        "build-prod": "webpack --config=webpack_v5.config.js --mode=production --progress --stats-error-details",
+        "build-prod": "NODE_ENV=production webpack --config=webpack_v5.config.js --mode=production --progress --stats-error-details",
         "dev-prod": "webpack --mode production"
     },
     "dependencies": {
