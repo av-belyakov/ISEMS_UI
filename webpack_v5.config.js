@@ -88,7 +88,7 @@ module.exports = {
 
     watch: NODE_ENV === "development",
 
-    devtool: NODE_ENV === "development" ? "source-map" : null,
+    devtool: "source-map" ,
 
     devServer: {
         contentBase: path.join(__dirname, "public/dist"),
