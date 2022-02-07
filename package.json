@@ -5,8 +5,9 @@
     "scripts": {
         "start": "node ./app",
         "startWS": "webpack-dev-server --open --mode development",
-        "dev": "webpack --config=webpack_v5.config.js --mode=development --progress --stats-error-details",
-        "build": "webpack --mode production"
+        "build": "webpack --config=webpack_v5.config.js --mode=development --progress --stats-error-details",
+        "build-prod": "webpack --config=webpack_v5.config.js --mode=production --progress --stats-error-details",
+        "dev-prod": "webpack --mode production"
     },
     "dependencies": {
         "@babel/runtime": "^7.16.3",
