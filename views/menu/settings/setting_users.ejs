@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns="http://www.w3.org/1999/html">
 <head>
-    <% include ../../head.ejs %>
+    <%- include('../../head'); -%>
     <script>
         var receivedFromServerMain = <%- JSON.stringify(mainInformation) %>
         var receivedFromServerAccess = <%- JSON.stringify(userGroupPermissions) %>
         var receivedFromServerListWorkGroup = <%- JSON.stringify(listWorkGroup) %>
     </script>
-    <% include ../../header.ejs %>
+    <%- include('../../header'); -%>
 </head>
 <body>
     <div class="content-wrapper">
@@ -17,8 +17,7 @@
             </div>
         </div>
     </div>
-    
-    <% include ../../footer.ejs %>
+    <%- include('../../footer'); -%>
     <script src="/dist/settingUsersPage.js"></script>
 </body>
 </html>

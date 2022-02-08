@@ -157,15 +157,13 @@ export default class ModalWindowShowInformationTask extends React.Component {
         let resultSrc = getListDirection("src");
         let resultDst = getListDirection("dst");
 
-        return (
-            <React.Fragment>
-                <div>{resultAny.value}</div>
-                {(resultAny.success && (resultSrc.success || resultDst.success)) ? <div className="text-danger text-center my-n2">&laquo;<small>ИЛИ</small>&raquo;</div> : <div></div>}                   
-                <div>{resultSrc.value}</div>
-                {(resultSrc.success && resultDst.success) ? <div className="text-danger text-center  my-n2">&laquo;<small>И</small>&raquo;</div> : <div></div>}                   
-                <div>{resultDst.value}</div>
-            </React.Fragment>
-        );
+        return (<React.Fragment>
+            <div>{resultAny.value}</div>
+            {(resultAny.success && (resultSrc.success || resultDst.success)) ? <div className="text-danger text-center my-n2">&laquo;<small>ИЛИ</small>&raquo;</div> : <div></div>}                   
+            <div>{resultSrc.value}</div>
+            {(resultSrc.success && resultDst.success) ? <div className="text-danger text-center  my-n2">&laquo;<small>И</small>&raquo;</div> : <div></div>}                   
+            <div>{resultDst.value}</div>
+        </React.Fragment>);
     }
 
     getInformationProgressFiltration(){
@@ -177,58 +175,56 @@ export default class ModalWindowShowInformationTask extends React.Component {
         let sfmfp = helpers.changeByteSize(this.state.filteringStatus.sfmfp);
         let sffrf = helpers.changeByteSize(this.state.filteringStatus.sffrf);
 
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-muted mt-0">
-                        <small>ход выполнения</small>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12} className="text-muted">
-                        <Card>
-                            <Card.Body className="pt-0 pb-0">
-                                <Row>
-                                    <Col md={8} className="text-muted">                                
-                                        <Row className="mb-n2">
-                                            <Col md={6}><small>всего файлов:</small></Col>
-                                            <Col md={6} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.nfmfp)}</strong> шт.</small></Col>
-                                        </Row>
-                                        <Row className="mb-n2">
-                                            <Col md={5}><small>общим размером:</small></Col>
-                                            <Col md={7} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.sfmfp)}</strong> байт (<strong>{sfmfp.size}</strong> {sfmfp.name})</small></Col>
-                                        </Row>
-                                        <Row className="mb-n2">
-                                            <Col md={6}><small>файлов обработанно:</small></Col>
-                                            <Col md={6} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.mpf)}</strong> шт.</small></Col>
-                                        </Row>
-                                        <Row className="mb-n2">
-                                            <Col md={6}><small>файлов обработанно с ошибкой:</small></Col>
-                                            <Col md={6} className="text-left"><small><strong>{this.state.filteringStatus.nepf}</strong> шт.</small></Col>
-                                        </Row>
-                                        <Row className="mb-n2">
-                                            <Col md={6}><small>файлов найдено:</small></Col>
-                                            <Col md={6} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.nffrf)}</strong> шт.</small></Col>
-                                        </Row>
-                                        <Row className="mb-n2">
-                                            <Col md={5}><small>общим размером:</small></Col>
-                                            <Col md={7} className="text-left"><small><strong>{numFormatter.format(this.state.filteringStatus.sffrf)}</strong> байт (<strong>{sffrf.size}</strong> {sffrf.name})</small></Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={6}><small>фильтруемых директорий:</small></Col>
-                                            <Col md={6} className="text-left"><small><strong>{this.state.filteringStatus.ndf}</strong> шт.</small></Col>
-                                        </Row>
-                                    </Col>
-                                    <Col md={4} className="mt-3 text-center">
-                                        {this.createCircleProcessFilter.call(this)}
-                                    </Col>
-                                </Row>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-            </React.Fragment>
-        );
+        return (<React.Fragment>
+            <Row>
+                <Col md={12} className="text-muted mt-0">
+                    <small>ход выполнения</small>
+                </Col>
+            </Row>
+            <Row>
+                <Col md={12} className="text-muted">
+                    <Card>
+                        <Card.Body className="pt-0 pb-0">
+                            <Row>
+                                <Col md={8} className="text-muted">                                
+                                    <Row className="mb-n2">
+                                        <Col md={6}><small>всего файлов:</small></Col>
+                                        <Col md={6} className="text-end"><small><strong>{numFormatter.format(this.state.filteringStatus.nfmfp)}</strong> шт.</small></Col>
+                                    </Row>
+                                    <Row className="mb-n2">
+                                        <Col md={5}><small>общим размером:</small></Col>
+                                        <Col md={7} className="text-end"><small><strong>{numFormatter.format(this.state.filteringStatus.sfmfp)}</strong> байт (<strong>{sfmfp.size}</strong> {sfmfp.name})</small></Col>
+                                    </Row>
+                                    <Row className="mb-n2">
+                                        <Col md={6}><small>файлов обработанно:</small></Col>
+                                        <Col md={6} className="text-end"><small><strong>{numFormatter.format(this.state.filteringStatus.mpf)}</strong> шт.</small></Col>
+                                    </Row>
+                                    <Row className="mb-n2">
+                                        <Col md={6}><small>файлов обработанно с ошибкой:</small></Col>
+                                        <Col md={6} className="text-end"><small><strong>{this.state.filteringStatus.nepf}</strong> шт.</small></Col>
+                                    </Row>
+                                    <Row className="mb-n2">
+                                        <Col md={6}><small>файлов найдено:</small></Col>
+                                        <Col md={6} className="text-end"><small><strong>{numFormatter.format(this.state.filteringStatus.nffrf)}</strong> шт.</small></Col>
+                                    </Row>
+                                    <Row className="mb-n2">
+                                        <Col md={5}><small>общим размером:</small></Col>
+                                        <Col md={7} className="text-end"><small><strong>{numFormatter.format(this.state.filteringStatus.sffrf)}</strong> байт (<strong>{sffrf.size}</strong> {sffrf.name})</small></Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={6}><small>фильтруемых директорий:</small></Col>
+                                        <Col md={6} className="text-end"><small><strong>{this.state.filteringStatus.ndf}</strong> шт.</small></Col>
+                                    </Row>
+                                </Col>
+                                <Col md={4} className="mt-3 text-center">
+                                    {this.createCircleProcessFilter.call(this)}
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </React.Fragment>);
     }
 
     getInformationProgressDownload(){
@@ -241,24 +237,22 @@ export default class ModalWindowShowInformationTask extends React.Component {
             percent = Math.round((this.state.downloadingStatus.nfd*100) / this.state.downloadingStatus.nft);
         }
 
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-muted">
-                        <small>
+        return (<React.Fragment>
+            <Row>
+                <Col md={12} className="text-muted">
+                    <small>
                         общее количество файлов подлежащих скачиванию: <strong>{this.state.downloadingStatus.nft}</strong>, 
                         загруженных файлов: <strong>{this.state.downloadingStatus.nfd}</strong>, 
                         из них с ошибкой: <strong>{this.state.downloadingStatus.nfde}</strong>
-                        </small>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12}>
-                        <ProgressBar now={percent} label={`${percent}%`} />
-                    </Col>
-                </Row>
-            </React.Fragment>
-        );
+                    </small>
+                </Col>
+            </Row>
+            <Row>
+                <Col md={12}>
+                    <ProgressBar now={percent} label={`${percent}%`} />
+                </Col>
+            </Row>
+        </React.Fragment>);
     }
 
     getStatusFiltering(){
@@ -300,54 +294,50 @@ export default class ModalWindowShowInformationTask extends React.Component {
     }
 
     createNetworkParameters(){
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col sm="3" className="text-center">
-                        <Badge  bg="info">ip адрес</Badge>
-                    </Col>
-                    <Col sm="2" className="text-danger text-center">&laquo;<small>ИЛИ</small>&raquo;</Col>
-                    <Col sm="3" className="text-center">
-                        <Badge  bg="info">сеть</Badge>
-                    </Col>
-                    <Col sm="1" className="text-danger text-center">&laquo;<small>И</small>&raquo;</Col>
-                    <Col sm="3" className="text-center">
-                        <Badge  bg="info">сетевой порт</Badge>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm="4">{this.getListNetworkParameters("ip")}</Col>
-                    <Col sm="1"></Col>
-                    <Col sm="4">{this.getListNetworkParameters("nw")}</Col>
-                    <Col sm="3">{this.getListNetworkParameters("pt")}</Col>
-                </Row>
-            </React.Fragment>
-        );
+        return (<React.Fragment>
+            <Row>
+                <Col sm="3" className="text-center">
+                    <Badge  bg="info">ip адрес</Badge>
+                </Col>
+                <Col sm="2" className="text-danger text-center">&laquo;<small>ИЛИ</small>&raquo;</Col>
+                <Col sm="3" className="text-center">
+                    <Badge  bg="info">сеть</Badge>
+                </Col>
+                <Col sm="1" className="text-danger text-center">&laquo;<small>И</small>&raquo;</Col>
+                <Col sm="3" className="text-center">
+                    <Badge  bg="info">сетевой порт</Badge>
+                </Col>
+            </Row>
+            <Row>
+                <Col sm="4">{this.getListNetworkParameters("ip")}</Col>
+                <Col sm="1"></Col>
+                <Col sm="4">{this.getListNetworkParameters("nw")}</Col>
+                <Col sm="3">{this.getListNetworkParameters("pt")}</Col>
+            </Row>
+        </React.Fragment>);
     }
 
     createCircleProcessFilter() {
         let percent = (this.state.filteringStatus.mpf*100) / this.state.filteringStatus.nfmfp;
 
-        return (
-            <Circle
-                progress={Math.round(percent)}
-                animate={true} // Boolean: Animated/Static progress
-                animationDuration="1s" // String: Length of animation
-                responsive={false} // Boolean: Make SVG adapt to parent size
-                size="170" // String: Defines the size of the circle.
-                lineWidth="35" // String: Defines the thickness of the circle's stroke.
-                progressColor="rgb(76, 154, 255)" // String: Color of "progress" portion of circle.
-                bgColor="#ecedf0" // String: Color of "empty" portion of circle.
-                textColor="#6b778c" // String: Color of percentage text color.
-                textStyle={{
-                    font: "bold 4rem Helvetica, Arial, sans-serif" // CSSProperties: Custom styling for percentage.
-                }}
-                percentSpacing={10} // Number: Adjust spacing of "%" symbol and number.
-                roundedStroke={false} // Boolean: Rounded/Flat line ends
-                showPercentage={true} // Boolean: Show/hide percentage.
-                showPercentageSymbol={true} // Boolean: Show/hide only the "%" symbol.
-            />
-        );
+        return (<Circle
+            progress={Math.round(percent)}
+            animate={true} // Boolean: Animated/Static progress
+            animationDuration="1s" // String: Length of animation
+            responsive={false} // Boolean: Make SVG adapt to parent size
+            size="170" // String: Defines the size of the circle.
+            lineWidth="35" // String: Defines the thickness of the circle's stroke.
+            progressColor="rgb(76, 154, 255)" // String: Color of "progress" portion of circle.
+            bgColor="#ecedf0" // String: Color of "empty" portion of circle.
+            textColor="#6b778c" // String: Color of percentage text color.
+            textStyle={{
+                font: "bold 4rem Helvetica, Arial, sans-serif" // CSSProperties: Custom styling for percentage.
+            }}
+            percentSpacing={10} // Number: Adjust spacing of "%" symbol and number.
+            roundedStroke={false} // Boolean: Rounded/Flat line ends
+            showPercentage={true} // Boolean: Show/hide percentage.
+            showPercentageSymbol={true} // Boolean: Show/hide only the "%" symbol.
+        />);
     }
 
     createUserDownloadTask(){
@@ -357,11 +347,9 @@ export default class ModalWindowShowInformationTask extends React.Component {
 
         let userInitiatedFileDownloadProcess = (this.state.userInitiatedFileDownloadProcess.length > 0) ? this.state.userInitiatedFileDownloadProcess: "задача сформирована автоматически";
 
-        return (
-            <Row>
-                <Col md={12} className="text-center text-muted">Пользователь: <i>{userInitiatedFileDownloadProcess}</i></Col>
-            </Row>
-        );
+        return (<Row>
+            <Col md={12} className="text-center text-muted">Пользователь: <i>{userInitiatedFileDownloadProcess}</i></Col>
+        </Row>);
     }
 
     createPathDirFilterFiles(){
@@ -369,16 +357,14 @@ export default class ModalWindowShowInformationTask extends React.Component {
             return;
         }
 
-        return (
-            <Row className="text-center text-muted">                   
-                <Col md={12}>
-                    <small>директория содержащая файлы полученные в результате фильтрации</small>
-                </Col>
-                <Col md={12} className="my_line_spacing">
-                    <small><strong>{this.state.filteringStatus.pdfff}</strong></small>
-                </Col>
-            </Row>
-        );
+        return (<Row className="text-center text-muted">                   
+            <Col md={12}>
+                <small>директория содержащая файлы полученные в результате фильтрации</small>
+            </Col>
+            <Col md={12} className="my_line_spacing">
+                <small><strong>{this.state.filteringStatus.pdfff}</strong></small>
+            </Col>
+        </Row>);
     }
 
     createPathDirStorageFiles(){
@@ -386,27 +372,23 @@ export default class ModalWindowShowInformationTask extends React.Component {
             return;
         }
 
-        return (
-            <Row className="text-center text-muted">                   
-                <Col md={12}>
-                    <small>директория для долговременного хранения загруженных файлов</small>
-                </Col>
-                <Col md={12} className="my_line_spacing">
-                    <small><strong>{this.state.downloadingStatus.pdsdf}</strong></small>
-                </Col>
-            </Row>
-        );
+        return (<Row className="text-center text-muted">                   
+            <Col md={12}>
+                <small>директория для долговременного хранения загруженных файлов</small>
+            </Col>
+            <Col md={12} className="my_line_spacing">
+                <small><strong>{this.state.downloadingStatus.pdsdf}</strong></small>
+            </Col>
+        </Row>);
     }
 
     createModalBody(){
         if(!this.state.showInfo){
-            return (
-                <div className="col-md-12 text-center">
-                    <Spinner animation="border" role="status" variant="primary">
-                        <span className="sr-only">Загрузка...</span>
-                    </Spinner>
-                </div>
-            );
+            return (<div className="col-md-12 text-center">
+                <Spinner animation="border" role="status" variant="primary">
+                    <span className="sr-only">Загрузка...</span>
+                </Spinner>
+            </div>);
         }
 
         let fdts = this.state.parametersFiltration.dt.s*1000;
@@ -442,56 +424,54 @@ export default class ModalWindowShowInformationTask extends React.Component {
 
         let userInitiatedFilteringProcess = (this.state.userInitiatedFilteringProcess.length > 0) ? this.state.userInitiatedFilteringProcess: "задача сформирована автоматически";
 
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col md={12} className="text-center">
+        return (<React.Fragment>
+            <Row>
+                <Col md={12} className="text-center">
                     Задача по фильтрации (добавлена: <i>{filtrationStart}</i>, завершена: <i>{filtrationEnd}</i>)
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12} className="text-center text-muted">Пользователь: <i>{userInitiatedFilteringProcess}</i></Col>
-                </Row>
-                <Row>
-                    <Col md={12} className="text-muted mt-2">
-                        <small>параметры</small>
-                    </Col>
-                </Row>
-                <Card>
-                    <Card.Body className="pt-0 pb-0">
-                        <Row>
-                            <Col md={9} className="text-muted">
-                                <small>
+                </Col>
+            </Row>
+            <Row>
+                <Col md={12} className="text-center text-muted">Пользователь: <i>{userInitiatedFilteringProcess}</i></Col>
+            </Row>
+            <Row>
+                <Col md={12} className="text-muted mt-2">
+                    <small>параметры</small>
+                </Col>
+            </Row>
+            <Card>
+                <Card.Body className="pt-0 pb-0">
+                    <Row>
+                        <Col md={9} className="text-muted">
+                            <small>
                                 дата и время,
                                 начальное: <strong>{this.formatter.format(fdts)}</strong>, 
                                 конечное: <strong>{this.formatter.format(fdte)}</strong>
-                                </small>
-                            </Col>
-                            <Col md={3} className="text-muted"><small>сетевой протокол: <strong>{(this.state.parametersFiltration.p === "any") ? "любой" : this.state.parametersFiltration.p}</strong></small></Col>
-                        </Row>
-                        <Row><Col md={12}>{this.createNetworkParameters.call(this)}</Col></Row>
-                    </Card.Body>                   
-                </Card>               
-                <Row className="text-muted mb-n2">
-                    <Col md={2}><small>статус задачи: </small></Col>
-                    <Col md={10} className="text-right">{this.getStatusFiltering.call(this)}</Col>
-                </Row>
-                {this.getInformationProgressFiltration()}
-                {this.createPathDirFilterFiles.call(this)}
-                <Row>
-                    <Col md={12} className="text-center mt-3">
+                            </small>
+                        </Col>
+                        <Col md={3} className="text-muted"><small>сетевой протокол: <strong>{(this.state.parametersFiltration.p === "any") ? "любой" : this.state.parametersFiltration.p}</strong></small></Col>
+                    </Row>
+                    <Row><Col md={12}>{this.createNetworkParameters.call(this)}</Col></Row>
+                </Card.Body>                   
+            </Card>               
+            <Row className="text-muted mb-n2">
+                <Col md={2}><small>статус задачи: </small></Col>
+                <Col md={10} className="text-right">{this.getStatusFiltering.call(this)}</Col>
+            </Row>
+            {this.getInformationProgressFiltration()}
+            {this.createPathDirFilterFiles.call(this)}
+            <Row>
+                <Col md={12} className="text-center mt-3">
                     Задача по скачиванию файлов (добавлена: <i>{downloadStart}</i>, завершена: <i>{downloadEnd}</i>)
-                    </Col>
-                </Row>
-                {this.createUserDownloadTask.call(this)}
-                <Row className="text-muted mb-n2">
-                    <Col md={2}><small>статус задачи: </small></Col>
-                    <Col md={10} className="text-right">{this.getStatusDownload.call(this)}</Col>
-                </Row>
-                {this.getInformationProgressDownload.call(this)}
-                {this.createPathDirStorageFiles.call(this)}
-            </React.Fragment>
-        );
+                </Col>
+            </Row>
+            {this.createUserDownloadTask.call(this)}
+            <Row className="text-muted mb-n2">
+                <Col md={2}><small>статус задачи: </small></Col>
+                <Col md={10} className="text-right">{this.getStatusDownload.call(this)}</Col>
+            </Row>
+            {this.getInformationProgressDownload.call(this)}
+            {this.createPathDirStorageFiles.call(this)}
+        </React.Fragment>);
     }
 
     createButtonStop(){
@@ -499,14 +479,12 @@ export default class ModalWindowShowInformationTask extends React.Component {
         let downloadExecute = (this.state.downloadingStatus.ts === "execute") || (this.state.downloadingStatus.ts === "wait");
 
         if(filterExecute || downloadExecute) {
-            return (
-                <Button 
-                    variant="outline-danger" 
-                    onClick={this.handlerButtonStop.bind(this, this.props.shortTaskInfo.sourceID)} 
-                    size="sm">
+            return (<Button 
+                variant="outline-danger" 
+                onClick={this.handlerButtonStop.bind(this, this.props.shortTaskInfo.sourceID)} 
+                size="sm">
                     остановить задачу
-                </Button>
-            );
+            </Button>);
         }
 
         return;
@@ -529,7 +507,7 @@ export default class ModalWindowShowInformationTask extends React.Component {
             <Modal.Footer>
                 {this.createButtonStop.call(this)}
                 <Button variant="outline-secondary" onClick={this.props.onHide} size="sm">
-                        закрыть
+                    закрыть
                 </Button>
             </Modal.Footer>
         </Modal>);

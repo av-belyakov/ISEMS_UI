@@ -2,11 +2,11 @@
 <html lang="ru" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 
 <head>
-    <% include ../../head.ejs %>
-        <script>
-            var receivedFromServer = <%- JSON.stringify(listItems) %>
-        </script>
-        <% include ../../header.ejs %>
+    <%- include('../../head'); -%>
+    <script>
+        var receivedFromServer = <%- JSON.stringify(listItems) %>
+    </script>
+    <%- include('../../header'); -%>
 </head>
 
 <body>
@@ -22,8 +22,8 @@
                 </div>
             </div>
         </div>
-        <% include ../../footer.ejs %>
-    </section>
+        <%- include('../../footer'); -%>
+     </section>
 </body>
 
 <script src="/dist/createVerticalMenuItems.js"></script>

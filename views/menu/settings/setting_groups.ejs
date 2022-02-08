@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <% include ../../head.ejs %>
+    <%- include('../../head'); -%>
     <script>
         var receivedFromServerMain = <%- JSON.stringify(mainInformation) %>
         var receivedFromServerAccess = <%- JSON.stringify(userGroupPermissions) %>
     </script>
-    <% include ../../header.ejs %>
+    <%- include('../../header'); -%>
 </head>
 <body>
     <div class="content-wrapper">
@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    <% include ../../footer.ejs %>
+    <%- include('../../footer'); -%>
     <script src="/dist/settingGroupsPage.js"></script>
 </body>
 </html>

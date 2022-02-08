@@ -3,8 +3,7 @@
 
 <head>
     <!-- подключаем дополнительные библиотеки, скрипты, таблицы стилей CSS и расширения -->
-    <% include head.ejs %>
-
+    <%- include('head'); -%>
         <script src="/dist/mainPage.js"></script>
 
         <script>
@@ -18,8 +17,7 @@
 </head>
 
 <body>
-    <% include header.ejs %>
-
+    <%- include('header'); -%>
         <div class="content-wrapper">
             <div class="container">
                 <div class="row pad-botm">
@@ -135,6 +133,7 @@
             </div>
         </div>
 </body>
-<% include footer.ejs %>
+
+<%- include('footer'); -%>
 
 </html>

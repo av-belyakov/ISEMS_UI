@@ -4,6 +4,7 @@ logs/
 test/
 spec/
 node_modules/
+node_modules_1/
 keys/isems_ui_cert.pem
 keys/isems_ui_private_key.pem
 public/dist/

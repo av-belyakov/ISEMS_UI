@@ -1,7 +1,6 @@
 "use strict";
 
 const ejs = require("ejs");
-//const ejs = require("ejs-locals");
 const path = require("path");
 
 const helmet = require("helmet");
@@ -36,8 +35,10 @@ module.exports = function (app, express, io) {
     /*
      * Rendering pages
      * */
-    app.engine("html", ejs);
-    app.engine("ejs", ejs);
+    app.engine(".html", ejs.renderFile);
+    app.engine(".ejs", ejs.renderFile);
+    //app.engine(".html", ejs.__express);
+    //app.engine(".ejs", ejs.__express);
     app.set("views", path.join(__dirname, "../views"));
     app.set("view engine", "ejs");
     app.use(bodyParser.json());

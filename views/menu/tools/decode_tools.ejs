@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <% include ../../head.ejs %>
-
+    <%- include('../../head'); -%>
     <script>
 
     </script>
+    <%- include('../../header'); -%>
 </head>
 <body>
     <section id="container" >
-        <% include ../../header.ejs %>
-
         <!--начало основного контента-->
         <div class="content-wrapper">
             <div class="container">
@@ -24,7 +22,7 @@
                 <div class="col-md-12 text-center" id="field_information"></div>
             </div>
         </div>
-        <% include ../../footer.ejs %>
+        <%- include('../../footer'); -%>
     </section>
 </body>
 </html>

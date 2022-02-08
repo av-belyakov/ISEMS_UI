@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <% include ../../head.ejs %>
+    <%- include('../../head'); -%>
     <script>
        var receivedFromServerMain = <%- JSON.stringify(mainInformation) %>
        var receivedFromServerAccess = <%- JSON.stringify(userPermissions) %>
        var receivedFromServerListFieldActivity = <%- JSON.stringify(listFieldActivity) %>
     </script>
-    <% include ../../header.ejs %>
+    <%- include('../../header'); -%>
 </head>
 <body>
     <section id="container">
@@ -23,7 +23,7 @@
                 <div class="col-md-12" id="main-page-content"></div>
             </div>
         </div>
-        <% include ../../footer.ejs %>
+        <%- include('../../footer'); -%>
     </section>
 </body>
 

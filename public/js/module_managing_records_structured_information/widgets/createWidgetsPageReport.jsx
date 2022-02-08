@@ -154,66 +154,64 @@ export default class CreateWidgetsPageReport extends React.Component {
     render(){
         let { numTotalReports, showNumTotalReports } = this.getTotalReport();
 
-        return (
-            <React.Fragment>
-                <Row>
-                    <Col md={2}>
-                        <CardElement 
-                            count={this.state.openReports.num}
-                            avatarColor="lightGreen"
-                            avatarText="д"
-                            text="обрабатываемые"
-                            show={this.state.openReports.show}
-                            titleText="количество Отчётов ожидающих обработки" />
-                    </Col>
-                    <Col md={2}>
-                        <CardElement 
-                            count={this.state.publishedReports.num}
-                            avatarColor="lightGreen"
-                            avatarText="д"
-                            text="опубликованные"
-                            show={this.state.publishedReports.show}
-                            titleText="количество опубликованных Отчётов" />
-                    </Col>
-                    <Col md={2}>
-                        <CardElement 
-                            count={numTotalReports}
-                            avatarColor="teal"
-                            avatarText="д"
-                            text="всего"
-                            show={showNumTotalReports}
-                            titleText="общее количество Отчётов" />
-                    </Col>
-                    <Col md={2}>
-                        <CardElement 
-                            count={this.state.successfullyImplementedComputerThreat.num}
-                            avatarColor="red"
-                            avatarText="ку"
-                            text="успешно"
-                            show={this.state.successfullyImplementedComputerThreat.show}
-                            titleText="успешно реализованные компьютерные угрозы" />
-                    </Col>
-                    <Col md={2}>
-                        <CardElement 
-                            count={this.state.computerThreatNotSuccessful.num}
-                            avatarColor="yellow"
-                            avatarText="ку"
-                            text="безуспешно"
-                            show={this.state.computerThreatNotSuccessful.show}
-                            titleText="компьютерные угрозы не являющиеся успешными" />
-                    </Col>
-                    <Col md={2}>
-                        <CardElement 
-                            count={this.state.unconfirmedComputerThreat.num}
-                            avatarColor="grey"
-                            avatarText="ку"
-                            text="отклоненные"
-                            show={this.state.unconfirmedComputerThreat.show}
-                            titleText="не подтвердившиеся компьютерные угрозы" />
-                    </Col>
-                </Row>
-            </React.Fragment>
-        );
+        return (<React.Fragment>
+            <Row>
+                <Col md={2}>
+                    <CardElement 
+                        count={this.state.openReports.num}
+                        avatarColor="lightGreen"
+                        avatarText="д"
+                        text="обрабатываемые"
+                        show={this.state.openReports.show}
+                        titleText="количество Отчётов ожидающих обработки" />
+                </Col>
+                <Col md={2}>
+                    <CardElement 
+                        count={this.state.publishedReports.num}
+                        avatarColor="lightGreen"
+                        avatarText="д"
+                        text="опубликованные"
+                        show={this.state.publishedReports.show}
+                        titleText="количество опубликованных Отчётов" />
+                </Col>
+                <Col md={2}>
+                    <CardElement 
+                        count={numTotalReports}
+                        avatarColor="teal"
+                        avatarText="д"
+                        text="всего"
+                        show={showNumTotalReports}
+                        titleText="общее количество Отчётов" />
+                </Col>
+                <Col md={2}>
+                    <CardElement 
+                        count={this.state.successfullyImplementedComputerThreat.num}
+                        avatarColor="red"
+                        avatarText="ку"
+                        text="успешно"
+                        show={this.state.successfullyImplementedComputerThreat.show}
+                        titleText="успешно реализованные компьютерные угрозы" />
+                </Col>
+                <Col md={2}>
+                    <CardElement 
+                        count={this.state.computerThreatNotSuccessful.num}
+                        avatarColor="yellow"
+                        avatarText="ку"
+                        text="безуспешно"
+                        show={this.state.computerThreatNotSuccessful.show}
+                        titleText="компьютерные угрозы не являющиеся успешными" />
+                </Col>
+                <Col md={2}>
+                    <CardElement 
+                        count={this.state.unconfirmedComputerThreat.num}
+                        avatarColor="grey"
+                        avatarText="ку"
+                        text="отклоненные"
+                        show={this.state.unconfirmedComputerThreat.show}
+                        titleText="не подтвердившиеся компьютерные угрозы" />
+                </Col>
+            </Row>
+        </React.Fragment>);
     }
 }
 
@@ -240,7 +238,7 @@ function CardElement(props){
                     </Grid>
                 </Paper>
             </div>:
-            <div className={classes.root}><Skeleton variant="rect" width={190} height={88}/></div>}
+            <div className={classes.root}><Skeleton className={classes.paper} variant="rect" width={190} height={88}/></div>}
     </Tooltip>);
 }
 
