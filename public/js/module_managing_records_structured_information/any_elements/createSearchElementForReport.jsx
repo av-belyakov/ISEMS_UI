@@ -190,20 +190,25 @@ export default function CreateSearchElementReport(props){
     let [ previousSearchParameters, setPreviousSearchParameters ] = React.useState(patternSearchParameters);
     let [ showBottonClean, setShowBottonClean ] = React.useState(false);
 
-    let handlerEvent = () => {
-        socketIo.on("isems-mrsi response ui", (data) => {
-            if(data.section === "send search request, count found elem, table page report"){
-                if(!_.isEqual(searchParameters, previousSearchParameters)){
-                    setShowBottonClean(true);
-                }
-
-                if(_.isEqual(searchParameters, patternSearchParameters)){
-                    setShowBottonClean(false);
-                }
+    let listener = (data) => {
+        if(data.section === "send search request, count found elem, table page report"){
+            if(!_.isEqual(searchParameters, previousSearchParameters)){
+                setShowBottonClean(true);
             }
-        });
+    
+            if(_.isEqual(searchParameters, patternSearchParameters)){
+                setShowBottonClean(false);
+            }
+        }
     };
-    handlerEvent();
+
+    React.useEffect(() => {
+        socketIo.on("isems-mrsi response ui", listener);
+            
+        return () => {
+            socketIo.off("isems-mrsi response ui", listener);
+        };
+    }, []);
 
     const classes = useStyles();
 

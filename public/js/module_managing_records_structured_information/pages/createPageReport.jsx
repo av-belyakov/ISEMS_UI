@@ -1,7 +1,4 @@
 import React from "react";
-import { Box, Button, Grid, Paper } from "@material-ui/core";
-import { green } from "@material-ui/core/colors";
-import AddIcon from "@material-ui/icons/Add";
 import PropTypes from "prop-types";
 
 import CreateMainTableReport from "../tables/createMainTableForReport.jsx";
@@ -9,8 +6,6 @@ import CreateWidgetsPageReport from "../widgets/createWidgetsPageReport.jsx";
 import CreateSearchElementReport from "../any_elements/createSearchElementForReport.jsx";
 import ModalWindowAddReportSTIX from "../../modal_windows/modalWindowAddReportSTIX.jsx";
 import ModalWindowShowInformationReportSTIX from "../../modal_windows/modalWindowShowInformationReportSTIX.jsx";
-
-import { CreateButtonNewReport } from "../buttons/createButtonNewReport.jsx";
 
 export default class CreatePageReport extends React.Component {
     constructor(props){
@@ -169,9 +164,6 @@ export default class CreatePageReport extends React.Component {
     }
 
     handlerButtonSaveModalWindowAddReportSTIX(obj){
-        console.log("func 'handlerButtonSaveModalWindowAddReportSTIX', START");
-        console.log(obj);
-
         this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
 
         setTimeout(() => {
@@ -186,9 +178,6 @@ export default class CreatePageReport extends React.Component {
     }
 
     handlerSendSearchRequest(searchParameters){
-        console.log("func 'handlerSendSearchRequest', searchParameters:");
-        console.log(searchParameters);
-
         let searchReguest = {
             paginateParameters: {
                 maxPartSize: 30,

@@ -66,17 +66,13 @@ export default class CreateMainTableForReport extends React.Component {
         this.handlerTableOnClick = this.handlerTableOnClick.bind(this);
         this.handlerOnRowsPerPageChange = this.handlerOnRowsPerPageChange.bind(this);
 
-        this.handlerEvents.call(this);
+        //this.handlerEvents.call(this);
         this.requestEmitter.call(this);
     }
 
     handlerEvents(){
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
             if(data.section === "send search request, count found elem, table page report"){
-
-                //console.log("func 'createMainTableForReport', handlerEvents");
-                //console.log(data);
-
                 if(!data.information.is_successful){
                     return;
                 }
@@ -88,10 +84,6 @@ export default class CreateMainTableForReport extends React.Component {
             }
 
             if(data.section === "send search request, table page report"){
-                
-                //console.log("func 'createMainTableForReport', handlerEvents");
-                //console.log(data);
-
                 if((typeof data.information === "undefined") || (data.information === null)){
                     return;
                 }
@@ -147,6 +139,71 @@ export default class CreateMainTableForReport extends React.Component {
 
     requestEmitter(){}
 
+    /*handlerReceivedData(data){
+        if(data.section === "send search request, count found elem, table page report"){
+            if(!data.information.is_successful){
+                return;
+            }
+
+            this.setState({ 
+                isShowProgress: false,
+                countSearchReports: data.information.additional_parameters.number_documents_found 
+            });
+        }
+
+        if(data.section === "send search request, table page report"){
+            if((typeof data.information === "undefined") || (data.information === null)){
+                return;
+            }
+
+            if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
+                return;
+            }
+
+            if((typeof data.information.additional_parameters.transmitted_data === "undefined") || (data.information.additional_parameters.transmitted_data === null)){
+                return;
+            }
+
+            let listReportsTmp = [],
+                listIdReport = [];
+            if(this.props.paginateParameters.currentPartNumber > 1){
+                listReportsTmp = this.state.listReports.slice();
+
+                this.props.changeValueAddNewReport(false);
+            }
+
+            for(let item of data.information.additional_parameters.transmitted_data){
+                listReportsTmp.push(item);
+                listIdReport.push(item.id);
+            }
+
+            this.props.socketIo.emit("isems-mrsi ui request: get short information about groups which report available", { arguments: listIdReport });
+
+            this.setState({ listReports: listReportsTmp });
+        }
+
+        if(data.section === "short information about groups which report available"){
+            if((typeof data.information === "undefined") || (data.information === null)){
+                return;
+            }
+
+            if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
+                return;
+            }
+
+            let tmp = this.state.listGroupsWhichReportAvailable.slice();
+            for(let item of data.information.additional_parameters){
+                if(typeof tmp.find((elem) => {
+                    return (elem.group_name === item.group_name && elem.object_id === item.object_id);
+                }) === "undefined"){
+                    tmp.push(item);
+                }
+            }
+
+            this.setState({ listGroupsWhichReportAvailable: tmp });
+        }
+    }*/
+
     handlerOnRowsPerPageChange(rowsPerPage){        
         this.setState({ countShowReportsPerPage: rowsPerPage });
     }
@@ -201,6 +258,11 @@ export default class CreateMainTableForReport extends React.Component {
     render(){
         return (<Paper elevation={3}>
             <Box m={2} mb={2} pt={2} pb={2}>
+                <CreateSubscribeEvents
+                    socketIo={this.props.socketIo}
+                    handlerReceivedData={this.handlerReceivedData.bind(this)}
+                />
+
                 {this.showDocumentCount.call(this)}
                 <CreateTable 
                     listReports={this.state.listReports} 
@@ -226,6 +288,28 @@ CreateMainTableForReport.propTypes = {
     handlerRequestNextPageOfTable: PropTypes.func.isRequired,
     handlerShowModalWindowAddNewReport: PropTypes.func.isRequired,
     handlerShowModalWindowInformationReport: PropTypes.func.isRequired,
+};
+
+function CreateSubscribeEvents(props){
+    const { socketIo, handlerReceivedData } = props;
+    let listener = (data) => {
+        handlerReceivedData(data);
+    };
+
+    React.useEffect(() => {
+        socketIo.on("isems-mrsi response ui", listener);
+        
+        return () => {
+            socketIo.off("isems-mrsi response ui", listener);
+        };
+    }, []);
+
+    return null;
+}
+
+CreateSubscribeEvents.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    handlerReceivedData: PropTypes.func.isRequired,
 };
 
 function CreateTable(props){

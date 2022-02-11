@@ -46,49 +46,79 @@ export default function CreateAnyModalWindowSTIXObject(props){
     let getMyModule = (name) => {
         switch(name){
         case "artifact":
+            console.log("11111");
+
             return React.lazy(() => import("./dialog_contents/contentArtifactSTIXObject.jsx")); 
         
         case "directory":
+            console.log("222222");
+        
             return React.lazy(() => import("./dialog_contents/contentDirectorySTIXObject.jsx")); 
         
         case "file":
+            console.log("333333");
+
             return React.lazy(() => import("./dialog_contents/contentFileSTIXObject.jsx")); 
         
         case "mutex":
+            console.log("4444444");
+
             return React.lazy(() => import("./dialog_contents/contentMutexSTIXObject.jsx")); 
         
         case "process":
+            console.log("5555555");
+
             return React.lazy(() => import("./dialog_contents/contentProcessSTIXObject.jsx")); 
         
         case "software":
+            console.log("6666666");
+
             return React.lazy(() => import("./dialog_contents/contentSoftwareSTIXObject.jsx")); 
         
         case "url":
+            console.log("777777");
+
             return React.lazy(() => import("./dialog_contents/contentURLSTIXObject.jsx")); 
         
         case "windows-registry-key":
+            console.log("888888");
+
             return React.lazy(() => import("./dialog_contents/contentWindowsRegistryKeySTIXObject.jsx")); 
         
         case "x509-certificate":
+            console.log("9999999");
+
             return React.lazy(() => import("./dialog_contents/contentX509CertificateSTIXObject.jsx")); 
         
         case "attack-pattern":
+            console.log("1011010");
+
             return React.lazy(() => import("./dialog_contents/contentAttackPatternSTIXObject.jsx")); 
 
         case "autonomous-system":
+            console.log("111|1111");
+
             return React.lazy(() => import("./dialog_contents/contentAutonomousSystemSTIXObject.jsx")); 
 
         case "campaign":
+            console.log("121212|121212");
+
             return React.lazy(() => import("./dialog_contents/contentCampaignSTIXObject.jsx")); 
             
         case "course-of-action":
+            console.log("131313|131313");
+
             return React.lazy(() => import("./dialog_contents/contentCourseOfActionSTIXObject.jsx")); 
 
         case "domain-name":
+            console.log("141414|141414");
+
             return React.lazy(() => import("./dialog_contents/contentDomainNameSTIXObject.jsx")); 
 
         case "email-addr":
             //"email-message"
+            console.log("151515|1511515");
+
             return React.lazy(() => import("./dialog_contents/contentEmailAddrSTIXObject.jsx")); 
 
         case "grouping":
@@ -190,6 +220,10 @@ export default function CreateAnyModalWindowSTIXObject(props){
                 </Grid>
             </Grid> 
         </DialogTitle>
+
+        {/** ЭТО СПЕЦИАЛЬНЫЙ СТРОГИЙ РЕЖИМ REACT ДЛЯ ПРОВЕРКИ */}
+        <React.StrictMode></React.StrictMode>
+
         <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22}}>Загрузка...</div>}>
             {(MyModule)?
                 <MyModule

@@ -109,7 +109,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             showDialogElementAdditionalThechnicalInfo: false,
             objectDialogElementAdditionalThechnicalInfo: {},
         };
-
+        
         this.modalClose = this.modalClose.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handlerPublished = this.handlerPublished.bind(this);
@@ -131,12 +131,11 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.handlerChosenDecisionsMadeComputerThreat = this.handlerChosenDecisionsMadeComputerThreat.bind(this);
         this.handlerExternalReferencesButtonSave = this.handlerExternalReferencesButtonSave.bind(this);
 
-        this.handlerEvents.call(this);
+        //this.handlerEvents.call(this);
         this.requestEmitter.call(this);
     }
 
     handlerEvents(){
-        //обработка события связанного с приемом списка групп которым разрешен доступ к данному Отчёту
         this.props.socketIo.on("isems-mrsi response ui", (data) => {
             if((data.information === null) || (typeof data.information === "undefined")){
                 return;
@@ -202,10 +201,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
                 break;
             case "isems-mrsi ui request: send search request, get STIX object for id":
-
-                console.log("isems-mrsi ui request: send search request, get STIX object for id");
-                console.log(data.information.additional_parameters.transmitted_data);
-
                 if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
                     break;
                 }
@@ -225,9 +220,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
             case "isems-mrsi ui request: send search request, list different objects STIX object for id":
                 this.setState({ showListPreviousStateReport: true });
-
-                console.log("isems-mrsi ui request: send search request, list different objects STIX object for id");
-                console.log(data.information.additional_parameters.transmitted_data);
 
                 if(this.state.currentAdditionalIdSTIXObject !== ""){
                     this.setState({ showListPreviousStateAnySTIXObject: true });
@@ -314,6 +306,174 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     requestEmitter(){}
+
+    handlerReceivedData(data){
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return;
+        }
+
+        let objectId = "", 
+            reportInfo = {},
+            listObjectInfoTmp = {},
+            listPreviousStateTmp = [],
+            optionsPreviousStateTmp = {};
+
+        switch(data.section){
+        case "list of groups that are allowed access":
+            this.setState({ availableForGroups: data.information.additional_parameters });
+            
+            break;
+        case "send search request, get report for id":
+            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                break;
+            }
+
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                break;
+            }
+
+            for(let obj of data.information.additional_parameters.transmitted_data){
+                if(obj.type !== "report"){
+                    continue;
+                }
+
+                reportInfo = obj;
+            }
+
+            if(Object.keys(reportInfo).length === 0){
+                break;
+            }
+
+            listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+            listObjectInfoTmp[reportInfo.id] = reportInfo;
+
+            this.setState({ 
+                listObjectInfo: listObjectInfoTmp,
+                reportAcceptedInformation: reportInfo,
+            });
+    
+            break;
+        case "list of groups to which the report is available":
+            if(!Array.isArray(data.information.additional_parameters.list_groups_which_report_available)){
+                break;
+            }
+
+            this.setState({ listGroupAccessToReport: data.information.additional_parameters.list_groups_which_report_available.map((item) => {
+                return { 
+                    group: item.group_name,
+                    time: helpers.getDate(item.date_time),
+                    userName: item.user_name,
+                    title: `Пользователь: ${item.user_name}, Время: ${helpers.getDate(item.date_time)}` };
+            })});
+
+            break;
+        case "isems-mrsi ui request: send search request, get STIX object for id":
+            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                break;
+            }
+
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                break;
+            }
+
+            listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+            for(let obj of data.information.additional_parameters.transmitted_data){
+                listObjectInfoTmp[obj.id] = obj;
+            }
+
+            this.setState({ listObjectInfo: listObjectInfoTmp });
+
+            break;
+
+        case "isems-mrsi ui request: send search request, list different objects STIX object for id":
+            this.setState({ showListPreviousStateReport: true });
+
+            if(this.state.currentAdditionalIdSTIXObject !== ""){
+                this.setState({ showListPreviousStateAnySTIXObject: true });
+            }
+
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                return;
+            }
+
+            objectId = (data.information.additional_parameters.transmitted_data.length > 1)? data.information.additional_parameters.transmitted_data[0].document_id: "";
+
+            if(objectId.startsWith("report")){
+                if(this.state.listPreviousStateReport.length === 0){
+                    listPreviousStateTmp = (data.information.additional_parameters.transmitted_data.length === 0)? 
+                        [{}]: 
+                        data.information.additional_parameters.transmitted_data;
+                } else {
+                    listPreviousStateTmp = this.state.listPreviousStateReport.slice();
+
+                    for(let item of data.information.additional_parameters.transmitted_data){
+                        if(!listPreviousStateTmp.find((elem) => elem.modified_time === item.modified_time)){
+                            listPreviousStateTmp.push(item);
+                        }
+                    }
+
+                    listPreviousStateTmp.sort(sortDateFunc);                
+                }
+    
+                optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousStateReport);
+                optionsPreviousStateTmp.objectId = objectId;
+                optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part + optionsPreviousStateTmp.currentPartNumber;
+    
+                this.setState({ 
+                    listPreviousStateReport: listPreviousStateTmp,
+                    optionsPreviousStateReport: optionsPreviousStateTmp,
+                });
+            } else {
+                if((this.state.listPreviousState.length === 0) || (this.state.optionsPreviousState.objectId !== objectId)){
+                    listPreviousStateTmp = (data.information.additional_parameters.transmitted_data.length === 0)? 
+                        [{}]: 
+                        data.information.additional_parameters.transmitted_data;
+                } else {
+                    listPreviousStateTmp = this.state.listPreviousState.slice();
+
+                    for(let item of data.information.additional_parameters.transmitted_data){
+                        if(!listPreviousStateTmp.find((elem) => elem.modified_time === item.modified_time)){
+                            listPreviousStateTmp.push(item);
+                        }
+                    }
+
+                    listPreviousStateTmp.sort(sortDateFunc);                
+                }
+
+                optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousState);
+                optionsPreviousStateTmp.objectId = objectId;
+                optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part + optionsPreviousStateTmp.currentPartNumber;
+    
+                this.setState({ 
+                    listPreviousState: listPreviousStateTmp,
+                    optionsPreviousState: optionsPreviousStateTmp,
+                });
+            }
+
+            break;
+
+        case "isems-mrsi ui request: send search request, count list different objects STIX object for id":
+            if(this.props.showReportId === data.information.additional_parameters.document_id){
+                optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousStateReport);
+                optionsPreviousStateTmp.objectId = data.information.additional_parameters.document_id;
+                optionsPreviousStateTmp.countFoundDocuments = data.information.additional_parameters.number_documents_found;
+
+                this.setState({ optionsPreviousStateReport: optionsPreviousStateTmp });
+            } else {
+                optionsPreviousStateTmp = _.cloneDeep(this.state.optionsPreviousState);
+                optionsPreviousStateTmp.objectId = data.information.additional_parameters.document_id;
+                optionsPreviousStateTmp.countFoundDocuments = data.information.additional_parameters.number_documents_found;
+
+                this.setState({ optionsPreviousState: optionsPreviousStateTmp });    
+            } 
+
+            break;
+        }
+    }
 
     handleClose(){
         this.modalClose();
@@ -613,9 +773,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 } 
             }});
 
-        console.log("SEND -> isems-mrsi ui request: send search request, get count different objects STIX object for id");
-        console.log("SEND -> isems-mrsi ui request: send search request, get different objects STIX object for id");
-
         this.setState({ 
             currentAdditionalIdSTIXObject: currentObjectId,
             showDialogElementAdditionalSTIXObject: true 
@@ -639,10 +796,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
 
     //обрабатывает изменение информации о STIX объектах
     handelrDialogSaveAnySTIXObject(newSTIXObject){
-        console.log("func 'handelrDialogSaveAnySTIXObject', START...");
-        console.log("----- ______ NEW STIX OBJECT ______-----");
-        console.log(newSTIXObject);
-
         let listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
 
         listObjectInfoTmp[newSTIXObject.id] = newSTIXObject;
@@ -684,9 +837,6 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     }
 
     handlerDialogSaveDialogNewSTIXObject(obj){
-        console.log("func 'handlerDialogSaveDialogNewSTIXObject', START");
-        console.log("Information: ", JSON.stringify(obj));
-
         this.setState({ showDialogNewSTIXObject: false });
     }
 
@@ -767,23 +917,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         });
     }
 
-    render() {
-        if((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined")){
-            return (<Dialog 
-                fullScreen 
-                open={this.props.show} 
-                onClose={this.modalClose} >
-
-                <CreateAppBar 
-                    title=""
-                    nameDialogButton="сохранить"
-                    reportAcceptedInformation={this.state.reportAcceptedInformation}
-                    reportChangeableInformation={{}}
-                    handelrDialogClose={this.modalClose}
-                    handlerDialogButton={this.handlerReportSave} />
-            </Dialog>);
-        }
-
+    createModalBody(){
         let reportInfo = this.state.listObjectInfo[this.props.showReportId];
         let outsideSpecificationIsNotExist = ((reportInfo.outside_specification === null) || (typeof reportInfo.outside_specification === "undefined"));
 
@@ -809,223 +943,199 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
             </Col>);
         };
 
-        //формирование модального окна для STIX объекта типа 'Report'
         return (<React.Fragment>
-            <Dialog 
-                fullScreen 
-                open={this.props.show} 
-                onClose={() => { 
-                    this.setState({ showListPreviousStateReport: false });
-                    this.modalClose();
-                }} >
+            <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
+                <Row>
+                    <Col md={7}>
+                        <Row className="mt-4">
+                            <Col md={6}><span className="text-muted">Наименование</span>:</Col>
+                            <Col md={6} className="text-right">{reportInfo.name}</Col>
+                        </Row>
 
-                <CreateAppBar 
-                    title={reportInfo.id}
-                    nameDialogButton="сохранить"
-                    reportAcceptedInformation={this.state.reportAcceptedInformation}
-                    reportChangeableInformation={reportInfo}
-                    handelrDialogClose={() => { 
-                        this.setState({ showListPreviousStateReport: false });
-                        this.modalClose();
-                    }}
-                    handlerDialogButton={() => { 
-                        this.setState({ showListPreviousStateReport: false });
-                        this.handlerReportSave();
-                    }} />
+                        <Row>
+                            <Col md={12}><span className="text-muted">Дата и время</span>:</Col>
+                        </Row>      
 
-                <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
-                    <Row>
-                        <Col md={7}>
-                            <Row className="mt-4">
-                                <Col md={6}><span className="text-muted">Наименование</span>:</Col>
-                                <Col md={6} className="text-right">{reportInfo.name}</Col>
-                            </Row>
+                        <Row>
+                            <Col md={6}>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">создания</span>
+                            </Col>
+                            <Col md={6} className="text-end">
+                                {helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}
+                            </Col>
+                        </Row>
 
-                            <Row>
-                                <Col md={12}><span className="text-muted">Дата и время</span>:</Col>
-                            </Row>      
+                        <Row>
+                            <Col md={6} className="pl-4">
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">последнего обновления</span>
+                            </Col>
+                            <Col md={6} className="text-end">
+                                {helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}
+                            </Col>
+                        </Row>
 
-                            <Row>
-                                <Col md={6}>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">создания</span>
-                                </Col>
-                                <Col md={6} className="text-end">
-                                    {helpers.convertDateFromString(reportInfo.created, { monthDescription: "long", dayDescription: "numeric" })}
-                                </Col>
-                            </Row>
+                        <Row>
+                            <Col md={6} className="pl-4">
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">публикации</span>
+                            </Col>
+                            {published()}
+                        </Row>
 
-                            <Row>
-                                <Col md={6} className="pl-4">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">последнего обновления</span>
-                                </Col>
-                                <Col md={6} className="text-end">
-                                    {helpers.convertDateFromString(reportInfo.modified, { monthDescription: "long", dayDescription: "numeric" })}
-                                </Col>
-                            </Row>
+                        {this.handlerManagingAccessToReport()}
+                    
+                        <Row>
+                            <Col md={12} className="mt-3">
+                                <TextField
+                                    id="outlined-multiline-static"
+                                    label={"подробное описание"}
+                                    multiline
+                                    minRows={3}
+                                    maxRows={8}
+                                    fullWidth
+                                    onChange={this.handlerOnChangeDescription}
+                                    defaultValue={reportInfo.description}
+                                    variant="outlined"/>
+                            </Col>  
+                        </Row>
 
-                            <Row>
-                                <Col md={6} className="pl-4">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">публикации</span>
-                                </Col>
-                                {published()}
-                            </Row>
+                        <GetListObjectRefs
+                            listObjectRef={reportInfo.object_refs} 
+                            handlerDeleteObjectRef={this.handlerDeleteObjectRef}
+                            handlerShowDialogNewSTIXObject={this.handlerShowDialogNewSTIXObject}
+                            handlerChangeCurrentSTIXObject={this.handlerChangeCurrentAdditionalIdSTIXObject} />
 
-                            {this.handlerManagingAccessToReport()}
-                                    
-                            <Row>
-                                <Col md={12} className="mt-3">
-                                    <TextField
-                                        id="outlined-multiline-static"
-                                        label={"подробное описание"}
-                                        multiline
-                                        minRows={3}
-                                        maxRows={8}
-                                        fullWidth
-                                        onChange={this.handlerOnChangeDescription}
-                                        defaultValue={reportInfo.description}
-                                        variant="outlined"/>
-                                </Col>  
-                            </Row>
+                        <Row className="mt-1">
+                            <Col md={12}>
+                                <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
+                            </Col>
+                        </Row>
 
-                            <GetListObjectRefs
-                                listObjectRef={reportInfo.object_refs} 
-                                handlerDeleteObjectRef={this.handlerDeleteObjectRef}
-                                handlerShowDialogNewSTIXObject={this.handlerShowDialogNewSTIXObject}
-                                handlerChangeCurrentSTIXObject={this.handlerChangeCurrentAdditionalIdSTIXObject} />
+                        <Row className="mt-3">
+                            <Col md={12}>
+                                <span className="pl-4">
+                                    <MainTextField
+                                        uniqName={"additional_name_not_stix_specifications"}
+                                        variant={"standard"}
+                                        label={"дополнительное наименование"}
+                                        value={(()=>{
+                                            if((reportInfo.outside_specification === null) || (typeof reportInfo.outside_specification === "undefined")){
+                                                return "";
+                                            }
 
-                            <Row className="mt-1">
-                                <Col md={12}>
-                                    <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
-                                </Col>
-                            </Row>
+                                            if((reportInfo.outside_specification.additional_name === null) || (typeof reportInfo.outside_specification.additional_name === "undefined")){
+                                                return "";
+                                            }
 
+                                            return reportInfo.outside_specification.additional_name;
+                                        })()}
+                                        fullWidth={true}
+                                        onChange={this.handlerOutsideSpecificationAdditionalName}
+                                    />
+                                </span>
+                            </Col>
+                        </Row>
+
+                        {((outsideSpecificationIsNotExist) || (reportInfo.outside_specification.decisions_made_computer_threat === null) || (typeof reportInfo.outside_specification.decisions_made_computer_threat === "undefined"))? 
+                            "":
                             <Row className="mt-3">
                                 <Col md={12}>
                                     <span className="pl-4">
-                                        <MainTextField
-                                            uniqName={"additional_name_not_stix_specifications"}
-                                            variant={"standard"}
-                                            label={"дополнительное наименование"}
-                                            value={(()=>{
-                                                if((reportInfo.outside_specification === null) || (typeof reportInfo.outside_specification === "undefined")){
-                                                    return "";
-                                                }
-
-                                                if((reportInfo.outside_specification.additional_name === null) || (typeof reportInfo.outside_specification.additional_name === "undefined")){
-                                                    return "";
-                                                }
-
-                                                return reportInfo.outside_specification.additional_name;
-                                            })()}
-                                            fullWidth={true}
-                                            onChange={this.handlerOutsideSpecificationAdditionalName}
-                                        />
+                                        <CreateListSelect
+                                            list={this.props.listTypesDecisionsMadeComputerThreat}
+                                            label="принятое решение по компьютерной угрозе"
+                                            uniqId="decisions_made_computer_threat"
+                                            currentItem={reportInfo.outside_specification.decisions_made_computer_threat}
+                                            handlerChosen={this.handlerChosenDecisionsMadeComputerThreat}
+                                            isNotDisabled={this.props.userPermissions.editing_information.status} />
                                     </span>
                                 </Col>
                             </Row>
+                        }
+                
+                        {((outsideSpecificationIsNotExist) || (reportInfo.outside_specification.computer_threat_type === null) || (typeof reportInfo.outside_specification.computer_threat_type === "undefined"))? 
+                            "":
+                            <Row className="mt-3">
+                                <Col md={12}>
+                                    <span className="pl-4">
+                                        <CreateListSelect
+                                            list={this.props.listTypesComputerThreat}
+                                            label="тип компьютерной угрозы"
+                                            uniqId="computer_threat_type"
+                                            currentItem={reportInfo.outside_specification.computer_threat_type}
+                                            handlerChosen={this.handlerChosenComputerThreatType}
+                                            isNotDisabled={this.props.userPermissions.editing_information.status} />
+                                    </span>
+                                </Col>
+                            </Row>
+                        }
 
-                            {((outsideSpecificationIsNotExist) || (reportInfo.outside_specification.decisions_made_computer_threat === null) || (typeof reportInfo.outside_specification.decisions_made_computer_threat === "undefined"))? 
-                                "":
-                                <Row className="mt-3">
-                                    <Col md={12}>
-                                        <span className="pl-4">
-                                            <CreateListSelect
-                                                list={this.props.listTypesDecisionsMadeComputerThreat}
-                                                label="принятое решение по компьютерной угрозе"
-                                                uniqId="decisions_made_computer_threat"
-                                                currentItem={reportInfo.outside_specification.decisions_made_computer_threat}
-                                                handlerChosen={this.handlerChosenDecisionsMadeComputerThreat}
-                                                isNotDisabled={this.props.userPermissions.editing_information.status} />
-                                        </span>
-                                    </Col>
-                                </Row>
-                            }
-                                
-                            {((outsideSpecificationIsNotExist) || (reportInfo.outside_specification.computer_threat_type === null) || (typeof reportInfo.outside_specification.computer_threat_type === "undefined"))? 
-                                "":
-                                <Row className="mt-3">
-                                    <Col md={12}>
-                                        <span className="pl-4">
-                                            <CreateListSelect
-                                                list={this.props.listTypesComputerThreat}
-                                                label="тип компьютерной угрозы"
-                                                uniqId="computer_threat_type"
-                                                currentItem={reportInfo.outside_specification.computer_threat_type}
-                                                handlerChosen={this.handlerChosenComputerThreatType}
-                                                isNotDisabled={this.props.userPermissions.editing_information.status} />
-                                        </span>
-                                    </Col>
-                                </Row>
-                            }
-
-                            <CreateElementAdditionalTechnicalInformationReportObject 
-                                reportInfo={reportInfo}
-                                objectId={this.props.showReportId}
-                                handlerElementConfidence={this.handlerElementConfidence.bind(this)}
-                                handlerElementDefanged={this.handlerElementDefanged.bind(this)}
-                                handlerElementLabels={this.handlerElementLabels.bind(this)}
-                                handlerElementDelete={this.handlerDeleteElementAdditionalTechnicalInformation.bind(this)}
-                                showDialogElementAdditionalThechnicalInfo={this.showDialogElementAdditionalThechnicalInfo.bind(this)}
-                                isNotDisabled={this.props.userPermissions.editing_information.status} />  
-                        </Col>
-                        <Col md={5}>
-                            <Paper elevation={3}>
-                                <Row className="pt-3">
-                                    <Col md={12} className="text-center">
-                                        <strong>Отчет доступен для просмотра следующих групп</strong>
-                                    </Col>
-                                </Row>
-
-                                <br/>
-                                {this.state.listGroupAccessToReport.map((item, num) => {
-                                    return (<Row className="pb-3" key={`key_list_group_access_report_${num}`}>
-                                        <Col md={1}></Col>
-                                        <Col md={10}>
-                                            <Row className="pl-3 pr-3">
-                                                <Col md={6} className="text-end text-muted">
-                                                    <Typography variant="caption">группа:</Typography>
-                                                </Col>
-                                                <Col md={6} className="text-start">
-                                                    <Typography variant="caption">{item.group}</Typography>
-                                                </Col>
-                                            </Row>
-                                            <Row className="pl-3 pr-3">
-                                                <Col md={6} className="text-end text-muted">
-                                                    <Typography variant="caption">добавлена:</Typography>
-                                                </Col>
-                                                <Col md={6} className="text-start">
-                                                    <Typography variant="caption">
-                                                        <span style={{ color: orange[800] }}>
-                                                            {helpers.convertDateFromString(item.time, { monthDescription: "long", dayDescription: "numeric" })}
-                                                        </span>
-                                                    </Typography>
-                                                </Col>
-                                            </Row>
-                                            <Row className="pl-3 pr-3">
-                                                <Col md={6} className="text-end text-muted">
-                                                    <Typography variant="caption">пользователем:</Typography>
-                                                </Col>
-                                                <Col md={6} className="text-start">
-                                                    <Typography variant="caption">{item.userName}</Typography>
-                                                </Col>
-                                            </Row>
-                                        </Col>
-                                        <Col md={1}></Col>
-                                    </Row>);
-                                })}
-                            </Paper>
+                        <CreateElementAdditionalTechnicalInformationReportObject 
+                            reportInfo={reportInfo}
+                            objectId={this.props.showReportId}
+                            handlerElementConfidence={this.handlerElementConfidence.bind(this)}
+                            handlerElementDefanged={this.handlerElementDefanged.bind(this)}
+                            handlerElementLabels={this.handlerElementLabels.bind(this)}
+                            handlerElementDelete={this.handlerDeleteElementAdditionalTechnicalInformation.bind(this)}
+                            showDialogElementAdditionalThechnicalInfo={this.showDialogElementAdditionalThechnicalInfo.bind(this)}
+                            isNotDisabled={this.props.userPermissions.editing_information.status} />  
+                    </Col>
+                    <Col md={5}>
+                        <Paper elevation={3}>
+                            <Row className="pt-3">
+                                <Col md={12} className="text-center">
+                                    <strong>Отчет доступен для просмотра следующих групп</strong>
+                                </Col>
+                            </Row>
 
                             <br/>
-                            <CreateListPreviousStateSTIXObject 
-                                socketIo={this.props.socketIo} 
-                                searchObjectId={this.props.showReportId}
-                                optionsPreviousState={this.state.optionsPreviousStateReport}
-                                showListPreviousState={this.state.showListPreviousStateReport}
-                                listPreviousState={this.state.listPreviousStateReport} /> 
-                        </Col>
-                    </Row>
-                </Container>
-            </Dialog>
+                            {this.state.listGroupAccessToReport.map((item, num) => {
+                                return (<Row className="pb-3" key={`key_list_group_access_report_${num}`}>
+                                    <Col md={1}></Col>
+                                    <Col md={10}>
+                                        <Row className="pl-3 pr-3">
+                                            <Col md={6} className="text-end text-muted">
+                                                <Typography variant="caption">группа:</Typography>
+                                            </Col>
+                                            <Col md={6} className="text-start">
+                                                <Typography variant="caption">{item.group}</Typography>
+                                            </Col>
+                                        </Row>
+                                        <Row className="pl-3 pr-3">
+                                            <Col md={6} className="text-end text-muted">
+                                                <Typography variant="caption">добавлена:</Typography>
+                                            </Col>
+                                            <Col md={6} className="text-start">
+                                                <Typography variant="caption">
+                                                    <span style={{ color: orange[800] }}>
+                                                        {helpers.convertDateFromString(item.time, { monthDescription: "long", dayDescription: "numeric" })}
+                                                    </span>
+                                                </Typography>
+                                            </Col>
+                                        </Row>
+                                        <Row className="pl-3 pr-3">
+                                            <Col md={6} className="text-end text-muted">
+                                                <Typography variant="caption">пользователем:</Typography>
+                                            </Col>
+                                            <Col md={6} className="text-start">
+                                                <Typography variant="caption">{item.userName}</Typography>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                    <Col md={1}></Col>
+                                </Row>);
+                            })}
+                        </Paper>
+
+                        <br/>
+                        <CreateListPreviousStateSTIXObject 
+                            socketIo={this.props.socketIo} 
+                            searchObjectId={this.props.showReportId}
+                            optionsPreviousState={this.state.optionsPreviousStateReport}
+                            showListPreviousState={this.state.showListPreviousStateReport}
+                            listPreviousState={this.state.listPreviousStateReport} /> 
+                    </Col>
+                </Row>
+            </Container>
 
             <Dialog 
                 fullWidth
@@ -1072,6 +1182,52 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                 handlerExternalReferencesButtonSave={this.handlerExternalReferencesButtonSave} />
         </React.Fragment>);
     }
+
+    render() {
+        let reportInfo = this.state.listObjectInfo[this.props.showReportId];
+
+        //формирование модального окна для STIX объекта типа 'Report'
+        return (<React.Fragment>
+            <CreateSubscribeEvents
+                socketIo={this.props.socketIo}
+                handlerReceivedData={this.handlerReceivedData.bind(this)}
+            />
+
+            <Dialog 
+                fullScreen 
+                open={this.props.show} 
+                onClose={() => { 
+                    this.setState({ showListPreviousStateReport: false });
+                    this.modalClose();
+                }} >
+
+                {((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined"))? 
+                    <CreateAppBar 
+                        title=""
+                        nameDialogButton="сохранить"
+                        reportAcceptedInformation={this.state.reportAcceptedInformation}
+                        reportChangeableInformation={{}}
+                        handelrDialogClose={this.modalClose}
+                        handlerDialogButton={this.handlerReportSave} />:
+                    <React.Fragment>
+                        <CreateAppBar 
+                            title={reportInfo.id}
+                            nameDialogButton="сохранить"
+                            reportAcceptedInformation={this.state.reportAcceptedInformation}
+                            reportChangeableInformation={reportInfo}
+                            handelrDialogClose={() => { 
+                                this.setState({ showListPreviousStateReport: false });
+                                this.modalClose();
+                            }}
+                            handlerDialogButton={() => { 
+                                this.setState({ showListPreviousStateReport: false });
+                                this.handlerReportSave();
+                            }} />
+                        {this.createModalBody.call(this)}
+                    </React.Fragment> }
+            </Dialog>
+        </React.Fragment>);
+    }
 }
 
 ModalWindowShowInformationReportSTIX.propTypes = {
@@ -1083,6 +1239,28 @@ ModalWindowShowInformationReportSTIX.propTypes = {
     userPermissions: PropTypes.object.isRequired,
     listTypesComputerThreat: PropTypes.object.isRequired,
     listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
+};
+
+function CreateSubscribeEvents(props){
+    const { socketIo, handlerReceivedData } = props;
+    let listener = (data) => {
+        handlerReceivedData(data);
+    };
+
+    React.useEffect(() => {
+        socketIo.on("isems-mrsi response ui", listener);
+        
+        return () => {
+            socketIo.off("isems-mrsi response ui", listener);
+        };
+    }, []);
+
+    return null;
+}
+
+CreateSubscribeEvents.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    handlerReceivedData: PropTypes.func.isRequired,
 };
 
 function CreateAppBar(props){

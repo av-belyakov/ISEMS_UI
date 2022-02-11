@@ -705,6 +705,97 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         id="extensions-name"
                         label="наименование"
                         size="small"
+                        fullWidth
+                        error={valuesIsInvalideNameE}
+                        value={valueE.name}
+                        onChange={(e) => {
+                            let valueETmp = _.cloneDeep(valueE);
+                            valueETmp.name = e.target.value;
+                            
+                            setValueE(valueETmp);
+
+                            if(e.target.value.length > 0){
+                                setValuesIsInvalideNameE(false);
+                                setButtonAddNewEIsDisabled(false);
+                            } else {
+                                setValuesIsInvalideNameE(true);
+                                setButtonAddNewEIsDisabled(true);
+                            }
+                        }}
+                        variant="outlined"
+                        helperText="обязательное для заполнения поле"
+                    />
+                </Grid>
+                <Grid item md={8}>
+                    <TextField
+                        id="extensions-description"
+                        label="подробное описание"
+                        multiline
+                        rows={2}
+                        fullWidth
+                        value={valueE.description}
+                        onChange={(e) => {
+                            let valueETmp = _.cloneDeep(valueE);
+                            valueETmp.description = e.target.value;
+
+                            setValueE(valueETmp);
+                        }}
+                        variant="outlined"/>
+                </Grid>
+            </Grid>
+
+            <Grid container direction="row">
+                <Grid item md={12} className="text-end mt-2 pb-2">
+                    <Button onClick={() => {
+                        let tmpData = _.cloneDeep(valueE);
+
+                        setValueE({ name: "", description: ""});
+                        setValuesIsInvalideNameE(true);
+
+                        handlerDialogElementAdditionalThechnicalInfo({ 
+                            actionType: "new",
+                            modalType: "extensions", 
+                            objectId: objectId,
+                            orderNumber: -1,
+                            data: tmpData,
+                        });
+                    }} disabled={buttonAddNewEIsDisabled}>
+                    добавить любую дополнительную информацию
+                    </Button>
+                </Grid>
+            </Grid>
+
+            <Grid container direction="row">
+                <Grid item md={12}><ul>{listExtensions}</ul></Grid>
+            </Grid>
+        </Grid>);
+    };
+
+    /**
+let getExtensions = () => {
+        let  listExtensions = [];
+        for(let k in reportInfo.extensions){
+            listExtensions.push(<li key={`extensions_${k}`}>
+                {k}: {reportInfo.extensions[k]}
+                <IconButton aria-label="delete-extensions-item" onClick={() => { 
+                    handlerElementDelete({ 
+                        itemType: "extensions", 
+                        item: k, 
+                        objectId: objectId,
+                        orderNumber: -1 }); 
+                }}>
+                    <IconCloseOutlined style={{ color: red[400] }} />
+                </IconButton>
+            </li>);
+        }
+
+        return (<Grid container direction="row" key="key_extensions_link">
+            <Grid container direction="row" spacing={3}>
+                <Grid item md={4}>
+                    <TextField
+                        id="extensions-name"
+                        label="наименование"
+                        size="small"
                         fullWidth={true}
                         error={valuesIsInvalideNameE}
                         value={valueE.name}
@@ -766,6 +857,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             <Grid item md={12}><ul>{listExtensions}</ul></Grid>
         </Grid>);
     };
+ */
 
     //уверенность создателя в правильности своих данных от 0 до 100
     let listConfidence = () => {

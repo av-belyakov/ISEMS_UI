@@ -32,7 +32,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         isNotDisabled,
     } = props;
 
-    let [ attackPatterElement, setAttackPatterElement ] = React.useState(listObjectInfo[currentIdSTIXObject]);
+    let [ attackPatterElement, setAttackPatterElement ] = React.useState((listObjectInfo[currentIdSTIXObject])? listObjectInfo[currentIdSTIXObject]: {});
     let [ valueNameChain, setValueNameChain ] = React.useState("");
     let [ valueNamePhases, setValueNamePhases ] = React.useState("");
     let [ buttonAddNewKillChain, setButtonAddNewKillChain ] = React.useState(true);
@@ -295,7 +295,6 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                         handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
                         handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
                         isNotDisabled={isNotDisabled} />       
-
                 </Grid>
 
                 <Grid item container md={4} style={{ display: "block" }}>
