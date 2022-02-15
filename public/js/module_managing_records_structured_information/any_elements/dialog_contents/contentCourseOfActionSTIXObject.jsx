@@ -1,6 +1,6 @@
 "use strict";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { 
     Button,
     DialogActions,
@@ -28,18 +28,18 @@ export default function CreateDialogContentCourseOfActionSTIXObject(props){
         isNotDisabled,
     } = props;
 
-    let [ currentSTIXObject, setCurrentSTIXObject ] = React.useState(listObjectInfo[currentIdSTIXObject]);
+    //let [ currentSTIXObject, setCurrentSTIXObject ] = React.useState(listObjectInfo[currentIdSTIXObject]);
+    let [ currentSTIXObject, setCurrentSTIXObject ] = React.useState({});
+    
+    useEffect(() => {
+        if(listObjectInfo[currentIdSTIXObject]){
+            setCurrentSTIXObject(listObjectInfo[currentIdSTIXObject]);
+        }
 
-    if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<DialogContent>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={12} justifyContent="center" className="pb-3">
-                поиск информации об STIX объекте типа Реагирование (Course of Action DO STIX)
-                </Grid>
-            </Grid>
-            <LinearProgress />
-        </DialogContent>);
-    }
+        return () => {
+            setCurrentSTIXObject({});
+        };
+    }, [ listObjectInfo, currentIdSTIXObject ]);
 
     let handlerDescription = (obj) => {
             let currentSTIXObjectTmp = _.cloneDeep(currentSTIXObject);
@@ -115,7 +115,7 @@ export default function CreateDialogContentCourseOfActionSTIXObject(props){
                 }
 
                 if(obj.actionType === "hashes_update"){
-                    if((currentSTIXObjectTmp.external_references[obj.orderNumber].hashes === null) || (typeof currentSTIXObjectTmp.external_references[obj.orderNumber].hashes === "undefined")){
+                    if((!currentSTIXObjectTmp.external_references[obj.orderNumber].hashes) || (typeof currentSTIXObjectTmp.external_references[obj.orderNumber].hashes === "undefined")){
                         currentSTIXObjectTmp.external_references[obj.orderNumber].hashes = {};
                     }
 
@@ -139,7 +139,7 @@ export default function CreateDialogContentCourseOfActionSTIXObject(props){
             }
     
             if(obj.modalType === "extensions") {
-                if((currentSTIXObjectTmp.extensions === null) || (typeof currentSTIXObjectTmp.extensions === "undefined")){
+                if((!currentSTIXObjectTmp.extensions) || (typeof currentSTIXObjectTmp.extensions === "undefined")){
                     currentSTIXObjectTmp.extensions = {};
                 }
 
@@ -185,6 +185,17 @@ export default function CreateDialogContentCourseOfActionSTIXObject(props){
 
             handlerDialog(currentSTIXObjectTmp);
         };
+
+    if((!listObjectInfo[currentIdSTIXObject]) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
+        return (<DialogContent>
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={12} justifyContent="center" className="pb-3">
+                    поиск информации об STIX объекте типа Реагирование (Course of Action DO STIX)
+                </Grid>
+            </Grid>
+            <LinearProgress />
+        </DialogContent>);
+    }
 
     return (<React.Fragment>
         <DialogContent>

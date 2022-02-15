@@ -139,7 +139,7 @@ export default class CreateMainTableForReport extends React.Component {
 
     requestEmitter(){}
 
-    /*handlerReceivedData(data){
+    handlerReceivedData(data){
         if(data.section === "send search request, count found elem, table page report"){
             if(!data.information.is_successful){
                 return;
@@ -202,7 +202,7 @@ export default class CreateMainTableForReport extends React.Component {
 
             this.setState({ listGroupsWhichReportAvailable: tmp });
         }
-    }*/
+    }
 
     handlerOnRowsPerPageChange(rowsPerPage){        
         this.setState({ countShowReportsPerPage: rowsPerPage });

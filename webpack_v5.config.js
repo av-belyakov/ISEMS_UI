@@ -86,7 +86,8 @@ module.exports = {
         library: "[name]",
 
         //ассеты будут складываться в dist/assets
-        //assetModuleFilename: "assets/[hash][ext][query]",
+        assetModuleFilename: "assets/[hash][ext][query]",
+        clean: true,
     },
 
     watch: NODE_ENV === "development",
@@ -104,7 +105,7 @@ module.exports = {
 
     resolve: {
         modules: ["node_modules", bootstrapPath],
-        extensions: [".js", "jsx", ".css"],
+        extensions: ["", ".js", "jsx", ".css"],
         alias: {
             "utf8": "utf8/utf8.js",
             "uuid": "uuid",
@@ -139,7 +140,7 @@ module.exports = {
 
     resolveLoader: {
         modules: ["node_modules"],
-        extensions: [".js"],
+        extensions: [".js", ".jsx"],
         //moduleExtensions: ["*-loader"]
     },
 
@@ -164,17 +165,19 @@ module.exports = {
         rules: [{
             test: /\.(js|jsx)$/, // определяем тип файлов
             exclude: /node_modules/, // исключаем из обработки папку node_modules
-            loader: "babel-loader", // определяем загрузчик
-            options: {
-                presets: ["@babel/preset-env", "@babel/preset-react"] // используемые плагины
-            }
+            use: {
+                loader: "babel-loader",
+                options: {
+                    presets: ["@babel/preset-env", "@babel/preset-react"],
+                },
+            },
         }, /*{
             test: /\.css$/,
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: ["css-loader"]
             })
-        },*/ {
+        }, {
             test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
             include: /\/node_modules\//,
             use: [{
@@ -184,7 +187,7 @@ module.exports = {
                     publicPath: "dist/",
                 },
             }],
-        }, {
+        },*/ {
             test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/,
             exclude: /\/node_modules\//,
             use: [{

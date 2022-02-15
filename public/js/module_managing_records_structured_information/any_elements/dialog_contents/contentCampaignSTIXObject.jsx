@@ -1,6 +1,6 @@
 "use strict";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { 
     Button,
     DialogActions,
@@ -34,7 +34,18 @@ export default function CreateDialogContentCampaignSTIXObject(props){
         isNotDisabled,
     } = props;
 
-    let [ dataPatterElement, setDataPatterElement ] = React.useState(listObjectInfo[currentIdSTIXObject]);
+    //let [ dataPatterElement, setDataPatterElement ] = React.useState(listObjectInfo[currentIdSTIXObject]);
+    let [ dataPatterElement, setDataPatterElement ] = React.useState({});
+    
+    useEffect(() => {
+        if(listObjectInfo[currentIdSTIXObject]){
+            setDataPatterElement(listObjectInfo[currentIdSTIXObject]);
+        }
+
+        return () => {
+            setDataPatterElement({});
+        };
+    }, [ listObjectInfo, currentIdSTIXObject ]);
 
     const handlerDescription = (obj) => {
             let valueTmp = _.cloneDeep(dataPatterElement);
@@ -218,7 +229,7 @@ export default function CreateDialogContentCampaignSTIXObject(props){
             handlerDialog(valueTmp);  
         };
 
-    if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
+    if((!listObjectInfo[currentIdSTIXObject]) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
         return (<DialogContent>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={12} justifyContent="center" className="pb-3">
@@ -356,7 +367,7 @@ function CreateCampaingPatternElements(props){
             <Grid item md={8}>
                 <TokenInput
                     style={{ height: "80px", width: "auto" }}
-                    tokenValues={(campaignPatterElement.aliases === null) ? []: campaignPatterElement.aliases}
+                    tokenValues={(!campaignPatterElement.aliases) ? []: campaignPatterElement.aliases}
                     onTokenValuesChange={handlerTokenValuesChange} />
             </Grid>
         </Grid>

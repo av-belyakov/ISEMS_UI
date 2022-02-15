@@ -1,6 +1,4 @@
-"use strict";
-
-import React from "react";
+import React, { useEffect } from "react";
 import { 
     Button,
     DialogActions,
@@ -32,12 +30,23 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         isNotDisabled,
     } = props;
 
-    let [ attackPatterElement, setAttackPatterElement ] = React.useState((listObjectInfo[currentIdSTIXObject])? listObjectInfo[currentIdSTIXObject]: {});
+    //let [ attackPatterElement, setAttackPatterElement ] = React.useState((listObjectInfo[currentIdSTIXObject])? listObjectInfo[currentIdSTIXObject]: {});
+    let [ attackPatterElement, setAttackPatterElement ] = React.useState({});
     let [ valueNameChain, setValueNameChain ] = React.useState("");
     let [ valueNamePhases, setValueNamePhases ] = React.useState("");
     let [ buttonAddNewKillChain, setButtonAddNewKillChain ] = React.useState(true);
     let [ invalidNameChain, setInvalidNameChain ] = React.useState(true);
     let [ invalidNamePhases, setInvalidNamePhases ] = React.useState(true);
+
+    useEffect(() => {
+        if(listObjectInfo[currentIdSTIXObject]){
+            setAttackPatterElement(listObjectInfo[currentIdSTIXObject]);
+        }
+
+        return () => {
+            setAttackPatterElement({});
+        };
+    }, [ listObjectInfo, currentIdSTIXObject ]);
 
     const handlerAddNewKillChain = () => {
             if(invalidNameChain || invalidNamePhases){
@@ -246,7 +255,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             handlerDialog(valueAPTmp);
         };
 
-    if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
+    if((!listObjectInfo[currentIdSTIXObject]) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
         return (<DialogContent>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={12} justifyContent="center" className="pb-3">
@@ -256,6 +265,8 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             <LinearProgress />
         </DialogContent>);
     }
+
+    console.log("---==== func 'contentAttackPatternSTIXObject' ====-----");
 
     return (<React.Fragment>
         <DialogContent>
@@ -392,7 +403,7 @@ function CreateAtackPatternElements(props){
             <Grid item md={8}>
                 <TokenInput
                     style={{ height: "80px", width: "auto" }}
-                    tokenValues={(attackPatterElement.aliases === null) ? []: attackPatterElement.aliases}
+                    tokenValues={(!attackPatterElement.aliases) ? []: attackPatterElement.aliases}
                     onTokenValuesChange={handlerTokenValuesChange} />
             </Grid>
         </Grid>
@@ -428,7 +439,7 @@ function CreateAtackPatternElements(props){
         </Grid>
 
         <CreateKillChainPhasesList 
-            listKillChainPhases={(attackPatterElement.kill_chain_phases === null) ? []: attackPatterElement.kill_chain_phases} 
+            listKillChainPhases={(!attackPatterElement.kill_chain_phases) ? []: attackPatterElement.kill_chain_phases} 
             handlerDeleteItem={handlerDeleteKillChain} />
     </React.Fragment>);
 }

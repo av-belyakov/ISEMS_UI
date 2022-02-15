@@ -784,7 +784,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
         this.setState({ optionsPreviousState: optionsPreviousStateTmp });
     
         //проверяем наличие информации об запрашиваемом STIX объекте
-        if((this.state.listObjectInfo[currentObjectId] !== null) && (typeof this.state.listObjectInfo[currentObjectId] !== "undefined")){
+        if((this.state.listObjectInfo[currentObjectId]) && (typeof this.state.listObjectInfo[currentObjectId] !== "undefined")){
             return;
         }
 
@@ -1077,7 +1077,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                             handlerElementLabels={this.handlerElementLabels.bind(this)}
                             handlerElementDelete={this.handlerDeleteElementAdditionalTechnicalInformation.bind(this)}
                             showDialogElementAdditionalThechnicalInfo={this.showDialogElementAdditionalThechnicalInfo.bind(this)}
-                            isNotDisabled={this.props.userPermissions.editing_information.status} />  
+                            isNotDisabled={this.props.userPermissions.editing_information.status} />
+  
                     </Col>
                     <Col md={5}>
                         <Paper elevation={3}>
@@ -1186,6 +1187,8 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
     render() {
         let reportInfo = this.state.listObjectInfo[this.props.showReportId];
 
+        console.log("Major func 'modalWindowShowInformationReportSTIX -------'");
+
         //формирование модального окна для STIX объекта типа 'Report'
         return (<React.Fragment>
             <CreateSubscribeEvents
@@ -1201,7 +1204,7 @@ export default class ModalWindowShowInformationReportSTIX extends React.Componen
                     this.modalClose();
                 }} >
 
-                {((this.state.listObjectInfo[this.props.showReportId] === null) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined"))? 
+                {((!this.state.listObjectInfo[this.props.showReportId]) || (typeof this.state.listObjectInfo[this.props.showReportId] === "undefined"))? 
                     <CreateAppBar 
                         title=""
                         nameDialogButton="сохранить"
