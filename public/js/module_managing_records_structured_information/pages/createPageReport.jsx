@@ -1,13 +1,177 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+import patternSearchParameters from "../patterns/patternSearchParameters.js";
 import CreateMainTableReport from "../tables/createMainTableForReport.jsx";
 import CreateWidgetsPageReport from "../widgets/createWidgetsPageReport.jsx";
-import CreateSearchElementReport from "../any_elements/createSearchElementForReport.jsx";
+import CreateSearchElementReport from "../any_elements/createSearchElementReport.jsx";
+import CreateSearchAreaOutputReports from "../any_elements/createSearchAreaOutputReports.jsx";
 import ModalWindowAddReportSTIX from "../../modal_windows/modalWindowAddReportSTIX.jsx";
+import ModalWindowShowInformationReport from "../../modal_windows/modalWindowShowInformationReport.jsx";
 import ModalWindowShowInformationReportSTIX from "../../modal_windows/modalWindowShowInformationReportSTIX.jsx";
 
-export default class CreatePageReport extends React.Component {
+export default function CreatePageReport(props) {
+    let {
+        socketIo,
+        receivedData,
+        listTypesComputerThreat,
+        listTypesDecisionsMadeComputerThreat, 
+    } = props;
+
+    console.log("class 'CreatePageReport', START...");
+
+    let [ addedNewReport, showAddedNewReport ] = React.useState(false);
+    let [ paginateParameters, setPaginateParameters ] = React.useState({
+        maxPartSize: 30,
+        currentPartNumber: 1,
+    });                  // ЭТО ПОЗЖЕ ЛУЧШЕ бы убрать в модуль формирования таблицы 
+    let [ showReportId, setShowReportId ] = React.useState("");
+    let [ showModalWindowAddReport, setShowModalWindowAddReport ] = React.useState(false);
+    let [ showModalWindowInformationReport, setShowModalWindowInformationReport ] = React.useState(false);
+
+    let handlerShowModalWindowAddReport = () => {
+            showModalWindowAddReport(true);
+        },
+        handlerCloseModalWindowAddReport = () => {
+            showModalWindowAddReport(false);
+        },
+        handlerShowModalWindowInformationReport = (elemId) => {
+            setShowReportId(elemId);
+            setShowModalWindowInformationReport(true);
+        },
+        handlerCloseModalWindowInformationReport = () => {
+            setShowReportId("");
+            setShowModalWindowInformationReport(false);
+        },
+
+        //////////// ДЛЯ ПАГИНАТОРА ТАБЛИЦЫ
+        handlerRequestNextPageOfTable = (numPagination) => {
+            /*let requestDetailsTmp = _.cloneDeep(this.state.requestDetails);
+    requestDetailsTmp.paginateParameters.currentPartNumber = numPagination;
+
+    this.setState({ requestDetails: requestDetailsTmp });
+
+    //запрос полной информации по заданным параметрам
+    this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: requestDetailsTmp });*/
+        },
+
+
+
+        handlerButtonSaveModalWindowAddReportSTIX = (obj) => {
+            /*    this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
+
+    setTimeout(() => {
+    //запрос краткой информации (количество) по заданным параметрам
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: this.state.requestDetails });
+
+        //запрос полной информации по заданным параметрам
+        this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: this.state.requestDetails });
+    
+        console.log("запрос полной информации по заданным параметрам...");
+    }, 1500);*/
+        },
+        handlerSendSearchRequest = (searchParameters) => {
+            /*let searchReguest = {
+        paginateParameters: {
+            maxPartSize: 30,
+            currentPartNumber: 1,
+        },
+        sortableField: "data_created",
+        searchParameters: searchParameters,
+    };
+
+    //запрос краткой информации (количество) по заданным параметрам
+    this.props.socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
+
+    //запрос полной информации по заданным параметрам
+    this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
+
+    this.setState({ requestDetails: searchReguest });*/
+        },
+        changeValueAddNewReport = (value) => {
+            this.setState({ addNewReport: value });
+        };
+
+    return (<React.Fragment>
+        <CreateWidgetsPageReport socketIo={socketIo}/>
+
+        {/** элементы поиска информации */}
+        {/*<CreateSearchElementReport 
+            socketIo={socketIo} 
+            userPermissions={receivedData.userPermissions}
+            handlerSendSearchRequest={handlerSendSearchRequest}
+            listTypesComputerThreat={listTypesComputerThreat}
+        listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat} />*/}
+
+        {/** область поиска и вывода информации по Отчётам */}
+        <CreateSearchAreaOutputReports 
+            socketIo={socketIo} 
+            userPermissions={receivedData.userPermissions}
+            listTypesComputerThreat={listTypesComputerThreat}
+            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
+            addNewReport={addedNewReport}
+            paginateParameters={paginateParameters}
+            changeValueAddNewReport={changeValueAddNewReport}
+            //            buttonAddNewReportIsDisabled={!receivedData.userPermissions.create.status}
+            handlerSendSearchRequest={handlerSendSearchRequest}
+            handlerRequestNextPageOfTable={handlerRequestNextPageOfTable}
+            handlerShowModalWindowAddNewReport={handlerShowModalWindowAddReport}
+            handlerShowModalWindowInformationReport={handlerShowModalWindowInformationReport}
+        />
+
+        {/** основная таблица страницы */}
+        {/*<CreateMainTableReport 
+            socketIo={socketIo}
+            addNewReport={addedNewReport}
+            paginateParameters={paginateParameters}
+            changeValueAddNewReport={changeValueAddNewReport}
+            buttonAddNewReportIsDisabled={!receivedData.userPermissions.create.status}
+            handlerRequestNextPageOfTable={handlerRequestNextPageOfTable}
+            handlerShowModalWindowAddNewReport={handlerShowModalWindowAddReport}
+        handlerShowModalWindowInformationReport={handlerShowModalWindowInformationReport} />*/}
+
+        <ModalWindowAddReportSTIX
+            show={showModalWindowAddReport}
+            onHide={handlerCloseModalWindowAddReport}
+            changeValueAddNewReport={changeValueAddNewReport}
+            listTypesComputerThreat={listTypesComputerThreat}
+            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
+            userPermissions={receivedData.userPermissions}
+            handlerButtonSave={handlerButtonSaveModalWindowAddReportSTIX}
+            socketIo={socketIo} />
+
+        <ModalWindowShowInformationReport
+            show={showModalWindowInformationReport}
+            onHide={handlerCloseModalWindowInformationReport}
+            showReportId={showReportId}
+            groupList={receivedData.groupList}
+            userPermissions={receivedData.userPermissions}
+            listTypesComputerThreat={listTypesComputerThreat}
+            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
+            socketIo={socketIo} />
+
+        {/*<ModalWindowShowInformationReportSTIX 
+                show={this.state.showModalWindowInformationReport}
+                onHide={this.handlerCloseModalWindowInformationReport}
+                showReportId={this.state.showReportId}
+                groupList={this.props.receivedData.groupList}
+                userPermissions={this.props.receivedData.userPermissions}
+                listTypesComputerThreat={this.props.listTypesComputerThreat}
+                listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat}
+            socketIo={this.props.socketIo} />*/}
+    </React.Fragment>);
+}
+
+CreatePageReport.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    receivedData: PropTypes.object.isRequired,
+    listTypesComputerThreat: PropTypes.object.isRequired,
+    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
+};
+
+
+
+/*export default class CreatePageReport extends React.Component {
     constructor(props){
         super(props);
 
@@ -23,17 +187,17 @@ export default class CreatePageReport extends React.Component {
                     currentPartNumber: 1,
                 },
                 sortableField: "data_created",
-                /**
-                 * между параметрами "id_documents", "type_documents", "created", "modified", "created_by_ref", "specific_search_fields" и 
-                 * "outside_specification_search_fields" используется логика "И"
-                 */
+                //
+                // между параметрами "id_documents", "type_documents", "created", "modified", "created_by_ref", "specific_search_fields" и 
+                // "outside_specification_search_fields" используется логика "И"
+                //
                 searchParameters: {            
                     documentsId: [],
                     documentsType: ["report"],
-                    /**  
-                     * если заполнены оба поля 'created' и 'modified' то тогда для поиска по данным из обоих полей работает логика "ИЛИ"
-                     * значение "0001-01-01T00:00:00.000+00:00" для полей с датами эквивалентно значению пустого поля
-                     */
+                    //  
+                    // если заполнены оба поля 'created' и 'modified' то тогда для поиска по данным из обоих полей работает логика "ИЛИ"
+                    // значение "0001-01-01T00:00:00.000+00:00" для полей с датами эквивалентно значению пустого поля
+                    //
                     created: {
                         start: "0001-01-01T00:00:00.000+00:00",
                         end: "0001-01-01T00:00:00.000+00:00",
@@ -43,45 +207,45 @@ export default class CreatePageReport extends React.Component {
                         end: "0001-01-01T00:00:00.000+00:00",
                     }, 
                     createdByRef: "",
-                    /** 
-                     * specific_search_fields содержит специфичные поля объектов STIX (если для поиска используются НЕСКОЛЬКО таких объектов 
-                     * то срабатывает логика "ИЛИ").
-                     * Если в объекте заполнены несколько полей то между ними работает логика "И", со всеми полями кроме полей даты.
-                     * Для поля "Value" выполняется проверка на соответствия одному из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", 
-                     * "ipv6-addr" или "url" 
-                     */
+                    // 
+                    // specific_search_fields содержит специфичные поля объектов STIX (если для поиска используются НЕСКОЛЬКО таких объектов 
+                    // то срабатывает логика "ИЛИ").
+                    // Если в объекте заполнены несколько полей то между ними работает логика "И", со всеми полями кроме полей даты.
+                    // Для поля "Value" выполняется проверка на соответствия одному из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", 
+                    // "ipv6-addr" или "url" 
+                    //
                     specificSearchFields: [
                         {
                             name: "",
                             aliases: [],
-                            /* интервал времени когда информация была обнаружена впервые */
+                            // интервал времени когда информация была обнаружена впервые 
                             firstSeen: {
                                 start: "0001-01-01T00:00:00.000+00:00",
                                 end: "0001-01-01T00:00:00.000+00:00",
                             },
-                            /* интервал времени когда информация была обнаружена в последний раз */
+                            // интервал времени когда информация была обнаружена в последний раз 
                             lastSeen: {
                                 start: "0001-01-01T00:00:00.000+00:00",
                                 end: "0001-01-01T00:00:00.000+00:00",
                             },
-                            /* равно или больше чем заданное пользователем время, когда отчет был опубликован */
+                            // равно или больше чем заданное пользователем время, когда отчет был опубликован 
                             published: "1970-01-01T00:00:00.000+00:00",
                             roles: [],
                             country: "",
                             city: "",
                             numberAutonomousSystem: 0,
-                            /**
-                             * может содержать какое либо из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", 
-                             * "ipv6-addr" или "url". Или все эти значения в перемешку. Между значениями в поле 'Value' используется
-                             * логика "ИЛИ".
-                             */
+                            //
+                            // может содержать какое либо из следующих типов значений: "domain-name", "email-addr", "ipv4-addr", 
+                            // "ipv6-addr" или "url". Или все эти значения в перемешку. Между значениями в поле 'Value' используется
+                            // логика "ИЛИ".
+                            //
                             value: [],
                         }
                     ],
-                    /** 
-                     * содержит поля не входящие в основную спецификацию STIX 2.0 и расширяющие набор некоторых свойств 
-                     * объектов STIX. Логика между ними это "ИЛИ", пустое содержимое полей не учитывается 
-                     */
+                    // 
+                    // содержит поля не входящие в основную спецификацию STIX 2.0 и расширяющие набор некоторых свойств 
+                    // объектов STIX. Логика между ними это "ИЛИ", пустое содержимое полей не учитывается 
+                    //
                     outsideSpecificationSearchFields: {
                         decisionsMadeComputerThreat: "", // принятые решения по компьютерной угрозе
                         computerThreatType: "", // тип компьютерной угрозы
@@ -90,6 +254,8 @@ export default class CreatePageReport extends React.Component {
             },
         };
 
+        console.log("class 'CreatePageReport', START...");
+        
         this.handlerEvents.call(this);
         this.requestEmitter.call(this);
 
@@ -132,21 +298,6 @@ export default class CreatePageReport extends React.Component {
         if(elemId === ""){
             return;
         }
-
-        //запрос на получение количества документов о предыдущем состоянии STIX объектов
-        this.props.socketIo.emit("isems-mrsi ui request: send search request, get count different objects STIX object for id", {
-            arguments: { "documentId": elemId },
-        });
-
-        //запрос на получение дополнительной информации о предыдущем состоянии STIX объектов
-        this.props.socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { 
-            arguments: { 
-                "documentId": elemId,
-                "paginateParameters": {
-                    "max_part_size": 15,
-                    "current_part_number": 1,
-                } 
-            }});
     }
 
     handlerCloseModalWindowInformationReport(){
@@ -208,7 +359,6 @@ export default class CreatePageReport extends React.Component {
         return (<React.Fragment>
             <CreateWidgetsPageReport socketIo={this.props.socketIo}/>
 
-            {/** элементы поиска информации */}
             <CreateSearchElementReport 
                 socketIo={this.props.socketIo} 
                 userPermissions={this.props.receivedData.userPermissions}
@@ -216,7 +366,6 @@ export default class CreatePageReport extends React.Component {
                 listTypesComputerThreat={this.props.listTypesComputerThreat}
                 listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat} />
 
-            {/** основная таблица страницы */}
             <CreateMainTableReport 
                 socketIo={this.props.socketIo}
                 addNewReport={this.state.addNewReport}
@@ -237,7 +386,7 @@ export default class CreatePageReport extends React.Component {
                 handlerButtonSave={this.handlerButtonSaveModalWindowAddReportSTIX.bind(this)}
                 socketIo={this.props.socketIo} />
 
-            <ModalWindowShowInformationReportSTIX 
+            <ModalWindowShowInformationReport
                 show={this.state.showModalWindowInformationReport}
                 onHide={this.handlerCloseModalWindowInformationReport}
                 showReportId={this.state.showReportId}
@@ -246,13 +395,16 @@ export default class CreatePageReport extends React.Component {
                 listTypesComputerThreat={this.props.listTypesComputerThreat}
                 listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat}
                 socketIo={this.props.socketIo} />
+
+            {/*<ModalWindowShowInformationReportSTIX 
+                show={this.state.showModalWindowInformationReport}
+                onHide={this.handlerCloseModalWindowInformationReport}
+                showReportId={this.state.showReportId}
+                groupList={this.props.receivedData.groupList}
+                userPermissions={this.props.receivedData.userPermissions}
+                listTypesComputerThreat={this.props.listTypesComputerThreat}
+                listTypesDecisionsMadeComputerThreat={this.props.listTypesDecisionsMadeComputerThreat}
+            socketIo={this.props.socketIo} />*//*}
         </React.Fragment>);
     }
-}
-
-CreatePageReport.propTypes = {
-    socketIo: PropTypes.object.isRequired,
-    receivedData: PropTypes.object.isRequired,
-    listTypesComputerThreat: PropTypes.object.isRequired,
-    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
-};
+}*/

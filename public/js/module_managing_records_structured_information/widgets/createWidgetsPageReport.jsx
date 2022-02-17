@@ -54,6 +54,8 @@ export default class CreateWidgetsPageReport extends React.Component {
     constructor(props){
         super(props);
 
+        console.log("func 'CreateWidgetsPageReport', START...");
+
         this.state = {
             openReports: { num: 0, show: false }, //количество Отчётов ожидающих обработки (не опубликованных)
             publishedReports: { num: 0, show: false }, //количество опубликованных Отчётов

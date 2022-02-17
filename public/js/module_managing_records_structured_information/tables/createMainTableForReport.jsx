@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { 
     Avatar,
     Box,
@@ -21,6 +21,7 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers";
 import { CreateButtonNewReport } from "../buttons/createButtonNewReport.jsx";
+import patternSearchParameters from "../patterns/patternSearchParameters.js";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,6 +49,243 @@ const columns = [
     },
 ];
 
+export default function CreateMainTableForReport(props) {
+    let {
+        socketIo,
+        addNewReport,
+        paginateParameters,
+        changeValueAddNewReport,
+        buttonAddNewReportIsDisabled,
+        handlerRequestNextPageOfTable,
+        handlerShowModalWindowAddNewReport,
+        handlerShowModalWindowInformationReport,
+    } = props;
+
+    let [ listReports, setListReports ] = useState([]);
+    let [ listGroupsWhichReportAvailable, setListGroupsWhichReportAvailable ] = useState([]);
+    let [ countSearchReports, setCountSearchReports ] = useState(0);
+    let [ numCurrentPagePagination, setNumCurrentPagePagination ] = useState(0);
+    let [ countShowReportsPerPage, setCountShowReportsPerPage ] = useState(10);
+    let [ isShowProgress, setIsShowProgress ] = useState(true);
+
+    let listener = (data) => {
+        if(data.section === "send search request, count found elem, table page report"){
+            if(!data.information.is_successful){
+                return;
+            }
+
+            setIsShowProgress(false);
+            setCountSearchReports(data.information.additional_parameters.number_documents_found);
+        }
+
+        if(data.section === "send search request, table page report"){
+            if((typeof data.information === "undefined") || (data.information === null)){
+                return;
+            }
+
+            if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
+                return;
+            }
+
+            if((typeof data.information.additional_parameters.transmitted_data === "undefined") || (data.information.additional_parameters.transmitted_data === null)){
+                return;
+            }
+
+            let listReportsTmp = [],
+                listIdReport = [];
+            if(paginateParameters.currentPartNumber > 1){
+                listReportsTmp = listReports.slice();
+
+                changeValueAddNewReport(false);
+            }
+
+            for(let item of data.information.additional_parameters.transmitted_data){
+                listReportsTmp.push(item);
+                listIdReport.push(item.id);
+            }
+
+            setListReports(listReportsTmp);
+            socketIo.emit("isems-mrsi ui request: get short information about groups which report available", { arguments: listIdReport });
+        }
+
+        if(data.section === "short information about groups which report available"){
+            if((typeof data.information === "undefined") || (data.information === null)){
+                return;
+            }
+
+            if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
+                return;
+            }
+
+            let tmp = listGroupsWhichReportAvailable.slice();
+            for(let item of data.information.additional_parameters){
+                if(typeof tmp.find((elem) => {
+                    return (elem.group_name === item.group_name && elem.object_id === item.object_id);
+                }) === "undefined"){
+                    tmp.push(item);
+                }
+            }
+
+            setListGroupsWhichReportAvailable(tmp);
+        }
+    };
+    useEffect(() => {
+        let searchReguest = {
+            paginateParameters: {
+                maxPartSize: 30,
+                currentPartNumber: 1,
+            },
+            sortableField: "data_created",
+            searchParameters: patternSearchParameters
+        };
+
+        socketIo.on("isems-mrsi response ui", listener);
+
+        //запрос краткой информации (количество) по заданным параметрам
+        socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
+
+        //запрос полной информации по заданным параметрам
+        socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
+
+        return () => {
+            socketIo.off("isems-mrsi response ui", listener);
+        };
+    }, []);
+
+    let handlerOnRowsPerPageChange = (rowsPerPage) => {
+            setCountShowReportsPerPage(rowsPerPage);        
+        },
+        handlerOnPageChange = (num) => {
+            if(num > numCurrentPagePagination){
+                if(((30 * num) < countSearchReports) && (listReports.length < countSearchReports)){
+                    handlerRequestNextPageOfTable(num+1);
+                }
+            }
+
+            setNumCurrentPagePagination(num);
+        },
+        handlerTableOnClick = (elem, elemId) => {
+            handlerShowModalWindowInformationReport(elemId);
+        },
+        handlerReceivedData = (data) => {
+            /*if(data.section === "send search request, count found elem, table page report"){
+                if(!data.information.is_successful){
+                    return;
+                }
+    
+                this.setState({ 
+                    isShowProgress: false,
+                    countSearchReports: data.information.additional_parameters.number_documents_found 
+                });
+            }
+    
+            if(data.section === "send search request, table page report"){
+                if((typeof data.information === "undefined") || (data.information === null)){
+                    return;
+                }
+    
+                if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
+                    return;
+                }
+    
+                if((typeof data.information.additional_parameters.transmitted_data === "undefined") || (data.information.additional_parameters.transmitted_data === null)){
+                    return;
+                }
+    
+                let listReportsTmp = [],
+                    listIdReport = [];
+                if(this.props.paginateParameters.currentPartNumber > 1){
+                    listReportsTmp = this.state.listReports.slice();
+    
+                    this.props.changeValueAddNewReport(false);
+                }
+    
+                for(let item of data.information.additional_parameters.transmitted_data){
+                    listReportsTmp.push(item);
+                    listIdReport.push(item.id);
+                }
+    
+                this.props.socketIo.emit("isems-mrsi ui request: get short information about groups which report available", { arguments: listIdReport });
+    
+                this.setState({ listReports: listReportsTmp });
+            }
+    
+            if(data.section === "short information about groups which report available"){
+                if((typeof data.information === "undefined") || (data.information === null)){
+                    return;
+                }
+    
+                if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
+                    return;
+                }
+    
+                let tmp = this.state.listGroupsWhichReportAvailable.slice();
+                for(let item of data.information.additional_parameters){
+                    if(typeof tmp.find((elem) => {
+                        return (elem.group_name === item.group_name && elem.object_id === item.object_id);
+                    }) === "undefined"){
+                        tmp.push(item);
+                    }
+                }
+    
+                this.setState({ listGroupsWhichReportAvailable: tmp });
+            }*/
+        },
+        getChipForGroups = (elemId) => {
+            let listTmp = [];
+            for(let item of listGroupsWhichReportAvailable){
+                if(elemId === item.object_id){
+                    listTmp.push(<Chip 
+                        size="small"
+                        avatar={<Avatar>{item.group_name.slice(0, 1).toUpperCase()}</Avatar>} 
+                        label={item.group_name}
+                        className="mr-1"  
+                        key={`key_${item.group_name}`}
+                        disabled />);
+                }
+            }
+
+            return (<React.Fragment>
+                <Chip  size="small" avatar={<Avatar>A</Avatar>} label="administrator" className="mr-1" key="key_administrator" disabled/>
+                {listTmp}
+            </React.Fragment>);
+        },
+        showDocumentCount = () => {
+            return (<Grid container direction="row" className="pb-2">
+                <Grid item container md={8} justifyContent="flex-start">
+                    <i>{`Всего документов найдено: ${countSearchReports}`}</i>
+                </Grid>
+                <Grid item container md={4} justifyContent="flex-end">
+                    <CreateButtonNewReport 
+                        buttonIsDisabled={buttonAddNewReportIsDisabled}
+                        handlerShowModalWindow={handlerShowModalWindowAddNewReport}/>
+                </Grid>
+            </Grid>);
+        };
+
+    return (<Paper elevation={3}>
+        <Box m={2} mb={2} pt={2} pb={2}>
+            <CreateSubscribeEvents
+                socketIo={socketIo}
+                handlerReceivedData={handlerReceivedData}
+            />
+
+            {showDocumentCount()}
+            <CreateTable 
+                listReports={listReports} 
+                isShowProgress={isShowProgress}
+                countSearchReports={countSearchReports}
+                numCurrentPagePagination={numCurrentPagePagination}
+                countShowReportsPerPage={countShowReportsPerPage} 
+                handlerTableOnClick={handlerTableOnClick}
+                handlerOnPageChange={handlerOnPageChange}
+                handlerOnRowsPerPageChange={handlerOnRowsPerPageChange}
+                getChipForGroups={getChipForGroups} />
+        </Box>
+    </Paper>);
+}
+
+/**
 export default class CreateMainTableForReport extends React.Component {
     constructor(props){
         super(props);
@@ -278,6 +516,7 @@ export default class CreateMainTableForReport extends React.Component {
         </Paper>);
     }
 }
+ */
 
 CreateMainTableForReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
@@ -326,9 +565,15 @@ function CreateTable(props){
     } = props;
     const classes = useStyles(),
         onPageChange = (elem, data) => {
+
+            console.log("func 'onPageChange'");
+
             handlerOnPageChange(data);
         },
         onRowsPerPageChange = (data) => {
+
+            console.log("func 'onRowsPerPageChange'");
+
             handlerOnRowsPerPageChange(data.target.value);
         };
 

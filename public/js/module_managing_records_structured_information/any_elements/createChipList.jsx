@@ -5,10 +5,7 @@ import PropTypes from "prop-types";
 
 export default function CreateChipList(props) {
     let { variant, style, chipData, handleDelete } = props;
-    const deleting = (item) => {
-        handleDelete(item);
-    };
-
+    
     if(chipData.length === 0){
         return null;
     }
@@ -18,7 +15,7 @@ export default function CreateChipList(props) {
             <Chip
                 key={`key_chip_${item.group}_${num}`}
                 label={item.group}
-                onDelete={deleting.bind(null, item.group)}
+                onDelete={() => handleDelete.call(null, item.group, num)}
                 variant={variant}
                 style={style} />
         </Tooltip>);

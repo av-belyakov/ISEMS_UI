@@ -115,6 +115,8 @@ export default function ModalWindowAddReportSTIX(props) {
 
     const classes = useStyles();
 
+    console.log("func 'ModalWindowAddReportSTIX', STARTT...");
+
     let [ reportInfo, setReportInfo ] = React.useState({ [newReportId]: dataInformationObject });
     let [ buttonReportSave, setButtonReportSave ] = React.useState(true);
     let [ showDialogNewSTIXObject, setShowDialogNewSTIXObject ] = React.useState(false);
