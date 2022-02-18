@@ -29,11 +29,7 @@ import { helpers } from "../../common_helpers/helpers";
 import validatorjs from "validatorjs";
 
 export default function CreatePatternSearchFilters(props){
-    let { 
-        patternFilters, 
-        listTypesDecisionsMadeComputerThreat,
-        handlerDeleteFilters, 
-    } = props;
+    let { patternFilters, handlerDeleteFilters } = props;
 
     let getOperatorORChild = (currentNum, size) => (currentNum < (size - 1))? <span style={{ color: red[400] }}>&nbsp;ИЛИ&nbsp;</span>: "",
         getOperatorANDChild = (currentNum, size) => (currentNum < (size - 1))? <span style={{ color: red[400] }}>&nbsp;И&nbsp;</span>: "";
@@ -294,7 +290,7 @@ export default function CreatePatternSearchFilters(props){
 
             if(dmctIsExist && !cttIsExist){
                 return (<Chip
-                    label={listTypesDecisionsMadeComputerThreat[patternFilters.outsideSpecificationSearchFields.decisionsMadeComputerThreat].Description}
+                    label={patternFilters.outsideSpecificationSearchFields.decisionsMadeComputerThreat}
                     variant="outlined"
                     style={{ color: grey[500], margin: "2px" }} />);
             } else if(!dmctIsExist && cttIsExist){
@@ -304,7 +300,7 @@ export default function CreatePatternSearchFilters(props){
                     style={{ color: grey[500], margin: "2px" }} />);
             } else {
                 return (<span>(<Chip
-                    label={listTypesDecisionsMadeComputerThreat[patternFilters.outsideSpecificationSearchFields.decisionsMadeComputerThreat].Description}
+                    label={patternFilters.outsideSpecificationSearchFields.decisionsMadeComputerThreat}
                     variant="outlined"
                     style={{ color: grey[500], margin: "2px" }} />
                 <span style={{ color: red[400] }}>&nbsp;ИЛИ&nbsp;</span>
@@ -369,6 +365,5 @@ export default function CreatePatternSearchFilters(props){
 
 CreatePatternSearchFilters.propTypes = {
     patternFilters: PropTypes.object.isRequired,
-    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
     handlerDeleteFilters: PropTypes.func.isRequired,
 };

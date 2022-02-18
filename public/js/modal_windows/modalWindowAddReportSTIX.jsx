@@ -25,11 +25,11 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
-import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
 import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx"; 
 import CreateAnyModalWindowSTIXObject from "../module_managing_records_structured_information/any_elements/createAnyModalWindowSTIXObject.jsx";
 import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
 import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
+import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 
 const tzoffset = (new Date()).getTimezoneOffset() * 60000;
 const myDate = (new Date(Date.now() - tzoffset)).toISOString();
@@ -105,17 +105,15 @@ export default function ModalWindowAddReportSTIX(props) {
     let { 
         show, 
         onHide, 
-        changeValueAddNewReport,
-        listTypesComputerThreat,
-        listTypesDecisionsMadeComputerThreat,
-        userPermissions,
-        handlerButtonSave,
         socketIo,
+        userPermissions,
+        //changeValueAddNewReport,
+        handlerButtonSave,
     } = props;
 
     const classes = useStyles();
 
-    console.log("func 'ModalWindowAddReportSTIX', STARTT...");
+    console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT )))))))");
 
     let [ reportInfo, setReportInfo ] = React.useState({ [newReportId]: dataInformationObject });
     let [ buttonReportSave, setButtonReportSave ] = React.useState(true);
@@ -135,91 +133,96 @@ export default function ModalWindowAddReportSTIX(props) {
     let [ showDialogElementAdditionalSTIXObject, setShowDialogElementAdditionalSTIXObject ] = React.useState(false);
     let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
 
-    (() => {
-        socketIo.on("isems-mrsi response ui", (data) => {
-            if((data.information === null) || (typeof data.information === "undefined")){
-                return;
-            }
+    let listener = (data) => {
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return;
+        }
 
-            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-                return;
-            }
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return;
+        }
 
-            let objectId = "", 
-                listObjectInfoTmp = {},
-                listPreviousStateTmp = [],
-                optionsPreviousStateTmp = {};
+        let objectId = "", 
+            listObjectInfoTmp = {},
+            listPreviousStateTmp = [],
+            optionsPreviousStateTmp = {};
 
-            switch(data.section){
-            case "isems-mrsi ui request: send search request, get STIX object for id":
-                if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-                    break;
-                }
-
-                if(data.information.additional_parameters.transmitted_data.length === 0){
-                    break;
-                }
-
-                listObjectInfoTmp = _.cloneDeep(listObjectInfo);
-                for(let obj of data.information.additional_parameters.transmitted_data){
-                    listObjectInfoTmp[obj.id] = obj;
-                }
-
-                setListObjectInfo(listObjectInfoTmp);
-
+        switch(data.section){
+        case "isems-mrsi ui request: send search request, get STIX object for id":
+            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
                 break;
+            }
 
-            case "isems-mrsi ui request: send search request, list different objects STIX object for id":
-                if(data.information.additional_parameters.transmitted_data.length === 0){
-                    return;
-                }
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                break;
+            }
 
-                objectId = (data.information.additional_parameters.transmitted_data.length > 1)? data.information.additional_parameters.transmitted_data[0].document_id: "";
+            listObjectInfoTmp = _.cloneDeep(listObjectInfo);
+            for(let obj of data.information.additional_parameters.transmitted_data){
+                listObjectInfoTmp[obj.id] = obj;
+            }
 
-                if((listPreviousState.length === 0) || (optionsPreviousState.objectId !== objectId)){
-                    listPreviousStateTmp = (data.information.additional_parameters.transmitted_data.length === 0)? 
-                        [{}]: 
-                        data.information.additional_parameters.transmitted_data;
-                } else {
-                    listPreviousStateTmp = listPreviousState.slice();
-    
-                    for(let item of data.information.additional_parameters.transmitted_data){
-                        if(!listPreviousStateTmp.find((elem) => elem.modified_time === item.modified_time)){
-                            listPreviousStateTmp.push(item);
-                        }
+            setListObjectInfo(listObjectInfoTmp);
+
+            break;
+
+        case "isems-mrsi ui request: send search request, list different objects STIX object for id":
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                return;
+            }
+
+            objectId = (data.information.additional_parameters.transmitted_data.length > 1)? data.information.additional_parameters.transmitted_data[0].document_id: "";
+
+            if((listPreviousState.length === 0) || (optionsPreviousState.objectId !== objectId)){
+                listPreviousStateTmp = (data.information.additional_parameters.transmitted_data.length === 0)? 
+                    [{}]: 
+                    data.information.additional_parameters.transmitted_data;
+            } else {
+                listPreviousStateTmp = listPreviousState.slice();
+
+                for(let item of data.information.additional_parameters.transmitted_data){
+                    if(!listPreviousStateTmp.find((elem) => elem.modified_time === item.modified_time)){
+                        listPreviousStateTmp.push(item);
                     }
-    
-                    listPreviousStateTmp.sort((a, b) => {
-                        let timeA = +new Date(a.modified_time);
-                        let timeB = +new Date(b.modified_time);
-                    
-                        if(timeA > timeB) return -1;
-                        if(timeA === timeB) return 0;
-                        if(timeA < timeB) return 1;
-                    });                
                 }
 
-                setListPreviousState(listPreviousStateTmp);
-
-                optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
-                optionsPreviousStateTmp.objectId = objectId;
-                optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part + optionsPreviousStateTmp.currentPartNumber;
-        
-                setOptionsPreviousState(optionsPreviousStateTmp);
-
-                break;
-
-            case "isems-mrsi ui request: send search request, count list different objects STIX object for id":
-                optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
-                optionsPreviousStateTmp.objectId = data.information.additional_parameters.document_id;
-                optionsPreviousStateTmp.countFoundDocuments = data.information.additional_parameters.number_documents_found;
-    
-                setOptionsPreviousState(optionsPreviousStateTmp);
-
-                break;
+                listPreviousStateTmp.sort((a, b) => {
+                    let timeA = +new Date(a.modified_time);
+                    let timeB = +new Date(b.modified_time);
+            
+                    if(timeA > timeB) return -1;
+                    if(timeA === timeB) return 0;
+                    if(timeA < timeB) return 1;
+                });                
             }
-        });
-    })();
+
+            setListPreviousState(listPreviousStateTmp);
+
+            optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
+            optionsPreviousStateTmp.objectId = objectId;
+            optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part + optionsPreviousStateTmp.currentPartNumber;
+
+            setOptionsPreviousState(optionsPreviousStateTmp);
+
+            break;
+
+        case "isems-mrsi ui request: send search request, count list different objects STIX object for id":
+            optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
+            optionsPreviousStateTmp.objectId = data.information.additional_parameters.document_id;
+            optionsPreviousStateTmp.countFoundDocuments = data.information.additional_parameters.number_documents_found;
+
+            setOptionsPreviousState(optionsPreviousStateTmp);
+
+            break;
+        }
+    };
+    React.useEffect(() => {
+        socketIo.on("isems-mrsi response ui", listener);
+        
+        return () => {
+            socketIo.off("isems-mrsi response ui", listener);
+        };
+    }, []);
 
     let handlerName = (e) => {
             let reportInfoTmp = _.cloneDeep(reportInfo);
@@ -252,15 +255,15 @@ export default function ModalWindowAddReportSTIX(props) {
             
             setReportInfo(reportInfoTmp);
         },
-        handlerComputerThreatType = (e) => {
+        handlerComputerThreatType = (data) => {
             let reportInfoTmp = _.cloneDeep(reportInfo);
-            reportInfoTmp[newReportId].outside_specification.computer_threat_type = e.target.value;
+            reportInfoTmp[newReportId].outside_specification.computer_threat_type = data;
             
             setReportInfo(reportInfoTmp);
         },
-        handlerDecisionsMadeComputerThreat = (e) => {
+        handlerDecisionsMadeComputerThreat = (data) => {
             let reportInfoTmp = _.cloneDeep(reportInfo);
-            reportInfoTmp[newReportId].outside_specification.decisions_made_computer_threat = e.target.value;
+            reportInfoTmp[newReportId].outside_specification.decisions_made_computer_threat = data;
             
             setReportInfo(reportInfoTmp);
         },
@@ -492,7 +495,7 @@ export default function ModalWindowAddReportSTIX(props) {
                             handlerButtonSave(reportInfo[newReportId]);
 
                             setReportInfo({ [newReportId]: dataInformationObject });
-                            changeValueAddNewReport(true);
+                            //changeValueAddNewReport(true);
                         }}>
                         сохранить
                     </Button>
@@ -606,14 +609,10 @@ export default function ModalWindowAddReportSTIX(props) {
                 <Row className="mt-3">
                     <Col md={12}>
                         <span className="pl-4">
-                            <CreateListSelect
-                                list={listTypesDecisionsMadeComputerThreat}
-                                label="принятое решение по компьютерной угрозе"
-                                uniqId="decisions_made_computer_threat"
-                                currentItem={reportInfo[newReportId].outside_specification.decisions_made_computer_threat}
-                                handlerChosen={handlerDecisionsMadeComputerThreat}
-                                isNotDisabled={true} 
-                            />
+                            <CreateListTypesDecisionsMadeComputerThreat
+                                socketIo={socketIo}
+                                defaultValue={""}
+                                handlerDecisionsMadeComputerThreat={handlerDecisionsMadeComputerThreat}/>
                         </span>
                     </Col>
                 </Row>
@@ -621,14 +620,10 @@ export default function ModalWindowAddReportSTIX(props) {
                 <Row className="mt-3">
                     <Col md={12}>
                         <span className="pl-4">
-                            <CreateListSelect
-                                list={listTypesComputerThreat}
-                                label="тип компьютерной угрозы"
-                                uniqId="computer_threat_type"
-                                currentItem={reportInfo[newReportId].outside_specification.computer_threat_type}
-                                handlerChosen={handlerComputerThreatType}
-                                isNotDisabled={true} 
-                            />
+                            <CreateListTypesComputerThreat
+                                socketIo={socketIo}
+                                defaultValue={""}
+                                handlerTypesComputerThreat={handlerComputerThreatType}/>
                         </span>
                     </Col>
                 </Row>
@@ -713,8 +708,6 @@ ModalWindowAddReportSTIX.propTypes = {
     onHide: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired,
-    changeValueAddNewReport: PropTypes.func.isRequired,
-    listTypesComputerThreat: PropTypes.object.isRequired,
-    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
+    //changeValueAddNewReport: PropTypes.func.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
 };

@@ -4,7 +4,6 @@ import { Col, Row } from "react-bootstrap";
 import { 
     CssBaseline, 
     Drawer,
-    Grid, 
     Tab, 
     Tabs, 
     Tooltip, 
@@ -78,17 +77,12 @@ LeftElements.propTypes = {
 function ChildElements(props){
     let url = new URL(window.location.href),
         name = url.searchParams.get("name"),
-        { 
-            socketIo, 
-            receivedData, 
-            listTypesComputerThreat, 
-            listTypesDecisionsMadeComputerThreat 
-        } = props;
+        { socketIo, receivedData } = props;
     let currentElement = <CreatePageReport 
         socketIo={socketIo} 
-        receivedData={receivedData}
-        listTypesComputerThreat={listTypesComputerThreat}
-        listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat} />;
+        receivedData={receivedData} />;
+
+    console.log("FUNC 'ChildElements' !!!!!");
 
     switch(name){
     case "observed_data":
@@ -139,8 +133,6 @@ function ChildElements(props){
 ChildElements.propTypes = {
     socketIo: PropTypes.object.isRequired, 
     receivedData: PropTypes.object.isRequired,
-    listTypesComputerThreat: PropTypes.object.isRequired,
-    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
 };
 
 class CreateMainPage extends React.Component {
@@ -148,7 +140,7 @@ class CreateMainPage extends React.Component {
         super(props);
 
         this.state = {
-            "connectModuleMRSICT": this.connectModuleMRSICT.call(this),
+            "connectModuleMRSICT": this.handlerConnectModuleMRSICT.call(this),
             "listTypesComputerThreat": {},
             "listTypesDecisionsMadeComputerThreat": {},
         };
@@ -201,24 +193,19 @@ class CreateMainPage extends React.Component {
         };
 
         this.handlerEvents = this.handlerEvents.call(this);
-        this.requestEmitter = this.requestEmitter.call(this);
+
+        console.log("_____ CREATE ____ MAIN ____ PAGE _______");
     }
 
-    connectModuleMRSICT() {
-        return (typeof this.props.receivedData !== "undefined") ? this.props.receivedData.connectionModules.moduleMRSICT : false;
-    }
-
-    requestEmitter() {
-        if (!this.state.connectModuleMRSICT) {
-            return;
-        }
-
-        this.props.socketIo.emit("isems-mrsi ui request: get list types decisions made computer threat", { arguments: {}});
-        this.props.socketIo.emit("isems-mrsi ui request: get list types computer threat", { arguments: {}});
+    handlerConnectModuleMRSICT() {
+        return (typeof this.props.receivedData !== "undefined")? this.props.receivedData.connectionModules.moduleMRSICT: false;
     }
 
     handlerEvents() {
         this.props.socketIo.on("module_MRSICT-API", (data) => {
+
+            console.log("-----====== CONNECTION STATUS: ", data.options.connectionStatus);
+
             if (data.type === "connectModuleMRSICT") {
                 if (data.options.connectionStatus) {
                     this.setState({ "connectModuleMRSICT": true });
@@ -231,28 +218,6 @@ class CreateMainPage extends React.Component {
 
                     this.setState({ "connectModuleMRSICT": false });
                 }
-            }
-        });
-
-        //обработка события связанного с приемом списка групп которым разрешен доступ к данному Отчёту
-        this.props.socketIo.on("isems-mrsi response ui", (data) => {
-            if((data.information === null) || (typeof data.information === "undefined")){
-                return;
-            }
-
-            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-                return;
-            }
-
-            switch(data.section){
-            case "list types decisions made computer threat":
-                this.setState({ "listTypesDecisionsMadeComputerThreat": data.information.additional_parameters.list });
-
-                break;
-            case "list types computer threat":
-                this.setState({ "listTypesComputerThreat": data.information.additional_parameters.list });
-
-                break;
             }
         });
     }
@@ -287,7 +252,7 @@ class CreateMainPage extends React.Component {
         }
     }
 
-    createMainElements(){
+    getLeftListMenu(){
         let list = [];
         for(let item in this.menuItem){
             list.push(<Tooltip title={this.menuItem[item].title} key={`tooltip_menu_item_${this.menuItem[item].num}`}>
@@ -301,26 +266,28 @@ class CreateMainPage extends React.Component {
             </Tooltip>);
         }
 
+        return list;
+    }
+
+    render() {
+
+        console.log("_______________==================________________");
+        
         return (<BrowserRouter>
             <CssBaseline />
 
             <div style={{ display: "flex" }}>
-                <LeftElements menuItem={this.menuItem} list={list} handler={this.getSelectedMenuItem}/>
+                <LeftElements menuItem={this.menuItem} list={this.getLeftListMenu.call(this)} handler={this.getSelectedMenuItem}/>
                 
-                {(!this.state.connectModuleMRSICT) ? 
+                {(!this.state.connectModuleMRSICT)? 
                     this.showModuleConnectionError.call(this):  
                     <ChildElements 
                         socketIo={this.props.socketIo} 
                         receivedData={this.props.receivedData} 
-                        listTypesComputerThreat={this.state.listTypesComputerThreat}
-                        listTypesDecisionsMadeComputerThreat={this.state.listTypesDecisionsMadeComputerThreat} />}
+                    />}
             </div>    
                 
         </BrowserRouter>);
-    }
-
-    render() {
-        return this.createMainElements.call(this);
     }
 }
 

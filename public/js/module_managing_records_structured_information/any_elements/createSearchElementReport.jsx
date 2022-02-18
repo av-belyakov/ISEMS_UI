@@ -1,18 +1,14 @@
 "use strict";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Button,
-    Divider,
-    OutlinedInput,
-    FilledInput,
     Grid,
     Paper,
     Typography, 
     TextField, 
     MenuItem,
-    InputBase,
     IconButton,
 } from "@material-ui/core";
 import DateFnsUtils from "dateIoFnsUtils";
@@ -27,7 +23,7 @@ import validatorjs from "validatorjs";
 
 import { helpers } from "../../common_helpers/helpers";
 import CreatePatternSearchFilters from "./createPatternSearchFilters.jsx";
-import { getDropdownMenuPlacement } from "react-bootstrap/esm/DropdownMenu";
+import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "./anyElements.jsx";
 
 const listSearchTypeElement = [
     {
@@ -170,39 +166,47 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateSearchElementReport(props){
-    let { 
+    let {
         socketIo,
+        addNewReport,
         userPermissions,
         handlerSendSearchRequest,
-        listTypesComputerThreat,
-        listTypesDecisionsMadeComputerThreat,
+        handlerChangeAddedNewReport,
     } = props;
-    
-    let listKeysTCT = Object.keys(listTypesComputerThreat),
-        listKeysTDMCT = Object.keys(listTypesDecisionsMadeComputerThreat);
 
-    let [ searchField, setSearchField ] = React.useState("");
-    let [ valuesIsInvalideSearchField, setValuesIsInvalideSearchField ] = React.useState(false);
-    let [ dateTimeEnd, setDateTimeEnd ] = React.useState(dateTimeEndTmp);
-    let [ dateTimeStart, setDateTimeStart ] = React.useState(dateTimeStartTmp);
-    let [ selectedSearchItem, setSelectedSearchItem ] = React.useState("");
-    let [ searchParameters, setSearchParameters ] = React.useState(patternSearchParameters);
-    let [ previousSearchParameters, setPreviousSearchParameters ] = React.useState(patternSearchParameters);
-    let [ showBottonClean, setShowBottonClean ] = React.useState(false);
+    let [ searchField, setSearchField ] = useState("");
+    let [ valuesIsInvalideSearchField, setValuesIsInvalideSearchField ] = useState(false);
+    let [ dateTimeEnd, setDateTimeEnd ] = useState(dateTimeEndTmp);
+    let [ dateTimeStart, setDateTimeStart ] = useState(dateTimeStartTmp);
+    let [ selectedSearchItem, setSelectedSearchItem ] = useState("");
+    let [ searchParameters, setSearchParameters ] = useState(patternSearchParameters);
+    let [ previousSearchParameters, setPreviousSearchParameters ] = useState(patternSearchParameters);
+    let [ showBottonClean, setShowBottonClean ] = useState(false);
 
     let listener = (data) => {
-        if(data.section === "send search request, count found elem, table page report"){
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return;
+        }
+
+        switch(data.section){
+        case "send search request, count found elem, table page report":
             if(!_.isEqual(searchParameters, previousSearchParameters)){
                 setShowBottonClean(true);
             }
-    
+
             if(_.isEqual(searchParameters, patternSearchParameters)){
                 setShowBottonClean(false);
             }
+
+            break;
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         socketIo.on("isems-mrsi response ui", listener);
             
         return () => {
@@ -211,6 +215,8 @@ export default function CreateSearchElementReport(props){
     }, []);
 
     const classes = useStyles();
+
+    console.log("func 'CreateSearchElementReport', MOUNT +++ (SEARCH Element Report) +++");
 
     let supportFuncAddValue = (searchParametersTmp) => {
             let myValue = new Set(searchParametersTmp.specificSearchFields[0].value);
@@ -544,6 +550,23 @@ export default function CreateSearchElementReport(props){
                 setShowBottonClean(false);
             }
         };
+    let handlerDecisionsMadeComputerThreat = (data) => {
+            let searchParametersTmp = _.cloneDeep(searchParameters);
+            searchParametersTmp.outsideSpecificationSearchFields.decisionsMadeComputerThreat = data;
+            setSearchParameters(searchParametersTmp);
+        },
+        handlerTypesComputerThreat = (data) => {
+            let searchParametersTmp = _.cloneDeep(searchParameters);
+            searchParametersTmp.outsideSpecificationSearchFields.computerThreatType = data;
+            setSearchParameters(searchParametersTmp);
+        };
+
+    if(addNewReport){
+        setTimeout(() => {
+            handlerSendSearchRequest(searchParameters);
+            handlerChangeAddedNewReport();
+        }, 1500);
+    }
 
     return (<Paper elevation={3}>
         <Box m={2} pb={2}>
@@ -661,51 +684,22 @@ export default function CreateSearchElementReport(props){
                 </Grid>
         
                 <Grid item container md={2}>
-                    <TextField
-                        id={"select-search-decisions_made_computer_threat"}
-                        select
-                        fullWidth
-                        label={"принятое решение"}
-                        value={searchParameters.outsideSpecificationSearchFields.decisionsMadeComputerThreat}
-                        onChange={(obj) => { 
-                            let searchParametersTmp = _.cloneDeep(searchParameters);
-                            searchParametersTmp.outsideSpecificationSearchFields.decisionsMadeComputerThreat = obj.target.value;
-                            setSearchParameters(searchParametersTmp);
-                        }} >
-                        <MenuItem key="key-decisions_made_computer_threat-value-empty" value="">пустое значение</MenuItem>
-                        {listKeysTDMCT.map((item) => {
-                            return (<MenuItem key={listTypesDecisionsMadeComputerThreat[item].ID} value={item}>
-                                {listTypesDecisionsMadeComputerThreat[item].Description}
-                            </MenuItem>);
-                        })}
-                    </TextField>
+                    <CreateListTypesDecisionsMadeComputerThreat
+                        socketIo={socketIo}
+                        defaultValue={""}
+                        handlerDecisionsMadeComputerThreat={handlerDecisionsMadeComputerThreat}/>
                 </Grid>
         
                 <Grid item container md={2}>
-                    <TextField
-                        id={"select-search-computer_threat_type"}
-                        select
-                        fullWidth
-                        label={"тип ком. угрозы"}
-                        value={searchParameters.outsideSpecificationSearchFields.computerThreatType}
-                        onChange={(obj) => { 
-                            let searchParametersTmp = _.cloneDeep(searchParameters);
-                            searchParametersTmp.outsideSpecificationSearchFields.computerThreatType = obj.target.value;
-                            setSearchParameters(searchParametersTmp);
-                        }} >
-                        <MenuItem key="key-computer_threat_type-value-empty" value="">пустое значение</MenuItem>
-                        {listKeysTCT.map((item) => {
-                            return (<MenuItem key={listTypesComputerThreat[item].ID} value={item}>
-                                {listTypesComputerThreat[item].Description}
-                            </MenuItem>);
-                        })}
-                    </TextField>
+                    <CreateListTypesComputerThreat
+                        socketIo={socketIo}
+                        defaultValue={""}
+                        handlerTypesComputerThreat={handlerTypesComputerThreat}/>
                 </Grid>
             </Grid>
 
             <CreatePatternSearchFilters 
                 patternFilters={searchParameters} 
-                listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
                 handlerDeleteFilters={filterDelete} />
 
             <Grid container direction="row" spacing={3}>
@@ -742,8 +736,8 @@ export default function CreateSearchElementReport(props){
 
 CreateSearchElementReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    addNewReport: PropTypes.bool.isRequired, 
     userPermissions: PropTypes.object.isRequired,
     handlerSendSearchRequest: PropTypes.func.isRequired,
-    listTypesComputerThreat: PropTypes.object.isRequired,
-    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
+    handlerChangeAddedNewReport: PropTypes.func.isRequired,
 };

@@ -52,9 +52,8 @@ const columns = [
 export default function CreateMainTableForReport(props) {
     let {
         socketIo,
-        addNewReport,
         paginateParameters,
-        changeValueAddNewReport,
+        //changeValueAddNewReport,
         buttonAddNewReportIsDisabled,
         handlerRequestNextPageOfTable,
         handlerShowModalWindowAddNewReport,
@@ -96,7 +95,8 @@ export default function CreateMainTableForReport(props) {
             if(paginateParameters.currentPartNumber > 1){
                 listReportsTmp = listReports.slice();
 
-                changeValueAddNewReport(false);
+                // Пока не пойму зачем
+                // changeValueAddNewReport(false);
             }
 
             for(let item of data.information.additional_parameters.transmitted_data){
@@ -131,10 +131,7 @@ export default function CreateMainTableForReport(props) {
     };
     useEffect(() => {
         let searchReguest = {
-            paginateParameters: {
-                maxPartSize: 30,
-                currentPartNumber: 1,
-            },
+            paginateParameters: paginateParameters,
             sortableField: "data_created",
             searchParameters: patternSearchParameters
         };
@@ -151,6 +148,9 @@ export default function CreateMainTableForReport(props) {
             socketIo.off("isems-mrsi response ui", listener);
         };
     }, []);
+
+    console.log("func 'CreateMainTableForReport' MOUNT === TABLE ===");
+    console.log("paginateParameters: ", paginateParameters);
 
     let handlerOnRowsPerPageChange = (rowsPerPage) => {
             setCountShowReportsPerPage(rowsPerPage);        
@@ -274,13 +274,13 @@ export default function CreateMainTableForReport(props) {
             <CreateTable 
                 listReports={listReports} 
                 isShowProgress={isShowProgress}
+                getChipForGroups={getChipForGroups}
                 countSearchReports={countSearchReports}
-                numCurrentPagePagination={numCurrentPagePagination}
-                countShowReportsPerPage={countShowReportsPerPage} 
+                countShowReportsPerPage={countShowReportsPerPage}
+                numCurrentPagePagination={numCurrentPagePagination} 
                 handlerTableOnClick={handlerTableOnClick}
                 handlerOnPageChange={handlerOnPageChange}
-                handlerOnRowsPerPageChange={handlerOnRowsPerPageChange}
-                getChipForGroups={getChipForGroups} />
+                handlerOnRowsPerPageChange={handlerOnRowsPerPageChange} />
         </Box>
     </Paper>);
 }
@@ -520,9 +520,8 @@ export default class CreateMainTableForReport extends React.Component {
 
 CreateMainTableForReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    addNewReport: PropTypes.bool.isRequired,
     paginateParameters: PropTypes.object.isRequired,
-    changeValueAddNewReport: PropTypes.func.isRequired,
+    //    changeValueAddNewReport: PropTypes.func.isRequired,
     buttonAddNewReportIsDisabled: PropTypes.bool.isRequired,
     handlerRequestNextPageOfTable: PropTypes.func.isRequired,
     handlerShowModalWindowAddNewReport: PropTypes.func.isRequired,
@@ -552,16 +551,16 @@ CreateSubscribeEvents.propTypes = {
 };
 
 function CreateTable(props){
-    let { 
+    let {
         listReports, 
         isShowProgress,
-        countSearchReports, 
-        numCurrentPagePagination, 
+        getChipForGroups,
+        countSearchReports,
         countShowReportsPerPage,
+        numCurrentPagePagination, 
         handlerTableOnClick,
         handlerOnPageChange,
         handlerOnRowsPerPageChange,
-        getChipForGroups,
     } = props;
     const classes = useStyles(),
         onPageChange = (elem, data) => {

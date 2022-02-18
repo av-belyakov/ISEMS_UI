@@ -1,95 +1,45 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import patternSearchParameters from "../patterns/patternSearchParameters.js";
-import CreateMainTableReport from "../tables/createMainTableForReport.jsx";
 import CreateWidgetsPageReport from "../widgets/createWidgetsPageReport.jsx";
-import CreateSearchElementReport from "../any_elements/createSearchElementReport.jsx";
 import CreateSearchAreaOutputReports from "../any_elements/createSearchAreaOutputReports.jsx";
 import ModalWindowAddReportSTIX from "../../modal_windows/modalWindowAddReportSTIX.jsx";
 import ModalWindowShowInformationReport from "../../modal_windows/modalWindowShowInformationReport.jsx";
 import ModalWindowShowInformationReportSTIX from "../../modal_windows/modalWindowShowInformationReportSTIX.jsx";
 
 export default function CreatePageReport(props) {
-    let {
-        socketIo,
-        receivedData,
-        listTypesComputerThreat,
-        listTypesDecisionsMadeComputerThreat, 
-    } = props;
+    let { socketIo, receivedData } = props;
 
     console.log("class 'CreatePageReport', START...");
 
-    let [ addedNewReport, showAddedNewReport ] = React.useState(false);
-    let [ paginateParameters, setPaginateParameters ] = React.useState({
-        maxPartSize: 30,
-        currentPartNumber: 1,
-    });                  // ЭТО ПОЗЖЕ ЛУЧШЕ бы убрать в модуль формирования таблицы 
-    let [ showReportId, setShowReportId ] = React.useState("");
-    let [ showModalWindowAddReport, setShowModalWindowAddReport ] = React.useState(false);
+    let [ addedNewReport, setAddedNewReport ] = React.useState(false);
+    let [ objectId, setObjectId ] = React.useState("");
+    let [ showModalWindowAddNewReport, setShowModalWindowAddNewReport ] = React.useState(false);
     let [ showModalWindowInformationReport, setShowModalWindowInformationReport ] = React.useState(false);
 
-    let handlerShowModalWindowAddReport = () => {
-            showModalWindowAddReport(true);
+    let handlerShowModalWindowAddNewReport = () => {
+            setShowModalWindowAddNewReport(true);
         },
         handlerCloseModalWindowAddReport = () => {
-            showModalWindowAddReport(false);
+            setShowModalWindowAddNewReport(false);
         },
         handlerShowModalWindowInformationReport = (elemId) => {
-            setShowReportId(elemId);
+            setObjectId(elemId);
             setShowModalWindowInformationReport(true);
         },
         handlerCloseModalWindowInformationReport = () => {
-            setShowReportId("");
+            setObjectId("");
             setShowModalWindowInformationReport(false);
         },
-
-        //////////// ДЛЯ ПАГИНАТОРА ТАБЛИЦЫ
-        handlerRequestNextPageOfTable = (numPagination) => {
-            /*let requestDetailsTmp = _.cloneDeep(this.state.requestDetails);
-    requestDetailsTmp.paginateParameters.currentPartNumber = numPagination;
-
-    this.setState({ requestDetails: requestDetailsTmp });
-
-    //запрос полной информации по заданным параметрам
-    this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: requestDetailsTmp });*/
+        handlerChangeAddedNewReport = () => {
+            setAddedNewReport((prevStatus) => {
+                return !prevStatus;
+            });
         },
-
-
-
         handlerButtonSaveModalWindowAddReportSTIX = (obj) => {
-            /*    this.props.socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
 
-    setTimeout(() => {
-    //запрос краткой информации (количество) по заданным параметрам
-        this.props.socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: this.state.requestDetails });
-
-        //запрос полной информации по заданным параметрам
-        this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: this.state.requestDetails });
-    
-        console.log("запрос полной информации по заданным параметрам...");
-    }, 1500);*/
-        },
-        handlerSendSearchRequest = (searchParameters) => {
-            /*let searchReguest = {
-        paginateParameters: {
-            maxPartSize: 30,
-            currentPartNumber: 1,
-        },
-        sortableField: "data_created",
-        searchParameters: searchParameters,
-    };
-
-    //запрос краткой информации (количество) по заданным параметрам
-    this.props.socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
-
-    //запрос полной информации по заданным параметрам
-    this.props.socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
-
-    this.setState({ requestDetails: searchReguest });*/
-        },
-        changeValueAddNewReport = (value) => {
-            this.setState({ addNewReport: value });
+            setAddedNewReport(true);
         };
 
     return (<React.Fragment>
@@ -107,15 +57,9 @@ export default function CreatePageReport(props) {
         <CreateSearchAreaOutputReports 
             socketIo={socketIo} 
             userPermissions={receivedData.userPermissions}
-            listTypesComputerThreat={listTypesComputerThreat}
-            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
             addNewReport={addedNewReport}
-            paginateParameters={paginateParameters}
-            changeValueAddNewReport={changeValueAddNewReport}
-            //            buttonAddNewReportIsDisabled={!receivedData.userPermissions.create.status}
-            handlerSendSearchRequest={handlerSendSearchRequest}
-            handlerRequestNextPageOfTable={handlerRequestNextPageOfTable}
-            handlerShowModalWindowAddNewReport={handlerShowModalWindowAddReport}
+            handlerChangeAddedNewReport={handlerChangeAddedNewReport}
+            handlerShowModalWindowAddNewReport={handlerShowModalWindowAddNewReport}
             handlerShowModalWindowInformationReport={handlerShowModalWindowInformationReport}
         />
 
@@ -131,23 +75,19 @@ export default function CreatePageReport(props) {
         handlerShowModalWindowInformationReport={handlerShowModalWindowInformationReport} />*/}
 
         <ModalWindowAddReportSTIX
-            show={showModalWindowAddReport}
+            show={showModalWindowAddNewReport}
             onHide={handlerCloseModalWindowAddReport}
-            changeValueAddNewReport={changeValueAddNewReport}
-            listTypesComputerThreat={listTypesComputerThreat}
-            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
+            socketIo={socketIo}
             userPermissions={receivedData.userPermissions}
-            handlerButtonSave={handlerButtonSaveModalWindowAddReportSTIX}
-            socketIo={socketIo} />
+            //changeValueAddNewReport={changeValueAddNewReport}
+            handlerButtonSave={handlerButtonSaveModalWindowAddReportSTIX} />
 
         <ModalWindowShowInformationReport
             show={showModalWindowInformationReport}
             onHide={handlerCloseModalWindowInformationReport}
-            showReportId={showReportId}
+            showReportId={objectId}
             groupList={receivedData.groupList}
             userPermissions={receivedData.userPermissions}
-            listTypesComputerThreat={listTypesComputerThreat}
-            listTypesDecisionsMadeComputerThreat={listTypesDecisionsMadeComputerThreat}
             socketIo={socketIo} />
 
         {/*<ModalWindowShowInformationReportSTIX 
@@ -165,8 +105,6 @@ export default function CreatePageReport(props) {
 CreatePageReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
     receivedData: PropTypes.object.isRequired,
-    listTypesComputerThreat: PropTypes.object.isRequired,
-    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
 };
 
 

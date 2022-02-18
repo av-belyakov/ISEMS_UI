@@ -37,7 +37,7 @@ import CreateListPreviousStateSTIX from "../module_managing_records_structured_i
 import CreateListPreviousStateSTIXObject from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIXObject.jsx";
 import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
 import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
-
+import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -69,15 +69,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function ModalWindowShowInformationReact(props) {
+export default function ModalWindowShowInformationReport(props) {
     let { 
         show,
         onHide,
         showReportId,
         groupList,
         userPermissions,
-        listTypesComputerThreat,
-        listTypesDecisionsMadeComputerThreat,
         socketIo,
     } = props;
 
@@ -98,7 +96,7 @@ export default function ModalWindowShowInformationReact(props) {
     const [state, dispatch] = useReducer(reducer, {});
     //const [ reportAcceptedInformation, setReportAcceptedInformation ] = useState({});
 
-    console.log("func 'ModalWindowShowInformationReact', Start...");
+    console.log("func 'ModalWindowShowInformationReact', MOUNT (((( WINDOW SHOW INFO REPORT ))))");
     console.log("showReportId = ", showReportId);
 
     const listener = (data) => {
@@ -282,15 +280,13 @@ export default function ModalWindowShowInformationReact(props) {
     </Dialog>); 
 }
 
-ModalWindowShowInformationReact.propTypes = {
+ModalWindowShowInformationReport.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
     showReportId: PropTypes.string.isRequired,
     groupList: PropTypes.array.isRequired,
     userPermissions: PropTypes.object.isRequired,
-    listTypesComputerThreat: PropTypes.object.isRequired,
-    listTypesDecisionsMadeComputerThreat: PropTypes.object.isRequired,
 };
 
 function CreateAppBar(props){
@@ -535,13 +531,17 @@ function CreateAppBody(props){
                             <Row className="mt-3">
                                 <Col md={12}>
                                     <span className="pl-4">
-                                        <CreateListSelect
+                                        <CreateListTypesDecisionsMadeComputerThreat
+                                            socketIo={socketIo}
+                                            defaultValue={reportInfo.outside_specification.decisions_made_computer_threat}
+                                            handlerDecisionsMadeComputerThreat={handlerChosenDecisionsMadeComputerThreat}/>
+                                        {/*<CreateListSelect
                                             list={this.props.listTypesDecisionsMadeComputerThreat}
                                             label="принятое решение по компьютерной угрозе"
                                             uniqId="decisions_made_computer_threat"
                                             currentItem={reportInfo.outside_specification.decisions_made_computer_threat}
                                             handlerChosen={this.handlerChosenDecisionsMadeComputerThreat}
-                                            isNotDisabled={this.props.userPermissions.editing_information.status} />
+                                        isNotDisabled={this.props.userPermissions.editing_information.status} />
                                     </span>
                                 </Col>
                             </Row>
@@ -552,7 +552,11 @@ function CreateAppBody(props){
                             <Row className="mt-3">
                                 <Col md={12}>
                                     <span className="pl-4">
-                                        <CreateListSelect
+                                        <CreateListTypesComputerThreat
+                                            socketIo={socketIo}
+                                            defaultValue={reportInfo.outside_specification.computer_threat_type}
+                                            handlerTypesComputerThreat={handlerChosenComputerThreatType}/>
+                                        {/*<CreateListSelect
                                             list={this.props.listTypesComputerThreat}
                                             label="тип компьютерной угрозы"
                                             uniqId="computer_threat_type"
