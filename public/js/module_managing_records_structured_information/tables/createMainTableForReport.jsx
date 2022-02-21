@@ -21,7 +21,6 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers";
 import { CreateButtonNewReport } from "../buttons/createButtonNewReport.jsx";
-import patternSearchParameters from "../patterns/patternSearchParameters.js";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,27 +48,36 @@ const columns = [
     },
 ];
 
+const currentPage = 0, //текущая страница
+    showReportsPerPage = 10, //количество строк на странице
+    maxPartSize = 30; //максимальный размер запрашиваемых данных
+
 export default function CreateMainTableForReport(props) {
     let {
         socketIo,
-        paginateParameters,
+        searchPattern,
+        //paginateParameters,
         //changeValueAddNewReport,
         buttonAddNewReportIsDisabled,
-        handlerRequestNextPageOfTable,
+        //handlerRequestNextPageOfTable,
         handlerShowModalWindowAddNewReport,
         handlerShowModalWindowInformationReport,
     } = props;
 
     let [ listReports, setListReports ] = useState([]);
-    let [ numCurrentPagePagination, setNumCurrentPagePagination ] = useState(0);
+    let [ currentPartNumber, setCurrentPartNumber ] = useState(1);
+    let [ numCurrentPagePagination, setNumCurrentPagePagination ] = useState(currentPage);
     let [ countSearchReports, setCountSearchReports ] = useState(0);
-    let [ countShowReportsPerPage, setCountShowReportsPerPage ] = useState(10);
+    let [ countShowReportsPerPage, setCountShowReportsPerPage ] = useState(showReportsPerPage);
     let [ isShowProgress, setIsShowProgress ] = useState(true);
 
     let searchReguest = {
-        paginateParameters: paginateParameters,
+        paginateParameters: {
+            maxPartSize: maxPartSize,
+            currentPartNumber: currentPartNumber,
+        },
         sortableField: "data_created",
-        searchParameters: patternSearchParameters
+        searchParameters: searchPattern,
     };
 
     let listenerSearchTableReport = (data) => {
@@ -89,7 +97,7 @@ export default function CreateMainTableForReport(props) {
 
         let listReportsTmp = [],
             listIdReport = [];
-        if(paginateParameters.currentPartNumber > 1){
+        if(numCurrentPagePagination > 1){
             listReportsTmp = listReports.slice();
 
             // Пока не пойму зачем
@@ -116,6 +124,8 @@ export default function CreateMainTableForReport(props) {
 
         socketIo.on("isems-mrsi response ui: send search request, table page report", listenerSearchTableReport);
         
+        console.log("search request");
+        console.log(searchReguest);
 
         //запрос полной информации по заданным параметрам
         socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
@@ -126,101 +136,96 @@ export default function CreateMainTableForReport(props) {
     }, []);
 
     console.log("func 'CreateMainTableForReport' MOUNT === TABLE ===");
-    console.log("paginateParameters: ", paginateParameters);
 
     let handlerOnRowsPerPageChange = (rowsPerPage) => {
+
+            console.log("func 'handlerOnRowsPerPageChange'");
+            console.log("здесь нужно обработать количество строк на странице, что бы они не превышали максимальное количество найденных элементов");
+
             setCountShowReportsPerPage(rowsPerPage);        
         },
         handlerOnPageChange = (num) => {
-            if(num > numCurrentPagePagination){
-                if(((30 * num) < countSearchReports) && (listReports.length < countSearchReports)){
-                    handlerRequestNextPageOfTable(num+1);
-                }
-            }
+
+            console.log("func 'handlerOnPageChange', NUM: ", num);
+
 
             setNumCurrentPagePagination(num);
+
+            /*if(num > numCurrentPagePagination){
+                return;
+            }
+            countShowReportsPerPage
+num - 1 - 2 - 3
+
+            30/10 - 3
+            30/20 - 1.5
+            30/30 - 1
+            
+            
+            
+            all = 68
+            30/10 (30) - 3
+            30/20 (30) - 1.5 -->
+            30/30 (60) - 1
+
+            60/10 (30) - 6
+            60/20 (30) - 3 -->
+            60/30 (60) - 2
+            */
+
+            //console.log("(30 * num) - ", (maxPartSize * num), " < ", countSearchReports, " - countSearchReports");
+            //console.log("listReports.length - ", listReports.length, " < ", countSearchReports, " - countSearchReports");
+            //console.log("num = ", num, ", countShowReportsPerPage = ", countShowReportsPerPage, " maxPartSize / countShowReportsPerPage = ", (maxPartSize / countShowReportsPerPage));
+
+            if(maxPartSize === 0){
+                return;
+            }
+
+            console.log("num: ", num, " >= ", (maxPartSize / countShowReportsPerPage) - 1, " :(maxPartSize / countShowReportsPerPage) - 1");
+
+            if(num >= ((maxPartSize * currentPartNumber) / countShowReportsPerPage) - 1){
+                setCurrentPartNumber((prevState) => prevState + 1);
+
+                //if((currentPartNumber * maxPartSize) > countSearchReports){
+                //  return
+                //}
+
+                console.log("SEND new reguest for search data --->");
+                handlerRequestNextPageOfTable();
+            }
+
+            /*if(((maxPartSize * num) < countSearchReports) && (listReports.length < countSearchReports)){
+                handlerRequestNextPageOfTable(num);
+            }*/
         },
         handlerTableOnClick = (elem, elemId) => {
             handlerShowModalWindowInformationReport(elemId);
         },
-        handlerReceivedData = (data) => {
-
-
-            
-            /*if(data.section === "send search request, count found elem, table page report"){
-                if(!data.information.is_successful){
-                    return;
-                }
-    
-                this.setState({ 
-                    isShowProgress: false,
-                    countSearchReports: data.information.additional_parameters.number_documents_found 
-                });
-            }
-    
-            if(data.section === "send search request, table page report"){
-                if((typeof data.information === "undefined") || (data.information === null)){
-                    return;
-                }
-    
-                if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
-                    return;
-                }
-    
-                if((typeof data.information.additional_parameters.transmitted_data === "undefined") || (data.information.additional_parameters.transmitted_data === null)){
-                    return;
-                }
-    
-                let listReportsTmp = [],
-                    listIdReport = [];
-                if(this.props.paginateParameters.currentPartNumber > 1){
-                    listReportsTmp = this.state.listReports.slice();
-    
-                    this.props.changeValueAddNewReport(false);
-                }
-    
-                for(let item of data.information.additional_parameters.transmitted_data){
-                    listReportsTmp.push(item);
-                    listIdReport.push(item.id);
-                }
-    
-                this.props.socketIo.emit("isems-mrsi ui request: get short information about groups which report available", { arguments: listIdReport });
-    
-                this.setState({ listReports: listReportsTmp });
-            }
-    
-            if(data.section === "short information about groups which report available"){
-                if((typeof data.information === "undefined") || (data.information === null)){
-                    return;
-                }
-    
-                if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
-                    return;
-                }
-    
-                let tmp = this.state.listGroupsWhichReportAvailable.slice();
-                for(let item of data.information.additional_parameters){
-                    if(typeof tmp.find((elem) => {
-                        return (elem.group_name === item.group_name && elem.object_id === item.object_id);
-                    }) === "undefined"){
-                        tmp.push(item);
-                    }
-                }
-    
-                this.setState({ listGroupsWhichReportAvailable: tmp });
-            }*/
-        },
         handlerCountSearchedReports = (docCount) => {
             setCountSearchReports(docCount);
+        },
+
+
+
+        //////////////////
+        handlerRequestNextPageOfTable = () => {
+
+            console.log("func 'handlerRequestNextPageOfTable', START..., CurrentPartNumber = ", currentPartNumber+1);
+
+            setCurrentPartNumber((prevState) => prevState + 1);
+
+            /*socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: {
+                paginateParameters: {
+                    maxPartSize: 30,
+                    currentPartNumber: currentPartNumber,
+                },
+                sortableField: "data_created",
+                searchParameters: searchPattern,
+            }});*/        
         };
 
     return (<Paper elevation={3}>
         <Box m={2} mb={2} pt={2} pb={2}>
-            <CreateSubscribeEvents
-                socketIo={socketIo}
-                handlerReceivedData={handlerReceivedData}
-            />
-
             <ShowDocumentCount 
                 socketIo={socketIo}
                 searchReguest={searchReguest}
@@ -237,7 +242,8 @@ export default function CreateMainTableForReport(props) {
                 numCurrentPagePagination={numCurrentPagePagination} 
                 handlerTableOnClick={handlerTableOnClick}
                 handlerOnPageChange={handlerOnPageChange}
-                handlerOnRowsPerPageChange={handlerOnRowsPerPageChange} />
+                handlerOnRowsPerPageChange={handlerOnRowsPerPageChange} 
+            />
         </Box>
     </Paper>);
 }
@@ -245,34 +251,13 @@ export default function CreateMainTableForReport(props) {
 
 CreateMainTableForReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    paginateParameters: PropTypes.object.isRequired,
+    searchPattern: PropTypes.object.isRequired,
+    //paginateParameters: PropTypes.object.isRequired,
     //    changeValueAddNewReport: PropTypes.func.isRequired,
     buttonAddNewReportIsDisabled: PropTypes.bool.isRequired,
-    handlerRequestNextPageOfTable: PropTypes.func.isRequired,
+    //handlerRequestNextPageOfTable: PropTypes.func.isRequired,
     handlerShowModalWindowAddNewReport: PropTypes.func.isRequired,
     handlerShowModalWindowInformationReport: PropTypes.func.isRequired,
-};
-
-function CreateSubscribeEvents(props){
-    const { socketIo, handlerReceivedData } = props;
-    let listener = (data) => {
-        handlerReceivedData(data);
-    };
-
-    React.useEffect(() => {
-        socketIo.on("isems-mrsi response ui", listener);
-        
-        return () => {
-            socketIo.off("isems-mrsi response ui", listener);
-        };
-    }, []);
-
-    return null;
-}
-
-CreateSubscribeEvents.propTypes = {
-    socketIo: PropTypes.object.isRequired,
-    handlerReceivedData: PropTypes.func.isRequired,
 };
 
 function ShowDocumentCount(props){
