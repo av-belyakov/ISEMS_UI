@@ -311,16 +311,17 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
                 console.log(globalObject.getData("descriptionSocketIo", "userConnections", taskInfo.socketId));
                 console.log("======================");
                 */
+                const eventsList = new Set([
+                    "list types decisions made computer threat",
+                    "list types computer threat",
+                    "send search request, table page report",
+                    "send search request, count found elem, table page report",
+                    "short information about groups which report available",
+                ]);
                 let eventStr = "isems-mrsi response ui";
-                switch(taskInfo.eventName){
-                case "list types decisions made computer threat":
-                    eventStr += `: ${taskInfo.eventName}`;
 
-                    break;
-                case "list types computer threat":
+                if(eventsList.has(taskInfo.eventName)){
                     eventStr += `: ${taskInfo.eventName}`;
-
-                    break;
                 }
 
                 if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, eventStr, { 

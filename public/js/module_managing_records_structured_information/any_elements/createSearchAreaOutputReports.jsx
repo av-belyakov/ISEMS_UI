@@ -5,12 +5,16 @@ import patternSearchParameters from "../patterns/patternSearchParameters.js";
 import CreateMainTableForReport from "../tables/createMainTableForReport.jsx";
 import CreateSearchElementReport from "./createSearchElementReport.jsx";
 
+const paginatePattern = {
+    maxPartSize: 30,
+    currentPartNumber: 1,
+};
+
 export default function CreateSearchAreaOutputReports(props){
     let {
         socketIo,
         userPermissions,
         addNewReport,
-        //            paginateParameters={paginateParameters}
         handlerChangeAddedNewReport,
         //            buttonAddNewReportIsDisabled={!receivedData.userPermissions.create.status}
         handlerShowModalWindowAddNewReport,
@@ -18,17 +22,17 @@ export default function CreateSearchAreaOutputReports(props){
     } = props;
 
     let [ searchPattern, setSearchPattern ] = React.useState(patternSearchParameters);
-    let [ paginateParameters, setPaginateParameters ] = React.useState({
-        maxPartSize: 30,
-        currentPartNumber: 1,
-    });
+    let [ paginateParameters, setPaginateParameters ] = React.useState(paginatePattern);
 
     console.log("func 'CreateSearchAreaOutputReports' MOUNT --- (SearchAreaOutputReports) ---");
+    console.log("paginateParameters: '", paginateParameters, "'");
 
     //для пагинатора таблицы
     let handlerRequestNextPageOfTable = (numPagination) => {
             setPaginateParameters((prevState) => {
                 prevState.currentPartNumber = numPagination;
+
+                return prevState;
             });
 
             socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: {

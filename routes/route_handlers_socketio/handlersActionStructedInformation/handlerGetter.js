@@ -583,7 +583,7 @@ module.exports.getShortInfoGroupsWhichReportAvailable = function(socketIo, data)
                         return;
                     }
 
-                    helpersFunc.sendMessageByUserSocketIo(socketIo.id, "isems-mrsi response ui", { 
+                    helpersFunc.sendMessageByUserSocketIo(socketIo.id, "isems-mrsi response ui: short information about groups which report available", { 
                         section: section,
                         eventForWidgets: false,
                         information: {

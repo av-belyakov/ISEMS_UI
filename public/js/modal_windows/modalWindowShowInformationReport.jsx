@@ -373,6 +373,17 @@ function CreateAppBody(props){
         };
     }, []);
 
+    /**
+ * 
+ * 
+ * 1. Не работает пагинатор для таблицы отчетов
+ * 2. Начал переделывать ModalWindowShowInformationReport, теперь не работает (хотя я еще ее до конца не переделал)
+ * СКОРЕЕ всего проблемма в формировании поискового запроса (хотя не факт)
+ * 3. Слишком много отрисовок таблицы (4 штуки только при первом монтировании)
+ * 4. Думаю стоит перейти на уникальные события для каждого действия, а не одно "isems-mrsi response ui" с разбивкой по
+ * секциям
+ */
+
     const handlerDeleteChipFromListGroupAccessToReport = (groupName) => {
         let newListGroup = listGroupAccessToReport.filter((item) => {
             return groupName !== item.group;
