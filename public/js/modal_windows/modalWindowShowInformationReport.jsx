@@ -197,7 +197,7 @@ export default function ModalWindowShowInformationReport(props) {
     
             //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
             socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: searchReguest });
-            //socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: searchReguest });
+            socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: searchReguest });
         }
     }, [ socketIo, showReportId ]);
 
