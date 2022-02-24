@@ -91,6 +91,10 @@ export default function ModalWindowShowInformationReport(props) {
             setButtonSaveIsDisabled(false);
 
             return {...state};
+        case "updateDescription":
+            state.description = action.data;
+
+            return {...state};
         }
     };
     const [state, dispatch] = useReducer(reducer, {});
@@ -130,14 +134,14 @@ export default function ModalWindowShowInformationReport(props) {
                 break;
             }
 
-            console.log("data.information.additional_parameters.transmitted_data");
-            console.log(data.information.additional_parameters.transmitted_data);
+            //console.log("data.information.additional_parameters.transmitted_data");
+            //console.log(data.information.additional_parameters.transmitted_data);
 
             for(let obj of data.information.additional_parameters.transmitted_data){
 
-                console.log("func 'listener', obj");
-                console.log(obj);        
-                console.log("obj.id: ", obj.id, " = ", showReportId, " :showReportId");
+                //console.log("func 'listener', obj");
+                //console.log(obj);        
+                //console.log("obj.id: ", obj.id, " = ", showReportId, " :showReportId");
 
                 if(obj.type === "report"){
                     dispatch({ type: "newAll", data: obj });                  
@@ -180,24 +184,11 @@ export default function ModalWindowShowInformationReport(props) {
     }, []);
     React.useEffect(() => {
         if(showReportId !== ""){
-            let searchReguest = {
-                paginateParameters: {
-                    maxPartSize: 30,
-                    currentPartNumber: 1,
-                },
-                sortableField: "data_created",
-                // между параметрами "id_documents", "type_documents", "created", "modified", "created_by_ref", "specific_search_fields" и 
-                // "outside_specification_search_fields" используется логика "И"
-                searchParameters: patternSearchParameters
-            };
-            searchReguest.searchParameters.documentsId = [ showReportId ];
-    
             console.log("func 'ModalWindowShowInformationReact', socketIo.emit");
-            console.log(searchReguest);
-    
+
             //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
-            socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: searchReguest });
-            socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: searchReguest });
+            socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
+            socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: showReportId });
         }
     }, [ socketIo, showReportId ]);
 
@@ -373,17 +364,6 @@ function CreateAppBody(props){
         };
     }, []);
 
-    /**
- * 
- * 
- * 1. Не работает пагинатор для таблицы отчетов
- * 2. Начал переделывать ModalWindowShowInformationReport, теперь не работает (хотя я еще ее до конца не переделал)
- * СКОРЕЕ всего проблемма в формировании поискового запроса (хотя не факт)
- * 3. Слишком много отрисовок таблицы (4 штуки только при первом монтировании)
- * 4. Думаю стоит перейти на уникальные события для каждого действия, а не одно "isems-mrsi response ui" с разбивкой по
- * секциям
- */
-
     const handlerDeleteChipFromListGroupAccessToReport = (groupName) => {
         let newListGroup = listGroupAccessToReport.filter((item) => {
             return groupName !== item.group;
@@ -420,6 +400,8 @@ function CreateAppBody(props){
             unprivilegedGroup: groupName,
         }});
     };
+
+    //const groupsViewingAvailable = React.useMemo(() => <GroupsViewingAvailable listGroupAccessToReport={listGroupAccessToReport}/>, [listGroupAccessToReport]);
 
     return (<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
         <Row>
@@ -460,7 +442,7 @@ function CreateAppBody(props){
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         <span className="text-muted">публикации</span>
                     </Col>
-                    {< MadePublished
+                    {<MadePublished
                         reportInformation={reportInformation} 
                         handlerPublished={handlerPublished} />}
                 </Row>
@@ -495,10 +477,10 @@ function CreateAppBody(props){
                             maxRows={8}
                             fullWidth
                             onChange={this.handlerOnChangeDescription}
-                            defaultValue={reportInfo.description}
+                            defaultValue={reportInformation.description}
                             variant="outlined"/>
                     </Col>  
-                </Row>*/}
+                </Row>
 
                 {/*<GetListObjectRefs
                             listObjectRef={reportInfo.object_refs} 
@@ -592,6 +574,7 @@ function CreateAppBody(props){
             </Col>
             <Col md={5}>
                 <GroupsViewingAvailable listGroupAccessToReport={listGroupAccessToReport} />
+                {/*groupsViewingAvailable*/}
 
                 <br/>
                 <CreateListPreviousStateSTIX 

@@ -606,7 +606,7 @@ module.exports.sendSearchRequestGetSTIXObjectForId = function(socketIo, data){
  */
 module.exports.sendSearchRequestGetDifferentObjectsSTIXObjectForId = function(socketIo, data){
     let funcName = " (func 'sendSearchRequestGetDifferentObjectsSTIXObjectForId')",
-        section = "isems-mrsi ui request: send search request, list different objects STIX object for id";
+        section = "send search request, list different objects STIX object for id";
 
     checkUserAuthentication(socketIo)
         .then((authData) => {
@@ -685,7 +685,7 @@ module.exports.sendSearchRequestGetDifferentObjectsSTIXObjectForId = function(so
  */
 module.exports.sendSearchRequestGetCountDifferentObjectsSTIXObjectForId = function(socketIo, data){
     let funcName = " (func 'sendSearchRequestGetCountDifferentObjectsSTIXObjectForId')",
-        section = "isems-mrsi ui request: send search request, count list different objects STIX object for id";
+        section = "send search request, count list different objects STIX object for id";
 
     checkUserAuthentication(socketIo)
         .then((authData) => {

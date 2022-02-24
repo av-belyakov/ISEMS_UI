@@ -43,8 +43,7 @@
     },
     "plugins": [
         "react",
-        "react-hooks",
-        "react-hooks/exhaustive-deps"
+        "react-hooks"
     ],
     "rules": {
         "linebreak-style": [

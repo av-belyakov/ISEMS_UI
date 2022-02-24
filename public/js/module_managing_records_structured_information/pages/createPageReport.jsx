@@ -54,22 +54,22 @@ export default function CreatePageReport(props) {
             handlerShowModalWindowInformationReport={handlerShowModalWindowInformationReport}
         />
 
-        <ModalWindowAddReportSTIX
+        {showModalWindowAddNewReport && <ModalWindowAddReportSTIX
             show={showModalWindowAddNewReport}
             onHide={handlerCloseModalWindowAddReport}
             socketIo={socketIo}
             userPermissions={receivedData.userPermissions}
             handlerButtonSave={handlerButtonSaveModalWindowAddReportSTIX} 
-        />
+        />}
 
-        <ModalWindowShowInformationReport
+        {showModalWindowInformationReport && <ModalWindowShowInformationReport
             show={showModalWindowInformationReport}
             onHide={handlerCloseModalWindowInformationReport}
             showReportId={objectId}
             groupList={receivedData.groupList}
             userPermissions={receivedData.userPermissions}
-            socketIo={socketIo} 
-        />
+            socketIo={socketIo}
+        />}
     </React.Fragment>);
 }
 

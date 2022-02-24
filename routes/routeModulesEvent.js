@@ -317,6 +317,8 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
                     "send search request, table page report",
                     "send search request, count found elem, table page report",
                     "short information about groups which report available",
+                    "send search request, list different objects STIX object for id",
+                    "send search request, count list different objects STIX object for id",
                 ]);
                 let eventStr = "isems-mrsi response ui";
 

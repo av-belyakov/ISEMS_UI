@@ -148,22 +148,20 @@ export default function CreateListPreviousStateSTIX(props){
 
     console.log("func 'CreateListPreviousStateSTIX', START...");
 
-    let listener = (data) => {
-        console.log("func 'listener'");
+    let handlerHasMore = (data) => {
+        setHasMore(data);
+    };
 
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
+    let listenerListDifferentObjects = (data) => {
+            console.log("func 'listenerListDifferentObjects'");
 
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
+            }
 
-        switch(data.section){
-        case "isems-mrsi ui request: send search request, list different objects STIX object for id":
-
-            //console.log("SECTION: isems-mrsi ui request: send search request, list different objects STIX object for id");
-            //console.log(data.information.additional_parameters);
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
 
             setShowListPreviousState(true);
 
@@ -195,23 +193,25 @@ export default function CreateListPreviousStateSTIX(props){
         
             dispatchOptionsPreviousState({ type: "updateCurrentPartNumber", data: data.information.additional_parameters.number_transmitted_part });
             
-            break;
+        },
+        listenerCountListDifferentObjects = (data) => {
+            console.log("func 'listenerCountListDifferentObjects'");
 
-        case "isems-mrsi ui request: send search request, count list different objects STIX object for id":
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
+            }
 
-            //console.log("SECTION: isems-mrsi ui request: send search request, count list different objects STIX object for id");
-            //console.log(data.information.additional_parameters);
-            //console.log("stateOptionsPrevious.objectId: ", stateOptionsPrevious.objectId, " === ", data.information.additional_parameters.document_id, " :data.information.additional_parameters.document_id");
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
 
             if(stateOptionsPrevious.objectId === data.information.additional_parameters.document_id){
                 dispatchOptionsPreviousState({ type: "updateCountFoundDocuments", data: data.information.additional_parameters.number_documents_found });
             }
-
-            break;
-        }
-    };
+        };
     React.useEffect(() => {
-        socketIo.on("isems-mrsi response ui", listener);
+        socketIo.on("isems-mrsi response ui: send search request, list different objects STIX object for id", listenerListDifferentObjects);
+        socketIo.on("isems-mrsi response ui: send search request, count list different objects STIX object for id", listenerCountListDifferentObjects);
 
         //запрос на получение количества документов о предыдущем состоянии STIX объектов
         socketIo.emit("isems-mrsi ui request: send search request, get count different objects STIX object for id", {
@@ -229,14 +229,147 @@ export default function CreateListPreviousStateSTIX(props){
             }});
 
         return () => {
-            socketIo.on("isems-mrsi response ui", listener);
+            socketIo.off("isems-mrsi response ui: send search request, list different objects STIX object for id", listenerListDifferentObjects);
+            socketIo.off("isems-mrsi response ui: send search request, count list different objects STIX object for id", listenerCountListDifferentObjects);
 
             dispatchOptionsPreviousState({ type: "cleanAll" });
             setListPreviousState([]);
         };
     }, []);
 
-    let createFrame = () => {
+    let framePreviousState = React.useMemo(() => <CreateFrame
+        searchObjectId={searchObjectId}
+        showListPreviousState={showListPreviousState} 
+        listPreviousState={listPreviousState} 
+        stateOptionsPrevious={stateOptionsPrevious}
+        hasMore={hasMore}
+        socketIo={socketIo}
+        handlerHasMore={handlerHasMore}
+    />, [ showListPreviousState, hasMore, listPreviousState ]);
+    
+    return (<React.Fragment>
+        <Grid container direction="row" className="pt-3">
+            <Grid item container md={12} justifyContent="center"><strong>История предыдущих состояний</strong></Grid>
+        </Grid>
+        <Grid container direction="row" className="pt-3">
+            <Grid item container md={12} justifyContent="flex-end" className="text-muted">
+                Всего документов:&nbsp;<strong>{stateOptionsPrevious.countFoundDocuments}</strong>
+            </Grid>
+        </Grid>
+        <Grid container direction="row" className="pt-2">
+            <Grid item container md={12} justifyContent="center">
+                {((!listPreviousState) || (typeof listPreviousState === "undefined"))? 
+                    "загрузка...":
+                    framePreviousState}
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+}
+
+CreateListPreviousStateSTIX.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    searchObjectId: PropTypes.string.isRequired,
+};
+
+function CreateFrame(props){
+    let { 
+        searchObjectId,
+        showListPreviousState, 
+        listPreviousState, 
+        stateOptionsPrevious,
+        hasMore,
+        socketIo,
+        handlerHasMore, 
+    } = props;
+
+    console.log("func 'createFrame' ====");
+
+    return (<InfiniteScroll
+        height={1000}
+        loader={(showListPreviousState)? <span></span>: <div className="text-center"><h5>загрузка...</h5></div>}
+        dataLength={listPreviousState.length}
+        hasMore={hasMore}
+        next={()=> {
+            if(listPreviousState.length >= stateOptionsPrevious.countFoundDocuments){
+                handlerHasMore(false);
+
+                return;
+            }
+
+            if(listPreviousState.length > 100){
+                handlerHasMore(false);
+
+                return;
+            }
+
+            console.log("scroll next document list, where documentId: ", searchObjectId, ", max_part_size: ", stateOptionsPrevious.sizePart, " current_part_number: ", stateOptionsPrevious.currentPartNumber);
+
+            socketIo.emit("isems-mrsi ui request: send search request, get different objects STIX object for id", { 
+                arguments: { 
+                    "documentId": searchObjectId,
+                    "paginateParameters": {
+                        "max_part_size": stateOptionsPrevious.sizePart,
+                        "current_part_number": stateOptionsPrevious.currentPartNumber,
+                    } 
+                }});
+        }} >
+        {listPreviousState.map((item, num) => {
+            if(typeof item.modified_time === "undefined"){
+                return;
+            }
+
+            return (<Box display="inline-block" sx={{ width: "100%" }} key={`key_history_${num}_${item.modified_time}`}>
+                <Card className="mb-3 pl-2 pr-2">
+                    <CardContent>
+                        <div>
+                            <Typography variant="caption">
+                                <span className="text-muted">время модификации</span>: <span  style={{ color: orange[800] }}>
+                                    {helpers.convertDateFromString(item.modified_time, { monthDescription: "long", dayDescription: "numeric" })}
+                                </span>
+                            </Typography>
+                        </div>
+                        <div>
+                            <Typography variant="caption">
+                                <span className="text-muted">изменения выполнил</span>: {(item.user_name_modified_object.length === 0)? 
+                                    <strong>имя неизвестно</strong>:
+                                    item.user_name_modified_object}
+                            </Typography>
+                        </div>
+                        <div className="text-start mb-2">
+                            <Typography variant="subtitle2">предыдущие значения:</Typography>
+                        </div>
+                        {item.field_list.map((e, n) => {
+                            let tmpPath = e.path.split("/"),
+                                num = tmpPath.length - 1,
+                                value = e.value;
+
+                            return (<Grid item xs zeroMinWidth key={`key_value_name_${n}_${item.modified_time}`}>
+                                <Typography variant="caption" color="inherit" display="block">
+                                    <span className="text-muted">{helpers.getHumanNameSTIXElement(tmpPath[num])}</span>: {showInformationInCycle(value, 1)}
+                                </Typography>
+                            </Grid>);
+                        })}
+                    </CardContent>
+                </Card>
+            </Box>);
+        })}
+    </InfiniteScroll>);
+}
+
+CreateFrame.propTypes = {
+    searchObjectId: PropTypes.string.isRequired,
+    showListPreviousState: PropTypes.bool.isRequired, 
+    listPreviousState: PropTypes.array.isRequired, 
+    stateOptionsPrevious: PropTypes.object.isRequired,
+    hasMore: PropTypes.bool.isRequired,
+    socketIo: PropTypes.object.isRequired,
+    handlerHasMore: PropTypes.func.isRequired,
+};
+
+/*let createFrame = () => {
+
+        console.log("func 'createFrame' ====");
+
         return (<InfiniteScroll
             height={1000}
             loader={(showListPreviousState)? <span></span>: <div className="text-center"><h5>загрузка...</h5></div>}
@@ -307,28 +440,4 @@ export default function CreateListPreviousStateSTIX(props){
                 </Box>);
             })}
         </InfiniteScroll>);
-    };
-
-    return (<React.Fragment>
-        <Grid container direction="row" className="pt-3">
-            <Grid item container md={12} justifyContent="center"><strong>История предыдущих состояний</strong></Grid>
-        </Grid>
-        <Grid container direction="row" className="pt-3">
-            <Grid item container md={12} justifyContent="flex-end" className="text-muted">
-                Всего документов:&nbsp;<strong>{stateOptionsPrevious.countFoundDocuments}</strong>
-            </Grid>
-        </Grid>
-        <Grid container direction="row" className="pt-2">
-            <Grid item container md={12} justifyContent="center">
-                {((!listPreviousState) || (typeof listPreviousState === "undefined"))? 
-                    "загрузка...":
-                    createFrame()}
-            </Grid>
-        </Grid>
-    </React.Fragment>);
-}
-
-CreateListPreviousStateSTIX.propTypes = {
-    socketIo: PropTypes.object.isRequired,
-    searchObjectId: PropTypes.string.isRequired,
-};
+    };*/
