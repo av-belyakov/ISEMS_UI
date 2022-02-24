@@ -171,6 +171,7 @@ export default function CreateSearchElementReport(props){
         addNewReport,
         userPermissions,
         handlerSendSearchRequest,
+        handlerChangeSendNewSearch,
         handlerChangeAddedNewReport,
     } = props;
 
@@ -183,36 +184,36 @@ export default function CreateSearchElementReport(props){
     let [ previousSearchParameters, setPreviousSearchParameters ] = useState(patternSearchParameters);
     let [ showBottonClean, setShowBottonClean ] = useState(false);
 
-    let listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        switch(data.section){
-        case "send search request, count found elem, table page report":
-            if(!_.isEqual(searchParameters, previousSearchParameters)){
-                setShowBottonClean(true);
-            }
-
-            if(_.isEqual(searchParameters, patternSearchParameters)){
-                setShowBottonClean(false);
-            }
-
-            break;
-        }
-    };
-
     useEffect(() => {
+        let listener = (data) => {
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
+            }
+    
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
+    
+            switch(data.section){
+            case "send search request, count found elem, table page report":
+                if(!_.isEqual(searchParameters, previousSearchParameters)){
+                    setShowBottonClean(true);
+                }
+    
+                if(_.isEqual(searchParameters, patternSearchParameters)){
+                    setShowBottonClean(false);
+                }
+    
+                break;
+            }
+        };
+
         socketIo.on("isems-mrsi response ui", listener);
             
         return () => {
             socketIo.off("isems-mrsi response ui", listener);
         };
-    }, []);
+    }, [ setShowBottonClean ]);
 
     const classes = useStyles();
 
@@ -687,20 +688,23 @@ export default function CreateSearchElementReport(props){
                     <CreateListTypesDecisionsMadeComputerThreat
                         socketIo={socketIo}
                         defaultValue={""}
-                        handlerDecisionsMadeComputerThreat={handlerDecisionsMadeComputerThreat}/>
+                        handlerDecisionsMadeComputerThreat={handlerDecisionsMadeComputerThreat}
+                    />
                 </Grid>
         
                 <Grid item container md={2}>
                     <CreateListTypesComputerThreat
                         socketIo={socketIo}
                         defaultValue={""}
-                        handlerTypesComputerThreat={handlerTypesComputerThreat}/>
+                        handlerTypesComputerThreat={handlerTypesComputerThreat}
+                    />
                 </Grid>
             </Grid>
 
             <CreatePatternSearchFilters 
                 patternFilters={searchParameters} 
-                handlerDeleteFilters={filterDelete} />
+                handlerDeleteFilters={filterDelete} 
+            />
 
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={12} justifyContent="flex-end">
@@ -724,6 +728,7 @@ export default function CreateSearchElementReport(props){
                         disabled={buttonSearchIsDisabled}
                         onClick={() => {
                             handlerSendSearchRequest(searchParameters);
+                            handlerChangeSendNewSearch();
                             setPreviousSearchParameters(searchParameters);
                         }}>
                         поиск
@@ -739,5 +744,6 @@ CreateSearchElementReport.propTypes = {
     addNewReport: PropTypes.bool.isRequired, 
     userPermissions: PropTypes.object.isRequired,
     handlerSendSearchRequest: PropTypes.func.isRequired,
+    handlerChangeSendNewSearch: PropTypes.func.isRequired,
     handlerChangeAddedNewReport: PropTypes.func.isRequired,
 };

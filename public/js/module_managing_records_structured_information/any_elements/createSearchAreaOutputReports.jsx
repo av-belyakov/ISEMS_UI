@@ -16,49 +16,31 @@ export default function CreateSearchAreaOutputReports(props){
         userPermissions,
         addNewReport,
         handlerChangeAddedNewReport,
-        //            buttonAddNewReportIsDisabled={!receivedData.userPermissions.create.status}
         handlerShowModalWindowAddNewReport,
         handlerShowModalWindowInformationReport,
     } = props;
 
     let [ searchPattern, setSearchPattern ] = React.useState(patternSearchParameters);
-    //let [ paginateParameters, setPaginateParameters ] = React.useState(paginatePattern);
+    let [ sendNewSearch, setSendNewSearch ] = React.useState(false);
 
     console.log("func 'CreateSearchAreaOutputReports' MOUNT --- (SearchAreaOutputReports) ---");
 
-    //для пагинатора таблицы
-    /*let handlerRequestNextPageOfTable = (numPagination) => {
-
-            console.log("func 'handlerRequestNextPageOfTable', START...");
-
-            setPaginateParameters((prevState) => {
-                prevState.currentPartNumber = numPagination;
-
-                return prevState;
-            });
-
-            socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: {
-                paginateParameters: {
-                    maxPartSize: 30,
-                    currentPartNumber: numPagination,
-                },
-                sortableField: "data_created",
-                searchParameters: searchPattern,
-            }});        
-        },*/
     //для поискового запроса
     let handlerSendSearchRequest = (searchParameters) => {
         setSearchPattern(searchParameters);
 
         let searchReguest = {
-            paginateParameters: paginatePattern,//paginateParameters,
+            paginateParameters: paginatePattern,
             sortableField: "data_created",
             searchParameters: searchParameters,
         };
-            //запрос краткой информации (количество) по заданным параметрам
+        //запрос краткой информации (количество) по заданным параметрам
         socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
         //запрос полной информации по заданным параметрам
         socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
+    };
+    let handlerChangeSendNewSearch = () => {
+        setSendNewSearch((prevSend) => !prevSend);
     };
 
     return (<React.Fragment>
@@ -68,17 +50,17 @@ export default function CreateSearchAreaOutputReports(props){
             addNewReport={addNewReport} 
             userPermissions={userPermissions}
             handlerSendSearchRequest={handlerSendSearchRequest}
+            handlerChangeSendNewSearch={handlerChangeSendNewSearch}
             handlerChangeAddedNewReport={handlerChangeAddedNewReport} 
         />
 
         {/** основная таблица страницы */}
         <CreateMainTableForReport 
             socketIo={socketIo}
+            sendNewSearch={sendNewSearch}
             searchPattern={searchPattern}
-            //paginateParameters={paginateParameters}
-            //changeValueAddNewReport={changeValueAddNewReport}
             buttonAddNewReportIsDisabled={!userPermissions.create.status}
-            //handlerRequestNextPageOfTable={handlerRequestNextPageOfTable}
+            handlerChangeSendNewSearch={handlerChangeSendNewSearch}
             handlerShowModalWindowAddNewReport={handlerShowModalWindowAddNewReport}
             handlerShowModalWindowInformationReport={handlerShowModalWindowInformationReport} 
         />
