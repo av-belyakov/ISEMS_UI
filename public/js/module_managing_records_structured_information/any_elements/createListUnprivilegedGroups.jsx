@@ -5,14 +5,19 @@ import { Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 export default function CreateListUnprivilegedGroups(props){
-    let { groupList, currentGroup, handlerChosen, isNotDisabled } = props;
+    let { groupList, handlerChosen, isNotDisabled } = props;
+
+    const [ currentGroup, setCurrentGroup ] = React.useState("select_group");
 
     return (<Form.Group>
         <Form.Control 
             disabled={!isNotDisabled}
             as="select" 
             size="sm" 
-            onChange={handlerChosen} 
+            onChange={(e) => {
+                handlerChosen(e);
+                setCurrentGroup("select_group");
+            }} 
             defaultValue={currentGroup} 
             id="dropdown_list_unprivileged_groups" >
             <option key="key_group_0_0" value="select_group">выбрать группу</option>
@@ -37,7 +42,6 @@ export default function CreateListUnprivilegedGroups(props){
 
 CreateListUnprivilegedGroups.propTypes = {
     groupList: PropTypes.array.isRequired,
-    currentGroup: PropTypes.string.isRequired,
     handlerChosen: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool,
 };

@@ -73,6 +73,10 @@ export default function CreateElementAdditionalTechnicalInformationReportObject(
     },
     [setLabelsTokenInput, objectId, handlerElementLabels]);
 
+    if(Object.keys(reportInfo).length === 0){
+        return null;
+    }
+
     let handlerElConf = (data) => {
             handlerElementConfidence({ data: +data.target.value, objectId: objectId });
         }, 

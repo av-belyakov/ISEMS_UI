@@ -26,7 +26,8 @@ export function MainTextField(props) {
         label={label} 
         variant={variant} 
         onChange={onChange} 
-        defaultValue={value}
+        //defaultValue={value}
+        value={value}
         fullWidth={fullWidth} />;
 }
 
@@ -87,7 +88,7 @@ export function CreateListTypesDecisionsMadeComputerThreat(props){
 
 CreateListTypesDecisionsMadeComputerThreat.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    defaultValue: PropTypes.string.isRequired,
+    defaultValue: PropTypes.func.isRequired,
     handlerDecisionsMadeComputerThreat: PropTypes.func.isRequired,
 };
 
@@ -140,6 +141,6 @@ export function CreateListTypesComputerThreat(props){
 
 CreateListTypesComputerThreat.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    defaultValue: PropTypes.string.isRequired,
+    defaultValue: PropTypes.func.isRequired,
     handlerTypesComputerThreat: PropTypes.func.isRequired,
 };

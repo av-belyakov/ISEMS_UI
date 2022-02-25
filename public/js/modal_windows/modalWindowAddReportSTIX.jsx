@@ -611,7 +611,7 @@ export default function ModalWindowAddReportSTIX(props) {
                         <span className="pl-4">
                             <CreateListTypesDecisionsMadeComputerThreat
                                 socketIo={socketIo}
-                                defaultValue={""}
+                                defaultValue={() => ""}
                                 handlerDecisionsMadeComputerThreat={handlerDecisionsMadeComputerThreat}/>
                         </span>
                     </Col>
@@ -622,7 +622,7 @@ export default function ModalWindowAddReportSTIX(props) {
                         <span className="pl-4">
                             <CreateListTypesComputerThreat
                                 socketIo={socketIo}
-                                defaultValue={""}
+                                defaultValue={() => ""}
                                 handlerTypesComputerThreat={handlerComputerThreatType}/>
                         </span>
                     </Col>

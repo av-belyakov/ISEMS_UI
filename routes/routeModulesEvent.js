@@ -314,9 +314,10 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
                 const eventsList = new Set([
                     "list types decisions made computer threat",
                     "list types computer threat",
-                    "send search request, table page report",
-                    "send search request, count found elem, table page report",
                     "short information about groups which report available",
+                    "send search request, table page report",
+                    "send search request, get report for id",
+                    "send search request, count found elem, table page report",
                     "send search request, list different objects STIX object for id",
                     "send search request, count list different objects STIX object for id",
                 ]);

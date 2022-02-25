@@ -687,7 +687,7 @@ export default function CreateSearchElementReport(props){
                 <Grid item container md={2}>
                     <CreateListTypesDecisionsMadeComputerThreat
                         socketIo={socketIo}
-                        defaultValue={""}
+                        defaultValue={() => ""}
                         handlerDecisionsMadeComputerThreat={handlerDecisionsMadeComputerThreat}
                     />
                 </Grid>
@@ -695,7 +695,7 @@ export default function CreateSearchElementReport(props){
                 <Grid item container md={2}>
                     <CreateListTypesComputerThreat
                         socketIo={socketIo}
-                        defaultValue={""}
+                        defaultValue={() => ""}
                         handlerTypesComputerThreat={handlerTypesComputerThreat}
                     />
                 </Grid>

@@ -331,7 +331,7 @@ module.exports.getListGroupsWhichReportAvailable = function(socketIo, data){
                         return;
                     }
 
-                    helpersFunc.sendMessageByUserSocketIo(socketIo.id, "isems-mrsi response ui", { 
+                    helpersFunc.sendMessageByUserSocketIo(socketIo.id, "isems-mrsi response ui: list of groups to which the report is available", { 
                         section: section,
                         eventForWidgets: false,
                         information: {

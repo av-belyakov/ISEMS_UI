@@ -4,6 +4,7 @@ import React, { useState, useEffect, useReducer } from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
     AppBar,
+    Box,
     Button,
     Container,
     Dialog,
@@ -79,195 +80,36 @@ export default function ModalWindowShowInformationReport(props) {
         socketIo,
     } = props;
 
-    const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
-    const reducer = (state, action) => {
-        switch(action.type){
-        case "newAll":
-            return action.data;
-        case "cleanAll":
-            return {};
-        case "madePublised":
-            state.published = action.data;
-            setButtonSaveIsDisabled(false);
-
-            return {...state};
-        case "updateDescription":
-            state.description = action.data;
-
-            return {...state};
-        }
-    };
-    const [state, dispatch] = useReducer(reducer, {});
-    //const [ reportAcceptedInformation, setReportAcceptedInformation ] = useState({});
+    const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(false);
+    const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = useState(false);
 
     console.log("func 'ModalWindowShowInformationReact', MOUNT (((( WINDOW SHOW INFO REPORT ))))");
     console.log("showReportId = ", showReportId);
 
-    const listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        let objectId = "", 
-            reportInfo = {},
-            listObjectInfoTmp = {},
-            listPreviousStateTmp = [],
-            optionsPreviousStateTmp = {};
-
-        switch(data.section){
-        /*case "list of groups that are allowed access":
-            this.setState({ availableForGroups: data.information.additional_parameters });
-        
-            break;*/
-        
-        // прием информации об Отчете по его ID
-        case "send search request, get report for id":
-            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-                break;
-            }
-
-            if(data.information.additional_parameters.transmitted_data.length === 0){
-                break;
-            }
-
-            //console.log("data.information.additional_parameters.transmitted_data");
-            //console.log(data.information.additional_parameters.transmitted_data);
-
-            for(let obj of data.information.additional_parameters.transmitted_data){
-
-                //console.log("func 'listener', obj");
-                //console.log(obj);        
-                //console.log("obj.id: ", obj.id, " = ", showReportId, " :showReportId");
-
-                if(obj.type === "report"){
-                    dispatch({ type: "newAll", data: obj });                  
-                    //setReportAcceptedInformation(obj);
-
-                    break;
-                }
-            }
-
-            break;
-
-
-        /*
-        case "isems-mrsi ui request: send search request, get STIX object for id":
-            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-                break;
-            }
-
-            if(data.information.additional_parameters.transmitted_data.length === 0){
-                break;
-            }
-
-            listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
-            for(let obj of data.information.additional_parameters.transmitted_data){
-                listObjectInfoTmp[obj.id] = obj;
-            }
-
-            this.setState({ listObjectInfo: listObjectInfoTmp });
-
-            break;*/
-        }
-    };
-
-    React.useEffect(() => {
-        socketIo.on("isems-mrsi response ui", listener);
-    
-        return () => {
-            socketIo.off("isems-mrsi response ui", listener);
-        };
-    }, []);
-    React.useEffect(() => {
-        if(showReportId !== ""){
-            console.log("func 'ModalWindowShowInformationReact', socketIo.emit");
-
-            //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
-            socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
-            socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: showReportId });
-        }
-    }, [ socketIo, showReportId ]);
-
-    const handlerPublished = () => {
-        let requestId = uuidv4();
-
-        if(!state.id){
-            return;
-        }
-
-        socketIo.once("service event: what time is it", (obj) => {
-            if(obj.id !== requestId){
-                return;
-            }
-
-            let dateNow = obj.date,
-                currentTimeZoneOffsetInHours = new Date(obj.date).getTimezoneOffset() / 60;
-
-            if(currentTimeZoneOffsetInHours < 0){
-                dateNow = +obj.date - ((currentTimeZoneOffsetInHours * -1) * 360000);
-            } else if(currentTimeZoneOffsetInHours > 0) {
-                dateNow = +obj.date + (currentTimeZoneOffsetInHours * 360000);
-            }
-
-            dispatch({ type: "madePublised", data: new Date(dateNow).toISOString() });
-        });
-
-        socketIo.emit("service request: what time is it", { arguments: { id: requestId, dateType: "integer" }});
-    };
-
-    const modalClose = () => {
-        onHide();
-
-        //setReportAcceptedInformation({});
-        dispatch({ type: "cleanAll" });                  
-        
-        //setReportInformation({});
-
-        /*this.setState({
-            reportInfo: {},
-            availableForGroups: [],
-            listPreviousStateReport: [],
-            listGroupAccessToReport: [],
-            showListPreviousStateReport: false,
-        });*/
-    };
-    const handlerReportSave = () => {
-
+    let handlerChangeButtonSaveIsDisabled = () => {
+        setButtonSaveIsDisabled((prevState) => !prevState);
     };
 
     return (<Dialog 
         fullScreen 
         open={show} 
-        onClose={() => { 
-            //this.setState({ showListPreviousStateReport: false });
-            modalClose();
-        }} >
-
+        onClose={() => onHide()}>
         <CreateAppBar 
             title={showReportId}
             nameDialogButton="сохранить"
             buttonSaveIsDisabled={buttonSaveIsDisabled}
             handelrDialogClose={() => { 
-                //this.setState({ showListPreviousStateReport: false });
-                modalClose();
+                onHide();
             }}
-            handlerDialogButton={() => { 
-                //this.setState({ showListPreviousStateReport: false });
-                handlerReportSave();
-            }} />
-            
-        {state.id && <CreateAppBody
+            handlerDialogButton={() => setButtonSaveChangeTrigger(true)} />            
+        <CreateAppBody
             socketIo={socketIo} 
             groupList={groupList}
             showReportId={showReportId}
             userPermissions={userPermissions.editing_information.status}
-            reportInformation={state}
-            handlerPublished={handlerPublished}
-        />}
+            buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+            handlerChangeButtonSaveIsDisabled={handlerChangeButtonSaveIsDisabled}
+        />
     </Dialog>); 
 }
 
@@ -321,265 +163,36 @@ function CreateAppBody(props){
         groupList,
         showReportId,
         userPermissions,
-        reportInformation,
-        handlerPublished,
+        buttonSaveChangeTrigger,
+        handlerChangeButtonSaveIsDisabled,
     } = props;
 
     console.log("func 'CreateAppBody', START");
-    console.log(reportInformation);
-
-    const [ listGroupAccessToReport, setListGroupAccessToReport ] = useState([]);
-    const [ currentGroupAccessToReport, setCurrentGroupAccessToReport ] = useState("select_group");
-
-    const listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        switch(data.section){
-        case "list of groups to which the report is available":
-            if(!Array.isArray(data.information.additional_parameters.list_groups_which_report_available)){
-                return;
-            }
-
-            setListGroupAccessToReport(data.information.additional_parameters.list_groups_which_report_available.map((item) => { 
-                return { group: item.group_name,
-                    time: helpers.getDate(item.date_time),
-                    userName: item.user_name,
-                    title: `Пользователь: ${item.user_name}, Время: ${helpers.getDate(item.date_time)}`};
-            }));
-
-            break;
-        }
-    };
-    React.useEffect(() => {
-        socketIo.on("isems-mrsi response ui", listener);
-    
-        return () => {
-            socketIo.off("isems-mrsi response ui", listener);
-        };
-    }, []);
-
-    const handlerDeleteChipFromListGroupAccessToReport = (groupName) => {
-        let newListGroup = listGroupAccessToReport.filter((item) => {
-            return groupName !== item.group;
-        });
-        setListGroupAccessToReport(newListGroup);
-
-        socketIo.emit("isems-mrsi ui request: forbid the group to access the report", { arguments: {
-            reportId: showReportId,
-            unprivilegedGroup: groupName,
-        }});
-    };
-    const handlerOnChangeAccessGroupToReport = (data) => {
-        let list = listGroupAccessToReport.slice(),
-            groupName = data.target.value;
-
-        for(let item of list){
-            if((groupName === item.group) || (groupName === "select_group")){
-                return;
-            }
-        }
-
-        list.push({ 
-            time: helpers.getDate(+new Date),
-            userName: "текущий пользователь",
-            group: groupName, 
-            title: `Пользователь: текущий, Время: ${helpers.getDate(+new Date)}` 
-        });
-
-        setListGroupAccessToReport(list);
-        setCurrentGroupAccessToReport("select_group");
-        
-        socketIo.emit("isems-mrsi ui request: allow the group to access the report", { arguments: {
-            reportId: showReportId,
-            unprivilegedGroup: groupName,
-        }});
-    };
-
-    //const groupsViewingAvailable = React.useMemo(() => <GroupsViewingAvailable listGroupAccessToReport={listGroupAccessToReport}/>, [listGroupAccessToReport]);
 
     return (<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
         <Row>
             <Col md={7}>
-                <Row className="mt-4">
-                    <Col md={6}><span className="text-muted">Наименование</span>:</Col>
-                    <Col md={6} className="text-right">{reportInformation.name && reportInformation.name}</Col>
-                </Row>
-
-                <Row>
-                    <Col md={12}><span className="text-muted">Дата и время</span>:</Col>
-                </Row>      
-
-                <Row>
-                    <Col md={6}>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <span className="text-muted">создания</span>
-                    </Col>
-                    <Col md={6} className="text-end">
-                        {reportInformation.created && 
-                        helpers.convertDateFromString(reportInformation.created, { monthDescription: "long", dayDescription: "numeric" })}
-                    </Col>
-                </Row>
-
-                <Row>
-                    <Col md={6} className="pl-4">
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <span className="text-muted">последнего обновления</span>
-                    </Col>
-                    <Col md={6} className="text-end">
-                        {reportInformation.modified && 
-                        helpers.convertDateFromString(reportInformation.modified, { monthDescription: "long", dayDescription: "numeric" })}
-                    </Col>
-                </Row>
-
-                <Row>
-                    <Col md={6} className="pl-4">
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <span className="text-muted">публикации</span>
-                    </Col>
-                    {<MadePublished
-                        reportInformation={reportInformation} 
-                        handlerPublished={handlerPublished} />}
-                </Row>
-
-                <Row className="mt-3">
-                    <Col md={12} className="text-muted text-left">Доступность для непривилегированных групп</Col>
-                </Row>
-                <Row className="mt-2">
-                    <Col md={6}>
-                        <CreateChipList
-                            variant="outlined"
-                            style={{ color: purple[400], margin: "2px" }}
-                            chipData={listGroupAccessToReport}
-                            handleDelete={handlerDeleteChipFromListGroupAccessToReport} />
-                    </Col>
-                    <Col md={6} className="pt-1">
-                        <CreateListUnprivilegedGroups 
-                            groupList={groupList}
-                            currentGroup={currentGroupAccessToReport}
-                            handlerChosen={handlerOnChangeAccessGroupToReport}
-                            isNotDisabled={userPermissions} />
-                    </Col>
-                </Row>
-                    
-                {/*<Row>
-                    <Col md={12} className="mt-3">
-                        <TextField
-                            id="outlined-multiline-static"
-                            label={"подробное описание"}
-                            multiline
-                            minRows={3}
-                            maxRows={8}
-                            fullWidth
-                            onChange={this.handlerOnChangeDescription}
-                            defaultValue={reportInformation.description}
-                            variant="outlined"/>
-                    </Col>  
-                </Row>
-
-                {/*<GetListObjectRefs
-                            listObjectRef={reportInfo.object_refs} 
-                            handlerDeleteObjectRef={this.handlerDeleteObjectRef}
-                            handlerShowDialogNewSTIXObject={this.handlerShowDialogNewSTIXObject}
-                        handlerChangeCurrentSTIXObject={this.handlerChangeCurrentAdditionalIdSTIXObject} />*/}
-
-                <Row className="mt-1">
-                    <Col md={12}>
-                        <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
-                    </Col>
-                </Row>
-
-                {/*<Row className="mt-3">
-                            <Col md={12}>
-                                <span className="pl-4">
-                                    <MainTextField
-                                        uniqName={"additional_name_not_stix_specifications"}
-                                        variant={"standard"}
-                                        label={"дополнительное наименование"}
-                                        value={(()=>{
-                                            if((reportInfo.outside_specification === null) || (typeof reportInfo.outside_specification === "undefined")){
-                                                return "";
-                                            }
-
-                                            if((reportInfo.outside_specification.additional_name === null) || (typeof reportInfo.outside_specification.additional_name === "undefined")){
-                                                return "";
-                                            }
-
-                                            return reportInfo.outside_specification.additional_name;
-                                        })()}
-                                        fullWidth={true}
-                                        onChange={this.handlerOutsideSpecificationAdditionalName}
-                                    />
-                                </span>
-                            </Col>
-                                    </Row>*/}
-
-                {/*((outsideSpecificationIsNotExist) || (reportInfo.outside_specification.decisions_made_computer_threat === null) || (typeof reportInfo.outside_specification.decisions_made_computer_threat === "undefined"))? 
-                            "":
-                            <Row className="mt-3">
-                                <Col md={12}>
-                                    <span className="pl-4">
-                                        <CreateListTypesDecisionsMadeComputerThreat
-                                            socketIo={socketIo}
-                                            defaultValue={reportInfo.outside_specification.decisions_made_computer_threat}
-                                            handlerDecisionsMadeComputerThreat={handlerChosenDecisionsMadeComputerThreat}/>
-                                        {/*<CreateListSelect
-                                            list={this.props.listTypesDecisionsMadeComputerThreat}
-                                            label="принятое решение по компьютерной угрозе"
-                                            uniqId="decisions_made_computer_threat"
-                                            currentItem={reportInfo.outside_specification.decisions_made_computer_threat}
-                                            handlerChosen={this.handlerChosenDecisionsMadeComputerThreat}
-                                        isNotDisabled={this.props.userPermissions.editing_information.status} />
-                                    </span>
-                                </Col>
-                            </Row>
-                                    */}
-                
-                {/*((outsideSpecificationIsNotExist) || (reportInfo.outside_specification.computer_threat_type === null) || (typeof reportInfo.outside_specification.computer_threat_type === "undefined"))? 
-                            "":
-                            <Row className="mt-3">
-                                <Col md={12}>
-                                    <span className="pl-4">
-                                        <CreateListTypesComputerThreat
-                                            socketIo={socketIo}
-                                            defaultValue={reportInfo.outside_specification.computer_threat_type}
-                                            handlerTypesComputerThreat={handlerChosenComputerThreatType}/>
-                                        {/*<CreateListSelect
-                                            list={this.props.listTypesComputerThreat}
-                                            label="тип компьютерной угрозы"
-                                            uniqId="computer_threat_type"
-                                            currentItem={reportInfo.outside_specification.computer_threat_type}
-                                            handlerChosen={this.handlerChosenComputerThreatType}
-                                            isNotDisabled={this.props.userPermissions.editing_information.status} />
-                                    </span>
-                                </Col>
-                            </Row>
-                        */}
-
-                {/*<CreateElementAdditionalTechnicalInformationReportObject 
-                            reportInfo={reportInfo}
-                            objectId={this.props.showReportId}
-                            handlerElementConfidence={this.handlerElementConfidence.bind(this)}
-                            handlerElementDefanged={this.handlerElementDefanged.bind(this)}
-                            handlerElementLabels={this.handlerElementLabels.bind(this)}
-                            handlerElementDelete={this.handlerDeleteElementAdditionalTechnicalInformation.bind(this)}
-                            showDialogElementAdditionalThechnicalInfo={this.showDialogElementAdditionalThechnicalInfo.bind(this)}
-                        isNotDisabled={this.props.userPermissions.editing_information.status} />*/}
-  
+                <CreateReportInformation 
+                    socketIo={socketIo}
+                    groupList={groupList}
+                    showReportId={showReportId}
+                    userPermissions={userPermissions}
+                    buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+                    handlerChangeButtonSaveIsDisabled={handlerChangeButtonSaveIsDisabled}
+                />
             </Col>
             <Col md={5}>
-                <GroupsViewingAvailable listGroupAccessToReport={listGroupAccessToReport} />
-                {/*groupsViewingAvailable*/}
-
+                <GroupsViewingAvailable 
+                    socketIo={socketIo}
+                    groupList={groupList} 
+                    showReportId={showReportId}
+                    userPermissions={userPermissions}
+                />
                 <br/>
                 <CreateListPreviousStateSTIX 
                     socketIo={socketIo} 
-                    searchObjectId={showReportId} />
+                    searchObjectId={showReportId} 
+                />
             </Col>
         </Row>
     </Container>);
@@ -590,8 +203,367 @@ CreateAppBody.propTypes = {
     groupList: PropTypes.array.isRequired,
     showReportId: PropTypes.string.isRequired,
     userPermissions: PropTypes.bool.isRequired,
-    reportInformation: PropTypes.object.isRequired,
-    handlerPublished: PropTypes.func.isRequired,
+    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    handlerChangeButtonSaveIsDisabled: PropTypes.func.isRequired,
+};
+
+function CreateReportInformation(props){
+    let {
+        socketIo,
+        groupList,
+        showReportId,
+        userPermissions,
+        buttonSaveChangeTrigger,
+        handlerChangeButtonSaveIsDisabled,
+    } = props;
+
+    console.log("func 'CreateReportInformation', START...");
+
+    const reducer = (state, action) => {
+        switch(action.type){
+        case "newAll":
+            return action.data;
+        case "cleanAll":
+            return {};
+        case "madePublised":
+            state.published = action.data;
+            handlerChangeButtonSaveIsDisabled(false);
+
+            return {...state};
+        case "updateDescription":
+            state.description = action.data;
+
+            return {...state};
+        case "updateAdditionalName":
+            if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
+                state.outside_specification = {};
+            }
+            state.outside_specification.additional_name = action.data;
+
+            return {...state};
+        case "updateDecisionsMadeComputerThreat":
+            if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
+                state.outside_specification = {};
+            }
+            state.outside_specification.decisions_made_computer_threat = action.data;
+
+            return {...state};
+
+        case "updateComputerThreatType":
+            if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
+                state.outside_specification = {};
+            }
+            state.outside_specification.computer_threat_type = action.data;
+
+            return {...state};
+        case "updateConfidence":
+            console.log("updateConfidence: ", action.data);
+            state.confidence = action.data;
+
+            return {...state};
+        case "updateDefanged":
+            console.log("updateDefanged: ", action.data);
+            state.defanged = (action.data === "true");
+
+            return {...state};
+        case "updateLabels":
+            console.log("updateLabels: ", action.data);
+            if(!Array.isArray(state.labels)){
+                state.labels = [];
+            }
+                
+            //                        state.labels = obj.listTokenValue;
+
+            return {...state};
+        case "deleteElementAdditionalTechnicalInformation":
+            /**
+let externalReferences = [];
+        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
+
+        if(obj.itemType === "external_references"){
+            externalReferences = listObjectTmp[obj.objectId].external_references.filter((item) => item.source_name !== obj.item);
+            listObjectTmp[obj.objectId].external_references = externalReferences;
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+
+        if(obj.itemType === "granular_markings"){
+            if(obj.orderNumber < 0){
+                return;
+            }
+
+            listObjectTmp[obj.objectId].granular_markings.splice(obj.orderNumber, 1);
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+
+        if(obj.itemType === "extensions"){
+            delete listObjectTmp[obj.objectId].extensions[obj.item];
+
+            this.setState({ listObjectInfo: listObjectTmp });
+        }
+ */
+            return {...state};
+        }
+    };
+    const [state, dispatch] = useReducer(reducer, {});
+
+    const listener = (data) => {
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+            return;
+        }
+
+        if(data.information.additional_parameters.transmitted_data.length === 0){
+            return;
+        }
+
+        for(let obj of data.information.additional_parameters.transmitted_data){
+            if(obj.type === "report"){
+                dispatch({ type: "newAll", data: obj });                  
+                //setReportAcceptedInformation(obj);
+
+                break;
+            }
+        }
+
+
+        /*let objectId = "", 
+            reportInfo = {},
+            listObjectInfoTmp = {},
+            listPreviousStateTmp = [],
+            optionsPreviousStateTmp = {};
+        case "list of groups that are allowed access":
+            this.setState({ availableForGroups: data.information.additional_parameters });
+        
+            break;
+        case "isems-mrsi ui request: send search request, get STIX object for id":
+            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                break;
+            }
+
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                break;
+            }
+
+            listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
+            for(let obj of data.information.additional_parameters.transmitted_data){
+                listObjectInfoTmp[obj.id] = obj;
+            }
+
+            this.setState({ listObjectInfo: listObjectInfoTmp });
+
+            break;
+        }*/
+    };
+    React.useEffect(() => {
+        socketIo.on("isems-mrsi response ui: send search request, get report for id", listener);
+    
+        return () => {
+            socketIo.off("isems-mrsi response ui: send search request, get report for id", listener);
+        };
+    }, []);
+    React.useEffect(() => {
+        if(showReportId !== ""){
+            console.log("func 'ModalWindowShowInformationReact', socketIo.emit");
+
+            //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
+            socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
+            socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: showReportId });
+        }
+    }, [ socketIo, showReportId ]);
+
+    const handlerPublished = () => {
+        let requestId = uuidv4();
+
+        if(!state.id){
+            return;
+        }
+
+        socketIo.once("service event: what time is it", (obj) => {
+            if(obj.id !== requestId){
+                return;
+            }
+
+            let dateNow = obj.date,
+                currentTimeZoneOffsetInHours = new Date(obj.date).getTimezoneOffset() / 60;
+
+            if(currentTimeZoneOffsetInHours < 0){
+                dateNow = +obj.date - ((currentTimeZoneOffsetInHours * -1) * 360000);
+            } else if(currentTimeZoneOffsetInHours > 0) {
+                dateNow = +obj.date + (currentTimeZoneOffsetInHours * 360000);
+            }
+
+            dispatch({ type: "madePublised", data: new Date(dateNow).toISOString() });
+        });
+
+        socketIo.emit("service request: what time is it", { arguments: { id: requestId, dateType: "integer" }});
+    };
+    
+    console.log("----=====-----");
+    console.log(state);
+    console.log("----=====-----");
+
+    let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
+
+    return (<React.Fragment>
+        <Row className="mt-4">
+            <Col md={6}><span className="text-muted">Наименование</span>:</Col>
+            <Col md={6} className="text-right">{state.name && state.name}</Col>
+        </Row>
+        <Row>
+            <Col md={12}><span className="text-muted">Дата и время</span>:</Col>
+        </Row>      
+        <Row>
+            <Col md={6}>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">создания</span>
+            </Col>
+            <Col md={6} className="text-end">
+                {state.created && 
+                    helpers.convertDateFromString(state.created, { monthDescription: "long", dayDescription: "numeric" })}
+            </Col>
+        </Row>
+        <Row>
+            <Col md={6} className="pl-4">
+                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">последнего обновления</span>
+            </Col>
+            <Col md={6} className="text-end">
+                {state.modified && 
+                    helpers.convertDateFromString(state.modified, { monthDescription: "long", dayDescription: "numeric" })}
+            </Col>
+        </Row>
+        <Row>
+            <Col md={6} className="pl-4">
+                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">публикации</span>
+            </Col>
+            {<MadePublished
+                reportInformation={state} 
+                handlerPublished={handlerPublished} 
+            />}
+        </Row>
+        <Row>
+            <Col md={12} className="mt-3">
+                <TextField
+                    id="outlined-multiline-static"
+                    label={"подробное описание"}
+                    multiline
+                    minRows={3}
+                    maxRows={8}
+                    fullWidth
+                    onChange={(e) => dispatch({ type: "updateDescription", data: e.target.value })}
+                    defaultValue={state.description}
+                    variant="outlined"/>
+            </Col>  
+        </Row>
+
+        {/*<GetListObjectRefs
+            listObjectRef={state.object_refs} 
+            handlerDeleteObjectRef={this.handlerDeleteObjectRef}
+            handlerShowDialogNewSTIXObject={this.handlerShowDialogNewSTIXObject}
+        handlerChangeCurrentSTIXObject={this.handlerChangeCurrentAdditionalIdSTIXObject} />*/}
+
+        <Row className="mt-3">
+            <Col md={12}>
+                <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
+            </Col>
+        </Row>
+        <Row className="mt-3">
+            <Col md={12}>
+                <span className="pl-4">
+                    <MainTextField
+                        uniqName={"additional_name_not_stix_specifications"}
+                        variant={"standard"}
+                        label={"дополнительное наименование"}
+                        value={(() => {
+                            if(outsideSpecificationIsNotExist){
+                                return "";
+                            }
+
+                            if((state.outside_specification.additional_name === null) || (typeof state.outside_specification.additional_name === "undefined")){
+                                return "";
+                            }
+
+                            return state.outside_specification.additional_name;
+                        })()}
+                        fullWidth={true}
+                        onChange={(e) => dispatch({ type: "updateAdditionalName", data: e.target.value })}
+                    />
+                </span>
+            </Col>
+        </Row>
+        <Row className="mt-3">
+            <Col md={12}>
+                <span className="pl-4">
+                    <CreateListTypesDecisionsMadeComputerThreat
+                        socketIo={socketIo}
+                        defaultValue={() => {
+                            if(outsideSpecificationIsNotExist){
+                                return "";
+                            }
+    
+                            if((state.outside_specification.decisions_made_computer_threat === null) || (typeof state.outside_specification.decisions_made_computer_threat === "undefined")){
+                                return "";
+                            }
+    
+                            return state.outside_specification.decisions_made_computer_threat;
+                        }}
+                        handlerDecisionsMadeComputerThreat={(e) => dispatch({ type: "updateDecisionsMadeComputerThreat", data: e })}
+                    />
+                </span>
+            </Col>
+        </Row>
+        <Row className="mt-3">
+            <Col md={12}>
+                <span className="pl-4">
+                    <CreateListTypesComputerThreat
+                        socketIo={socketIo}
+                        defaultValue={() => {
+                            if(outsideSpecificationIsNotExist){
+                                return "";
+                            }
+    
+                            if((state.outside_specification.computer_threat_type === null) || (typeof state.outside_specification.computer_threat_type === "undefined")){
+                                return "";
+                            }
+
+                            return state.outside_specification.computer_threat_type;
+                        }}
+                        handlerTypesComputerThreat={(e) => dispatch({ type: "updateComputerThreatType", data: e })}/>
+                </span>
+            </Col>
+        </Row>
+        <CreateElementAdditionalTechnicalInformationReportObject 
+            reportInfo={state}
+            objectId={showReportId}
+            handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
+            handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
+            handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
+            handlerElementDelete={(e) => { console.log(e); }}
+            showDialogElementAdditionalThechnicalInfo={(e) => { console.log(e); }}
+            isNotDisabled={userPermissions} />
+
+        {/*
+                    updateConfidence
+            updateDefanged
+            updateLabels
+*/}
+    </React.Fragment>);
+}
+
+CreateReportInformation.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    groupList: PropTypes.array.isRequired,
+    showReportId: PropTypes.string.isRequired,
+    userPermissions: PropTypes.bool.isRequired,
+    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    handlerChangeButtonSaveIsDisabled: PropTypes.func.isRequired,
 };
 
 function MadePublished(props){
@@ -624,55 +596,150 @@ MadePublished.propTypes = {
 };
 
 function GroupsViewingAvailable(props){
-    let { listGroupAccessToReport } = props;
+    let { 
+        socketIo,
+        groupList,
+        showReportId,
+        userPermissions,
+    } = props;
+
+    const [ listGroupAccessToReport, setListGroupAccessToReport ] = useState([]);
+
+    const listener = (data) => {
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return;
+        }
+
+        if(!Array.isArray(data.information.additional_parameters.list_groups_which_report_available)){
+            return;
+        }
+
+        setListGroupAccessToReport(data.information.additional_parameters.list_groups_which_report_available.map((item) => { 
+            return { group: item.group_name,
+                time: helpers.getDate(item.date_time),
+                userName: item.user_name,
+                title: `Пользователь: ${item.user_name}, Время: ${helpers.getDate(item.date_time)}`};
+        }));
+    };
+    React.useEffect(() => {
+        socketIo.on("isems-mrsi response ui: list of groups to which the report is available", listener);
+    
+        return () => {
+            socketIo.off("isems-mrsi response ui: list of groups to which the report is available", listener);
+        };
+    }, []);
+
+    const handlerOnChangeAccessGroupToReport = (data) => {
+        let list = listGroupAccessToReport.slice(),
+            groupName = data.target.value;
+
+        for(let item of list){
+            if((groupName === item.group) || (groupName === "select_group")){
+                return;
+            }
+        }
+
+        list.push({ 
+            time: helpers.getDate(+new Date),
+            userName: "текущий пользователь",
+            group: groupName, 
+            title: `Пользователь: текущий, Время: ${helpers.getDate(+new Date)}` 
+        });
+
+        setListGroupAccessToReport(list);
+        
+        socketIo.emit("isems-mrsi ui request: allow the group to access the report", { arguments: {
+            reportId: showReportId,
+            unprivilegedGroup: groupName,
+        }});
+    };
+
+    const handlerDeleteChipFromListGroupAccessToReport = (groupName) => {
+        let newListGroup = listGroupAccessToReport.filter((item) => {
+            return groupName !== item.group;
+        });
+        setListGroupAccessToReport(newListGroup);
+
+        socketIo.emit("isems-mrsi ui request: forbid the group to access the report", { arguments: {
+            reportId: showReportId,
+            unprivilegedGroup: groupName,
+        }});
+    };
 
     return (<Paper elevation={3}>
-        <Row className="pt-3">
-            <Col md={12} className="text-center">
-                <strong>Отчет доступен для просмотра следующих групп</strong>
-            </Col>
-        </Row>
+        <Box m={2} pb={2}>
+            <Grid container direction="row" className="pt-3">
+                <Grid item container md={12} justifyContent="center">
+                    <strong>Отчет доступен для просмотра следующих групп</strong>
+                </Grid>
+            </Grid>
 
-        <br/>
-        {listGroupAccessToReport.map((item, num) => {
-            return (<Row className="pb-3" key={`key_list_group_access_report_${num}`}>
-                <Col md={1}></Col>
-                <Col md={10}>
-                    <Row className="pl-3 pr-3">
-                        <Col md={6} className="text-end text-muted">
-                            <Typography variant="caption">группа:</Typography>
-                        </Col>
-                        <Col md={6} className="text-start">
-                            <Typography variant="caption">{item.group}</Typography>
-                        </Col>
-                    </Row>
-                    <Row className="pl-3 pr-3">
-                        <Col md={6} className="text-end text-muted">
-                            <Typography variant="caption">добавлена:</Typography>
-                        </Col>
-                        <Col md={6} className="text-start">
-                            <Typography variant="caption">
-                                <span style={{ color: orange[800] }}>
-                                    {helpers.convertDateFromString(item.time, { monthDescription: "long", dayDescription: "numeric" })}
-                                </span>
-                            </Typography>
-                        </Col>
-                    </Row>
-                    <Row className="pl-3 pr-3">
-                        <Col md={6} className="text-end text-muted">
-                            <Typography variant="caption">пользователем:</Typography>
-                        </Col>
-                        <Col md={6} className="text-start">
-                            <Typography variant="caption">{item.userName}</Typography>
-                        </Col>
-                    </Row>
-                </Col>
-                <Col md={1}></Col>
-            </Row>);
-        })}
+            <br/>
+            {listGroupAccessToReport.map((item, num) => {
+                return (<Grid container direction="row" className="pb-3" key={`key_list_group_access_report_${num}`}>
+                    <Grid item container md={12} justifyContent="flex-end">
+                        <Grid container direction="row" className="pl-3 pr-3" spacing={3}>
+                            <Grid item container md={6} justifyContent="flex-end" className="text-end text-muted">
+                                <Typography variant="caption">группа:</Typography>
+                            </Grid>
+                            <Grid item container md={6} justifyContent="flex-start" className="text-end text-muted">
+                                <Typography variant="caption">{item.group}</Typography>
+                            </Grid>
+                        </Grid>
+
+                        <Grid container direction="row" className="pl-3 pr-3" spacing={3}>
+                            <Grid item container md={6} justifyContent="flex-end" className="text-end text-muted">
+                                <Typography variant="caption">добавлена:</Typography>
+                            </Grid>
+                            <Grid item container md={6} justifyContent="flex-start" className="text-end text-muted">
+                                <Typography variant="caption">
+                                    <span style={{ color: orange[800] }}>
+                                        {helpers.convertDateFromString(item.time, { monthDescription: "long", dayDescription: "numeric" })}
+                                    </span>
+                                </Typography>
+                            </Grid>
+                        </Grid>
+
+                        <Grid container direction="row" className="pl-3 pr-3" spacing={3}>
+                            <Grid item container md={6} justifyContent="flex-end" className="text-end text-muted">
+                                <Typography variant="caption">пользователем:</Typography> 
+                            </Grid>
+                            <Grid item container md={6} justifyContent="flex-start" className="text-end text-muted">
+                                <Typography variant="caption">{item.userName}</Typography>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>);
+            })}
+
+            <Grid container direction="row" spacing={1}>
+                <Grid item container md={9} justifyContent="flex-start">
+                    <CreateChipList
+                        variant="outlined"
+                        style={{ color: purple[400], margin: "2px" }}
+                        chipData={listGroupAccessToReport}
+                        handleDelete={handlerDeleteChipFromListGroupAccessToReport}
+                    />
+                </Grid>
+                <Grid item container md={3} justifyContent="flex-end">
+                    <CreateListUnprivilegedGroups 
+                        groupList={groupList}
+                        handlerChosen={handlerOnChangeAccessGroupToReport}
+                        isNotDisabled={userPermissions}
+                    />
+                </Grid>
+            </Grid>
+        </Box>
     </Paper>);
 }
 
 GroupsViewingAvailable.propTypes = {
-    listGroupAccessToReport: PropTypes.array.isRequired,
+    socketIo: PropTypes.object.isRequired,
+    groupList: PropTypes.array.isRequired,
+    showReportId: PropTypes.string.isRequired,
+    userPermissions: PropTypes.bool.isRequired,
 };
