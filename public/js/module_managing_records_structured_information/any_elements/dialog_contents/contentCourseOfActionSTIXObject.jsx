@@ -258,8 +258,8 @@ export default function CreateDialogContentCourseOfActionSTIXObject(props){
                     </Grid>
 
                     <CreateElementAdditionalTechnicalInformationDO 
-                        reportInfo={currentSTIXObject}
                         objectId={currentIdSTIXObject}
+                        reportInfo={currentSTIXObject}
                         handlerElementConfidence={handlerElementConfidence}
                         handlerElementDefanged={handlerElementDefanged}
                         handlerElementLabels={handlerElementLabels}

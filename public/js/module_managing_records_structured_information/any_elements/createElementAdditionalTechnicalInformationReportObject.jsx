@@ -24,6 +24,8 @@ import TokenInput from "react-customize-token-input";
 import { blue, grey, green, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
+import CreateAnyModalWindowSTIXObject from "./createAnyModalWindowSTIXObject.jsx";
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: "100%",
@@ -48,8 +50,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateElementAdditionalTechnicalInformationReportObject(props){
     let { 
-        reportInfo, 
+        socketIo,
         objectId,
+        reportInfo, 
         handlerElementConfidence, 
         handlerElementDefanged, 
         handlerElementLabels,
@@ -421,12 +424,26 @@ export default function CreateElementAdditionalTechnicalInformationReportObject(
         <Grid container direction="row" className="mb-2">
             <Grid item md={12} className="text-end"><small>1 - чем больше тем увереннее</small></Grid>
         </Grid>
+
+        <CreateAnyModalWindowSTIXObject
+            socketIo={socketIo}
+            listObjectInfo={this.state.listObjectInfo}
+            listPreviousState={this.state.listPreviousState}
+            optionsPreviousState={this.state.optionsPreviousState}
+            showDialogElement={this.state.showDialogElementAdditionalSTIXObject}
+            currentAdditionalIdSTIXObject={this.state.currentAdditionalIdSTIXObject}
+            showListPreviousState={this.state.showListPreviousStateAnySTIXObject}
+            handelrDialogClose={this.handelrDialogClose}
+            handelrDialogSave={this.handelrDialogSaveAnySTIXObject}
+            isNotDisabled={this.props.userPermissions.editing_information.status} 
+        />
     </React.Fragment>);
 }
 
 CreateElementAdditionalTechnicalInformationReportObject.propTypes = {
-    reportInfo: PropTypes.object.isRequired,
+    socketIo: PropTypes.object.isRequired,
     objectId: PropTypes.string.isRequired,
+    reportInfo: PropTypes.object.isRequired,
     handlerElementConfidence: PropTypes.func.isRequired,
     handlerElementDefanged: PropTypes.func.isRequired,
     handlerElementLabels: PropTypes.func.isRequired,

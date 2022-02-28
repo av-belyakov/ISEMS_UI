@@ -36,6 +36,7 @@ import CreateListUnprivilegedGroups from "../module_managing_records_structured_
 import CreateAnyModalWindowSTIXObject from "../module_managing_records_structured_information/any_elements/createAnyModalWindowSTIXObject.jsx";
 import CreateListPreviousStateSTIX from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIX.jsx";
 import CreateListPreviousStateSTIXObject from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIXObject.jsx";
+import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
 import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
 import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
@@ -220,6 +221,10 @@ function CreateReportInformation(props){
     console.log("func 'CreateReportInformation', START...");
 
     const reducer = (state, action) => {
+
+        console.log("____ reducer _____");
+        console.log("action.type: ", action.type);
+
         switch(action.type){
         case "newAll":
             return action.data;
@@ -231,9 +236,9 @@ function CreateReportInformation(props){
 
             return {...state};
         case "updateDescription":
-            state.description = action.data;
+            console.log("---=== updateDescription ===---");
 
-            return {...state};
+            return {...state, description: action.data};
         case "updateAdditionalName":
             if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
                 state.outside_specification = {};
@@ -257,22 +262,71 @@ function CreateReportInformation(props){
 
             return {...state};
         case "updateConfidence":
-            console.log("updateConfidence: ", action.data);
-            state.confidence = action.data;
+            console.log("BEFORE updateConfidence: ", state.confidence);
+            console.log("state.confidence: ", state.confidence, " === ", action.data.data, " :action.data");
 
-            return {...state};
+            if(state.confidence === action.data.data){
+                console.log("00000000000");
+
+                return {...state};
+            }
+
+            console.log("AFTER updateConfidence: ", state.confidence);
+
+            return {...state, confidence: action.data.data};
         case "updateDefanged":
             console.log("updateDefanged: ", action.data);
-            state.defanged = (action.data === "true");
 
-            return {...state};
+            return {...state, defanged: (action.data === "true")};
         case "updateLabels":
             console.log("updateLabels: ", action.data);
-            if(!Array.isArray(state.labels)){
-                state.labels = [];
+
+            return {...state, labels :action.data.listTokenValue};
+        case "updateExternalReferences":
+            console.log("func 'CreateReportInformation', updateExternalReferences");
+            console.log("------", action.data, "-------");
+
+            for(let key of state.external_references){
+                if(key.source_name === action.data.source_name){
+                    return {...state};
+                }
             }
-                
-            //                        state.labels = obj.listTokenValue;
+
+            state.external_references.push(action.data);
+
+            console.log("COUNT state.external_references: ",state.external_references.length);
+
+            return {...state};
+        case "updateExternalReferencesHashesUpdate":
+            console.log("funct 'updateExternalReferencesHashesUpdate'");
+            console.log(action.data);
+            /*if((valueAPTmp.external_references[obj.orderNumber].hashes === null) || (typeof valueAPTmp.external_references[obj.orderNumber].hashes === "undefined")){
+                    valueAPTmp.external_references[obj.orderNumber].hashes = {};
+                }
+
+                valueAPTmp.external_references[obj.orderNumber].hashes[obj.data.type] = obj.data.hash;
+                setAttackPatterElement(valueAPTmp);*/      
+
+
+            return {...state};
+        case "updateExternalReferencesHashesDelete":
+            console.log("funct 'updateExternalReferencesHashesDelete'");
+            console.log(action.data);
+
+            /*delete valueAPTmp.external_references[obj.orderNumber].hashes[obj.hashName];
+                setAttackPatterElement(valueAPTmp);  */
+
+            return {...state};
+        case "updateGranularMarkings":
+            console.log("func 'CreateReportInformation', updateGranularMarkings");
+
+            state.granular_markings.push(action.data);
+
+            return {...state};
+        case "updateExtensions":
+            console.log("updateExtensions: ", action.data);
+
+            state.extensions[action.data.name] = action.data.description;
 
             return {...state};
         case "deleteElementAdditionalTechnicalInformation":
@@ -406,6 +460,45 @@ let externalReferences = [];
 
         socketIo.emit("service request: what time is it", { arguments: { id: requestId, dateType: "integer" }});
     };
+
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
+        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
+        console.log(state);
+        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
+        console.log(obj);
+
+        if(obj.modalType === "external_references"){
+            switch(obj.actionType){
+            case "hashes_update":
+                console.log("external_references - hashes_update");
+
+                dispatch({ type: "updateExternalReferencesHashesUpdate", data: obj.data });
+
+                break;
+            case "hashes_delete":
+                console.log("external_references - hashes_delete");
+
+                dispatch({ type: "updateExternalReferencesHashesDelete", data: obj.data });
+
+                break;
+            default:
+                console.log("external_references - default");
+                console.log("obj.modalType - ", obj.modalType);
+
+                dispatch({ type: "updateExternalReferences", data: obj.data });
+            }
+        }
+        
+        if(obj.modalType === "granular_markings") {
+            console.log("updateGranularMarkings......");
+
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+        }
+        
+        if(obj.modalType === "extensions") {
+            dispatch({ type: "updateExtensions", data: obj.data });
+        }
+    };
     
     console.log("----=====-----");
     console.log(state);
@@ -535,21 +628,36 @@ let externalReferences = [];
 
                             return state.outside_specification.computer_threat_type;
                         }}
-                        handlerTypesComputerThreat={(e) => dispatch({ type: "updateComputerThreatType", data: e })}/>
+                        handlerTypesComputerThreat={(e) => dispatch({ type: "updateComputerThreatType", data: e })}
+                    />
                 </span>
             </Col>
         </Row>
-        <CreateElementAdditionalTechnicalInformationReportObject 
-            reportInfo={state}
+        <CreateElementAdditionalTechnicalInformationDO
             objectId={showReportId}
+            reportInfo={state}
+            handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
+            handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
+            handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
+            handlerElementDelete={(e) => { console.log(e); }}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
+            //handlerDialogElementAdditionalThechnicalInfo={(e) => { console.log(e)}}
+            isNotDisabled={userPermissions} 
+        />
+        {/*<CreateElementAdditionalTechnicalInformationReportObject 
+            socketIo={socketIo}
+            objectId={showReportId}
+            reportInfo={state}
             handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
             handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
             handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
             handlerElementDelete={(e) => { console.log(e); }}
             showDialogElementAdditionalThechnicalInfo={(e) => { console.log(e); }}
-            isNotDisabled={userPermissions} />
+            isNotDisabled={userPermissions} 
+        />*/}
 
         {/*
+        Недоделал CreateElementAdditionalTechnicalInformationReportObject 
                     updateConfidence
             updateDefanged
             updateLabels

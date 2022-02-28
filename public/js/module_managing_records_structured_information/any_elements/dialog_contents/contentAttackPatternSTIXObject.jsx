@@ -298,8 +298,8 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                     </Grid>
 
                     <CreateElementAdditionalTechnicalInformationDO 
-                        reportInfo={attackPatterElement}
                         objectId={currentIdSTIXObject}
+                        reportInfo={attackPatterElement}
                         handlerElementConfidence={handlerElementConfidence}
                         handlerElementDefanged={handlerElementDefanged}
                         handlerElementLabels={handlerElementLabels}

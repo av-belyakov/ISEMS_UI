@@ -265,8 +265,8 @@ export default function CreateDialogContentCampaignSTIXObject(props){
                     </Grid>
 
                     <CreateElementAdditionalTechnicalInformationDO 
-                        reportInfo={dataPatterElement}
                         objectId={currentIdSTIXObject}
+                        reportInfo={dataPatterElement}
                         handlerElementConfidence={handlerElementConfidence}
                         handlerElementDefanged={handlerElementDefanged}
                         handlerElementLabels={handlerElementLabels}
