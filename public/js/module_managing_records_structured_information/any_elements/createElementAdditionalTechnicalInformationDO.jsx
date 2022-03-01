@@ -71,12 +71,12 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
     let { 
         objectId,
         reportInfo, 
+        isNotDisabled,
         handlerElementConfidence, 
         handlerElementDefanged, 
         handlerElementLabels,
         handlerElementDelete,
         handlerDialogElementAdditionalThechnicalInfo,
-        isNotDisabled,
     } = props;
 
     let listTmpLabelsAdditionalTechnicalInformation = ((reportInfo.labels !== null) && (Array.isArray(reportInfo.labels)))? reportInfo.labels: [];
@@ -110,18 +110,15 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
 
     let [ buttonAddNewERIsDisabled, setButtonAddNewERIsDisabled ] = useState(true),
         [ buttonAddNewGMIsDisabled, setButtonAddNewGMIsDisabled ] = useState(true),
-        [ buttonAddNewEIsDisabled, setButtonAddNewEIsDisabled ] = useState(true),
         [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true),
         [ buttonAddSelectorIsDisabled, setButtonAddSelectorIsDisabled ] = useState(true),
         [ valuesIsInvalideSourceNameER, setValuesIsInvalideSourceNameER ] = useState(true),
         [ valuesIsInvalidURLER, setValuesIsInvalidURLER ] = useState(false),
         [ valueTmpHashSumER, setValueTmpHashSumER ] = useState({ type: "", description: "" }),
         [ valueTmpUpdateHashSumER, setValueTmpUpdateHashSumER ] = useState({}),
-        [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
         [ valueTmpSelector, setValueTmpSelector ] = useState(""),
         [ valueER, setValueER ] = useState(patternValueER),
-        [ valueGM, setValueGM ] = useState(patternValueGM),
-        [ valueE, setValueE ] = useState({ name: "", description: ""});
+        [ valueGM, setValueGM ] = useState(patternValueGM);
 
     let handlerElConf = (data) => {
             handlerElementConfidence({ data: +data.target.value, objectId: objectId });
@@ -262,7 +259,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                             }}
                         />
                     </Grid>
-                    <Grid item md={2} className="text-end pt-2">
+                    <Grid item md={2} className="text-end mt-4">
                         <Button 
                             onClick={() => {
                                 let valueERTmp = _.cloneDeep(valueER);
@@ -467,7 +464,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                                         }}
                                     />
                                 </Grid>
-                                <Grid item md={2} className="text-end pt-2">
+                                <Grid item md={2} className="text-end mt-4">
                                     <Button 
                                         onClick={() => {
                                             if((valueTmpUpdateHashSumER[key] === null) || (typeof valueTmpUpdateHashSumER[key] === "undefined")){                                                    
@@ -682,97 +679,6 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         </Grid>);
     };
 
-    //любая дополнительная информация
-    let getExtensions = () => {
-        let  listExtensions = [];
-        for(let k in reportInfo.extensions){
-            listExtensions.push(<li key={`extensions_${k}`}>
-                {k}: {reportInfo.extensions[k]}
-                <IconButton aria-label="delete-extensions-item" onClick={() => { 
-                    handlerElementDelete({ 
-                        itemType: "extensions", 
-                        item: k, 
-                        objectId: objectId,
-                        orderNumber: -1 }); 
-                }}>
-                    <IconCloseOutlined style={{ color: red[400] }} />
-                </IconButton>
-            </li>);
-        }
-
-        return (<Grid container direction="row" key="key_extensions_link">
-            <Grid container direction="row" spacing={3}>
-                <Grid item md={4}>
-                    <TextField
-                        id="extensions-name"
-                        label="наименование"
-                        size="small"
-                        fullWidth
-                        error={valuesIsInvalideNameE}
-                        value={valueE.name}
-                        onChange={(e) => {
-                            let valueETmp = _.cloneDeep(valueE);
-                            valueETmp.name = e.target.value;
-                            
-                            setValueE(valueETmp);
-
-                            if(e.target.value.length > 0){
-                                setValuesIsInvalideNameE(false);
-                                setButtonAddNewEIsDisabled(false);
-                            } else {
-                                setValuesIsInvalideNameE(true);
-                                setButtonAddNewEIsDisabled(true);
-                            }
-                        }}
-                        variant="outlined"
-                        helperText="обязательное для заполнения поле"
-                    />
-                </Grid>
-                <Grid item md={8}>
-                    <TextField
-                        id="extensions-description"
-                        label="подробное описание"
-                        multiline
-                        rows={2}
-                        fullWidth
-                        value={valueE.description}
-                        onChange={(e) => {
-                            let valueETmp = _.cloneDeep(valueE);
-                            valueETmp.description = e.target.value;
-
-                            setValueE(valueETmp);
-                        }}
-                        variant="outlined"/>
-                </Grid>
-            </Grid>
-
-            <Grid container direction="row">
-                <Grid item md={12} className="text-end mt-2 pb-2">
-                    <Button onClick={() => {
-                        let tmpData = _.cloneDeep(valueE);
-
-                        setValueE({ name: "", description: ""});
-                        setValuesIsInvalideNameE(true);
-
-                        handlerDialogElementAdditionalThechnicalInfo({ 
-                            actionType: "new",
-                            modalType: "extensions", 
-                            objectId: objectId,
-                            orderNumber: -1,
-                            data: tmpData,
-                        });
-                    }} disabled={buttonAddNewEIsDisabled}>
-                    добавить любую дополнительную информацию
-                    </Button>
-                </Grid>
-            </Grid>
-
-            <Grid container direction="row">
-                <Grid item md={12}><ul>{listExtensions}</ul></Grid>
-            </Grid>
-        </Grid>);
-    };
-
     //уверенность создателя в правильности своих данных от 0 до 100
     let listConfidence = () => {
         let list = [];
@@ -886,7 +792,13 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                 <Typography className={classes.heading}>любая дополнительная информация</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                {getExtensions()}
+                <GetExtensions 
+                    objectId={objectId}
+                    reportInfo={reportInfo}
+                    handlerElementDelete={handlerElementDelete}
+                    handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
+                />
+                {/*getExtensions()*/}
             </AccordionDetails>
         </Accordion>
 
@@ -900,10 +812,120 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
 CreateElementAdditionalTechnicalInformationDO.propTypes = {
     objectId: PropTypes.string.isRequired,
     reportInfo: PropTypes.object.isRequired,
+    isNotDisabled: PropTypes.bool,
     handlerElementConfidence: PropTypes.func.isRequired,
     handlerElementDefanged: PropTypes.func.isRequired,
     handlerElementLabels: PropTypes.func.isRequired,
     handlerElementDelete: PropTypes.func.isRequired,
     handlerDialogElementAdditionalThechnicalInfo: PropTypes.func.isRequired,
-    isNotDisabled: PropTypes.bool,
+};
+
+//любая дополнительная информация
+function GetExtensions(props){
+    let {
+        objectId,
+        reportInfo,
+        handlerElementDelete,
+        handlerDialogElementAdditionalThechnicalInfo,
+    } = props;
+
+    let [ buttonAddNewEIsDisabled, setButtonAddNewEIsDisabled ] = useState(true),
+        [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
+        [ valueE, setValueE ] = useState({ name: "", description: ""});
+
+    let  listExtensions = [];
+    for(let k in reportInfo.extensions){
+        listExtensions.push(<li key={`extensions_${k}`}>
+            {k}: {reportInfo.extensions[k]}
+            <IconButton aria-label="delete-extensions-item" onClick={() => { 
+                handlerElementDelete({ 
+                    itemType: "extensions", 
+                    item: k, 
+                    objectId: objectId,
+                    orderNumber: -1 }); 
+            }}>
+                <IconCloseOutlined style={{ color: red[400] }} />
+            </IconButton>
+        </li>);
+    }
+
+    return (<Grid container direction="row" key="key_extensions_link">
+        <Grid container direction="row" spacing={3}>
+            <Grid item md={4}>
+                <TextField
+                    id="extensions-name"
+                    label="наименование"
+                    size="small"
+                    fullWidth
+                    error={valuesIsInvalideNameE}
+                    value={valueE.name}
+                    onChange={(e) => {
+                        let valueETmp = _.cloneDeep(valueE);
+                        valueETmp.name = e.target.value;
+                        
+                        setValueE(valueETmp);
+
+                        if(e.target.value.length > 0){
+                            setValuesIsInvalideNameE(false);
+                            setButtonAddNewEIsDisabled(false);
+                        } else {
+                            setValuesIsInvalideNameE(true);
+                            setButtonAddNewEIsDisabled(true);
+                        }
+                    }}
+                    variant="outlined"
+                    helperText="обязательное для заполнения поле"
+                />
+            </Grid>
+            <Grid item md={8}>
+                <TextField
+                    id="extensions-description"
+                    label="подробное описание"
+                    multiline
+                    rows={2}
+                    fullWidth
+                    value={valueE.description}
+                    onChange={(e) => {
+                        let valueETmp = _.cloneDeep(valueE);
+                        valueETmp.description = e.target.value;
+
+                        setValueE(valueETmp);
+                    }}
+                    variant="outlined"
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row">
+            <Grid item md={12} className="text-end mt-2 pb-2">
+                <Button onClick={() => {
+                    let tmpData = _.cloneDeep(valueE);
+
+                    setValueE({ name: "", description: ""});
+                    setValuesIsInvalideNameE(true);
+
+                    handlerDialogElementAdditionalThechnicalInfo({ 
+                        actionType: "new",
+                        modalType: "extensions", 
+                        objectId: objectId,
+                        orderNumber: -1,
+                        data: tmpData,
+                    });
+                }} disabled={buttonAddNewEIsDisabled}>
+                    добавить любую дополнительную информацию
+                </Button>
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row">
+            <Grid item md={12}><ul>{listExtensions}</ul></Grid>
+        </Grid>
+    </Grid>);
+}
+
+GetExtensions.propTypes = {
+    objectId: PropTypes.string.isRequired,
+    reportInfo: PropTypes.object.isRequired,
+    handlerElementDelete: PropTypes.func.isRequired,
+    handlerDialogElementAdditionalThechnicalInfo: PropTypes.func.isRequired,
 };

@@ -27,7 +27,8 @@ import PropTypes from "prop-types";
 import { helpers } from "../common_helpers/helpers";
 import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx"; 
 import CreateAnyModalWindowSTIXObject from "../module_managing_records_structured_information/any_elements/createAnyModalWindowSTIXObject.jsx";
-import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
+//import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
+import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
 import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 
@@ -628,9 +629,31 @@ export default function ModalWindowAddReportSTIX(props) {
                     </Col>
                 </Row>
 
-                <CreateElementAdditionalTechnicalInformationReportObject 
-                    reportInfo={reportInfo[newReportId]}
+                {/**
+             *      !!!!!!!
+             * обработчики handlerElementConfidence, handlerElementConfidence, handlerElementLabels я проверил, значения
+             * меняются. Теперь нужно проверить, а скорее всего немного подкорректировать обработчики handlerElementDelete
+             * и handlerDialogElementAdditionalThechnicalInfo. А также вынести в отдельные функции getGranularMarkings, getExternalReferences 
+             * элемента CreateElementAdditionalTechnicalInformationDO
+             *      !!!!!!!
+             */}
+
+                <CreateElementAdditionalTechnicalInformationDO
                     objectId={newReportId}
+                    reportInfo={reportInfo[newReportId]}
+                    isNotDisabled={userPermissions.create.status}
+                    handlerElementConfidence={handlerElementConfidence}
+                    handlerElementDefanged={handlerElementDefanged}
+                    handlerElementLabels={handlerElementLabels}
+                    handlerElementDelete={(e) => { console.log("func 'handlerElementDelete' --- ", e); }}
+                    handlerDialogElementAdditionalThechnicalInfo={(e) => { console.log("func 'handlerDialogElementAdditionalThechnicalInfo' --- ", e); }} 
+                    //handlerElementDelete={(e) => dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e })}
+                    //handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+                />
+                {/*<CreateElementAdditionalTechnicalInformationReportObject
+                    socketIo={socketIo}
+                    objectId={newReportId} 
+                    reportInfo={reportInfo[newReportId]}
                     handlerElementConfidence={handlerElementConfidence}
                     handlerElementDefanged={handlerElementDefanged}
                     handlerElementLabels={handlerElementLabels}
@@ -650,7 +673,7 @@ export default function ModalWindowAddReportSTIX(props) {
                         setShowDialogElementAdditionalThechnicalInfo(true);
                     }}
                     isNotDisabled={true}                   
-                />  
+                />*/}  
             </Container>
         </Dialog>
     

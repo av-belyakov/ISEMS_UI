@@ -224,6 +224,7 @@ function CreateReportInformation(props){
 
         console.log("____ reducer _____");
         console.log("action.type: ", action.type);
+        console.log("action: ", action);
 
         switch(action.type){
         case "newAll":
@@ -236,7 +237,9 @@ function CreateReportInformation(props){
 
             return {...state};
         case "updateDescription":
-            console.log("---=== updateDescription ===---");
+            if(state.description === action.data){
+                return {...state};
+            }
 
             return {...state, description: action.data};
         case "updateAdditionalName":
@@ -262,30 +265,16 @@ function CreateReportInformation(props){
 
             return {...state};
         case "updateConfidence":
-            console.log("BEFORE updateConfidence: ", state.confidence);
-            console.log("state.confidence: ", state.confidence, " === ", action.data.data, " :action.data");
-
             if(state.confidence === action.data.data){
-                console.log("00000000000");
-
                 return {...state};
             }
 
-            console.log("AFTER updateConfidence: ", state.confidence);
-
             return {...state, confidence: action.data.data};
         case "updateDefanged":
-            console.log("updateDefanged: ", action.data);
-
             return {...state, defanged: (action.data === "true")};
         case "updateLabels":
-            console.log("updateLabels: ", action.data);
-
             return {...state, labels :action.data.listTokenValue};
         case "updateExternalReferences":
-            console.log("func 'CreateReportInformation', updateExternalReferences");
-            console.log("------", action.data, "-------");
-
             for(let key of state.external_references){
                 if(key.source_name === action.data.source_name){
                     return {...state};
@@ -294,70 +283,56 @@ function CreateReportInformation(props){
 
             state.external_references.push(action.data);
 
-            console.log("COUNT state.external_references: ",state.external_references.length);
-
             return {...state};
         case "updateExternalReferencesHashesUpdate":
-            console.log("funct 'updateExternalReferencesHashesUpdate'");
-            console.log(action.data);
-            /*if((valueAPTmp.external_references[obj.orderNumber].hashes === null) || (typeof valueAPTmp.external_references[obj.orderNumber].hashes === "undefined")){
-                    valueAPTmp.external_references[obj.orderNumber].hashes = {};
-                }
+            if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
+                state.external_references[action.data.orderNumber].hashes = {};
+            }
 
-                valueAPTmp.external_references[obj.orderNumber].hashes[obj.data.type] = obj.data.hash;
-                setAttackPatterElement(valueAPTmp);*/      
-
+            state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
 
             return {...state};
         case "updateExternalReferencesHashesDelete":
-            console.log("funct 'updateExternalReferencesHashesDelete'");
-            console.log(action.data);
-
-            /*delete valueAPTmp.external_references[obj.orderNumber].hashes[obj.hashName];
-                setAttackPatterElement(valueAPTmp);  */
+            delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
 
             return {...state};
         case "updateGranularMarkings":
-            console.log("func 'CreateReportInformation', updateGranularMarkings");
+            for(let keyGM of state.granular_markings){
+                if(!keyGM.selectors){
+                    return {...state};
+                }
+
+                for(let keyS of keyGM.selectors){
+                    for(let key of action.data.selectors){
+                        if(key === keyS){
+                            return {...state};
+                        }
+                    }
+                }
+            }
 
             state.granular_markings.push(action.data);
 
             return {...state};
         case "updateExtensions":
-            console.log("updateExtensions: ", action.data);
-
             state.extensions[action.data.name] = action.data.description;
 
             return {...state};
         case "deleteElementAdditionalTechnicalInformation":
-            /**
-let externalReferences = [];
-        let listObjectTmp = _.cloneDeep(this.state.listObjectInfo);
+            switch(action.data.itemType){
+            case "extensions":
+                delete state.extensions[action.data.item];
 
-        if(obj.itemType === "external_references"){
-            externalReferences = listObjectTmp[obj.objectId].external_references.filter((item) => item.source_name !== obj.item);
-            listObjectTmp[obj.objectId].external_references = externalReferences;
+                return {...state};
+            case "granular_markings":
+                delete state.granular_markings[action.data.orderNumber];
 
-            this.setState({ listObjectInfo: listObjectTmp });
-        }
+                return {...state};
+            case "external_references":
+                delete state.external_references[action.data.orderNumber];
 
-        if(obj.itemType === "granular_markings"){
-            if(obj.orderNumber < 0){
-                return;
+                return {...state};
             }
-
-            listObjectTmp[obj.objectId].granular_markings.splice(obj.orderNumber, 1);
-
-            this.setState({ listObjectInfo: listObjectTmp });
-        }
-
-        if(obj.itemType === "extensions"){
-            delete listObjectTmp[obj.objectId].extensions[obj.item];
-
-            this.setState({ listObjectInfo: listObjectTmp });
-        }
- */
-            return {...state};
         }
     };
     const [state, dispatch] = useReducer(reducer, {});
@@ -472,13 +447,14 @@ let externalReferences = [];
             case "hashes_update":
                 console.log("external_references - hashes_update");
 
-                dispatch({ type: "updateExternalReferencesHashesUpdate", data: obj.data });
+                dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
 
                 break;
             case "hashes_delete":
                 console.log("external_references - hashes_delete");
+                console.log(obj);
 
-                dispatch({ type: "updateExternalReferencesHashesDelete", data: obj.data });
+                dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
 
                 break;
             default:
@@ -491,11 +467,14 @@ let externalReferences = [];
         
         if(obj.modalType === "granular_markings") {
             console.log("updateGranularMarkings......");
+            console.log(obj);
 
             dispatch({ type: "updateGranularMarkings", data: obj.data });
         }
         
         if(obj.modalType === "extensions") {
+            console.log("obj.modalType === extensions, obj: ", obj);
+
             dispatch({ type: "updateExtensions", data: obj.data });
         }
     };
@@ -633,35 +612,17 @@ let externalReferences = [];
                 </span>
             </Col>
         </Row>
+        
         <CreateElementAdditionalTechnicalInformationDO
             objectId={showReportId}
             reportInfo={state}
+            isNotDisabled={userPermissions}
             handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
             handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
             handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
-            handlerElementDelete={(e) => { console.log(e); }}
-            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
-            //handlerDialogElementAdditionalThechnicalInfo={(e) => { console.log(e)}}
-            isNotDisabled={userPermissions} 
+            handlerElementDelete={(e) => dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e })}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
         />
-        {/*<CreateElementAdditionalTechnicalInformationReportObject 
-            socketIo={socketIo}
-            objectId={showReportId}
-            reportInfo={state}
-            handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
-            handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
-            handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
-            handlerElementDelete={(e) => { console.log(e); }}
-            showDialogElementAdditionalThechnicalInfo={(e) => { console.log(e); }}
-            isNotDisabled={userPermissions} 
-        />*/}
-
-        {/*
-        Недоделал CreateElementAdditionalTechnicalInformationReportObject 
-                    updateConfidence
-            updateDefanged
-            updateLabels
-*/}
     </React.Fragment>);
 }
 
