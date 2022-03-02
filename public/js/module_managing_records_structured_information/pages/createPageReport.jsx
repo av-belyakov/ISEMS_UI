@@ -36,9 +36,13 @@ export default function CreatePageReport(props) {
             });
         },
         handlerButtonSaveModalWindowAddReportSTIX = (obj) => {
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
+           
+            console.log("func 'handlerButtonSaveModalWindowAddReportSTIX', START --------");
+            console.log("this will be send to backend --->", obj);
+            
+            //socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
 
-            setAddedNewReport(true);
+            //setAddedNewReport(true);
         };
 
     return (<React.Fragment>

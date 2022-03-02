@@ -85,7 +85,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
     const [ expanded, setExpanded ] = useState(false),
         [ labelsTokenInput, setLabelsTokenInput ] = useState(listTmpLabelsAdditionalTechnicalInformation);
     const handleChange = (panel) => (event, isExpanded) => {
-        setExpanded(isExpanded ? panel : false);
+        setExpanded(isExpanded? panel: false);
     };
     const handlerChangeElementLabels = useCallback((newTokenValues) => {
         setLabelsTokenInput(newTokenValues);
@@ -502,7 +502,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
     };
 
     //дополнительные "гранулярные метки"
-    let getGranularMarkings = () => {
+    /*let getGranularMarkings = () => {
         return (<Grid container direction="row" key="key_granular_markings_link">
             <Grid container direction="row" spacing={3}>
                 <Grid item md={2}>
@@ -677,7 +677,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                     </Card>);
                 })}
         </Grid>);
-    };
+    };*/
 
     //уверенность создателя в правильности своих данных от 0 до 100
     let listConfidence = () => {
@@ -781,7 +781,13 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                 <Typography className={classes.heading}>дополнительные {"\"гранулярные метки\""}</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                {getGranularMarkings()}
+                <GetGranularMarkings
+                    objectId={objectId}
+                    reportInfo={reportInfo}
+                    handlerElementDelete={handlerElementDelete}
+                    handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
+                />
+                {/*getGranularMarkings()*/}
             </AccordionDetails>
         </Accordion>
         <Accordion expanded={expanded === "panel3"} onChange={handleChange("panel3")}>
@@ -816,6 +822,220 @@ CreateElementAdditionalTechnicalInformationDO.propTypes = {
     handlerElementConfidence: PropTypes.func.isRequired,
     handlerElementDefanged: PropTypes.func.isRequired,
     handlerElementLabels: PropTypes.func.isRequired,
+    handlerElementDelete: PropTypes.func.isRequired,
+    handlerDialogElementAdditionalThechnicalInfo: PropTypes.func.isRequired,
+};
+
+//дополнительные внешние ссылки
+function GetGranularMarkings(props){
+    let {  
+        objectId,
+        reportInfo,
+        handlerElementDelete,
+        handlerDialogElementAdditionalThechnicalInfo,
+    } = props;
+
+    const classes = useStyles();
+    let patternValueGM = {
+        lang: "",
+        marking_ref: "",
+        selectors: [],
+    };
+    let [ valueGM, setValueGM ] = useState(patternValueGM);
+    let [ valueTmpSelector, setValueTmpSelector ] = useState("");
+    let [ buttonAddNewGMIsDisabled, setButtonAddNewGMIsDisabled ] = useState(true);
+    let [ buttonAddSelectorIsDisabled, setButtonAddSelectorIsDisabled ] = useState(true);
+
+    let handlerDelSelector = (num) => {
+        let tmp = _.cloneDeep(valueGM);
+        tmp.selectors.splice(num, 1);
+
+        if(tmp.selectors.length === 0){
+            setButtonAddNewGMIsDisabled(true);
+        }
+
+        setValueGM(tmp);
+    };
+
+    return (<Grid container direction="row" key="key_granular_markings_link">
+        <Grid container direction="row" spacing={3}>
+            <Grid item md={2}>
+                <TextField
+                    id="granular-markings-lang"
+                    label="маркер языка"
+                    fullWidth={true}
+                    value={valueGM.lang}
+                    onChange={(e) => {
+                        let valueGMTmp = _.cloneDeep(valueGM);
+
+                        valueGMTmp.lang = e.target.value.toUpperCase();
+                        setValueGM(valueGMTmp);
+                    }}
+                />
+            </Grid>
+            <Grid item md={10}>
+                <Grid container direction="row">
+                    <Grid item md={9}>
+                        <TextField
+                            id="granular-markings-marking-ref"
+                            label="идентификатор объекта 'marking-definition'"
+                            fullWidth={true}
+                            value={valueGM.marking_ref}
+                            onChange={(e) => {
+                                let valueGMTmp = _.cloneDeep(valueGM);
+
+                                valueGMTmp.marking_ref = e.target.value;
+                                setValueGM(valueGMTmp);
+                            }}
+                        />
+                    </Grid>
+                    <Grid item md={3} className="text-start mt-2">
+                        <Button onClick={() => {
+                            let valueGMTmp = _.cloneDeep(valueGM);
+
+                            valueGMTmp.marking_ref = `marking-definition--${uuidv4()}`;
+                            setValueGM(valueGMTmp);
+                        }}>
+                            сгенерировать
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid container direction="row" key="key_input_hash_field">
+            <Grid item md={7}>
+                <TextField
+                    id="marking-definition-selector"
+                    label="идентификатор селектора"
+                    fullWidth
+                    value={valueTmpSelector}
+                    onChange={(e) => {
+                        setValueTmpSelector(e.target.value);
+                        (e.target.value.length === 0)? setButtonAddSelectorIsDisabled(true): setButtonAddSelectorIsDisabled(false);
+                    }}
+                />
+            </Grid>
+            <Grid item md={2} className="text-start mt-2">
+                <Button onClick={() => {
+                    setValueTmpSelector(`selector--${uuidv4()}`);
+                    setButtonAddSelectorIsDisabled(false);
+                }} >
+                    сгенерировать
+                </Button>
+            </Grid>
+            <Grid item md={3} className="text-end mt-2">
+                <Button 
+                    onClick={() => {
+                        if(valueTmpSelector === ""){
+                            return;
+                        }
+
+                        let valueGMTmp = _.cloneDeep(valueGM);
+
+                        valueGMTmp.selectors.push(valueTmpSelector);
+                        setValueGM(valueGMTmp);
+                        setValueTmpSelector("");
+
+                        setButtonAddNewGMIsDisabled(false);
+                        setButtonAddSelectorIsDisabled(true);
+                    }} 
+                    disabled={buttonAddSelectorIsDisabled} 
+                    color="primary" >
+                        добавить селектор
+                </Button>
+            </Grid>
+        </Grid>
+
+        {(valueGM.selectors.length === 0) ? 
+            "" : 
+            <Grid container direction="row" className="mt-3">
+                <ol>
+                    {valueGM.selectors.map((item, num) => {
+                        return (<li key={`key_item_selector_${num}`}>
+                            {item}&nbsp;
+                            <IconButton aria-label="delete-selector" onClick={() => handlerDelSelector.call(null, num)}>
+                                <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                            </IconButton>
+                        </li>);
+                    })}
+                </ol>
+            </Grid>}
+
+        <Grid container direction="row" key="key_granular_markings_link">
+            <Grid item md={12} className="text-end pt-2 pb-2">
+                <Button onClick={() => {
+                    let tmpData = _.cloneDeep(valueGM);
+                    setValueGM(patternValueGM);
+                    setButtonAddNewGMIsDisabled(true);
+
+                    tmpData.external_id = `granular_markings--${uuidv4()}`;
+
+                    handlerDialogElementAdditionalThechnicalInfo({ 
+                        actionType: "new",
+                        modalType: "granular_markings", 
+                        objectId: objectId,
+                        orderNumber: -1,
+                        data: tmpData,
+                    });
+                }} disabled={buttonAddNewGMIsDisabled}>
+                    {"добавить новую \"гранулярную метку\""}
+                </Button>
+            </Grid>
+        </Grid>
+
+        {((typeof reportInfo.granular_markings === "undefined") || (reportInfo.granular_markings === null) || (reportInfo.granular_markings.length === 0))?
+            "":
+            reportInfo.granular_markings.map((item, key) => {
+                let markingRef = "";
+
+                if((typeof item.marking_ref !== "undefined") && (item.marking_ref !== null) && (item.marking_ref.length !== 0)){
+                    markingRef = item.marking_ref;
+                }
+
+                return (<Card className={classes.customPaper} key={`key_granular_markings_${key}_fragment`}>
+                    <CardHeader 
+                        subheader={markingRef}
+                        action={<React.Fragment>
+                            <IconButton aria-label="delete" onClick={()=>{ 
+                                handlerElementDelete({ 
+                                    itemType: "granular_markings", 
+                                    item: markingRef,
+                                    orderNumber: key,
+                                    objectId: objectId }); 
+                            }}>
+                                <IconDeleteOutline style={{ color: red[400] }} />
+                            </IconButton>
+                        </React.Fragment>} />
+                    <CardContent>
+                        {((typeof item.lang === "undefined") || (item.lang === null) || (item.lang.length === 0) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_granular_mark_${key}_2`}>
+                                <Grid item md={12}>
+                                    <Typography variant="body2" component="p"><span className="text-muted">текстовый код языка</span>: {item.lang}</Typography>
+                                </Grid>
+                            </Grid>)}
+
+                        {((item.selectors === null) && (typeof item.selectors === "undefined"))?
+                            "":
+                            <Grid container direction="row" key={`key_granular_mark_${key}_3`}>
+                                <Grid item md={12}>
+                                    <span>
+                                        <span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство</span>:
+                                        <ol>{item.selectors.map((i, num) => {
+                                            return <li key={`hash_${i.selectors}_${num}`}>{i}</li>;
+                                        })}</ol>
+                                    </span>
+                                </Grid>
+                            </Grid>}
+                    </CardContent>
+                </Card>);
+            })}
+    </Grid>);
+}
+
+GetGranularMarkings.propTypes = {
+    objectId: PropTypes.string.isRequired,
+    reportInfo: PropTypes.object.isRequired,
     handlerElementDelete: PropTypes.func.isRequired,
     handlerDialogElementAdditionalThechnicalInfo: PropTypes.func.isRequired,
 };
