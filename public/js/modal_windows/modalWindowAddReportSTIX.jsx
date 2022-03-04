@@ -26,7 +26,7 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
 import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx"; 
-import CreateAnyModalWindowSTIXObject from "../module_managing_records_structured_information/any_elements/createAnyModalWindowSTIXObject.jsx";
+//import CreateAnyModalWindowSTIXObject from "../module_managing_records_structured_information/any_elements/createAnyModalWindowSTIXObject.jsx";
 //import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
 //import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
@@ -91,6 +91,126 @@ const useStyles = makeStyles((theme) => ({
         width: "100%",
     },
 }));
+const reducer = (state, action) => {
+    let elemTmp = "";
+
+    switch(action.type){
+    case "newAll":
+        return action.data;
+    case "cleanAll":
+        return {};
+    case "updateName":
+        return {...state, name: action.data};
+    case "updateDescription":
+        if(state.description === action.data){
+            return {...state};
+        }
+
+        return {...state, description: action.data};
+    case "updateAdditionalName":
+        if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
+            state.outside_specification = {};
+        }
+        state.outside_specification.additional_name = action.data;
+
+        return {...state};
+    case "updateDecisionsMadeComputerThreat":
+        if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
+            state.outside_specification = {};
+        }
+        state.outside_specification.decisions_made_computer_threat = action.data;
+
+        return {...state};
+
+    case "updateComputerThreatType":
+        if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
+            state.outside_specification = {};
+        }
+        state.outside_specification.computer_threat_type = action.data;
+
+        return {...state};
+    case "updateConfidence":
+        if(state.confidence === action.data.data){
+            return {...state};
+        }
+
+        return {...state, confidence: action.data.data};
+    case "updateDefanged":
+        return {...state, defanged: (action.data.data === "true")};
+    case "updateLabels":
+        return {...state, labels :action.data.listTokenValue};
+    case "updateExternalReferences":
+        for(let key of state.external_references){
+            if(key.source_name === action.data.source_name){
+                return {...state};
+            }
+        }
+
+        state.external_references.push(action.data);
+
+        return {...state};
+    case "updateExternalReferencesHashesUpdate":
+        if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
+            state.external_references[action.data.orderNumber].hashes = {};
+        }
+
+        state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
+
+        return {...state};
+    case "updateExternalReferencesHashesDelete":
+        delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
+
+        return {...state};
+    case "updateGranularMarkings":
+        for(let keyGM of state.granular_markings){
+            if(!keyGM){
+                return {...state};
+            }
+
+            for(let keyS of keyGM.selectors){
+                for(let key of action.data.selectors){
+                    if(key === keyS){
+                        return {...state};
+                    }
+                }
+            }
+        }
+
+        state.granular_markings.push(action.data);
+
+        return {...state};
+    case "updateExtensions":
+        state.extensions[action.data.name] = action.data.description;
+
+        return {...state};
+    case "deleteObjectRefs":
+        if(state.object_refs.length === 0){
+            return {...state};
+        }
+
+        elemTmp = state.object_refs.splice(action.data, 1)[0].split("--");    
+        state.report_types = state.report_types.filter((item) => item !== elemTmp[0]);
+
+        return {...state};
+    case "deleteElementAdditionalTechnicalInformation":
+        switch(action.data.itemType){
+        case "extensions":
+            delete state.extensions[action.data.item];
+
+            break;
+        case "granular_markings":
+            state.granular_markings.splice(action.data.orderNumber, 1);
+
+            return {...state};
+        case "external_references":
+            state.external_references.splice(action.data.orderNumber, 1);
+
+            return {...state};
+        }
+
+        return state;
+    }
+};
 
 export default function ModalWindowAddReportSTIX(props) {
     let { 
@@ -98,8 +218,8 @@ export default function ModalWindowAddReportSTIX(props) {
         onHide, 
         socketIo,
         userPermissions,
-        //changeValueAddNewReport,
         handlerButtonSave,
+        handlerShowObjectRefSTIXObject,
     } = props;
 
     const classes = useStyles();
@@ -126,182 +246,13 @@ export default function ModalWindowAddReportSTIX(props) {
         currentPartNumber: 1,
     });
     //____ модальное окно с информацией о любом типе STIX объектов
-    let [ showDialogElementAdditionalSTIXObject, setShowDialogElementAdditionalSTIXObject ] = React.useState(false);
+    //let [ showDialogElementAdditionalSTIXObject, setShowDialogElementAdditionalSTIXObject ] = React.useState(false);
     //____ здесь ID STIX объекта открытого в дополнительном модальном окне
-    let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
+    //let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
     //
     // ***************************
     //
 
-    const reducer = (state, action) => {
-
-        console.log("____ reducer _____");
-        console.log("action.type: ", action.type);
-        console.log("action: ", action);
-
-        let elemTmp = "";
-
-        switch(action.type){
-        case "newAll":
-            return action.data;
-        case "cleanAll":
-            return {};
-        case "updateName":
-            if(action.data.length === 0){
-                setButtonReportSave(true);
-                setValuesIsInvalideReportName(true);
-            } else {
-                setValuesIsInvalideReportName(false);
-
-                if(state.object_refs.length === 0){
-                    setButtonReportSave(true);
-                } else {
-                    setButtonReportSave(false);
-                }
-            }
-
-            return {...state, name: action.data};
-        case "updateDescription":
-            if(state.description === action.data){
-                return {...state};
-            }
-
-            return {...state, description: action.data};
-        case "updateAdditionalName":
-            if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
-                state.outside_specification = {};
-            }
-            state.outside_specification.additional_name = action.data;
-
-            return {...state};
-        case "updateDecisionsMadeComputerThreat":
-            if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
-                state.outside_specification = {};
-            }
-            state.outside_specification.decisions_made_computer_threat = action.data;
-
-            return {...state};
-
-        case "updateComputerThreatType":
-            if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
-                state.outside_specification = {};
-            }
-            state.outside_specification.computer_threat_type = action.data;
-
-            return {...state};
-        case "updateConfidence":
-            if(state.confidence === action.data.data){
-                return {...state};
-            }
-
-            return {...state, confidence: action.data.data};
-        case "updateDefanged":
-            console.log("--- func 'reducer', action.type: ", action.type, ", action.data: ", action.data);
-
-            return {...state, defanged: (action.data === "true")};
-        case "updateLabels":
-            return {...state, labels :action.data.listTokenValue};
-        case "updateExternalReferences":
-            console.log("--- func 'reducer', action.type: ", action.type, ", action.data: ", action.data);
-
-            for(let key of state.external_references){
-                if(key.source_name === action.data.source_name){
-                    return {...state};
-                }
-            }
-
-            state.external_references.push(action.data);
-
-            return {...state};
-        case "updateExternalReferencesHashesUpdate":
-            if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
-                state.external_references[action.data.orderNumber].hashes = {};
-            }
-
-            state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
-
-            return {...state};
-        case "updateExternalReferencesHashesDelete":
-            delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
-
-            return {...state};
-        case "updateGranularMarkings":
-            console.log("--- func 'reducer', action.type: ", action.type, ", action.data: ", action.data);
-            console.log("BEFORE state.granular_markings = ", state.granular_markings);
-
-            for(let keyGM of state.granular_markings){
-                console.log("keyGM = ", keyGM);
-
-                //if(!keyGM.selectors){
-                if(!keyGM){
-                    //return {...state};
-
-                    /**
-                     * 
-                     * после удаления одного из элементов granular_markings при добавлении нового элемента добавляется
-                     * два одинаковых элементов если есть break; а если return {...state}; то тогда не добавляется ничего
-                     * 
-                     */
-
-                    break;
-                }
-
-                for(let keyS of keyGM.selectors){
-                    for(let key of action.data.selectors){
-                        if(key === keyS){
-                            return {...state};
-                        }
-                    }
-                }
-            }
-
-            state.granular_markings.push(action.data);
-            console.log("AFTER state.granular_markings = ", state.granular_markings);
-
-            return {...state};
-        case "updateExtensions":
-            console.log("--- func 'reducer', action.type: ", action.type, ", action.data: ", action.data);
-
-            state.extensions[action.data.name] = action.data.description;
-
-            return {...state};
-        case "deleteObjectRefs":
-            console.log("--- func 'reducer', action.type: ", action.type, ", action.data: ", action.data);
-            console.log("ref element: ", state);
-            
-            if(state.object_refs.length === 0){
-                return {...state};
-            }
-
-            elemTmp = state.object_refs.splice(action.data, 1)[0].split("--");
-        
-            state.report_types = state.report_types.filter((item) => item !== elemTmp[0]);
-            if(state.object_refs.length === 0){
-                setButtonReportSave(true);
-            } else {
-                setButtonReportSave(false);
-            }
-
-            console.log("AFTER delete object_refs: ", state);
-    
-            return {...state};
-        case "deleteElementAdditionalTechnicalInformation":
-            switch(action.data.itemType){
-            case "extensions":
-                delete state.extensions[action.data.item];
-
-                return {...state};
-            case "granular_markings":
-                delete state.granular_markings[action.data.orderNumber];
-
-                return {...state};
-            case "external_references":
-                delete state.external_references[action.data.orderNumber];
-
-                return {...state};
-            }
-        }
-    };
     const [state, dispatch] = useReducer(reducer, dataInformationObject);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
@@ -420,7 +371,7 @@ export default function ModalWindowAddReportSTIX(props) {
         };
     }, []);
 
-    let handelrDialogClose = () => {
+    /*let handelrDialogClose = () => {
             setShowDialogElementAdditionalSTIXObject(false);
         },
         handelrDialogSaveAnySTIXObject = (newSTIXObject) => {
@@ -431,20 +382,26 @@ export default function ModalWindowAddReportSTIX(props) {
 
             listObjectInfoTmp[newSTIXObject.id] = newSTIXObject;
             setListObjectInfo(listObjectInfoTmp);
-        },
-        handlerDialogSaveDialogNewSTIXObject = (obj) => {
+        },*/
+    let handlerDialogSaveDialogNewSTIXObject = (obj) => {
             console.log("func 'handlerDialogSaveDialogNewSTIXObject', START");
             console.log("Information: ", JSON.stringify(obj));
+
+            //модальное окно в котором будут создаваться любые виды STIX объектов кроме Отчетов
 
             //так как при выполнении данной функции мы добавляем ссылку на новый или существующий STIX объект
             // то мы можем утверждать что ссылка на объект в параметре obj.object_ref уже есть, а значит можно
             // разрешить сохранение нового объекта типа Отчёт
-            setButtonReportSave(false);
+            //setButtonReportSave(false);
 
         },
         handlerCloseDialogNewSTIXObject = () => {
             setShowDialogNewSTIXObject(false);
         };
+
+    console.log("--=-=-=-=-==-==-=-=-=-=-=-=-=-");
+    console.log(state);
+    console.log("--=-=-=-=-==-==-=-=-=-=-=-=-=-");
 
     let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
 
@@ -488,7 +445,23 @@ export default function ModalWindowAddReportSTIX(props) {
                             error={valuesIsInvalideReportName}
                             fullWidth={true}
                             helperText="обязательное для заполнения поле"
-                            onChange={(e) => dispatch({ type: "updateName", data: e.target.value })}
+                            onChange={(e) => {
+                                let elem = e.target.value;
+                                if(elem.length > 0){
+                                    setValuesIsInvalideReportName(false);
+
+                                    if(state.object_refs.length > 0){
+                                        setButtonReportSave(false);
+                                    } else {
+                                        setButtonReportSave(true);
+                                    }
+                                } else {
+                                    setButtonReportSave(true);
+                                    setValuesIsInvalideReportName(true);
+                                }
+
+                                dispatch({ type: "updateName", data: elem });
+                            }}
                         />
                     </Col>
                 </Row>
@@ -549,7 +522,7 @@ export default function ModalWindowAddReportSTIX(props) {
 
                                                     console.log("SHOW Object Ref!!!!!!!");   
                                                 }}
-                                            //onClick={handlerShowObjectRefSTIXObject.bind(null, item)}
+                                                onClick={handlerShowObjectRefSTIXObject.bind(null, item)}
                                             >
                                                 <img 
                                                     key={`key_object_ref_type_${key}`} 
@@ -560,7 +533,15 @@ export default function ModalWindowAddReportSTIX(props) {
                                             </Button>
                                         </Tooltip>
 
-                                        <IconButton aria-label="delete" onClick={() => dispatch({ type: "deleteObjectRefs", data: key })}>
+                                        <IconButton aria-label="delete" onClick={() => {
+                                            if((state.object_refs.length > 0) && (state.name.length > 0)){
+                                                setButtonReportSave(true);
+                                            } else {
+                                                setButtonReportSave(false);
+                                            }
+
+                                            dispatch({ type: "deleteObjectRefs", data: key });
+                                        }}>
                                             <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                                         </IconButton>
                                     </Col>
@@ -693,7 +674,7 @@ export default function ModalWindowAddReportSTIX(props) {
         </Dialog>
 
         {/** показать модальное окно с информацией о любом типе STIX объектов */}
-        <CreateAnyModalWindowSTIXObject
+        {/*<CreateAnyModalWindowSTIXObject
             socketIo={socketIo}
             listObjectInfo={listObjectInfo}
             listPreviousState={listPreviousState}
@@ -703,7 +684,7 @@ export default function ModalWindowAddReportSTIX(props) {
             showListPreviousState={false}
             handelrDialogClose={handelrDialogClose}
             handelrDialogSave={handelrDialogSaveAnySTIXObject}
-            isNotDisabled={userPermissions.editing_information.status} />
+                            isNotDisabled={userPermissions.editing_information.status} />*/}
     </React.Fragment>);
 }
 
@@ -713,4 +694,5 @@ ModalWindowAddReportSTIX.propTypes = {
     socketIo: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
+    handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
 };

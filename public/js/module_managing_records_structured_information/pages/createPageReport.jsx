@@ -5,6 +5,7 @@ import CreateWidgetsPageReport from "../widgets/createWidgetsPageReport.jsx";
 import CreateSearchAreaOutputReports from "../any_elements/createSearchAreaOutputReports.jsx";
 import ModalWindowAddReportSTIX from "../../modal_windows/modalWindowAddReportSTIX.jsx";
 import ModalWindowShowInformationReport from "../../modal_windows/modalWindowShowInformationReport.jsx";
+import ModalWindowAnySTIXObject from "../../modal_windows/modalWindowAnySTIXObject.jsx";
 
 export default function CreatePageReport(props) {
     let { socketIo, receivedData } = props;
@@ -13,6 +14,8 @@ export default function CreatePageReport(props) {
 
     let [ addedNewReport, setAddedNewReport ] = React.useState(false);
     let [ objectId, setObjectId ] = React.useState("");
+    let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
+    let [ showModalWindowSTIXObject, setShowModalWindowSTIXObject ] = React.useState(false);
     let [ showModalWindowAddNewReport, setShowModalWindowAddNewReport ] = React.useState(false);
     let [ showModalWindowInformationReport, setShowModalWindowInformationReport ] = React.useState(false);
 
@@ -35,14 +38,28 @@ export default function CreatePageReport(props) {
                 return !prevStatus;
             });
         },
+        handlerShowObjectRefSTIXObject = (objectId) => {
+            console.log("func 'handlerShowObjectRefSTIXObject', object ID = ", objectId);
+
+            setCurrentAdditionalIdSTIXObject(objectId);
+            setShowModalWindowSTIXObject(true);
+        },
         handlerButtonSaveModalWindowAddReportSTIX = (obj) => {
            
             console.log("func 'handlerButtonSaveModalWindowAddReportSTIX', START --------");
             console.log("this will be send to backend --->", obj);
             
-            //socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
 
-            //setAddedNewReport(true);
+            setAddedNewReport(true);
+        },
+        handelrDialogCloseModalWindowSTIXObject = (obj) => {
+            console.log("func 'handelrDialogCloseModalWindowSTIXObject', obj = ", obj);
+            console.log("------------------------------------------------------");
+        },
+        handelrDialogSaveAnySTIXObjectModalWindowSTIXObject = (obj) => {
+            console.log("func 'handelrDialogSaveAnySTIXObjectModalWindowSTIXObject', obj = ", obj);
+            console.log("-----------------------------------------------------------------------");
         };
 
     return (<React.Fragment>
@@ -64,6 +81,7 @@ export default function CreatePageReport(props) {
             socketIo={socketIo}
             userPermissions={receivedData.userPermissions}
             handlerButtonSave={handlerButtonSaveModalWindowAddReportSTIX} 
+            handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
         />}
 
         {showModalWindowInformationReport && <ModalWindowShowInformationReport
@@ -73,6 +91,21 @@ export default function CreatePageReport(props) {
             groupList={receivedData.groupList}
             userPermissions={receivedData.userPermissions}
             socketIo={socketIo}
+        />}
+
+        {showModalWindowSTIXObject && <ModalWindowAnySTIXObject
+            socketIo={socketIo}
+            showModalWindow={showModalWindowSTIXObject}
+            //listObjectInfo={listObjectInfo}
+            //listPreviousState={listPreviousState}
+            //optionsPreviousState={optionsPreviousState}
+            //showDialogElement={showDialogElementAdditionalSTIXObject}
+            //showDialogElement={showCreateAnyModalWindowSTIXObject}
+            currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
+            //showListPreviousState={false}
+            handelrDialogClose={handelrDialogCloseModalWindowSTIXObject}
+            handelrDialogSave={handelrDialogSaveAnySTIXObjectModalWindowSTIXObject}
+            isNotDisabled={receivedData.userPermissions.editing_information.status} 
         />}
     </React.Fragment>);
 }

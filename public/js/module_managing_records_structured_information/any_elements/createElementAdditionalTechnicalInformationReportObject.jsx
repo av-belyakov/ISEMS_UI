@@ -24,7 +24,7 @@ import TokenInput from "react-customize-token-input";
 import { blue, grey, green, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
-import CreateAnyModalWindowSTIXObject from "./createAnyModalWindowSTIXObject.jsx";
+import CreateAnyModalWindowSTIXObject from "../../modal_windows/modalWindowAnySTIXObject.jsx";
 
 const useStyles = makeStyles((theme) => ({
     root: {
