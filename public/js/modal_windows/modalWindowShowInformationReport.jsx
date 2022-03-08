@@ -323,13 +323,14 @@ function CreateReportInformation(props){
                 delete state.extensions[action.data.item];
 
                 return {...state};
-            case "granular_markings":
-                delete state.granular_markings[action.data.orderNumber];
 
+            case "granular_markings":
+                state.granular_markings.splice(action.data.orderNumber, 1);
+        
                 return {...state};
             case "external_references":
-                delete state.external_references[action.data.orderNumber];
-
+                state.external_references.splice(action.data.orderNumber, 1);
+        
                 return {...state};
             }
         }

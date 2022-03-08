@@ -53,14 +53,9 @@ export default function ModalWindowAnySTIXObject(props){
     let { 
         socketIo,
         showModalWindow,
-        //listObjectInfo,
-        //listPreviousState,
-        //optionsPreviousState,
-        //showDialogElement,
+        parentIdSTIXObject,
         currentAdditionalIdSTIXObject,
-        //showListPreviousState, 
         handelrDialogClose,
-        handelrDialogSave,
         isNotDisabled, 
     } = props;
 
@@ -102,17 +97,11 @@ export default function ModalWindowAnySTIXObject(props){
             `${(typeof objectElem === "undefined")? "": objectElem.description} id: ${currentAdditionalIdSTIXObject}`,
         img = (typeof objectElem === "undefined")? "": <img src={`/images/stix_object/${objectElem.link}`} width="35" height="35" />;
 
-    const handlerDialogButtonSave = (data) => {
-        handelrDialogSave(data);
-
-        handelrDialogClose();
-    };
-
     return (<Dialog 
         fullWidth
         maxWidth="xl"
         scroll="paper"
-        open={showDialogElement} >
+        open={showModalWindow} >
         <DialogTitle>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={11}>{img}&nbsp;<span className="pt-2">{titleName}</span></Grid>
@@ -139,14 +128,10 @@ export default function ModalWindowAnySTIXObject(props){
                         isNotDisabled={isNotDisabled}
                     />
                 */}
-                {<MyModule 
-                    listObjectInfo={listObjectInfo}
-                    listPreviousState={listPreviousState}
-                    optionsPreviousState={optionsPreviousState}
-                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
-                    showListPreviousState={showListPreviousState}
+                {MyModule && <MyModule 
                     socketIo={socketIo}
-                    handlerDialog={handlerDialogButtonSave}
+                    parentIdSTIXObject={parentIdSTIXObject}
+                    currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
                     handelrDialogClose={handelrDialogClose}
                     isNotDisabled={isNotDisabled}
                 />}
@@ -158,15 +143,22 @@ export default function ModalWindowAnySTIXObject(props){
 
 ModalWindowAnySTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    listPreviousState: PropTypes.array.isRequired,
-    listObjectInfo: PropTypes.object.isRequired,
-    optionsPreviousState: PropTypes.object.isRequired,
-    showDialogElement: PropTypes.bool.isRequired,
+    showModalWindow: PropTypes.bool.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
-    showListPreviousState: PropTypes.bool.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
-    handelrDialogSave: PropTypes.func.isRequired,
-    isNotDisabled: PropTypes.bool.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired, 
+    
+//    socketIo: PropTypes.object.isRequired,
+//    listPreviousState: PropTypes.array.isRequired,
+//    listObjectInfo: PropTypes.object.isRequired,
+//    optionsPreviousState: PropTypes.object.isRequired,
+//    showDialogElement: PropTypes.bool.isRequired,
+//    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+//    showListPreviousState: PropTypes.bool.isRequired,
+//    handelrDialogClose: PropTypes.func.isRequired,
+//    handelrDialogSave: PropTypes.func.isRequired,
+//    isNotDisabled: PropTypes.bool.isRequired,
 };
 
 /*

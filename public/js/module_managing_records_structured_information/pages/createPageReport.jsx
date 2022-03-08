@@ -56,10 +56,9 @@ export default function CreatePageReport(props) {
         handelrDialogCloseModalWindowSTIXObject = (obj) => {
             console.log("func 'handelrDialogCloseModalWindowSTIXObject', obj = ", obj);
             console.log("------------------------------------------------------");
-        },
-        handelrDialogSaveAnySTIXObjectModalWindowSTIXObject = (obj) => {
-            console.log("func 'handelrDialogSaveAnySTIXObjectModalWindowSTIXObject', obj = ", obj);
-            console.log("-----------------------------------------------------------------------");
+
+            setCurrentAdditionalIdSTIXObject("");
+            setShowModalWindowSTIXObject(false);
         };
 
     return (<React.Fragment>
@@ -96,15 +95,9 @@ export default function CreatePageReport(props) {
         {showModalWindowSTIXObject && <ModalWindowAnySTIXObject
             socketIo={socketIo}
             showModalWindow={showModalWindowSTIXObject}
-            //listObjectInfo={listObjectInfo}
-            //listPreviousState={listPreviousState}
-            //optionsPreviousState={optionsPreviousState}
-            //showDialogElement={showDialogElementAdditionalSTIXObject}
-            //showDialogElement={showCreateAnyModalWindowSTIXObject}
+            parentIdSTIXObject={objectId}
             currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
-            //showListPreviousState={false}
             handelrDialogClose={handelrDialogCloseModalWindowSTIXObject}
-            handelrDialogSave={handelrDialogSaveAnySTIXObjectModalWindowSTIXObject}
             isNotDisabled={receivedData.userPermissions.editing_information.status} 
         />}
     </React.Fragment>);

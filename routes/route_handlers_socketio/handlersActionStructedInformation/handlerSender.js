@@ -443,7 +443,7 @@ module.exports.sendSearchRequestGetReportForId = function(socketIo, data){
  */
 module.exports.sendSearchRequestGetSTIXObjectForId = function(socketIo, data){
     let funcName = " (func 'sendSearchRequestGetSTIXObjectForId')",
-        section = "isems-mrsi ui request: send search request, get STIX object for id",
+        section = "send search request, get STIX object for id",
         searchRequestTmp = {
             collection_name: "stix object",
             paginate_parameters: {

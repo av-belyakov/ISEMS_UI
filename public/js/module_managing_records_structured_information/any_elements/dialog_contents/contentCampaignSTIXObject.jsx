@@ -1,6 +1,6 @@
 "use strict";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useReducer } from "react";
 import { 
     Button,
     DialogActions,
@@ -15,297 +15,326 @@ import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import CreateListPreviousStateSTIXObject from "../createListPreviousStateSTIXObject.jsx";
+import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 const minDefaultData = "0001-01-01T00:00:00Z",
     defaultData = "2001-01-01T00:00:01Z";
 
+const reducer = (state, action) => {
+
+    //console.log("____ reducer _____");
+    //console.log("action.type: ", action.type);
+    //console.log("action: ", action);
+    //console.log("state: ", state);
+
+    switch(action.type){
+    case "newAll":
+        return action.data;
+    case "cleanAll":
+        return {};
+    case "updateObjective":
+        return {...state, objective: action.data};
+    case "updateDescription":
+        if(state.description === action.data){
+            return {...state};
+        }
+
+        return {...state, description: action.data};
+    case "updateTokenValuesChange":
+        return {...state, aliases: action.data};
+    case "updateDateTimeFirstSeen":
+        return {...state, first_seen: new Date(action.data).toISOString()};
+    case "updateDateTimeLastSeen":
+        return {...state, last_seen: new Date(action.data).toISOString()};
+    case "updateConfidence":
+        if(state.confidence === action.data.data){
+            return {...state};
+        }
+
+        return {...state, confidence: action.data.data};
+    case "updateDefanged":
+        return {...state, defanged: (action.data === "true")};
+    case "updateLabels":
+        return {...state, labels: action.data.listTokenValue};
+    case "updateExternalReferences":
+        for(let key of state.external_references){
+            if(key.source_name === action.data.source_name){
+                return {...state};
+            }
+        }
+
+        state.external_references.push(action.data);
+
+        return {...state};
+    case "updateExternalReferencesHashesUpdate":
+        if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
+            state.external_references[action.data.orderNumber].hashes = {};
+        }
+
+        state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
+
+        return {...state};
+    case "updateExternalReferencesHashesDelete":
+        delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
+
+        return {...state};
+    case "updateGranularMarkings":
+        for(let keyGM of state.granular_markings){
+            if(!keyGM.selectors){
+                return {...state};
+            }
+
+            for(let keyS of keyGM.selectors){
+                for(let key of action.data.selectors){
+                    if(key === keyS){
+                        return {...state};
+                    }
+                }
+            }
+        }
+
+        state.granular_markings.push(action.data);
+
+        return {...state};
+    case "updateExtensions":
+        if(!state.extensions){
+            state.extensions = [];
+        }
+
+        state.extensions[action.data.name] = action.data.description;
+
+        return {...state};
+    case "deleteElementAdditionalTechnicalInformation":
+        switch(action.data.itemType){
+        case "extensions":
+            delete state.extensions[action.data.item];
+
+            return {...state};
+        case "granular_markings":
+            state.granular_markings.splice(action.data.orderNumber, 1);
+
+            return {...state};
+        case "external_references":
+            state.external_references.splice(action.data.orderNumber, 1);
+
+            return {...state};
+        }
+    }
+};
+
 export default function CreateDialogContentCampaignSTIXObject(props){
     let { 
-        listObjectInfo, 
-        listPreviousState,
-        optionsPreviousState,
-        currentIdSTIXObject,
-        showListPreviousState,
         socketIo,
-        handlerDialog,
+        parentIdSTIXObject,
+        currentAdditionalIdSTIXObject,
         handelrDialogClose,
         isNotDisabled,
     } = props;
 
     //let [ dataPatterElement, setDataPatterElement ] = React.useState(listObjectInfo[currentIdSTIXObject]);
-    let [ dataPatterElement, setDataPatterElement ] = React.useState({});
-    
-    useEffect(() => {
-        if(listObjectInfo[currentIdSTIXObject]){
-            setDataPatterElement(listObjectInfo[currentIdSTIXObject]);
-        }
-
-        return () => {
-            setDataPatterElement({});
-        };
-    }, [ listObjectInfo, currentIdSTIXObject ]);
-
-    const handlerDescription = (obj) => {
-            let valueTmp = _.cloneDeep(dataPatterElement);
-            valueTmp.description = obj.target.value;
-    
-            setDataPatterElement(valueTmp);
-        }, 
-        handlerTokenValuesChange = React.useCallback((newTokenValues) => {    
-            let valueTmp = _.cloneDeep(dataPatterElement);
-            valueTmp.aliases = newTokenValues;
-    
-            setDataPatterElement(valueTmp);
-        }, [ setDataPatterElement, dataPatterElement ]),
-        handlerObjective = (obj) => {
-            let valueTmp = _.cloneDeep(dataPatterElement);
-            valueTmp.objective = obj.target.value;
-    
-            setDataPatterElement(valueTmp);
-        },
-        handlerChangeDateTimeFirstSeen = (obj) => {
-            let valueTmp = _.cloneDeep(dataPatterElement);
-            valueTmp.first_seen = new Date(obj).toISOString();
-    
-            setDataPatterElement(valueTmp);
-        },
-        handlerChangeDateTimeLastSeen = (obj) => {
-            let valueTmp = _.cloneDeep(dataPatterElement);
-            valueTmp.last_seen = new Date(obj).toISOString();
-    
-            setDataPatterElement(valueTmp);
-        },
-        //пункт "уверенность создателя в правильности своих данных от 0 до 100"
-        handlerElementConfidence = (obj) => { 
-            let valueTmp = _.cloneDeep(dataPatterElement);
-            valueTmp.confidence = obj.data;
-
-            setDataPatterElement(valueTmp);
-        },
-        //пункт "определены ли данные содержащиеся в объекте"
-        handlerElementDefanged = (obj) => {
-            let valueTmp = _.cloneDeep(dataPatterElement);
-            valueTmp.defanged = (obj.data === "true");
-
-            setDataPatterElement(valueTmp);
-        },
-        //пункт "набор терминов, используемых для описания данного объекта"        
-        handlerElementLabels = (obj) => {
-            let valueTmp = _.cloneDeep(dataPatterElement);
-
-            if(!Array.isArray(valueTmp.labels)){
-                valueTmp.labels = [];
-            }
-
-            valueTmp.labels = obj.listTokenValue;
-
-            setDataPatterElement(valueTmp);
-        },
-        handlerDeleteElementAdditionalTechnicalInformation = (obj) => {
-            let valueTmp = _.cloneDeep(dataPatterElement);
-
-            if(obj.itemType === "external_references"){
-                if(obj.orderNumber < 0){
-                    return;
-                }
-
-                valueTmp.external_references.splice(obj.orderNumber, 1);
-
-                setDataPatterElement(valueTmp);
-            }
-
-            if(obj.itemType === "granular_markings"){
-                if(obj.orderNumber < 0){
-                    return;
-                }
-
-                valueTmp.granular_markings.splice(obj.orderNumber, 1);
-
-                setDataPatterElement(valueTmp);
-            }
-
-            if(obj.itemType === "extensions"){
-                delete valueTmp.extensions[obj.item];
-
-                setDataPatterElement(valueTmp);
-            }
-     
-        },
-        handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-            let valueTmp = _.cloneDeep(dataPatterElement);
-
-            if(obj.modalType === "external_references"){
-                if(obj.actionType === "new"){
-                    if(!Array.isArray(valueTmp.external_references)){
-                        valueTmp.external_references = [];
-                    }
-
-                    valueTmp.external_references.push(obj.data);
-    
-                    setDataPatterElement(valueTmp);        
-                }
-
-                if(obj.actionType === "update"){
-                    valueTmp.external_references[obj.orderNumber] = obj.data;
-
-                    setDataPatterElement(valueTmp);        
-                }
-
-                if(obj.actionType === "hashes_update"){
-                    if((valueTmp.external_references[obj.orderNumber].hashes === null) || (typeof valueTmp.external_references[obj.orderNumber].hashes === "undefined")){
-                        valueTmp.external_references[obj.orderNumber].hashes = {};
-                    }
-
-                    valueTmp.external_references[obj.orderNumber].hashes[obj.data.type] = obj.data.hash;
-
-                    setDataPatterElement(valueTmp);      
-                }
-
-                if(obj.actionType === "hashes_delete"){
-                    delete valueTmp.external_references[obj.orderNumber].hashes[obj.hashName];
-                    
-                    setDataPatterElement(valueTmp);  
-                }
-            }
-    
-            if((obj.modalType === "granular_markings") && (obj.actionType === "new")) {
-                if(!Array.isArray(valueTmp.granular_markings)){
-                    valueTmp.granular_markings = [];
-                }
-
-                valueTmp.granular_markings.push(obj.data);
-    
-                setDataPatterElement(valueTmp);  
-            }
-    
-            if(obj.modalType === "extensions") {
-                if((valueTmp.extensions === null) || (typeof valueTmp.extensions === "undefined")){
-                    valueTmp.extensions = {};
-                }
-
-                valueTmp.extensions[obj.data.name] = obj.data.description;
-
-                setDataPatterElement(valueTmp);  
-            }
-        },
-        handlerSave = () => {
-            let valueTmp = _.cloneDeep(dataPatterElement);
-            valueTmp.lang = "RU";
-            
-            if(valueTmp.labels === null){
-                delete valueTmp.labels;
-            }
-
-            if(valueTmp.external_references === null){
-                delete valueTmp.external_references;
-            }
-
-            if(valueTmp.object_marking_refs === null){
-                delete valueTmp.object_marking_refs;
-            }
-
-            if(valueTmp.granular_markings === null){
-                delete valueTmp.granular_markings;
-            }
-
-            if(valueTmp.extensions === null){
-                delete valueTmp.extensions;
-            }
-
-            if(valueTmp.aliases === null){
-                delete valueTmp.aliases;
-            }
-
-            if(valueTmp.kill_chain_phases === null){
-                delete valueTmp.kill_chain_phases;
-            }
-
-            setDataPatterElement(valueTmp);
-
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [valueTmp] });
-
-            handlerDialog(valueTmp);  
-        };
-
-    if((!listObjectInfo[currentIdSTIXObject]) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<DialogContent>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={12} justifyContent="center" className="pb-3">
-                    поиск информации об STIX объекте типа Кампания (Campaign DO STIX)
-                </Grid>
-            </Grid>
-            <LinearProgress />
-        </DialogContent>);
-    }
+    //let [ dataPatterElement, setDataPatterElement ] = React.useState({});
+    let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
 
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" spacing={3}>
-                <Grid item container md={8}>
-                    <Grid container direction="row" className="pt-3">
-                        <CreateCampaingPatternElements 
-                            campaignPatterElement={dataPatterElement}
-                            handlerObjective={handlerObjective}
-                            handlerDescription={handlerDescription}
-                            handlerTokenValuesChange={handlerTokenValuesChange}
-                            handlerChangeDateTimeFirstSeen={handlerChangeDateTimeFirstSeen}
-                            handlerChangeDateTimeLastSeen={handlerChangeDateTimeLastSeen}
-                        />
-                    </Grid> 
-
-                    <Grid container direction="row" className="pt-3">
-                        <Grid item container md={12} justifyContent="center">
-                            <h3>
-                                Здесь нужно разместить область с ссылками на объекты Report с которыми может быть связан данный объект. 
-                                При чем нужно ограничить переходы по этим ссылка для непривелегированных пользователей. Это надо доделать.
-                            </h3>
-                        </Grid>
-                    </Grid>
-
-                    <CreateElementAdditionalTechnicalInformationDO 
-                        objectId={currentIdSTIXObject}
-                        reportInfo={dataPatterElement}
-                        handlerElementConfidence={handlerElementConfidence}
-                        handlerElementDefanged={handlerElementDefanged}
-                        handlerElementLabels={handlerElementLabels}
-                        handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
-                        handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
-                        isNotDisabled={isNotDisabled} />       
-                </Grid>
+                <CreateMajorContent 
+                    socketIo={socketIo}
+                    parentIdSTIXObject={parentIdSTIXObject}
+                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
+                    buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+                    isNotDisabled={isNotDisabled}
+                />
 
                 <Grid item container md={4} style={{ display: "block" }}>
-                    <CreateListPreviousStateSTIXObject 
+                    <CreateListPreviousStateSTIX 
                         socketIo={socketIo} 
-                        searchObjectId={currentIdSTIXObject}
-                        optionsPreviousState={optionsPreviousState}
-                        showListPreviousState={showListPreviousState}
-                        listPreviousState={listPreviousState} /> 
+                        searchObjectId={currentAdditionalIdSTIXObject} 
+                    />
                 </Grid>
             </Grid>            
         </DialogContent>
         <DialogActions>
             <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
-            <Button 
-                disabled={_.isEqual(dataPatterElement, listObjectInfo[currentIdSTIXObject])}
-                onClick={handlerSave}
+            {/**
+             * кнопка Сохранить активируется через изменение состояния ButtonSaveChangeTrigger
+             * теперь надо сделать проверку на изменения содержимого и добавить соответствующий тригер
+             * в поле disabled= кнопки
+             * 
+             * Кроме того надо не забывать что обработчик на кнупку Сохранить в ModalWindowShowInformationReport
+             * тоже не работает (надо доделать)
+             */}
+            
+            {isNotDisabled && <Button 
+                //disabled={_.isEqual(dataPatterElement, listObjectInfo[currentIdSTIXObject])}
+                onClick={() => {
+                    setButtonSaveChangeTrigger(true);
+                    handelrDialogClose();
+                }}
                 color="primary">
                 сохранить
-            </Button>
+            </Button>}
         </DialogActions>
     </React.Fragment>);
 }
 
 CreateDialogContentCampaignSTIXObject.propTypes = {
-    listObjectInfo: PropTypes.object.isRequired,
-    listPreviousState: PropTypes.array.isRequired,
-    optionsPreviousState: PropTypes.object.isRequired,
-    currentIdSTIXObject: PropTypes.string.isRequired,
-    showListPreviousState: PropTypes.bool.isRequired,
     socketIo: PropTypes.object.isRequired,
-    handlerDialog: PropTypes.func.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
+};
+
+function CreateMajorContent(props){
+    let {
+        socketIo,
+        parentIdSTIXObject,
+        currentIdSTIXObject,
+        buttonSaveChangeTrigger,
+        isNotDisabled,
+    } = props;
+
+    const [state, dispatch] = useReducer(reducer, {});
+
+    const listener = (data) => {
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+            return;
+        }
+
+        if(data.information.additional_parameters.transmitted_data.length === 0){
+            return;
+        }
+
+        for(let obj of data.information.additional_parameters.transmitted_data){
+            dispatch({ type: "newAll", data: obj });                  
+        }
+    };
+    useEffect(() => {
+        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+
+        return () => {
+            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
+        };
+    }, []);
+    useEffect(() => {
+        if(currentIdSTIXObject !== ""){
+            console.log("func 'CreateMajorContent', socketIo.emit for STIX object current ID: ", currentIdSTIXObject);
+
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentIdSTIXObject,
+                parentObjectId: parentIdSTIXObject,
+            }});
+        //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
+        //socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
+        //socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: showReportId });
+        }
+    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    useEffect(() => {
+        
+        if(buttonSaveChangeTrigger){
+            console.log("UUUUUUUUUUUUUUUUUUUUUUU");
+            //    socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+        }
+    }, [ buttonSaveChangeTrigger ]);
+
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
+        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
+        console.log(state);
+        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
+        console.log(obj);
+
+        if(obj.modalType === "external_references"){
+            switch(obj.actionType){
+            case "hashes_update":
+                console.log("external_references - hashes_update");
+
+                dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
+
+                break;
+            case "hashes_delete":
+                console.log("external_references - hashes_delete");
+                console.log(obj);
+
+                dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
+
+                break;
+            default:
+                console.log("external_references - default");
+                console.log("obj.modalType - ", obj.modalType);
+
+                dispatch({ type: "updateExternalReferences", data: obj.data });
+            }
+        }
+    
+        if(obj.modalType === "granular_markings") {
+            console.log("updateGranularMarkings......");
+            console.log(obj);
+
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+        }
+    
+        if(obj.modalType === "extensions") {
+            console.log("obj.modalType === extensions, obj: ", obj);
+
+            dispatch({ type: "updateExtensions", data: obj.data });
+        }
+    };
+
+    //console.log("----=== CreateMajorContent ===-----");
+    //console.log(state);
+    //console.log("----==========================-----");
+
+    return (
+        <Grid item container md={8}>
+            <Grid container direction="row" className="pt-3">
+                <CreateCampaingPatternElements 
+                    campaignPatterElement={state}
+                    handlerObjective={(e) => dispatch({ type: "updateObjective", data: e })}
+                    handlerDescription={(e) => dispatch({ type: "updateDescription", data: e })}
+                    handlerTokenValuesChange={(e) => dispatch({ type: "updateTokenValuesChange", data: e })}
+                    handlerChangeDateTimeFirstSeen={(e) => dispatch({ type: "updateDateTimeFirstSeen", data: e })}
+                    handlerChangeDateTimeLastSeen={(e) => dispatch({ type: "updateDateTimeLastSeen", data: e })}
+                />
+            </Grid> 
+
+            <Grid container direction="row" className="pt-3">
+                <Grid item container md={12} justifyContent="center">
+                    <h3>
+                        Здесь нужно разместить область с ссылками на объекты Report с которыми может быть связан данный объект. 
+                        При чем нужно ограничить переходы по этим ссылка для непривелегированных пользователей. Это надо доделать.
+                    </h3>
+                </Grid>
+            </Grid>
+
+            <CreateElementAdditionalTechnicalInformationDO
+                objectId={currentIdSTIXObject}
+                reportInfo={state}
+                isNotDisabled={isNotDisabled}
+                handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
+                handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
+                handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
+                handlerElementDelete={(e) => dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e })}
+                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+            />
+        </Grid>
+    );
+}
+
+CreateMajorContent.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
+    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
 

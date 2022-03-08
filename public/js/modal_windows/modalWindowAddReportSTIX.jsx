@@ -138,7 +138,7 @@ const reducer = (state, action) => {
     case "updateDefanged":
         return {...state, defanged: (action.data.data === "true")};
     case "updateLabels":
-        return {...state, labels :action.data.listTokenValue};
+        return {...state, labels: action.data.listTokenValue};
     case "updateExternalReferences":
         for(let key of state.external_references){
             if(key.source_name === action.data.source_name){
@@ -504,26 +504,7 @@ export default function ModalWindowAddReportSTIX(props) {
                                 return (<Row key={`key_object_ref_${key}`}>
                                     <Col md={12}>
                                         <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                                            <Button 
-                                                onClick={()=>{
-
-                                                    /**
-                                                     * 
-                                                     * 
-                                                     * 
-                                                     * Здесь надо сделать просмотр и редактрование информации по STIX объектам
-                                                     * на которые есть ссылка в object_refs (но это после того как будет продуманно
-                                                     * аналогичное действие для окна Отчеты)
-                                                     * В настоещее время можно открыть модальное окно CreateAnyModalWindowSTIXObject
-                                                     * но оно может быть переделанно.
-                                                     * 
-                                                     * 
-                                                     */
-
-                                                    console.log("SHOW Object Ref!!!!!!!");   
-                                                }}
-                                                onClick={handlerShowObjectRefSTIXObject.bind(null, item)}
-                                            >
+                                            <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item)}>
                                                 <img 
                                                     key={`key_object_ref_type_${key}`} 
                                                     src={`/images/stix_object/${objectElem.link}`} 
