@@ -565,7 +565,14 @@ export default function CreateSearchElementReport(props){
     if(addNewReport){
         setTimeout(() => {
             handlerSendSearchRequest(searchParameters);
-            handlerChangeAddedNewReport();
+            //handlerChangeAddedNewReport();
+
+            /**
+             * 
+             * Обновление при добавлении нового Отчета не происходит или происходит, но без результатно
+             * 
+             */
+
         }, 1500);
     }
 

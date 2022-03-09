@@ -132,8 +132,8 @@ export default function ModalWindowAnySTIXObject(props){
                     socketIo={socketIo}
                     parentIdSTIXObject={parentIdSTIXObject}
                     currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
-                    handelrDialogClose={handelrDialogClose}
                     isNotDisabled={isNotDisabled}
+                    handelrDialogClose={handelrDialogClose}
                 />}
             </Suspense>
         </ErrorBoundary>

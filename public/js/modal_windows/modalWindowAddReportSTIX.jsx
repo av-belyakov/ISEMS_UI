@@ -180,6 +180,10 @@ const reducer = (state, action) => {
 
         return {...state};
     case "updateExtensions":
+        if(!state.extensions){
+            state.extensions = {};
+        }
+
         state.extensions[action.data.name] = action.data.description;
 
         return {...state};
@@ -226,7 +230,6 @@ export default function ModalWindowAddReportSTIX(props) {
 
     console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT )))))))");
 
-
     let [ buttonReportSave, setButtonReportSave ] = React.useState(true);
     let [ showDialogNewSTIXObject, setShowDialogNewSTIXObject ] = React.useState(false);
     let [ valuesIsInvalideReportName, setValuesIsInvalideReportName ] = React.useState(true);
@@ -245,15 +248,9 @@ export default function ModalWindowAddReportSTIX(props) {
         objectId: "",
         currentPartNumber: 1,
     });
-    //____ модальное окно с информацией о любом типе STIX объектов
-    //let [ showDialogElementAdditionalSTIXObject, setShowDialogElementAdditionalSTIXObject ] = React.useState(false);
-    //____ здесь ID STIX объекта открытого в дополнительном модальном окне
-    //let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
-    //
-    // ***************************
-    //
 
     const [state, dispatch] = useReducer(reducer, dataInformationObject);
+    let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -371,23 +368,13 @@ export default function ModalWindowAddReportSTIX(props) {
         };
     }, []);
 
-    /*let handelrDialogClose = () => {
-            setShowDialogElementAdditionalSTIXObject(false);
-        },
-        handelrDialogSaveAnySTIXObject = (newSTIXObject) => {
-            console.log("func 'modalWindowAddReportSTIX', func 'handelrDialogSaveAnySTIXObject', START...");
-            console.log(newSTIXObject);
-
-            let listObjectInfoTmp = _.cloneDeep(listObjectInfo);
-
-            listObjectInfoTmp[newSTIXObject.id] = newSTIXObject;
-            setListObjectInfo(listObjectInfoTmp);
-        },*/
     let handlerDialogSaveDialogNewSTIXObject = (obj) => {
             console.log("func 'handlerDialogSaveDialogNewSTIXObject', START");
-            console.log("Information: ", JSON.stringify(obj));
+            console.log("Information: ", obj);
 
-            //модальное окно в котором будут создаваться любые виды STIX объектов кроме Отчетов
+            //
+            //обработчик кнопки Сохранить модального окна в котором будут создаваться любые виды STIX объектов кроме Отчетов
+            //
 
             //так как при выполнении данной функции мы добавляем ссылку на новый или существующий STIX объект
             // то мы можем утверждать что ссылка на объект в параметре obj.object_ref уже есть, а значит можно
@@ -398,12 +385,6 @@ export default function ModalWindowAddReportSTIX(props) {
         handlerCloseDialogNewSTIXObject = () => {
             setShowDialogNewSTIXObject(false);
         };
-
-    console.log("--=-=-=-=-==-==-=-=-=-=-=-=-=-");
-    console.log(state);
-    console.log("--=-=-=-=-==-==-=-=-=-=-=-=-=-");
-
-    let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
 
     return (<React.Fragment>
         <Dialog 
@@ -429,7 +410,7 @@ export default function ModalWindowAddReportSTIX(props) {
                             onHide();
                             handlerButtonSave(state);
                         }}>
-                        сохранить
+                            сохранить
                     </Button>
                 </Toolbar>
             </AppBar>
@@ -441,7 +422,6 @@ export default function ModalWindowAddReportSTIX(props) {
                             id="name-new-report"
                             label="наименование"
                             value={state.name}
-                            //disabled={(typeof erInfo.source_name !== "undefined")}
                             error={valuesIsInvalideReportName}
                             fullWidth={true}
                             helperText="обязательное для заполнения поле"
@@ -536,7 +516,7 @@ export default function ModalWindowAddReportSTIX(props) {
                             size="small"
                             startIcon={<AddIcon style={{ color: green[500] }} />}
                             onClick={() => setShowDialogNewSTIXObject(true)}>
-                            прикрепить дополнительный объект
+                                прикрепить дополнительный объект
                         </Button>
                     </Col>
                 </Row>

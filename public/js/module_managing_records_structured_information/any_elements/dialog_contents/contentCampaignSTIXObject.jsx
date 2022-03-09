@@ -1,6 +1,6 @@
 "use strict";
 
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { 
     Button,
     DialogActions,
@@ -99,7 +99,7 @@ const reducer = (state, action) => {
         return {...state};
     case "updateExtensions":
         if(!state.extensions){
-            state.extensions = [];
+            state.extensions = {};
         }
 
         state.extensions[action.data.name] = action.data.description;
@@ -128,13 +128,20 @@ export default function CreateDialogContentCampaignSTIXObject(props){
         socketIo,
         parentIdSTIXObject,
         currentAdditionalIdSTIXObject,
-        handelrDialogClose,
         isNotDisabled,
+        handelrDialogClose,
     } = props;
 
-    //let [ dataPatterElement, setDataPatterElement ] = React.useState(listObjectInfo[currentIdSTIXObject]);
-    //let [ dataPatterElement, setDataPatterElement ] = React.useState({});
+    let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
     let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
+
+    const handlerButtonIsDisabled = () => {
+        if(!buttonIsDisabled){
+            return;
+        }
+
+        setButtonIsDisabled();
+    };
 
     return (<React.Fragment>
         <DialogContent>
@@ -145,6 +152,8 @@ export default function CreateDialogContentCampaignSTIXObject(props){
                     currentIdSTIXObject={currentAdditionalIdSTIXObject}
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
                     isNotDisabled={isNotDisabled}
+                    handelrDialogClose={handelrDialogClose}
+                    handlerButtonIsDisabled={handlerButtonIsDisabled}
                 />
 
                 <Grid item container md={4} style={{ display: "block" }}>
@@ -166,12 +175,9 @@ export default function CreateDialogContentCampaignSTIXObject(props){
              * тоже не работает (надо доделать)
              */}
             
-            {isNotDisabled && <Button 
-                //disabled={_.isEqual(dataPatterElement, listObjectInfo[currentIdSTIXObject])}
-                onClick={() => {
-                    setButtonSaveChangeTrigger(true);
-                    handelrDialogClose();
-                }}
+            {isNotDisabled && <Button
+                disabled={buttonIsDisabled} 
+                onClick={() => setButtonSaveChangeTrigger(true)}
                 color="primary">
                 сохранить
             </Button>}
@@ -183,8 +189,8 @@ CreateDialogContentCampaignSTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
+    handelrDialogClose: PropTypes.func.isRequired,
 };
 
 function CreateMajorContent(props){
@@ -194,6 +200,8 @@ function CreateMajorContent(props){
         currentIdSTIXObject,
         buttonSaveChangeTrigger,
         isNotDisabled,
+        handelrDialogClose,
+        handlerButtonIsDisabled,
     } = props;
 
     const [state, dispatch] = useReducer(reducer, {});
@@ -216,7 +224,10 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
-            dispatch({ type: "newAll", data: obj });                  
+
+            console.log("++++++++++++ func 'listener', reseived data: ", obj);
+
+            dispatch({ type: "newAll", data: obj });
         }
     };
     useEffect(() => {
@@ -224,6 +235,7 @@ function CreateMajorContent(props){
 
         return () => {
             socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
+            dispatch({ type: "newAll", data: {} });
         };
     }, []);
     useEffect(() => {
@@ -240,12 +252,14 @@ function CreateMajorContent(props){
         }
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
-        
         if(buttonSaveChangeTrigger){
-            console.log("UUUUUUUUUUUUUUUUUUUUUUU");
-            //    socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            console.log("--------- UUUUUUUUUUUUUUUUUUUUUUU ========");
+            console.log(state);
+            
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            handelrDialogClose();
         }
-    }, [ buttonSaveChangeTrigger ]);
+    }, [ socketIo, state, buttonSaveChangeTrigger, handelrDialogClose ]);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
@@ -259,6 +273,7 @@ function CreateMajorContent(props){
                 console.log("external_references - hashes_update");
 
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
 
                 break;
             case "hashes_delete":
@@ -266,6 +281,7 @@ function CreateMajorContent(props){
                 console.log(obj);
 
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
 
                 break;
             default:
@@ -273,6 +289,7 @@ function CreateMajorContent(props){
                 console.log("obj.modalType - ", obj.modalType);
 
                 dispatch({ type: "updateExternalReferences", data: obj.data });
+                handlerButtonIsDisabled();
             }
         }
     
@@ -281,29 +298,27 @@ function CreateMajorContent(props){
             console.log(obj);
 
             dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerButtonIsDisabled();
         }
     
         if(obj.modalType === "extensions") {
             console.log("obj.modalType === extensions, obj: ", obj);
 
             dispatch({ type: "updateExtensions", data: obj.data });
+            handlerButtonIsDisabled();
         }
     };
-
-    //console.log("----=== CreateMajorContent ===-----");
-    //console.log(state);
-    //console.log("----==========================-----");
 
     return (
         <Grid item container md={8}>
             <Grid container direction="row" className="pt-3">
                 <CreateCampaingPatternElements 
                     campaignPatterElement={state}
-                    handlerObjective={(e) => dispatch({ type: "updateObjective", data: e })}
-                    handlerDescription={(e) => dispatch({ type: "updateDescription", data: e })}
-                    handlerTokenValuesChange={(e) => dispatch({ type: "updateTokenValuesChange", data: e })}
-                    handlerChangeDateTimeFirstSeen={(e) => dispatch({ type: "updateDateTimeFirstSeen", data: e })}
-                    handlerChangeDateTimeLastSeen={(e) => dispatch({ type: "updateDateTimeLastSeen", data: e })}
+                    handlerObjective={(e) => { dispatch({ type: "updateObjective", data: e }); handlerButtonIsDisabled(); }}
+                    handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e }); handlerButtonIsDisabled(); }}
+                    handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
+                    handlerChangeDateTimeFirstSeen={(e) => { dispatch({ type: "updateDateTimeFirstSeen", data: e }); handlerButtonIsDisabled(); }}
+                    handlerChangeDateTimeLastSeen={(e) => { dispatch({ type: "updateDateTimeLastSeen", data: e }); handlerButtonIsDisabled(); }}
                 />
             </Grid> 
 
@@ -320,10 +335,10 @@ function CreateMajorContent(props){
                 objectId={currentIdSTIXObject}
                 reportInfo={state}
                 isNotDisabled={isNotDisabled}
-                handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
-                handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
-                handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
-                handlerElementDelete={(e) => dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e })}
+                handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
                 handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
             />
         </Grid>
@@ -336,6 +351,8 @@ CreateMajorContent.propTypes = {
     currentIdSTIXObject: PropTypes.string.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
+    handelrDialogClose: PropTypes.func.isRequired,
+    handlerButtonIsDisabled: PropTypes.func.isRequired,
 };
 
 function CreateCampaingPatternElements(props){
