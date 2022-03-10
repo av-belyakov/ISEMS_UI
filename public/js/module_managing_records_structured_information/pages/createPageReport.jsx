@@ -34,6 +34,8 @@ export default function CreatePageReport(props) {
             setShowModalWindowInformationReport(false);
         },
         handlerChangeAddedNewReport = () => {
+            console.log("func 'handlerChangeAddedNewReport' &&&&&&&&&&&&&");
+
             setAddedNewReport((prevStatus) => !prevStatus);
         },
         handlerShowObjectRefSTIXObject = (objectId) => {
@@ -42,7 +44,7 @@ export default function CreatePageReport(props) {
             setCurrentAdditionalIdSTIXObject(objectId);
             setShowModalWindowSTIXObject(true);
         },
-        handlerButtonSaveModalWindowAddReportSTIX = (obj) => {
+        handlerButtonSaveModalWindowReportSTIX = (obj) => {
            
             console.log("func 'handlerButtonSaveModalWindowAddReportSTIX', START --------");
             console.log("this will be send to backend --->", obj);
@@ -50,6 +52,7 @@ export default function CreatePageReport(props) {
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
 
             setAddedNewReport(true);
+            handlerCloseModalWindowInformationReport();
         },
         handelrDialogCloseModalWindowSTIXObject = (obj) => {
             console.log("func 'handelrDialogCloseModalWindowSTIXObject', obj = ", obj);
@@ -77,7 +80,7 @@ export default function CreatePageReport(props) {
             onHide={handlerCloseModalWindowAddReport}
             socketIo={socketIo}
             userPermissions={receivedData.userPermissions}
-            handlerButtonSave={handlerButtonSaveModalWindowAddReportSTIX} 
+            handlerButtonSave={handlerButtonSaveModalWindowReportSTIX} 
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
         />}
 
@@ -88,6 +91,8 @@ export default function CreatePageReport(props) {
             groupList={receivedData.groupList}
             userPermissions={receivedData.userPermissions}
             socketIo={socketIo}
+            handlerButtonSave={handlerButtonSaveModalWindowReportSTIX} 
+            handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
         />}
 
         {showModalWindowSTIXObject && <ModalWindowAnySTIXObject

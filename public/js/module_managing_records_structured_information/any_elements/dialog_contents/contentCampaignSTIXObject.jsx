@@ -7,7 +7,6 @@ import {
     DialogContent,
     TextField,
     Grid,
-    LinearProgress,
 } from "@material-ui/core";
 import TokenInput from "react-customize-token-input";
 import DateFnsUtils from "dateIoFnsUtils";

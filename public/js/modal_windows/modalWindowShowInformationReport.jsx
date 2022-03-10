@@ -8,11 +8,9 @@ import {
     Button,
     Container,
     Dialog,
-    DialogTitle,
     Toolbar,
     IconButton,
     Typography,
-    Tooltip,
     Grid,
     Link,
     TextField,
@@ -20,24 +18,23 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
-import { teal, purple, grey, green, orange, red } from "@material-ui/core/colors";
+import { teal, purple, grey, orange } from "@material-ui/core/colors";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../common_helpers/helpers";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
-import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
-import patternSearchParameters from "../module_managing_records_structured_information/patterns/patternSearchParameters.js";
-import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx";
+import { CreateListObjectRefs } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
+//import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
+//import patternSearchParameters from "../module_managing_records_structured_information/patterns/patternSearchParameters.js";
+//import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
 //import CreateAnyModalWindowSTIXObject from "./modalWindowAnySTIXObject.jsx";
 import CreateListPreviousStateSTIX from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIX.jsx";
-import CreateListPreviousStateSTIXObject from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIXObject.jsx";
+//import CreateListPreviousStateSTIXObject from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIXObject.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
-import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
+//import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
 import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 
 const useStyles = makeStyles((theme) => ({
@@ -70,6 +67,132 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const reducer = (state, action) => {
+    let elemTmp = "";
+
+    console.log("____ reducer _____");
+    console.log("action.type: ", action.type);
+    console.log("action: ", action);
+
+    switch(action.type){
+    case "newAll":
+        return action.data;
+    case "cleanAll":
+        return {};
+    case "madePublised":
+        state.published = action.data;
+
+        return {...state};
+    case "updateDescription":
+        if(state.description === action.data){
+            return {...state};
+        }
+
+        return {...state, description: action.data};
+    case "updateAdditionalName":
+        if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
+            state.outside_specification = {};
+        }
+        state.outside_specification.additional_name = action.data;
+
+        return {...state};
+    case "updateDecisionsMadeComputerThreat":
+        if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
+            state.outside_specification = {};
+        }
+        state.outside_specification.decisions_made_computer_threat = action.data;
+
+        return {...state};
+
+    case "updateComputerThreatType":
+        if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
+            state.outside_specification = {};
+        }
+        state.outside_specification.computer_threat_type = action.data;
+
+        return {...state};
+    case "deleteObjectRefs":
+        if(state.object_refs.length === 0){
+            return {...state};
+        }
+
+        elemTmp = state.object_refs.splice(action.data, 1)[0].split("--");    
+        state.report_types = state.report_types.filter((item) => item !== elemTmp[0]);
+
+        return {...state};
+    case "updateConfidence":
+        if(state.confidence === action.data.data){
+            return {...state};
+        }
+
+        return {...state, confidence: action.data.data};
+    case "updateDefanged":
+        return {...state, defanged: (action.data === "true")};
+    case "updateLabels":
+        return {...state, labels :action.data.listTokenValue};
+    case "updateExternalReferences":
+        for(let key of state.external_references){
+            if(key.source_name === action.data.source_name){
+                return {...state};
+            }
+        }
+
+        state.external_references.push(action.data);
+
+        return {...state};
+    case "updateExternalReferencesHashesUpdate":
+        if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
+            state.external_references[action.data.orderNumber].hashes = {};
+        }
+
+        state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
+
+        return {...state};
+    case "updateExternalReferencesHashesDelete":
+        delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
+
+        return {...state};
+    case "updateGranularMarkings":
+        for(let keyGM of state.granular_markings){
+            if(!keyGM.selectors){
+                return {...state};
+            }
+
+            for(let keyS of keyGM.selectors){
+                for(let key of action.data.selectors){
+                    if(key === keyS){
+                        return {...state};
+                    }
+                }
+            }
+        }
+
+        state.granular_markings.push(action.data);
+
+        return {...state};
+    case "updateExtensions":
+        state.extensions[action.data.name] = action.data.description;
+
+        return {...state};
+    case "deleteElementAdditionalTechnicalInformation":
+        switch(action.data.itemType){
+        case "extensions":
+            delete state.extensions[action.data.item];
+
+            return {...state};
+
+        case "granular_markings":
+            state.granular_markings.splice(action.data.orderNumber, 1);
+    
+            return {...state};
+        case "external_references":
+            state.external_references.splice(action.data.orderNumber, 1);
+    
+            return {...state};
+        }
+    }
+};
+
 export default function ModalWindowShowInformationReport(props) {
     let { 
         show,
@@ -78,17 +201,28 @@ export default function ModalWindowShowInformationReport(props) {
         groupList,
         userPermissions,
         socketIo,
+        handlerButtonSave,
+        handlerShowObjectRefSTIXObject,
     } = props;
 
-    const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(false);
+    const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
     const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = useState(false);
 
     console.log("func 'ModalWindowShowInformationReact', MOUNT (((( WINDOW SHOW INFO REPORT ))))");
     console.log("showReportId = ", showReportId);
 
-    let handlerChangeButtonSaveIsDisabled = () => {
-        setButtonSaveIsDisabled((prevState) => !prevState);
-    };
+    let handlerButtonSaveIsNotDisabled = () => {
+            if(buttonSaveIsDisabled){
+                setButtonSaveIsDisabled(false);
+            }
+        },
+        handlerPressButtonSave = (state) => {
+            setButtonSaveChangeTrigger((prevState) => !prevState);
+            if(!buttonSaveIsDisabled){
+                setButtonSaveIsDisabled(true);
+            }
+            handlerButtonSave(state);
+        };
 
     return (<Dialog 
         fullScreen 
@@ -108,7 +242,9 @@ export default function ModalWindowShowInformationReport(props) {
             showReportId={showReportId}
             userPermissions={userPermissions.editing_information.status}
             buttonSaveChangeTrigger={buttonSaveChangeTrigger}
-            handlerChangeButtonSaveIsDisabled={handlerChangeButtonSaveIsDisabled}
+            handlerPressButtonSave={handlerPressButtonSave}
+            handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+            handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
         />
     </Dialog>); 
 }
@@ -120,6 +256,8 @@ ModalWindowShowInformationReport.propTypes = {
     showReportId: PropTypes.string.isRequired,
     groupList: PropTypes.array.isRequired,
     userPermissions: PropTypes.object.isRequired,
+    handlerButtonSave: PropTypes.func.isRequired,
+    handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
 };
 
 function CreateAppBar(props){
@@ -164,7 +302,9 @@ function CreateAppBody(props){
         showReportId,
         userPermissions,
         buttonSaveChangeTrigger,
-        handlerChangeButtonSaveIsDisabled,
+        handlerPressButtonSave,
+        handlerShowObjectRefSTIXObject,
+        handlerButtonSaveIsNotDisabled,
     } = props;
 
     console.log("func 'CreateAppBody', START");
@@ -174,11 +314,12 @@ function CreateAppBody(props){
             <Col md={7}>
                 <CreateReportInformation 
                     socketIo={socketIo}
-                    groupList={groupList}
                     showReportId={showReportId}
                     userPermissions={userPermissions}
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
-                    handlerChangeButtonSaveIsDisabled={handlerChangeButtonSaveIsDisabled}
+                    handlerPressButtonSave={handlerPressButtonSave}
+                    handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+                    handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
                 />
             </Col>
             <Col md={5}>
@@ -204,139 +345,25 @@ CreateAppBody.propTypes = {
     showReportId: PropTypes.string.isRequired,
     userPermissions: PropTypes.bool.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
-    handlerChangeButtonSaveIsDisabled: PropTypes.func.isRequired,
+    handlerPressButtonSave: PropTypes.func.isRequired,
+    handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
+    handlerButtonSaveIsNotDisabled: PropTypes.func.isRequired,
 };
 
 function CreateReportInformation(props){
     let {
         socketIo,
-        groupList,
         showReportId,
         userPermissions,
         buttonSaveChangeTrigger,
-        handlerChangeButtonSaveIsDisabled,
+        handlerPressButtonSave,
+        handlerShowObjectRefSTIXObject,
+        handlerButtonSaveIsNotDisabled,
     } = props;
 
     console.log("func 'CreateReportInformation', START...");
 
-    const reducer = (state, action) => {
-
-        console.log("____ reducer _____");
-        console.log("action.type: ", action.type);
-        console.log("action: ", action);
-
-        switch(action.type){
-        case "newAll":
-            return action.data;
-        case "cleanAll":
-            return {};
-        case "madePublised":
-            state.published = action.data;
-            handlerChangeButtonSaveIsDisabled(false);
-
-            return {...state};
-        case "updateDescription":
-            if(state.description === action.data){
-                return {...state};
-            }
-
-            return {...state, description: action.data};
-        case "updateAdditionalName":
-            if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
-                state.outside_specification = {};
-            }
-            state.outside_specification.additional_name = action.data;
-
-            return {...state};
-        case "updateDecisionsMadeComputerThreat":
-            if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
-                state.outside_specification = {};
-            }
-            state.outside_specification.decisions_made_computer_threat = action.data;
-
-            return {...state};
-
-        case "updateComputerThreatType":
-            if((state.outside_specification === null) || (typeof state.outside_specification === "undefined")){
-                state.outside_specification = {};
-            }
-            state.outside_specification.computer_threat_type = action.data;
-
-            return {...state};
-        case "updateConfidence":
-            if(state.confidence === action.data.data){
-                return {...state};
-            }
-
-            return {...state, confidence: action.data.data};
-        case "updateDefanged":
-            return {...state, defanged: (action.data === "true")};
-        case "updateLabels":
-            return {...state, labels :action.data.listTokenValue};
-        case "updateExternalReferences":
-            for(let key of state.external_references){
-                if(key.source_name === action.data.source_name){
-                    return {...state};
-                }
-            }
-
-            state.external_references.push(action.data);
-
-            return {...state};
-        case "updateExternalReferencesHashesUpdate":
-            if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
-                state.external_references[action.data.orderNumber].hashes = {};
-            }
-
-            state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
-
-            return {...state};
-        case "updateExternalReferencesHashesDelete":
-            delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
-
-            return {...state};
-        case "updateGranularMarkings":
-            for(let keyGM of state.granular_markings){
-                if(!keyGM.selectors){
-                    return {...state};
-                }
-
-                for(let keyS of keyGM.selectors){
-                    for(let key of action.data.selectors){
-                        if(key === keyS){
-                            return {...state};
-                        }
-                    }
-                }
-            }
-
-            state.granular_markings.push(action.data);
-
-            return {...state};
-        case "updateExtensions":
-            state.extensions[action.data.name] = action.data.description;
-
-            return {...state};
-        case "deleteElementAdditionalTechnicalInformation":
-            switch(action.data.itemType){
-            case "extensions":
-                delete state.extensions[action.data.item];
-
-                return {...state};
-
-            case "granular_markings":
-                state.granular_markings.splice(action.data.orderNumber, 1);
-        
-                return {...state};
-            case "external_references":
-                state.external_references.splice(action.data.orderNumber, 1);
-        
-                return {...state};
-            }
-        }
-    };
     const [state, dispatch] = useReducer(reducer, {});
-
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -356,58 +383,32 @@ function CreateReportInformation(props){
 
         for(let obj of data.information.additional_parameters.transmitted_data){
             if(obj.type === "report"){
-                dispatch({ type: "newAll", data: obj });                  
-                //setReportAcceptedInformation(obj);
+                dispatch({ type: "newAll", data: obj });
 
                 break;
             }
         }
-
-
-        /*let objectId = "", 
-            reportInfo = {},
-            listObjectInfoTmp = {},
-            listPreviousStateTmp = [],
-            optionsPreviousStateTmp = {};
-        case "list of groups that are allowed access":
-            this.setState({ availableForGroups: data.information.additional_parameters });
-        
-            break;
-        case "isems-mrsi ui request: send search request, get STIX object for id":
-            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-                break;
-            }
-
-            if(data.information.additional_parameters.transmitted_data.length === 0){
-                break;
-            }
-
-            listObjectInfoTmp = _.cloneDeep(this.state.listObjectInfo);
-            for(let obj of data.information.additional_parameters.transmitted_data){
-                listObjectInfoTmp[obj.id] = obj;
-            }
-
-            this.setState({ listObjectInfo: listObjectInfoTmp });
-
-            break;
-        }*/
     };
-    React.useEffect(() => {
+    useEffect(() => {
         socketIo.on("isems-mrsi response ui: send search request, get report for id", listener);
     
         return () => {
             socketIo.off("isems-mrsi response ui: send search request, get report for id", listener);
         };
     }, []);
-    React.useEffect(() => {
+    useEffect(() => {
         if(showReportId !== ""){
-            console.log("func 'ModalWindowShowInformationReact', socketIo.emit");
-
             //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
             socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
             socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: showReportId });
         }
     }, [ socketIo, showReportId ]);
+    useEffect(() => {
+        if(buttonSaveChangeTrigger){
+            console.log("func 'CreateReportInformation' ----> SEND REPORT:", state);
+            handlerPressButtonSave(state);
+        }
+    }, [ buttonSaveChangeTrigger, state, handlerPressButtonSave ]);
 
     const handlerPublished = () => {
         let requestId = uuidv4();
@@ -431,59 +432,64 @@ function CreateReportInformation(props){
             }
 
             dispatch({ type: "madePublised", data: new Date(dateNow).toISOString() });
+            handlerButtonSaveIsNotDisabled();
         });
 
         socketIo.emit("service request: what time is it", { arguments: { id: requestId, dateType: "integer" }});
     };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
-        console.log(state);
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
-        console.log(obj);
+        //console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
+        //console.log(state);
+        //console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
+        //console.log(obj);
 
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
             case "hashes_update":
-                console.log("external_references - hashes_update");
+                //console.log("external_references - hashes_update");
 
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
 
                 break;
             case "hashes_delete":
-                console.log("external_references - hashes_delete");
-                console.log(obj);
+                //console.log("external_references - hashes_delete");
+                //console.log(obj);
 
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
 
                 break;
             default:
-                console.log("external_references - default");
-                console.log("obj.modalType - ", obj.modalType);
+                //console.log("external_references - default");
+                //console.log("obj.modalType - ", obj.modalType);
 
                 dispatch({ type: "updateExternalReferences", data: obj.data });
             }
+
+            handlerButtonSaveIsNotDisabled();
         }
         
         if(obj.modalType === "granular_markings") {
-            console.log("updateGranularMarkings......");
-            console.log(obj);
+            //console.log("updateGranularMarkings......");
+            //console.log(obj);
 
             dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerButtonSaveIsNotDisabled();
         }
         
         if(obj.modalType === "extensions") {
-            console.log("obj.modalType === extensions, obj: ", obj);
+            //console.log("obj.modalType === extensions, obj: ", obj);
 
             dispatch({ type: "updateExtensions", data: obj.data });
+            handlerButtonSaveIsNotDisabled();
         }
     };
-    
-    console.log("----=====-----");
-    console.log(state);
-    console.log("----=====-----");
 
     let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
+
+    console.log("--------=============----------");
+    console.log(state);
+    console.log("--------=============----------");
 
     return (<React.Fragment>
         <Row className="mt-4">
@@ -529,11 +535,48 @@ function CreateReportInformation(props){
                     minRows={3}
                     maxRows={8}
                     fullWidth
-                    onChange={(e) => dispatch({ type: "updateDescription", data: e.target.value })}
+                    onChange={(e) => {
+                        dispatch({ type: "updateDescription", data: e.target.value });
+                        handlerButtonSaveIsNotDisabled();
+                    }}
                     defaultValue={state.description}
                     variant="outlined"/>
             </Col>  
         </Row>
+
+        {state.object_refs && <CreateListObjectRefs
+            objectRefs={state.object_refs} 
+            handlerDeleteObjectRef={(key) => {
+
+                console.log("func 'handlerDeleteObjectRef', KEY: ", key);
+
+                dispatch({ type: "deleteObjectRefs", data: key });
+                handlerButtonSaveIsNotDisabled();
+            }} 
+            handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+            handlerChangeCurrentSTIXObject={() => {
+
+                console.log("func 'handlerChangeCurrentSTIXObject' OOOOOO");
+
+                /**
+                 * 
+                 * работает просмотр объектов перечисленных в ObjectRef (пока только CreateDialogContentCampaignSTIXObject),
+                 * а также удаление ссылок на различные STIX объекты. Теперь нужно перенести CreateListObjectRefs и в ModalWindowAddReportSTIX
+                 * и сделать handlerChangeCurrentSTIXObject для открытия модального окна предназначенного для создания новых объектов ObjectRef.
+                 * Нужно удалить уже не нужные ModalWindowShowInformationReportSTIX и CreateElementAdditionalTechnicalInformationReportObject
+                 * 
+                 */
+
+                //
+                //
+                //
+                //dispatch({ type: "", data: obj.data });
+                //handlerButtonSaveIsNotDisabled();
+                //
+                //
+                //
+            }}
+        />}
 
         {/*<GetListObjectRefs
             listObjectRef={state.object_refs} 
@@ -565,7 +608,10 @@ function CreateReportInformation(props){
                             return state.outside_specification.additional_name;
                         })()}
                         fullWidth={true}
-                        onChange={(e) => dispatch({ type: "updateAdditionalName", data: e.target.value })}
+                        onChange={(e) => {
+                            dispatch({ type: "updateAdditionalName", data: e.target.value });
+                            handlerButtonSaveIsNotDisabled();
+                        }}
                     />
                 </span>
             </Col>
@@ -586,7 +632,10 @@ function CreateReportInformation(props){
     
                             return state.outside_specification.decisions_made_computer_threat;
                         }}
-                        handlerDecisionsMadeComputerThreat={(e) => dispatch({ type: "updateDecisionsMadeComputerThreat", data: e })}
+                        handlerDecisionsMadeComputerThreat={(e) => {
+                            dispatch({ type: "updateDecisionsMadeComputerThreat", data: e });
+                            handlerButtonSaveIsNotDisabled();
+                        }}
                     />
                 </span>
             </Col>
@@ -607,7 +656,10 @@ function CreateReportInformation(props){
 
                             return state.outside_specification.computer_threat_type;
                         }}
-                        handlerTypesComputerThreat={(e) => dispatch({ type: "updateComputerThreatType", data: e })}
+                        handlerTypesComputerThreat={(e) => {
+                            dispatch({ type: "updateComputerThreatType", data: e });
+                            handlerButtonSaveIsNotDisabled();
+                        }}
                     />
                 </span>
             </Col>
@@ -617,10 +669,10 @@ function CreateReportInformation(props){
             objectId={showReportId}
             reportInfo={state}
             isNotDisabled={userPermissions}
-            handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
-            handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
-            handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
-            handlerElementDelete={(e) => dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e })}
+            handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonSaveIsNotDisabled(); }}
+            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonSaveIsNotDisabled(); }}
+            handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonSaveIsNotDisabled(); }}
+            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonSaveIsNotDisabled(); }}
             handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
         />
     </React.Fragment>);
@@ -628,11 +680,12 @@ function CreateReportInformation(props){
 
 CreateReportInformation.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    groupList: PropTypes.array.isRequired,
     showReportId: PropTypes.string.isRequired,
     userPermissions: PropTypes.bool.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
-    handlerChangeButtonSaveIsDisabled: PropTypes.func.isRequired,
+    handlerPressButtonSave: PropTypes.func.isRequired,
+    handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
+    handlerButtonSaveIsNotDisabled: PropTypes.func.isRequired,
 };
 
 function MadePublished(props){

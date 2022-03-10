@@ -175,6 +175,8 @@ export default function CreateSearchElementReport(props){
         handlerChangeAddedNewReport,
     } = props;
 
+    const classes = useStyles();
+
     let [ searchField, setSearchField ] = useState("");
     let [ valuesIsInvalideSearchField, setValuesIsInvalideSearchField ] = useState(false);
     let [ dateTimeEnd, setDateTimeEnd ] = useState(dateTimeEndTmp);
@@ -214,8 +216,11 @@ export default function CreateSearchElementReport(props){
             socketIo.off("isems-mrsi response ui", listener);
         };
     }, [ setShowBottonClean ]);
-
-    const classes = useStyles();
+    useEffect(() => {
+        if(addNewReport){
+            setTimeout(() => location.reload(), 1000);
+        }
+    }, [ addNewReport, handlerSendSearchRequest, searchParameters ]);
 
     console.log("func 'CreateSearchElementReport', MOUNT +++ (SEARCH Element Report) +++");
 
@@ -562,20 +567,6 @@ export default function CreateSearchElementReport(props){
             setSearchParameters(searchParametersTmp);
         };
 
-    if(addNewReport){
-        setTimeout(() => {
-            handlerSendSearchRequest(searchParameters);
-            //handlerChangeAddedNewReport();
-
-            /**
-             * 
-             * Обновление при добавлении нового Отчета не происходит или происходит, но без результатно
-             * 
-             */
-
-        }, 1500);
-    }
-
     return (<Paper elevation={3}>
         <Box m={2} pb={2}>
             <Grid container direction="row" spacing={3}>
@@ -725,7 +716,7 @@ export default function CreateSearchElementReport(props){
                                 setShowBottonClean(false);
                                 setSearchParameters(patternSearchParameters);
                             }}>
-                            очистить
+                                очистить
                         </Button>&nbsp;</span>:""}
                     <Button
                         size="small"
@@ -738,7 +729,7 @@ export default function CreateSearchElementReport(props){
                             handlerChangeSendNewSearch();
                             setPreviousSearchParameters(searchParameters);
                         }}>
-                        поиск
+                            поиск
                     </Button>
                 </Grid>
             </Grid>

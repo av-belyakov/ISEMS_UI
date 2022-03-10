@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from "react";
+import { Col, Row } from "react-bootstrap";
 import {
+    Button,
+    Grid,
+    Tooltip,
     TextField, 
+    Typography,
     MenuItem,
+    IconButton,
 } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
+import { green, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
+
+import { helpers } from "../../common_helpers/helpers.js";
 
 /**
  * 
@@ -143,4 +154,80 @@ CreateListTypesComputerThreat.propTypes = {
     socketIo: PropTypes.object.isRequired,
     defaultValue: PropTypes.func.isRequired,
     handlerTypesComputerThreat: PropTypes.func.isRequired,
+};
+
+/**
+ * Формирует список из свойства object_refs, а также элементы его управления
+ * @param {*} props 
+ * @returns 
+ */
+export function CreateListObjectRefs(props){
+    let { 
+        objectRefs,
+        handlerDeleteObjectRef, 
+        handlerShowObjectRefSTIXObject,
+        handlerChangeCurrentSTIXObject 
+    } = props;
+
+    console.log("func 'CreateListObjectRefs', state: ", objectRefs);
+
+    return (<React.Fragment>
+        <Row className="mt-4">
+            <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с Отчётом</span></Col>
+        </Row>
+        <Row>
+            <Col md={12}>
+                {objectRefs && (objectRefs.length === 0)? 
+                    <Typography variant="caption">
+                        <span  style={{ color: red[800] }}>
+                            * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Отчётом
+                        </span>
+                    </Typography>:
+                    objectRefs.map((item, key) => {
+                        let type = item.split("--");
+                        let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+                    
+                        if(typeof objectElem === "undefined" ){
+                            return "";
+                        }
+
+                        return (<Row key={`key_object_ref_${key}`}>
+                            <Col md={12}>
+                                <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
+                                    <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item)}>
+                                        <img 
+                                            key={`key_object_ref_type_${key}`} 
+                                            src={`/images/stix_object/${objectElem.link}`} 
+                                            width="35" 
+                                            height="35" />
+                                                &nbsp;{item}&nbsp;
+                                    </Button>
+                                </Tooltip>
+
+                                <IconButton aria-label="delete" onClick={handlerDeleteObjectRef.bind(null, key)}>
+                                    <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                </IconButton>
+                            </Col>
+                        </Row>);
+                    })}
+            </Col>
+        </Row>
+        <Row>
+            <Col md={12} className="text-end">
+                <Button
+                    size="small"
+                    startIcon={<AddIcon style={{ color: green[500] }} />}
+                    onClick={handlerChangeCurrentSTIXObject}>
+                        прикрепить дополнительный объект
+                </Button>
+            </Col>
+        </Row>
+    </React.Fragment>);
+}
+
+CreateListObjectRefs.propTypes = {
+    objectRefs: PropTypes.array.isRequired, 
+    handlerDeleteObjectRef: PropTypes.func.isRequired, 
+    handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
+    handlerChangeCurrentSTIXObject: PropTypes.func.isRequired, 
 };

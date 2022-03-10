@@ -234,9 +234,6 @@ export default function ModalWindowAddReportSTIX(props) {
     let [ showDialogNewSTIXObject, setShowDialogNewSTIXObject ] = React.useState(false);
     let [ valuesIsInvalideReportName, setValuesIsInvalideReportName ] = React.useState(true);
 
-    //
-    // useState которые ниже по большей части относятся к редактированию и просмотру других STIX объектов
-    // **************************
     //____ здесь будет хранится информация о любом STIX объекте ссылка на которую есть в object_refs
     let [ listObjectInfo, setListObjectInfo ] = React.useState({});
     //____ здесь будет хранится информация о предыдущем состоянии different
@@ -464,10 +461,9 @@ export default function ModalWindowAddReportSTIX(props) {
                 <Row className="mt-4">
                     <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с Отчётом</span></Col>
                 </Row>
-
                 <Row>
                     <Col md={12}>
-                        {(state.object_refs.length === 0)? 
+                        {state.object_refs && (state.object_refs.length === 0)? 
                             <Typography variant="caption">
                                 <span  style={{ color: red[800] }}>
                                     * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Отчётом

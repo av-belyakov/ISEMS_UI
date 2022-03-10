@@ -93,11 +93,6 @@ export default function CreateMainTableForReport(props) {
                 return;
             }
     
-            //console.log(222222222);
-            //console.log(data.information.additional_parameters.transmitted_data);
-            //console.log("numCurrentPagePagination: '", numCurrentPagePagination, "'");
-            //console.log("BEFORE listReport count: ", listReports.length);
-    
             let listReportsTmp = listReports.slice(),
                 listIdReport = [];
 
@@ -114,8 +109,6 @@ export default function CreateMainTableForReport(props) {
             if(listIdReport.length > 0){
                 setIsShowProgress(false);
             }
-    
-            //console.log("AFTER listReportsTmp count: ", listReportsTmp.length);
     
             setListReports(listReportsTmp);
             socketIo.emit("isems-mrsi ui request: get short information about groups which report available", { arguments: listIdReport });
