@@ -1,35 +1,26 @@
 "use strict";
 
-import React, { Suspense, useReducer } from "react";
+import React, { useReducer } from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
     AppBar,
     Button,
     Container,
     Dialog,
-    DialogTitle,
     TextField,
     Toolbar,
-    Tooltip,
     Typography,
     IconButton,
-    Grid,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { teal, green, red } from "@material-ui/core/colors";
-import AddIcon from "@material-ui/icons/Add";
+import { teal } from "@material-ui/core/colors";
 import CloseIcon from "@material-ui/icons/Close";
-import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import { helpers } from "../common_helpers/helpers";
-import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx"; 
-//import CreateAnyModalWindowSTIXObject from "../module_managing_records_structured_information/any_elements/createAnyModalWindowSTIXObject.jsx";
-//import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
+import { CreateListObjectRefs } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
-//import ModalWindowDialogElementAdditionalThechnicalInformation from "./modalWindowDialogElementAdditionalThechnicalInformation.jsx";
 import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 
 const tzoffset = (new Date()).getTimezoneOffset() * 60000;
@@ -224,6 +215,7 @@ export default function ModalWindowAddReportSTIX(props) {
         userPermissions,
         handlerButtonSave,
         handlerShowObjectRefSTIXObject,
+        handlerShowModalWindowCreateNewSTIXObject,
     } = props;
 
     const classes = useStyles();
@@ -231,7 +223,6 @@ export default function ModalWindowAddReportSTIX(props) {
     console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT )))))))");
 
     let [ buttonReportSave, setButtonReportSave ] = React.useState(true);
-    let [ showDialogNewSTIXObject, setShowDialogNewSTIXObject ] = React.useState(false);
     let [ valuesIsInvalideReportName, setValuesIsInvalideReportName ] = React.useState(true);
 
     //____ здесь будет хранится информация о любом STIX объекте ссылка на которую есть в object_refs
@@ -365,24 +356,6 @@ export default function ModalWindowAddReportSTIX(props) {
         };
     }, []);
 
-    let handlerDialogSaveDialogNewSTIXObject = (obj) => {
-            console.log("func 'handlerDialogSaveDialogNewSTIXObject', START");
-            console.log("Information: ", obj);
-
-            //
-            //обработчик кнопки Сохранить модального окна в котором будут создаваться любые виды STIX объектов кроме Отчетов
-            //
-
-            //так как при выполнении данной функции мы добавляем ссылку на новый или существующий STIX объект
-            // то мы можем утверждать что ссылка на объект в параметре obj.object_ref уже есть, а значит можно
-            // разрешить сохранение нового объекта типа Отчёт
-            //setButtonReportSave(false);
-
-        },
-        handlerCloseDialogNewSTIXObject = () => {
-            setShowDialogNewSTIXObject(false);
-        };
-
     return (<React.Fragment>
         <Dialog 
             fullScreen
@@ -458,64 +431,21 @@ export default function ModalWindowAddReportSTIX(props) {
                     </Col>  
                 </Row>
 
-                <Row className="mt-4">
-                    <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с Отчётом</span></Col>
-                </Row>
-                <Row>
-                    <Col md={12}>
-                        {state.object_refs && (state.object_refs.length === 0)? 
-                            <Typography variant="caption">
-                                <span  style={{ color: red[800] }}>
-                                    * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Отчётом
-                                </span>
-                            </Typography>:
-                            state.object_refs.map((item, key) => {
-                                let type = item.split("--");
-                                let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-                    
-                                if(typeof objectElem === "undefined" ){
-                                    return "";
-                                }
-
-                                return (<Row key={`key_object_ref_${key}`}>
-                                    <Col md={12}>
-                                        <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                                            <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item)}>
-                                                <img 
-                                                    key={`key_object_ref_type_${key}`} 
-                                                    src={`/images/stix_object/${objectElem.link}`} 
-                                                    width="35" 
-                                                    height="35" />
-                                                    &nbsp;{item}&nbsp;
-                                            </Button>
-                                        </Tooltip>
-
-                                        <IconButton aria-label="delete" onClick={() => {
-                                            if((state.object_refs.length > 0) && (state.name.length > 0)){
-                                                setButtonReportSave(true);
-                                            } else {
-                                                setButtonReportSave(false);
-                                            }
-
-                                            dispatch({ type: "deleteObjectRefs", data: key });
-                                        }}>
-                                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                                        </IconButton>
-                                    </Col>
-                                </Row>);
-                            })}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={12} className="text-end">
-                        <Button
-                            size="small"
-                            startIcon={<AddIcon style={{ color: green[500] }} />}
-                            onClick={() => setShowDialogNewSTIXObject(true)}>
-                                прикрепить дополнительный объект
-                        </Button>
-                    </Col>
-                </Row>
+                {state.object_refs && <CreateListObjectRefs
+                    objectRefs={state.object_refs} 
+                    handlerDeleteObjectRef={(key) => {
+                        if(state.object_refs.length > 0){
+                            setButtonReportSave(true);
+                        } else {
+                            setButtonReportSave(false);
+                        }
+                        dispatch({ type: "deleteObjectRefs", data: key });
+                    }} 
+                    handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+                    handlerChangeCurrentSTIXObject={() => {
+                        handlerShowModalWindowCreateNewSTIXObject(newReportId);
+                    }}
+                />}
 
                 <Row className="mt-1">
                     <Col md={12}>
@@ -604,44 +534,6 @@ export default function ModalWindowAddReportSTIX(props) {
                 />
             </Container>
         </Dialog>
-
-        {/** показать модальное окно в котором будут создаваться любые виды STIX объектов кроме Отчетов */}
-        <Dialog 
-            fullWidth
-            maxWidth="xl"
-            scroll="paper"
-            open={showDialogNewSTIXObject} >
-            <DialogTitle>
-                <Grid item container md={12} justifyContent="flex-end">
-                    <IconButton edge="start" color="inherit" onClick={handlerCloseDialogNewSTIXObject} aria-label="close">
-                        <CloseIcon />
-                    </IconButton>
-                </Grid>
-            </DialogTitle>
-            <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22}}>Загрузка...</div>}>
-                <ContentCreateNewSTIXObject 
-                    listObjectInfo={state}
-                    currentIdSTIXObject={newReportId} 
-                    socketIo={socketIo}
-                    handlerDialog={handlerDialogSaveDialogNewSTIXObject}
-                    handelrDialogClose={handlerCloseDialogNewSTIXObject}
-                    isNotDisabled={true}
-                />
-            </Suspense>
-        </Dialog>
-
-        {/** показать модальное окно с информацией о любом типе STIX объектов */}
-        {/*<CreateAnyModalWindowSTIXObject
-            socketIo={socketIo}
-            listObjectInfo={listObjectInfo}
-            listPreviousState={listPreviousState}
-            optionsPreviousState={optionsPreviousState}
-            showDialogElement={showDialogElementAdditionalSTIXObject}
-            currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
-            showListPreviousState={false}
-            handelrDialogClose={handelrDialogClose}
-            handelrDialogSave={handelrDialogSaveAnySTIXObject}
-                            isNotDisabled={userPermissions.editing_information.status} />*/}
     </React.Fragment>);
 }
 
@@ -652,4 +544,5 @@ ModalWindowAddReportSTIX.propTypes = {
     userPermissions: PropTypes.object.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
+    handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
 };

@@ -938,6 +938,7 @@ function GetExtensions(props){
 
                     setValueE({ name: "", description: ""});
                     setValuesIsInvalideNameE(true);
+                    setButtonAddNewEIsDisabled(true);
 
                     handlerDialogElementAdditionalThechnicalInfo({ 
                         actionType: "new",

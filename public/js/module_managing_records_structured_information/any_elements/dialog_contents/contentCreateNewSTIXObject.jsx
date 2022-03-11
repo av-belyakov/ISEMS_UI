@@ -49,12 +49,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateDialogContentNewSTIXObject(props){
     let { 
-        listObjectInfo, 
-        currentIdSTIXObject,
         socketIo,
+        isNotDisabled,
+        currentIdSTIXObject, 
         handlerDialog,
         handelrDialogClose,
-        isNotDisabled,
     } = props;
 
     return (<React.Fragment>
@@ -82,10 +81,9 @@ export default function CreateDialogContentNewSTIXObject(props){
 }
 
 CreateDialogContentNewSTIXObject.propTypes = {
-    listObjectInfo: PropTypes.object.isRequired,
-    currentIdSTIXObject: PropTypes.string.isRequired,
     socketIo: PropTypes.object.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired, 
     handlerDialog: PropTypes.func.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
-    isNotDisabled: PropTypes.bool.isRequired,
 };

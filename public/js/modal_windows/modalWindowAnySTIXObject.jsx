@@ -52,28 +52,12 @@ const ContentNullSTIXObject = lazy(() => import(/* webpackChunkName 'ContentNull
 export default function ModalWindowAnySTIXObject(props){    
     let { 
         socketIo,
+        isNotDisabled, 
         showModalWindow,
         parentIdSTIXObject,
         currentAdditionalIdSTIXObject,
         handelrDialogClose,
-        isNotDisabled, 
     } = props;
-
-    /**
- * 
- * Думаю что ВСЮ логику по управлению информацией об любых STIX объектов, доступ к которым выполняется через
- * свойство object_refs нужно вынести в эти объекты, что бы дать возможность использовать эти объекты отдельно
- * и исключить их жесткую зависимость от родительского объекта подобного этому. Соответственно все обработчики
- * надо вынести в них.
- * 
- */
-
-    /*let [ viewMyModule, setViewMyModule ] = useState(null);
-    useEffect(() => {
-        setViewMyModule(somethingModule(idSTIXObject));
-
-        return () => { setViewMyModule(null); };
-    }, [ idSTIXObject, showDialogElement ]);*/
 
     let idSTIXObject = currentAdditionalIdSTIXObject;
     let type = currentAdditionalIdSTIXObject.split("--");
@@ -115,188 +99,25 @@ export default function ModalWindowAnySTIXObject(props){
 
         <ErrorBoundary>
             <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22}}>Загрузка...</div>}>
-                {/*
-                    viewMyModule && <viewMyModule
-                        listObjectInfo={listObjectInfo}
-                        listPreviousState={listPreviousState}
-                        optionsPreviousState={optionsPreviousState}
-                        currentIdSTIXObject={currentAdditionalIdSTIXObject}
-                        showListPreviousState={showListPreviousState}
-                        socketIo={socketIo}
-                        handlerDialog={handlerDialogButtonSave}
-                        handelrDialogClose={handelrDialogClose}
-                        isNotDisabled={isNotDisabled}
-                    />
-                */}
                 {MyModule && <MyModule 
                     socketIo={socketIo}
+                    isNotDisabled={isNotDisabled}
                     parentIdSTIXObject={parentIdSTIXObject}
                     currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
-                    isNotDisabled={isNotDisabled}
                     handelrDialogClose={handelrDialogClose}
                 />}
             </Suspense>
         </ErrorBoundary>
-
     </Dialog>);
 }
 
 ModalWindowAnySTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired, 
     showModalWindow: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
-    isNotDisabled: PropTypes.bool.isRequired, 
-    
-//    socketIo: PropTypes.object.isRequired,
-//    listPreviousState: PropTypes.array.isRequired,
-//    listObjectInfo: PropTypes.object.isRequired,
-//    optionsPreviousState: PropTypes.object.isRequired,
-//    showDialogElement: PropTypes.bool.isRequired,
-//    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
-//    showListPreviousState: PropTypes.bool.isRequired,
-//    handelrDialogClose: PropTypes.func.isRequired,
-//    handelrDialogSave: PropTypes.func.isRequired,
-//    isNotDisabled: PropTypes.bool.isRequired,
-};
-
-/*
-export default function CreateAnyModalWindowSTIXObject(props){    
-    let { 
-        socketIo,
-        listObjectInfo,
-        listPreviousState,
-        optionsPreviousState,
-        showDialogElement,
-        currentAdditionalIdSTIXObject,
-        showListPreviousState, 
-        handelrDialogClose,
-        handelrDialogSave,
-        isNotDisabled, 
-    } = props;
-
-    //let [ viewMyModule, setViewMyModule ] = useState(null);
-    //useEffect(() => {
-    //    setViewMyModule(somethingModule(idSTIXObject));
-    //    return () => { setViewMyModule(null); };
-    //}, [ idSTIXObject, showDialogElement ]);
-
-    let idSTIXObject = currentAdditionalIdSTIXObject;
-    let type = currentAdditionalIdSTIXObject.split("--");
-    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-
-    if(!idSTIXObject || idSTIXObject === ""){
-        return null;
-    }
-
-    if(typeof objectElem !== "undefined" ){
-        idSTIXObject = type[0];
-        img = <img 
-            src={`/images/stix_object/${objectElem.link}`} 
-            width="35" 
-            height="35" />;
-    }
-    
-    let MyModule = somethingModule(idSTIXObject);
-    let titleName = (currentAdditionalIdSTIXObject === "create-new-stix-object")? 
-            "Создание нового объекта или добавление существующего": 
-            `${(typeof objectElem === "undefined")? "": objectElem.description} id: ${currentAdditionalIdSTIXObject}`,
-        img = (typeof objectElem === "undefined")? "": <img src={`/images/stix_object/${objectElem.link}`} width="35" height="35" />;
-
-    const handlerDialogButtonSave = (data) => {
-        handelrDialogSave(data);
-
-        handelrDialogClose();
-    };
-
-    return (<Dialog 
-        fullWidth
-        maxWidth="xl"
-        scroll="paper"
-        open={showDialogElement} >
-        <DialogTitle>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={11}>{img}&nbsp;<span className="pt-2">{titleName}</span></Grid>
-                <Grid item container md={1} justifyContent="flex-end">
-                    <IconButton edge="start" color="inherit" onClick={handelrDialogClose} aria-label="close">
-                        <CloseIcon />
-                    </IconButton>
-                </Grid>
-            </Grid> 
-        </DialogTitle>
-
-        <ErrorBoundary>
-            <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22}}>Загрузка...</div>}>
-                {
-                    //viewMyModule && <viewMyModule
-                    //    listObjectInfo={listObjectInfo}
-                    //    listPreviousState={listPreviousState}
-                    //    optionsPreviousState={optionsPreviousState}
-                    //    currentIdSTIXObject={currentAdditionalIdSTIXObject}
-                    //    showListPreviousState={showListPreviousState}
-                    //    socketIo={socketIo}
-                    //    handlerDialog={handlerDialogButtonSave}
-                    //    handelrDialogClose={handelrDialogClose}
-                    //    isNotDisabled={isNotDisabled}/>
-                }
-                {<MyModule 
-                    listObjectInfo={listObjectInfo}
-                    listPreviousState={listPreviousState}
-                    optionsPreviousState={optionsPreviousState}
-                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
-                    showListPreviousState={showListPreviousState}
-                    socketIo={socketIo}
-                    handlerDialog={handlerDialogButtonSave}
-                    handelrDialogClose={handelrDialogClose}
-                    isNotDisabled={isNotDisabled}
-                />}
-            </Suspense>
-        </ErrorBoundary>
-
-    </Dialog>);
-}
-
-{/** ЭТО СПЕЦИАЛЬНЫЙ СТРОГИЙ РЕЖИМ REACT ДЛЯ ПРОВЕРКИ *}
-<React.StrictMode>
-<ContentNullSTIXObject />
-<ContentAttackPatternSTIXObject 
-    listObjectInfo={listObjectInfo}
-    listPreviousState={listPreviousState}
-    optionsPreviousState={optionsPreviousState}
-    currentIdSTIXObject={currentAdditionalIdSTIXObject}
-    showListPreviousState={showListPreviousState}
-    socketIo={socketIo}
-    handlerDialog={handlerDialogButtonSave}
-    handelrDialogClose={handelrDialogClose}
-    isNotDisabled={isNotDisabled}
-/>*/
-
-const useIntersectionObserver = (reference) => {
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-        const handleIntersect = (entries, observer) => {
-            if (entries[0].isIntersecting) {
-                setIsVisible(true);
-                observer.unobserve(entries[0].target);
-                observer.disconnect();
-            }
-        };
-
-        // Create the observer, passing in the callback
-        const observer = new IntersectionObserver(handleIntersect);
-
-        // If we have a ref value, start observing it
-        if (reference) {
-            observer.observe(reference.current);
-        }
-
-        // If unmounting, disconnect the observer
-        return () => observer.disconnect();
-    }, [reference]);
-
-    return isVisible;
 };
 
 function somethingModule(nameSTIX){

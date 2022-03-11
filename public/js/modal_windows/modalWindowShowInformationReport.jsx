@@ -26,15 +26,9 @@ import { helpers } from "../common_helpers/helpers";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
 import { CreateListObjectRefs } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
-//import CreateListSelect from "../module_managing_records_structured_information/any_elements/createListSelect.jsx";
-//import patternSearchParameters from "../module_managing_records_structured_information/patterns/patternSearchParameters.js";
-//import ContentCreateNewSTIXObject from "../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
-//import CreateAnyModalWindowSTIXObject from "./modalWindowAnySTIXObject.jsx";
 import CreateListPreviousStateSTIX from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIX.jsx";
-//import CreateListPreviousStateSTIXObject from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIXObject.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
-//import CreateElementAdditionalTechnicalInformationReportObject from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationReportObject.jsx";
 import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 
 const useStyles = makeStyles((theme) => ({
@@ -203,6 +197,7 @@ export default function ModalWindowShowInformationReport(props) {
         socketIo,
         handlerButtonSave,
         handlerShowObjectRefSTIXObject,
+        handlerShowModalWindowCreateNewSTIXObject,
     } = props;
 
     const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
@@ -245,6 +240,7 @@ export default function ModalWindowShowInformationReport(props) {
             handlerPressButtonSave={handlerPressButtonSave}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
+            handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
         />
     </Dialog>); 
 }
@@ -258,6 +254,7 @@ ModalWindowShowInformationReport.propTypes = {
     userPermissions: PropTypes.object.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
+    handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
 };
 
 function CreateAppBar(props){
@@ -305,6 +302,7 @@ function CreateAppBody(props){
         handlerPressButtonSave,
         handlerShowObjectRefSTIXObject,
         handlerButtonSaveIsNotDisabled,
+        handlerShowModalWindowCreateNewSTIXObject,
     } = props;
 
     console.log("func 'CreateAppBody', START");
@@ -320,6 +318,7 @@ function CreateAppBody(props){
                     handlerPressButtonSave={handlerPressButtonSave}
                     handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
                     handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
+                    handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
                 />
             </Col>
             <Col md={5}>
@@ -348,6 +347,7 @@ CreateAppBody.propTypes = {
     handlerPressButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerButtonSaveIsNotDisabled: PropTypes.func.isRequired,
+    handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
 };
 
 function CreateReportInformation(props){
@@ -359,6 +359,7 @@ function CreateReportInformation(props){
         handlerPressButtonSave,
         handlerShowObjectRefSTIXObject,
         handlerButtonSaveIsNotDisabled,
+        handlerShowModalWindowCreateNewSTIXObject,
     } = props;
 
     console.log("func 'CreateReportInformation', START...");
@@ -558,31 +559,17 @@ function CreateReportInformation(props){
 
                 console.log("func 'handlerChangeCurrentSTIXObject' OOOOOO");
 
+                handlerShowModalWindowCreateNewSTIXObject(showReportId);
                 /**
                  * 
                  * работает просмотр объектов перечисленных в ObjectRef (пока только CreateDialogContentCampaignSTIXObject),
                  * а также удаление ссылок на различные STIX объекты. Теперь нужно перенести CreateListObjectRefs и в ModalWindowAddReportSTIX
                  * и сделать handlerChangeCurrentSTIXObject для открытия модального окна предназначенного для создания новых объектов ObjectRef.
-                 * Нужно удалить уже не нужные ModalWindowShowInformationReportSTIX и CreateElementAdditionalTechnicalInformationReportObject
+                 * 
                  * 
                  */
-
-                //
-                //
-                //
-                //dispatch({ type: "", data: obj.data });
-                //handlerButtonSaveIsNotDisabled();
-                //
-                //
-                //
             }}
         />}
-
-        {/*<GetListObjectRefs
-            listObjectRef={state.object_refs} 
-            handlerDeleteObjectRef={this.handlerDeleteObjectRef}
-            handlerShowDialogNewSTIXObject={this.handlerShowDialogNewSTIXObject}
-        handlerChangeCurrentSTIXObject={this.handlerChangeCurrentAdditionalIdSTIXObject} />*/}
 
         <Row className="mt-3">
             <Col md={12}>
@@ -650,6 +637,14 @@ function CreateReportInformation(props){
                                 return "";
                             }
     
+                            /**
+                             * 
+                             * Теперь надо переделать CreateDialogContentAttackPatternSTIXObject и CreateDialogContentCourseOfActionSTIXObject
+                             * по образу CreateDialogContentCampaignSTIXObject. А после делать остальные типы STIX объектов
+                             * 
+                             * 
+                             */
+
                             if((state.outside_specification.computer_threat_type === null) || (typeof state.outside_specification.computer_threat_type === "undefined")){
                                 return "";
                             }
@@ -686,6 +681,7 @@ CreateReportInformation.propTypes = {
     handlerPressButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerButtonSaveIsNotDisabled: PropTypes.func.isRequired,
+    handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
 };
 
 function MadePublished(props){

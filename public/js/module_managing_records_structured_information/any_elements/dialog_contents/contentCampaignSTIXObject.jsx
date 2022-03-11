@@ -1,6 +1,6 @@
 "use strict";
 
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer } from "react";
 import { 
     Button,
     DialogActions,
@@ -125,9 +125,9 @@ const reducer = (state, action) => {
 export default function CreateDialogContentCampaignSTIXObject(props){
     let { 
         socketIo,
+        isNotDisabled,
         parentIdSTIXObject,
         currentAdditionalIdSTIXObject,
-        isNotDisabled,
         handelrDialogClose,
     } = props;
 
@@ -186,9 +186,9 @@ export default function CreateDialogContentCampaignSTIXObject(props){
 
 CreateDialogContentCampaignSTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
-    isNotDisabled: PropTypes.bool.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
 };
 
