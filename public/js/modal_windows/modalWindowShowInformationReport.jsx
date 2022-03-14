@@ -548,26 +548,12 @@ function CreateReportInformation(props){
         {state.object_refs && <CreateListObjectRefs
             objectRefs={state.object_refs} 
             handlerDeleteObjectRef={(key) => {
-
-                console.log("func 'handlerDeleteObjectRef', KEY: ", key);
-
                 dispatch({ type: "deleteObjectRefs", data: key });
                 handlerButtonSaveIsNotDisabled();
             }} 
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerChangeCurrentSTIXObject={() => {
-
-                console.log("func 'handlerChangeCurrentSTIXObject' OOOOOO");
-
                 handlerShowModalWindowCreateNewSTIXObject(showReportId);
-                /**
-                 * 
-                 * работает просмотр объектов перечисленных в ObjectRef (пока только CreateDialogContentCampaignSTIXObject),
-                 * а также удаление ссылок на различные STIX объекты. Теперь нужно перенести CreateListObjectRefs и в ModalWindowAddReportSTIX
-                 * и сделать handlerChangeCurrentSTIXObject для открытия модального окна предназначенного для создания новых объектов ObjectRef.
-                 * 
-                 * 
-                 */
             }}
         />}
 
@@ -637,14 +623,6 @@ function CreateReportInformation(props){
                                 return "";
                             }
     
-                            /**
-                             * 
-                             * Теперь надо переделать CreateDialogContentAttackPatternSTIXObject и CreateDialogContentCourseOfActionSTIXObject
-                             * по образу CreateDialogContentCampaignSTIXObject. А после делать остальные типы STIX объектов
-                             * 
-                             * 
-                             */
-
                             if((state.outside_specification.computer_threat_type === null) || (typeof state.outside_specification.computer_threat_type === "undefined")){
                                 return "";
                             }

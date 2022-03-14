@@ -21,14 +21,24 @@ const minDefaultData = "0001-01-01T00:00:00Z",
     defaultData = "2001-01-01T00:00:01Z";
 
 const reducer = (state, action) => {
-
-    //console.log("____ reducer _____");
-    //console.log("action.type: ", action.type);
-    //console.log("action: ", action);
-    //console.log("state: ", state);
+    let lastSeen = "";
+    let firstSeen = "";
+    let currentTimeZoneOffsetInHours = "";
 
     switch(action.type){
     case "newAll":
+        lastSeen = Date.parse(action.data.last_seen);
+        firstSeen = Date.parse(action.data.first_seen);
+        currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
+    
+        if(currentTimeZoneOffsetInHours < 0){
+            action.data.last_seen = new Date(lastSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            action.data.first_seen = new Date(firstSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+        } else {
+            action.data.last_seen = new Date(lastSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            action.data.first_seen = new Date(firstSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+        }
+
         return action.data;
     case "cleanAll":
         return {};
@@ -135,12 +145,15 @@ export default function CreateDialogContentCampaignSTIXObject(props){
     let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
 
     const handlerButtonIsDisabled = () => {
-        if(!buttonIsDisabled){
-            return;
-        }
+            if(!buttonIsDisabled){
+                return;
+            }
 
-        setButtonIsDisabled();
-    };
+            setButtonIsDisabled();
+        },
+        handlerButtonSaveChangeTrigger = () => {
+            setButtonSaveChangeTrigger((prevState) => !prevState);
+        };
 
     return (<React.Fragment>
         <DialogContent>
@@ -153,6 +166,7 @@ export default function CreateDialogContentCampaignSTIXObject(props){
                     isNotDisabled={isNotDisabled}
                     handelrDialogClose={handelrDialogClose}
                     handlerButtonIsDisabled={handlerButtonIsDisabled}
+                    handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
                 />
 
                 <Grid item container md={4} style={{ display: "block" }}>
@@ -164,16 +178,7 @@ export default function CreateDialogContentCampaignSTIXObject(props){
             </Grid>            
         </DialogContent>
         <DialogActions>
-            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
-            {/**
-             * кнопка Сохранить активируется через изменение состояния ButtonSaveChangeTrigger
-             * теперь надо сделать проверку на изменения содержимого и добавить соответствующий тригер
-             * в поле disabled= кнопки
-             * 
-             * Кроме того надо не забывать что обработчик на кнупку Сохранить в ModalWindowShowInformationReport
-             * тоже не работает (надо доделать)
-             */}
-            
+            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>            
             {isNotDisabled && <Button
                 disabled={buttonIsDisabled} 
                 onClick={() => setButtonSaveChangeTrigger(true)}
@@ -201,6 +206,7 @@ function CreateMajorContent(props){
         isNotDisabled,
         handelrDialogClose,
         handlerButtonIsDisabled,
+        handlerButtonSaveChangeTrigger,
     } = props;
 
     const [state, dispatch] = useReducer(reducer, {});
@@ -223,9 +229,6 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
-
-            console.log("++++++++++++ func 'listener', reseived data: ", obj);
-
             dispatch({ type: "newAll", data: obj });
         }
     };
@@ -239,70 +242,57 @@ function CreateMajorContent(props){
     }, []);
     useEffect(() => {
         if(currentIdSTIXObject !== ""){
-            console.log("func 'CreateMajorContent', socketIo.emit for STIX object current ID: ", currentIdSTIXObject);
-
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: parentIdSTIXObject,
             }});
-        //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
-        //socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
-        //socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: showReportId });
         }
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
-        if(buttonSaveChangeTrigger){
-            console.log("--------- UUUUUUUUUUUUUUUUUUUUUUU ========");
-            console.log(state);
-            
+        if(buttonSaveChangeTrigger){            
+            let lastSeen = Date.parse(state.last_seen);
+            let firstSeen = Date.parse(state.first_seen);
+            let currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
+        
+            if(currentTimeZoneOffsetInHours < 0){
+                state.last_seen = new Date(lastSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+                state.first_seen = new Date(firstSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            } else {
+                state.last_seen = new Date(lastSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+                state.first_seen = new Date(firstSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            }
+
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            handlerButtonSaveChangeTrigger();
             handelrDialogClose();
         }
-    }, [ socketIo, state, buttonSaveChangeTrigger, handelrDialogClose ]);
+    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
-        console.log(state);
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
-        console.log(obj);
-
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
             case "hashes_update":
-                console.log("external_references - hashes_update");
-
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             case "hashes_delete":
-                console.log("external_references - hashes_delete");
-                console.log(obj);
-
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             default:
-                console.log("external_references - default");
-                console.log("obj.modalType - ", obj.modalType);
-
                 dispatch({ type: "updateExternalReferences", data: obj.data });
                 handlerButtonIsDisabled();
             }
         }
     
         if(obj.modalType === "granular_markings") {
-            console.log("updateGranularMarkings......");
-            console.log(obj);
-
             dispatch({ type: "updateGranularMarkings", data: obj.data });
             handlerButtonIsDisabled();
         }
     
         if(obj.modalType === "extensions") {
-            console.log("obj.modalType === extensions, obj: ", obj);
-
             dispatch({ type: "updateExtensions", data: obj.data });
             handlerButtonIsDisabled();
         }
@@ -313,8 +303,8 @@ function CreateMajorContent(props){
             <Grid container direction="row" className="pt-3">
                 <CreateCampaingPatternElements 
                     campaignPatterElement={state}
-                    handlerObjective={(e) => { dispatch({ type: "updateObjective", data: e }); handlerButtonIsDisabled(); }}
-                    handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e }); handlerButtonIsDisabled(); }}
+                    handlerObjective={(e) => { dispatch({ type: "updateObjective", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
                     handlerChangeDateTimeFirstSeen={(e) => { dispatch({ type: "updateDateTimeFirstSeen", data: e }); handlerButtonIsDisabled(); }}
                     handlerChangeDateTimeLastSeen={(e) => { dispatch({ type: "updateDateTimeLastSeen", data: e }); handlerButtonIsDisabled(); }}
@@ -352,6 +342,7 @@ CreateMajorContent.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     handelrDialogClose: PropTypes.func.isRequired,
     handlerButtonIsDisabled: PropTypes.func.isRequired,
+    handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
 };
 
 function CreateCampaingPatternElements(props){

@@ -169,8 +169,6 @@ export function CreateListObjectRefs(props){
         handlerChangeCurrentSTIXObject 
     } = props;
 
-    console.log("func 'CreateListObjectRefs', state: ", objectRefs);
-
     return (<React.Fragment>
         <Row className="mt-4">
             <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с Отчётом</span></Col>

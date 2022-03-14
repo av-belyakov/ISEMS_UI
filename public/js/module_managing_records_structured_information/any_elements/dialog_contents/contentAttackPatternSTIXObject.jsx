@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { 
     Button,
     DialogActions,
@@ -6,7 +6,6 @@ import {
     Grid,
     TextField,
     IconButton,
-    LinearProgress,
 } from "@material-ui/core";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { red } from "@material-ui/core/colors";
@@ -14,354 +13,355 @@ import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import CreateListPreviousStateSTIXObject from "../createListPreviousStateSTIXObject.jsx";
+//import CreateListPreviousStateSTIXObject from "../createListPreviousStateSTIXObject.jsx";
+import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
+
+const reducer = (state, action) => {
+   
+    //console.log("____ reducer _____");
+    //console.log("action.type: ", action.type);
+    //console.log("action: ", action);
+    //console.log("state: ", state);
+
+    switch(action.type){
+    case "newAll":
+        return action.data;
+    case "cleanAll":
+        return {};
+    case "updateDescription":
+        if(state.description === action.data){
+            return {...state};
+        }
+
+        return {...state, description: action.data};
+    case "updateTokenValuesChange":
+        return {...state, aliases: action.data};
+    case "updateKillChainPhases":
+        console.log("func 'reducer', action.type: ", action.type, " action.data: ", action.data);
+
+        state.kill_chain_phases.push(action.data);
+
+        return {...state};    
+    case "updateConfidence":
+        if(state.confidence === action.data.data){
+            return {...state};
+        }
+
+        return {...state, confidence: action.data.data};
+    case "updateDefanged":
+        return {...state, defanged: (action.data === "true")};
+    case "updateLabels":
+        return {...state, labels: action.data.listTokenValue};
+    case "updateExternalReferences":
+        for(let key of state.external_references){
+            if(key.source_name === action.data.source_name){
+                return {...state};
+            }
+        }
+
+        state.external_references.push(action.data);
+
+        return {...state};
+    case "updateExternalReferencesHashesUpdate":
+        if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
+            state.external_references[action.data.orderNumber].hashes = {};
+        }
+
+        state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
+
+        return {...state};
+    case "updateExternalReferencesHashesDelete":
+        delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
+
+        return {...state};
+    case "updateGranularMarkings":
+        for(let keyGM of state.granular_markings){
+            if(!keyGM.selectors){
+                return {...state};
+            }
+
+            for(let keyS of keyGM.selectors){
+                for(let key of action.data.selectors){
+                    if(key === keyS){
+                        return {...state};
+                    }
+                }
+            }
+        }
+
+        state.granular_markings.push(action.data);
+
+        return {...state};
+    case "updateExtensions":
+        if(!state.extensions){
+            state.extensions = {};
+        }
+
+        state.extensions[action.data.name] = action.data.description;
+
+        return {...state};
+    case "deleteKillChain":
+        state.kill_chain_phases.splice(action.data, 1);
+
+        return {...state};
+    case "deleteElementAdditionalTechnicalInformation":
+        switch(action.data.itemType){
+        case "extensions":
+            delete state.extensions[action.data.item];
+
+            return {...state};
+        case "granular_markings":
+            state.granular_markings.splice(action.data.orderNumber, 1);
+
+            return {...state};
+        case "external_references":
+            state.external_references.splice(action.data.orderNumber, 1);
+
+            return {...state};
+        }
+    }
+};
 
 export default function CreateDialogContentAttackPatternSTIXObject(props){
     let { 
-        listObjectInfo, 
-        listPreviousState,
-        optionsPreviousState,
-        currentIdSTIXObject,
-        showListPreviousState,
         socketIo,
-        handlerDialog,
-        handelrDialogClose,
         isNotDisabled,
+        parentIdSTIXObject,
+        currentAdditionalIdSTIXObject,
+        handelrDialogClose,
     } = props;
 
-    //let [ attackPatterElement, setAttackPatterElement ] = React.useState((listObjectInfo[currentIdSTIXObject])? listObjectInfo[currentIdSTIXObject]: {});
-    let [ attackPatterElement, setAttackPatterElement ] = React.useState({});
-    let [ valueNameChain, setValueNameChain ] = React.useState("");
-    let [ valueNamePhases, setValueNamePhases ] = React.useState("");
-    let [ buttonAddNewKillChain, setButtonAddNewKillChain ] = React.useState(true);
-    let [ invalidNameChain, setInvalidNameChain ] = React.useState(true);
-    let [ invalidNamePhases, setInvalidNamePhases ] = React.useState(true);
+    let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
+    let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
 
-    useEffect(() => {
-        if(listObjectInfo[currentIdSTIXObject]){
-            setAttackPatterElement(listObjectInfo[currentIdSTIXObject]);
-        }
+    const handlerButtonIsDisabled = () => {
+            if(!buttonIsDisabled){
+                return;
+            }
 
-        return () => {
-            setAttackPatterElement({});
+            setButtonIsDisabled();
+        },
+        handlerButtonSaveChangeTrigger = () => {
+            setButtonSaveChangeTrigger((prevState) => !prevState);
         };
-    }, [ listObjectInfo, currentIdSTIXObject ]);
-
-    const handlerAddNewKillChain = () => {
-            if(invalidNameChain || invalidNamePhases){
-                return;
-            }
-
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-
-            if(!Array.isArray(valueAPTmp.kill_chain_phases)){
-                valueAPTmp.kill_chain_phases = [];
-            }
-
-            valueAPTmp.kill_chain_phases.push({ kill_chain_name: valueNameChain, phase_name: valueNamePhases });
-
-            setAttackPatterElement(valueAPTmp);
-            setInvalidNameChain(true);
-            setInvalidNamePhases(true);
-            setButtonAddNewKillChain(true);
-            setValueNameChain("");
-            setValueNamePhases("");
-        },
-        handlerNameChain = (obj) => {
-            setValueNameChain(obj.target.value);
-
-            if(!new RegExp("^[a-zA-Z0-9_-]{3,}$").test(obj.target.value)){
-                setInvalidNameChain(true);
-                setButtonAddNewKillChain(true);
-
-                return;
-            }
-
-            setInvalidNameChain(false);
-
-            if(!invalidNamePhases){
-                setButtonAddNewKillChain(false);
-            }
-        },
-        handlerNamePhases = (obj) => {
-            setValueNamePhases(obj.target.value);
-
-            if(!new RegExp("^[a-zA-Z0-9_-]{3,}$").test(obj.target.value)){
-                setInvalidNamePhases(true);
-                setButtonAddNewKillChain(true); 
-
-                return;
-            }
-
-            setInvalidNamePhases(false);
-
-            if(!invalidNameChain){
-                setButtonAddNewKillChain(false);
-            }
-        },
-        handlerDescription = (obj) => {
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-            valueAPTmp.description = obj.target.value;
-            setAttackPatterElement(valueAPTmp);
-        },
-        handlerTokenValuesChange = React.useCallback((newTokenValues) => {            
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-            valueAPTmp.aliases = newTokenValues;
-            setAttackPatterElement(valueAPTmp);
-        }, [ setAttackPatterElement, attackPatterElement ]),
-        handlerDeleteKillChain = (num) => {
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-            valueAPTmp.kill_chain_phases.splice(num, 1);
-            setAttackPatterElement(valueAPTmp);
-        },
-        //пункт "уверенность создателя в правильности своих данных от 0 до 100"
-        handlerElementConfidence = (obj) => { 
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-            valueAPTmp.confidence = obj.data;
-            setAttackPatterElement(valueAPTmp);
-        },
-        //пункт "определены ли данные содержащиеся в объекте"
-        handlerElementDefanged = (obj) => {
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-            valueAPTmp.defanged = (obj.data === "true");
-            setAttackPatterElement(valueAPTmp);
-        },
-        //пункт "набор терминов, используемых для описания данного объекта"        
-        handlerElementLabels = (obj) => {
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-
-            if(!Array.isArray(valueAPTmp.labels)){
-                valueAPTmp.labels = [];
-            }
-
-            valueAPTmp.labels = obj.listTokenValue;
-            setAttackPatterElement(valueAPTmp);
-        },
-        handlerDeleteElementAdditionalTechnicalInformation = (obj) => {
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-
-            if(obj.itemType === "external_references"){
-                if(obj.orderNumber < 0){
-                    return;
-                }
-
-                valueAPTmp.external_references.splice(obj.orderNumber, 1);
-                setAttackPatterElement(valueAPTmp);
-            }
-
-            if(obj.itemType === "granular_markings"){
-                if(obj.orderNumber < 0){
-                    return;
-                }
-
-                valueAPTmp.granular_markings.splice(obj.orderNumber, 1);
-                setAttackPatterElement(valueAPTmp);
-            }
-
-            if(obj.itemType === "extensions"){
-                delete valueAPTmp.extensions[obj.item];
-                setAttackPatterElement(valueAPTmp);
-            }
-             
-        },
-        handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-
-            if(obj.modalType === "external_references"){
-                if(obj.actionType === "new"){
-                    if(!Array.isArray(valueAPTmp.external_references)){
-                        valueAPTmp.external_references = [];
-                    }
-
-                    valueAPTmp.external_references.push(obj.data);
-                    setAttackPatterElement(valueAPTmp);        
-                }
-
-                if(obj.actionType === "update"){
-                    valueAPTmp.external_references[obj.orderNumber] = obj.data;
-                    setAttackPatterElement(valueAPTmp);
-                }
-
-                if(obj.actionType === "hashes_update"){
-                    if((valueAPTmp.external_references[obj.orderNumber].hashes === null) || (typeof valueAPTmp.external_references[obj.orderNumber].hashes === "undefined")){
-                        valueAPTmp.external_references[obj.orderNumber].hashes = {};
-                    }
-
-                    valueAPTmp.external_references[obj.orderNumber].hashes[obj.data.type] = obj.data.hash;
-                    setAttackPatterElement(valueAPTmp);      
-                }
-
-                if(obj.actionType === "hashes_delete"){
-                    delete valueAPTmp.external_references[obj.orderNumber].hashes[obj.hashName];
-                    setAttackPatterElement(valueAPTmp);  
-                }
-            }
-            
-            if((obj.modalType === "granular_markings") && (obj.actionType === "new")) {
-                if(!Array.isArray(valueAPTmp.granular_markings)){
-                    valueAPTmp.granular_markings = [];
-                }
-
-                valueAPTmp.granular_markings.push(obj.data);
-                setAttackPatterElement(valueAPTmp);  
-            }
-            
-            if(obj.modalType === "extensions") {
-                if((valueAPTmp.extensions === null) || (typeof valueAPTmp.extensions === "undefined")){
-                    valueAPTmp.extensions = {};
-                }
-
-                valueAPTmp.extensions[obj.data.name] = obj.data.description;
-                setAttackPatterElement(valueAPTmp);  
-            }
-        },
-        handlerSave = () => {
-            let valueAPTmp = _.cloneDeep(attackPatterElement);
-            valueAPTmp.lang = "RU";
-            
-            if(valueAPTmp.labels === null){
-                delete valueAPTmp.labels;
-            }
-
-            if(valueAPTmp.external_references === null){
-                delete valueAPTmp.external_references;
-            }
-
-            if(valueAPTmp.object_marking_refs === null){
-                delete valueAPTmp.object_marking_refs;
-            }
-
-            if(valueAPTmp.granular_markings === null){
-                delete valueAPTmp.granular_markings;
-            }
-
-            if(valueAPTmp.extensions === null){
-                delete valueAPTmp.extensions;
-            }
-
-            if(valueAPTmp.aliases === null){
-                delete valueAPTmp.aliases;
-            }
-
-            if(valueAPTmp.kill_chain_phases === null){
-                delete valueAPTmp.kill_chain_phases;
-            }
-
-            setAttackPatterElement(valueAPTmp);
-
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [valueAPTmp] });
-
-            handlerDialog(valueAPTmp);
-        };
-
-    if((!listObjectInfo[currentIdSTIXObject]) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<DialogContent>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={12} justifyContent="center" className="pb-3">
-                    поиск информации об STIX объекте типа Шаблон атаки (Attack Pattern DO STIX)
-                </Grid>
-            </Grid>
-            <LinearProgress />
-        </DialogContent>);
-    }
-
-    console.log("---==== func 'contentAttackPatternSTIXObject' ====-----");
 
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" spacing={3}>
-                <Grid item container md={8}>
-                    <Grid container direction="row" className="pt-3">
-                        <CreateAtackPatternElements 
-                            attackPatterElement={attackPatterElement}
-                            valueNameChain={valueNameChain}
-                            valueNamePhases={valueNamePhases}
-                            buttonAddNewKillChain={buttonAddNewKillChain}
-                            invalidNameChain={invalidNameChain}
-                            invalidNamePhases={invalidNamePhases}
-                            handlerNameChain={handlerNameChain}
-                            handlerNamePhases={handlerNamePhases}
-                            handlerDescription={handlerDescription}
-                            handlerAddNewKillChain={handlerAddNewKillChain}
-                            handlerTokenValuesChange={handlerTokenValuesChange} 
-                            handlerDeleteKillChain={handlerDeleteKillChain} />
-                    </Grid> 
-
-                    <Grid container direction="row" className="pt-3">
-                        <Grid item container md={12} justifyContent="center">
-                            <h3>
-                            Здесь нужно разместить область с ссылками на объекты Report с которыми может быть связан данный объект. 
-                            При чем нужно ограничить переходы по этим ссылка для непривелегированных пользователей. Это надо доделать.
-                            </h3>
-                        </Grid>
-                    </Grid>
-
-                    <CreateElementAdditionalTechnicalInformationDO 
-                        objectId={currentIdSTIXObject}
-                        reportInfo={attackPatterElement}
-                        handlerElementConfidence={handlerElementConfidence}
-                        handlerElementDefanged={handlerElementDefanged}
-                        handlerElementLabels={handlerElementLabels}
-                        handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
-                        handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
-                        isNotDisabled={isNotDisabled} />       
-                </Grid>
+                <CreateMajorContent 
+                    socketIo={socketIo}
+                    parentIdSTIXObject={parentIdSTIXObject}
+                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
+                    buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+                    isNotDisabled={isNotDisabled}
+                    handelrDialogClose={handelrDialogClose}
+                    handlerButtonIsDisabled={handlerButtonIsDisabled}
+                    handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
+                />
 
                 <Grid item container md={4} style={{ display: "block" }}>
-                    <CreateListPreviousStateSTIXObject 
+                    <CreateListPreviousStateSTIX 
                         socketIo={socketIo} 
-                        searchObjectId={currentIdSTIXObject}
-                        optionsPreviousState={optionsPreviousState}
-                        showListPreviousState={showListPreviousState}
-                        listPreviousState={listPreviousState} /> 
+                        searchObjectId={currentAdditionalIdSTIXObject} 
+                    />
                 </Grid>
             </Grid>            
         </DialogContent>
         <DialogActions>
-            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
-            <Button 
-                disabled={_.isEqual(attackPatterElement, listObjectInfo[currentIdSTIXObject])}
-                onClick={handlerSave}
+            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>            
+            {isNotDisabled && <Button
+                disabled={buttonIsDisabled} 
+                onClick={() => setButtonSaveChangeTrigger(true)}
                 color="primary">
-                    сохранить
-            </Button>
+                сохранить
+            </Button>}
         </DialogActions>
     </React.Fragment>);
 }
 
 CreateDialogContentAttackPatternSTIXObject.propTypes = {
-    listObjectInfo: PropTypes.object.isRequired,
-    listPreviousState: PropTypes.array.isRequired,
-    optionsPreviousState: PropTypes.object.isRequired,
-    currentIdSTIXObject: PropTypes.string.isRequired,
-    showListPreviousState: PropTypes.bool.isRequired,
     socketIo: PropTypes.object.isRequired,
-    handlerDialog: PropTypes.func.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+    handelrDialogClose: PropTypes.func.isRequired,
 };
 
-function CreateAtackPatternElements(props){
+function CreateMajorContent(props){
+    let {
+        socketIo,
+        parentIdSTIXObject,
+        currentIdSTIXObject,
+        buttonSaveChangeTrigger,
+        isNotDisabled,
+        handelrDialogClose,
+        handlerButtonIsDisabled,
+        handlerButtonSaveChangeTrigger,
+    } = props;
+
+    const [ state, dispatch ] = useReducer(reducer, {});
+
+    const listener = (data) => {
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+            return;
+        }
+
+        if(data.information.additional_parameters.transmitted_data.length === 0){
+            return;
+        }
+
+        for(let obj of data.information.additional_parameters.transmitted_data){
+
+            console.log("++++++++++++ func 'listener', reseived data: ", obj);
+
+            dispatch({ type: "newAll", data: obj });
+        }
+    };
+    useEffect(() => {
+        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+
+        return () => {
+            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
+            dispatch({ type: "newAll", data: {} });
+        };
+    }, []);
+    useEffect(() => {
+        if(currentIdSTIXObject !== ""){
+            console.log("func 'CreateMajorContent', socketIo.emit for STIX object current ID: ", currentIdSTIXObject);
+
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentIdSTIXObject,
+                parentObjectId: parentIdSTIXObject,
+            }});
+        }
+    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    useEffect(() => {
+        if(buttonSaveChangeTrigger){
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            handlerButtonSaveChangeTrigger();
+            handelrDialogClose();
+        }
+    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
+        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
+        console.log(state);
+        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
+        console.log(obj);
+
+        if(obj.modalType === "external_references"){
+            switch(obj.actionType){
+            case "hashes_update":
+                console.log("external_references - hashes_update");
+
+                dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
+
+                break;
+            case "hashes_delete":
+                console.log("external_references - hashes_delete");
+                console.log(obj);
+
+                dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
+
+                break;
+            default:
+                console.log("external_references - default");
+                console.log("obj.modalType - ", obj.modalType);
+
+                dispatch({ type: "updateExternalReferences", data: obj.data });
+                handlerButtonIsDisabled();
+            }
+        }
+    
+        if(obj.modalType === "granular_markings") {
+            console.log("updateGranularMarkings......");
+            console.log(obj);
+
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerButtonIsDisabled();
+        }
+    
+        if(obj.modalType === "extensions") {
+            console.log("obj.modalType === extensions, obj: ", obj);
+
+            dispatch({ type: "updateExtensions", data: obj.data });
+            handlerButtonIsDisabled();
+        }
+    };
+
+    return (
+        <Grid item container md={8}>
+            <Grid container direction="row" className="pt-3">
+                <CreateAttackPatternElements 
+                    campaignPatterElement={state}
+                    handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
+                    handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
+                    handlerAddKillChainPhases={(e) => { dispatch({ type: "updateKillChainPhases", data: e }); handlerButtonIsDisabled(); }}
+                />
+            </Grid> 
+
+            <Grid container direction="row" className="pt-3">
+                <Grid item container md={12} justifyContent="center">
+                    <h3>
+                        Здесь нужно разместить область с ссылками на объекты Report с которыми может быть связан данный объект. 
+                        При чем нужно ограничить переходы по этим ссылка для непривелегированных пользователей. Это надо доделать.
+                    </h3>
+                </Grid>
+            </Grid>
+
+            <CreateElementAdditionalTechnicalInformationDO
+                objectId={currentIdSTIXObject}
+                reportInfo={state}
+                isNotDisabled={isNotDisabled}
+                handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
+                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+            />
+        </Grid>
+    );
+}
+
+CreateMajorContent.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
+    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
+    handelrDialogClose: PropTypes.func.isRequired,
+    handlerButtonIsDisabled: PropTypes.func.isRequired,
+    handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
+};
+
+function CreateAttackPatternElements(props){
     let { 
-        attackPatterElement,
-        valueNameChain,
-        valueNamePhases,
-        buttonAddNewKillChain,
-        invalidNameChain,
-        invalidNamePhases,
-        handlerNameChain,
-        handlerNamePhases,
-        handlerDescription,
-        handlerAddNewKillChain,
+        campaignPatterElement, 
+        handlerDescription, 
         handlerTokenValuesChange,
         handlerDeleteKillChain,
+        handlerAddKillChainPhases,
     } = props;
+
+    console.log("func 'CreateAttackPatternElements', campaignPatterElement: ", campaignPatterElement);
+    console.log("_______________________________________");
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование</span>:</Grid>
-            <Grid item container md={8} >{attackPatterElement.name}</Grid>
+            <Grid item container md={8} >{campaignPatterElement.name}</Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
@@ -372,14 +372,14 @@ function CreateAtackPatternElements(props){
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания</span>:</Grid>
             <Grid item container md={8}>
-                {helpers.convertDateFromString(attackPatterElement.created, { monthDescription: "long", dayDescription: "numeric" })}
+                {helpers.convertDateFromString(campaignPatterElement.created, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления</span>:</Grid>
             <Grid item container md={8}>
-                {helpers.convertDateFromString(attackPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
+                {helpers.convertDateFromString(campaignPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
@@ -387,13 +387,13 @@ function CreateAtackPatternElements(props){
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание</span>:</Grid>
             <Grid item container md={8}>
                 <TextField
-                    id="outlined-multiline-static"
+                    id="outlined-description-static"
                     multiline
                     minRows={3}
                     maxRows={8}
                     fullWidth
                     onChange={handlerDescription}
-                    defaultValue={attackPatterElement.description}
+                    defaultValue={campaignPatterElement.description}
                     variant="outlined"/>
             </Grid>
         </Grid>
@@ -403,7 +403,7 @@ function CreateAtackPatternElements(props){
             <Grid item md={8}>
                 <TokenInput
                     style={{ height: "80px", width: "auto" }}
-                    tokenValues={(!attackPatterElement.aliases) ? []: attackPatterElement.aliases}
+                    tokenValues={(!campaignPatterElement.aliases) ? []: campaignPatterElement.aliases}
                     onTokenValuesChange={handlerTokenValuesChange} />
             </Grid>
         </Grid>
@@ -414,49 +414,106 @@ function CreateAtackPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={1}>
-            <Grid item container md={5}>
-                <TextField
-                    id="input_new_name_kill_chain"
-                    fullWidth
-                    error={invalidNameChain}
-                    label="имя цепочки"
-                    value={valueNameChain}
-                    onChange={handlerNameChain} />
-            </Grid>
-            <Grid item container md={5}>
-                <TextField
-                    id="input_new_name_phases"
-                    fullWidth
-                    error={invalidNamePhases}
-                    label="наименование фазы"
-                    value={valueNamePhases}
-                    onChange={handlerNamePhases} />
-            </Grid>
-            <Grid item container md={2} justifyContent="center">
-                <Button onClick={handlerAddNewKillChain} disabled={buttonAddNewKillChain}>добавить цепочку</Button>
-            </Grid>
-        </Grid>
+        <CreateKillChainPhases handlerAddKillChainPhases={handlerAddKillChainPhases} />
 
         <CreateKillChainPhasesList 
-            listKillChainPhases={(!attackPatterElement.kill_chain_phases) ? []: attackPatterElement.kill_chain_phases} 
+            listKillChainPhases={(!campaignPatterElement.kill_chain_phases) ? []: campaignPatterElement.kill_chain_phases} 
             handlerDeleteItem={handlerDeleteKillChain} />
     </React.Fragment>);
 }
 
-CreateAtackPatternElements.propTypes = {
-    attackPatterElement: PropTypes.object.isRequired,
-    valueNameChain: PropTypes.string.isRequired,
-    valueNamePhases: PropTypes.string.isRequired,
-    buttonAddNewKillChain: PropTypes.bool.isRequired,
-    invalidNameChain: PropTypes.bool.isRequired,
-    invalidNamePhases: PropTypes.bool.isRequired,
-    handlerNameChain: PropTypes.func.isRequired,
-    handlerNamePhases: PropTypes.func.isRequired,
+CreateAttackPatternElements.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired,
     handlerDescription: PropTypes.func.isRequired,
-    handlerAddNewKillChain: PropTypes.func.isRequired,
     handlerTokenValuesChange: PropTypes.func.isRequired,
     handlerDeleteKillChain: PropTypes.func.isRequired,
+    handlerAddKillChainPhases: PropTypes.func.isRequired,
+};
+
+function CreateKillChainPhases(props){
+    let { handlerAddKillChainPhases } = props;
+
+    let [ invalidNameChain, setInvalidNameChain ] = useState(true);
+    let [ invalidNamePhases, setInvalidNamePhases ] = useState(true);
+    let [ valueNameChain, setValueNameChain ] = useState("");
+    let [ valueNamePhases, setValueNamePhases ] = useState("");
+    let [ isDisabledButtonNewKillChain, setIsDisabledButtonNewKillChain ] = useState(true);
+
+    const handlerNameChain = (obj) => {
+            setValueNameChain(obj.target.value);
+
+            if(!new RegExp("^[a-zA-Z0-9_-]{3,}$").test(obj.target.value)){
+                setInvalidNameChain(true);
+                setIsDisabledButtonNewKillChain(true);
+
+                return;
+            }
+
+            setInvalidNameChain(false);
+
+            if(!invalidNamePhases){
+                setIsDisabledButtonNewKillChain(false);
+            }
+        },
+        handlerNamePhases = (obj) => {
+            setValueNamePhases(obj.target.value);
+
+            if(!new RegExp("^[a-zA-Z0-9_-]{3,}$").test(obj.target.value)){
+                setInvalidNamePhases(true);
+                setIsDisabledButtonNewKillChain(true); 
+
+                return;
+            }
+
+            setInvalidNamePhases(false);
+
+            if(!invalidNameChain){
+                setIsDisabledButtonNewKillChain(false);
+            }
+        };
+
+    return (<Grid container direction="row" spacing={1}>
+        <Grid item container md={5}>
+            <TextField
+                id="input_new_name_kill_chain"
+                fullWidth
+                error={invalidNameChain}
+                label="имя цепочки"
+                value={valueNameChain}
+                onChange={handlerNameChain} />
+        </Grid>
+        <Grid item container md={5}>
+            <TextField
+                id="input_new_name_phases"
+                fullWidth
+                error={invalidNamePhases}
+                label="наименование фазы"
+                value={valueNamePhases}
+                onChange={handlerNamePhases} />
+        </Grid>
+        <Grid item container md={2} justifyContent="center">
+            <Button onClick={() => {
+                if(invalidNameChain || invalidNamePhases){
+                    return;
+                }
+
+                handlerAddKillChainPhases.call(null, {
+                    kill_chain_name: valueNameChain,
+                    phase_name: valueNamePhases,
+                });
+
+                setInvalidNameChain(true);
+                setInvalidNamePhases(true);
+                setValueNameChain("");
+                setValueNamePhases("");
+                setIsDisabledButtonNewKillChain(true);
+            }} disabled={isDisabledButtonNewKillChain}>добавить цепочку</Button>
+        </Grid>
+    </Grid>);
+}
+
+CreateKillChainPhases.propTypes = {
+    handlerAddKillChainPhases: PropTypes.func.isRequired,
 };
 
 function CreateKillChainPhasesList(props){
@@ -472,7 +529,7 @@ function CreateKillChainPhasesList(props){
                 {listKillChainPhases.map((item, num) => {
                     return (<li key={`key_item_kill_phases_${num}`}>
                         <span className="text-muted">наименование</span>: {item.kill_chain_name}, <span className="text-muted">фаза</span>: {item.phase_name}&nbsp;
-                        <IconButton aria-label="delete-hash" onClick={() => handlerDeleteItem.call(null, num)}>
+                        <IconButton aria-label="delete-hash" onClick={handlerDeleteItem.bind(null, num)}>
                             <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                         </IconButton>
                     </li>);

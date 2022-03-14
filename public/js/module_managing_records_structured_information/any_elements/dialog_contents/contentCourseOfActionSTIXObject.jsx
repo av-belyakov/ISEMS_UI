@@ -28,6 +28,13 @@ export default function CreateDialogContentCourseOfActionSTIXObject(props){
         isNotDisabled,
     } = props;
 
+    /**
+ * 
+ * Nеперь осталось переделать только CreateDialogContentCourseOfActionSTIXObject по аналогии с CreateDialogContentAttackPatternSTIXObject
+ * и CreateDialogContentCampaignSTIXObject и можно продолжать делать остальные объекты по тому же принципу
+ * 
+ */
+
     //let [ currentSTIXObject, setCurrentSTIXObject ] = React.useState(listObjectInfo[currentIdSTIXObject]);
     let [ currentSTIXObject, setCurrentSTIXObject ] = React.useState({});
     
