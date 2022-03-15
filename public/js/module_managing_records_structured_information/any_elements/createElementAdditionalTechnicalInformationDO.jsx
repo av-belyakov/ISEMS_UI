@@ -98,7 +98,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         let listTmpLabelsAdditionalTechnicalInformation = ((reportInfo.labels !== null) && (Array.isArray(reportInfo.labels)))? reportInfo.labels: [];
 
         return (<Grid container direction="row" className="mt-2 pl-4">
-            <Grid item md={6}><span className="text-muted">набор терминов, используемых для описания данного объекта</span>:</Grid>
+            <Grid item md={6}><span className="text-muted">набор терминов, используемых для описания данного объекта:</span></Grid>
             <Grid item md={6} className="text-right">    
                 <TokenInput
                     style={{ height: "80px", width: "auto" }}
@@ -130,7 +130,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         </Grid>
 
         <Grid container direction="row" className="mt-3 pl-4">
-            <Grid item md={6}><span className="text-muted">версия спецификации STIX</span>:</Grid>
+            <Grid item md={6}><span className="text-muted">версия спецификации STIX:</span></Grid>
             <Grid item md={6} className="text-end">
                 {((typeof reportInfo.spec_version === "undefined") || (reportInfo.spec_version.length === 0))? 
                     <span className="text-dark">версия не определена</span>: 
@@ -140,12 +140,12 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             
         {((typeof reportInfo.lang !== "undefined") && (reportInfo.lang !== null) && (reportInfo.lang.length !== 0)) ? 
             <Grid container direction="row" className="pl-4">
-                <Grid item md={6}><span className="text-muted">текстовый код языка</span>:</Grid>
+                <Grid item md={6}><span className="text-muted">текстовый код языка:</span></Grid>
                 <Grid item md={6} className="text-end"><i>{reportInfo.lang.toUpperCase()}</i></Grid>
             </Grid> : ""}
 
         <Grid container direction="row" className="pl-4">
-            <Grid item md={10}><span className="text-muted">уверенность создателя в правильности своих данных от 0 до 100</span>&sup1;:</Grid>
+            <Grid item md={10}><span className="text-muted">уверенность создателя в правильности своих данных от 0 до 100:</span>&sup1;</Grid>
             <Grid item md={2} className="text-end">
                 <Form.Group>
                     <Form.Control 
@@ -163,7 +163,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
 
         {((typeof reportInfo.created_by_ref !== "undefined") && (reportInfo.created_by_ref !== null) && (reportInfo.created_by_ref.length !== 0)) ? 
             <Grid container direction="row" className="mt-1 pl-4">
-                <Grid item md={6}><span className="text-muted">идентификатор источника создавшего Отчёт</span>:</Grid>
+                <Grid item md={6}><span className="text-muted">идентификатор источника создавшего Отчёт:</span></Grid>
                 <Grid item md={6}>
                     <TextField size="small" defaultValue={reportInfo.created_by_ref} disabled fullWidth/>
                 </Grid>
@@ -175,7 +175,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         }
 
         <Grid container direction="row" className="pl-4 mt-1 mb-3">
-            <Grid item md={10}><span className="text-muted">определены ли данные содержащиеся в объекте</span>:</Grid>
+            <Grid item md={10}><span className="text-muted">определены ли данные содержащиеся в объекте:</span></Grid>
             <Grid item md={2} className="text-end">
                 <Form.Group>
                     <Form.Control 
@@ -826,7 +826,7 @@ function GetGranularMarkings(props){
                             "": 
                             <Grid container direction="row" key={`key_granular_mark_${key}_2`}>
                                 <Grid item md={12}>
-                                    <Typography variant="body2" component="p"><span className="text-muted">текстовый код языка</span>: {item.lang}</Typography>
+                                    <Typography variant="body2" component="p"><span className="text-muted">текстовый код языка:</span> {item.lang}</Typography>
                                 </Grid>
                             </Grid>)}
 
@@ -835,7 +835,7 @@ function GetGranularMarkings(props){
                             <Grid container direction="row" key={`key_granular_mark_${key}_3`}>
                                 <Grid item md={12}>
                                     <span>
-                                        <span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство</span>:
+                                        <span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство:</span>
                                         <ol>{item.selectors.map((i, num) => {
                                             return <li key={`hash_${i.selectors}_${num}`}>{i}</li>;
                                         })}</ol>

@@ -13,7 +13,6 @@ import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-//import CreateListPreviousStateSTIXObject from "../createListPreviousStateSTIXObject.jsx";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
@@ -38,8 +37,6 @@ const reducer = (state, action) => {
     case "updateTokenValuesChange":
         return {...state, aliases: action.data};
     case "updateKillChainPhases":
-        console.log("func 'reducer', action.type: ", action.type, " action.data: ", action.data);
-
         state.kill_chain_phases.push(action.data);
 
         return {...state};    
@@ -54,6 +51,10 @@ const reducer = (state, action) => {
     case "updateLabels":
         return {...state, labels: action.data.listTokenValue};
     case "updateExternalReferences":
+        if(!state.external_references){
+            state.external_references = [];
+        }
+
         for(let key of state.external_references){
             if(key.source_name === action.data.source_name){
                 return {...state};
@@ -76,6 +77,10 @@ const reducer = (state, action) => {
 
         return {...state};
     case "updateGranularMarkings":
+        if(!state.granular_markings){
+            state.granular_markings = [];
+        }
+
         for(let keyGM of state.granular_markings){
             if(!keyGM.selectors){
                 return {...state};
@@ -220,9 +225,6 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
-
-            console.log("++++++++++++ func 'listener', reseived data: ", obj);
-
             dispatch({ type: "newAll", data: obj });
         }
     };
@@ -360,7 +362,7 @@ function CreateAttackPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
             <Grid item container md={8} >{campaignPatterElement.name}</Grid>
         </Grid>
 
@@ -370,21 +372,21 @@ function CreateAttackPatternElements(props){
         </Grid>      
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания:</span></Grid>
             <Grid item container md={8}>
                 {helpers.convertDateFromString(campaignPatterElement.created, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления:</span></Grid>
             <Grid item container md={8}>
                 {helpers.convertDateFromString(campaignPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание:</span></Grid>
             <Grid item container md={8}>
                 <TextField
                     id="outlined-description-static"
@@ -399,7 +401,7 @@ function CreateAttackPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Альтернативные имена</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Альтернативные имена:</span></Grid>
             <Grid item md={8}>
                 <TokenInput
                     style={{ height: "80px", width: "auto" }}
@@ -528,7 +530,7 @@ function CreateKillChainPhasesList(props){
             <ol>
                 {listKillChainPhases.map((item, num) => {
                     return (<li key={`key_item_kill_phases_${num}`}>
-                        <span className="text-muted">наименование</span>: {item.kill_chain_name}, <span className="text-muted">фаза</span>: {item.phase_name}&nbsp;
+                        <span className="text-muted">наименование:</span> {item.kill_chain_name}, <span className="text-muted">фаза:</span> {item.phase_name}&nbsp;
                         <IconButton aria-label="delete-hash" onClick={handlerDeleteItem.bind(null, num)}>
                             <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                         </IconButton>

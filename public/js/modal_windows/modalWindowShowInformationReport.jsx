@@ -64,10 +64,6 @@ const useStyles = makeStyles((theme) => ({
 const reducer = (state, action) => {
     let elemTmp = "";
 
-    console.log("____ reducer _____");
-    console.log("action.type: ", action.type);
-    console.log("action: ", action);
-
     switch(action.type){
     case "newAll":
         return action.data;
@@ -440,30 +436,17 @@ function CreateReportInformation(props){
     };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        //console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
-        //console.log(state);
-        //console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
-        //console.log(obj);
-
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
             case "hashes_update":
-                //console.log("external_references - hashes_update");
-
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
 
                 break;
             case "hashes_delete":
-                //console.log("external_references - hashes_delete");
-                //console.log(obj);
-
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
 
                 break;
             default:
-                //console.log("external_references - default");
-                //console.log("obj.modalType - ", obj.modalType);
-
                 dispatch({ type: "updateExternalReferences", data: obj.data });
             }
 
@@ -471,16 +454,11 @@ function CreateReportInformation(props){
         }
         
         if(obj.modalType === "granular_markings") {
-            //console.log("updateGranularMarkings......");
-            //console.log(obj);
-
             dispatch({ type: "updateGranularMarkings", data: obj.data });
             handlerButtonSaveIsNotDisabled();
         }
         
         if(obj.modalType === "extensions") {
-            //console.log("obj.modalType === extensions, obj: ", obj);
-
             dispatch({ type: "updateExtensions", data: obj.data });
             handlerButtonSaveIsNotDisabled();
         }
@@ -488,13 +466,9 @@ function CreateReportInformation(props){
 
     let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
 
-    console.log("--------=============----------");
-    console.log(state);
-    console.log("--------=============----------");
-
     return (<React.Fragment>
         <Row className="mt-4">
-            <Col md={6}><span className="text-muted">Наименование</span>:</Col>
+            <Col md={6}><span className="text-muted">Наименование:</span></Col>
             <Col md={6} className="text-right">{state.name && state.name}</Col>
         </Row>
         <Row>
@@ -502,7 +476,7 @@ function CreateReportInformation(props){
         </Row>      
         <Row>
             <Col md={6}>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">создания</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">создания:</span>
             </Col>
             <Col md={6} className="text-end">
                 {state.created && 
@@ -511,7 +485,7 @@ function CreateReportInformation(props){
         </Row>
         <Row>
             <Col md={6} className="pl-4">
-                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">последнего обновления</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">последнего обновления:</span>
             </Col>
             <Col md={6} className="text-end">
                 {state.modified && 
@@ -520,7 +494,7 @@ function CreateReportInformation(props){
         </Row>
         <Row>
             <Col md={6} className="pl-4">
-                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">публикации</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted">публикации:</span>
             </Col>
             {<MadePublished
                 reportInformation={state} 

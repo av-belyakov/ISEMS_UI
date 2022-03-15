@@ -3,6 +3,10 @@ import { Col, Row } from "react-bootstrap";
 import {
     Button,
     Grid,
+    List,
+    ListItem,
+    ListItemText,
+    Menu,
     Tooltip,
     TextField, 
     Typography,
@@ -15,6 +19,7 @@ import { green, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
+import dictionaryLists from "../../common_helpers/dictionaryLists.js";
 
 /**
  * 
@@ -228,4 +233,51 @@ CreateListObjectRefs.propTypes = {
     handlerDeleteObjectRef: PropTypes.func.isRequired, 
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerChangeCurrentSTIXObject: PropTypes.func.isRequired, 
+};
+
+export function CreateListIdentityClass(props){
+    let { campaignPatterElement, handlerIdentityClass } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["identity-class-ov"].content.length; i++){
+            if(elem === dictionaryLists["identity-class-ov"].content[i].name){
+                return dictionaryLists["identity-class-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.identity_class);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["identity-class-ov"] && <React.Fragment>
+        <TextField
+            id={"select-search-computer_threat_type"}
+            select
+            fullWidth
+            label={"тип физического лица или организации"}
+            value={campaignPatterElement.identity_class? campaignPatterElement.identity_class: "" }
+            onChange={(e) => {
+                handlerIdentityClass.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="identity-class-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["identity-class-ov"].content.map((item, key) => {
+                return (<MenuItem key={`identity-class-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListIdentityClass.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerIdentityClass: PropTypes.func.isRequired,
 };

@@ -67,6 +67,10 @@ const reducer = (state, action) => {
     case "updateLabels":
         return {...state, labels: action.data.listTokenValue};
     case "updateExternalReferences":
+        if(!state.external_references){
+            state.external_references = [];
+        }
+
         for(let key of state.external_references){
             if(key.source_name === action.data.source_name){
                 return {...state};
@@ -89,6 +93,10 @@ const reducer = (state, action) => {
 
         return {...state};
     case "updateGranularMarkings":
+        if(!state.granular_markings){
+            state.granular_markings = [];
+        }
+
         for(let keyGM of state.granular_markings){
             if(!keyGM.selectors){
                 return {...state};
@@ -360,7 +368,7 @@ function CreateCampaingPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
             <Grid item container md={8} >{campaignPatterElement.name}</Grid>
         </Grid>
 
@@ -370,21 +378,21 @@ function CreateCampaingPatternElements(props){
         </Grid>      
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания:</span></Grid>
             <Grid item container md={8}>
                 {helpers.convertDateFromString(campaignPatterElement.created, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления:</span></Grid>
             <Grid item container md={8}>
                 {helpers.convertDateFromString(campaignPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание:</span></Grid>
             <Grid item container md={8}>
                 <TextField
                     id="outlined-description-static"
@@ -399,7 +407,7 @@ function CreateCampaingPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Альтернативные имена</span>:</Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Альтернативные имена:</span></Grid>
             <Grid item md={8}>
                 <TokenInput
                     style={{ height: "80px", width: "auto" }}
@@ -410,7 +418,7 @@ function CreateCampaingPatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted">Первое обнаружение</span>:
+                <span className="text-muted">Первое обнаружение:</span>
             </Grid>
             <Grid item container md={8}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -429,7 +437,7 @@ function CreateCampaingPatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted">Последнее обнаружение</span>:
+                <span className="text-muted">Последнее обнаружение:</span>
             </Grid>
             <Grid item container md={8}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -448,7 +456,7 @@ function CreateCampaingPatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted">Основная цель или желаемый результат</span>:
+                <span className="text-muted">Основная цель или желаемый результат:</span>
             </Grid>
             <Grid item container md={8}>
                 <TextField

@@ -1,310 +1,382 @@
 "use strict";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useReducer } from "react";
 import { 
     Button,
     DialogActions,
     DialogContent,
     Grid,
-    LinearProgress,
     TextField,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import CreateListPreviousStateSTIXObject from "../createListPreviousStateSTIXObject.jsx";
+import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
+
+const reducer = (state, action) => {
+    switch(action.type){
+    case "newAll":
+        return action.data;
+    case "cleanAll":
+        return {};
+    case "updateDescription":
+        if(state.description === action.data){
+            return {...state};
+        }
+
+        return {...state, description: action.data};
+    case "updateConfidence":
+        if(state.confidence === action.data.data){
+            return {...state};
+        }
+
+        return {...state, confidence: action.data.data};
+    case "updateDefanged":
+        return {...state, defanged: (action.data === "true")};
+    case "updateLabels":
+        return {...state, labels: action.data.listTokenValue};
+    case "updateExternalReferences":
+        if(!state.external_references){
+            state.external_references = [];
+        }
+
+        for(let key of state.external_references){
+            if(key.source_name === action.data.source_name){
+                return {...state};
+            }
+        }
+
+        state.external_references.push(action.data);
+
+        return {...state};
+    case "updateExternalReferencesHashesUpdate":
+        if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
+            state.external_references[action.data.orderNumber].hashes = {};
+        }
+
+        state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
+
+        return {...state};
+    case "updateExternalReferencesHashesDelete":
+        delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
+
+        return {...state};
+    case "updateGranularMarkings":
+        if(!state.granular_markings){
+            state.granular_markings = [];
+        }
+
+        for(let keyGM of state.granular_markings){
+            if(!keyGM.selectors){
+                return {...state};
+            }
+
+            for(let keyS of keyGM.selectors){
+                for(let key of action.data.selectors){
+                    if(key === keyS){
+                        return {...state};
+                    }
+                }
+            }
+        }
+
+        state.granular_markings.push(action.data);
+
+        return {...state};
+    case "updateExtensions":
+        if(!state.extensions){
+            state.extensions = {};
+        }
+
+        state.extensions[action.data.name] = action.data.description;
+
+        return {...state};
+    case "deleteElementAdditionalTechnicalInformation":
+        switch(action.data.itemType){
+        case "extensions":
+            delete state.extensions[action.data.item];
+
+            return {...state};
+        case "granular_markings":
+            state.granular_markings.splice(action.data.orderNumber, 1);
+
+            return {...state};
+        case "external_references":
+            state.external_references.splice(action.data.orderNumber, 1);
+
+            return {...state};
+        }
+    }
+};
 
 export default function CreateDialogContentCourseOfActionSTIXObject(props){
     let { 
-        listObjectInfo, 
-        listPreviousState,
-        optionsPreviousState,
-        currentIdSTIXObject,
-        showListPreviousState,
         socketIo,
-        handlerDialog,
-        handelrDialogClose,
         isNotDisabled,
+        parentIdSTIXObject,
+        currentAdditionalIdSTIXObject,
+        handelrDialogClose,
     } = props;
 
-    /**
- * 
- * Nеперь осталось переделать только CreateDialogContentCourseOfActionSTIXObject по аналогии с CreateDialogContentAttackPatternSTIXObject
- * и CreateDialogContentCampaignSTIXObject и можно продолжать делать остальные объекты по тому же принципу
- * 
- */
+    let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
+    let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
 
-    //let [ currentSTIXObject, setCurrentSTIXObject ] = React.useState(listObjectInfo[currentIdSTIXObject]);
-    let [ currentSTIXObject, setCurrentSTIXObject ] = React.useState({});
-    
-    useEffect(() => {
-        if(listObjectInfo[currentIdSTIXObject]){
-            setCurrentSTIXObject(listObjectInfo[currentIdSTIXObject]);
-        }
+    const handlerButtonIsDisabled = () => {
+            if(!buttonIsDisabled){
+                return;
+            }
 
-        return () => {
-            setCurrentSTIXObject({});
+            setButtonIsDisabled();
+        },
+        handlerButtonSaveChangeTrigger = () => {
+            setButtonSaveChangeTrigger((prevState) => !prevState);
         };
-    }, [ listObjectInfo, currentIdSTIXObject ]);
-
-    let handlerDescription = (obj) => {
-            let currentSTIXObjectTmp = _.cloneDeep(currentSTIXObject);
-            currentSTIXObjectTmp.description = obj.target.value;
-            setCurrentSTIXObject(currentSTIXObjectTmp);
-        },
-        //пункт "уверенность создателя в правильности своих данных от 0 до 100"
-        handlerElementConfidence = (obj) => { 
-            let currentSTIXObjectTmp = _.cloneDeep(currentSTIXObject);
-            currentSTIXObjectTmp.confidence = obj.data;
-            setCurrentSTIXObject(currentSTIXObjectTmp);
-        },
-        //пункт "определены ли данные содержащиеся в объекте"
-        handlerElementDefanged = (obj) => {
-            let currentSTIXObjectTmp = _.cloneDeep(currentSTIXObject);
-            currentSTIXObjectTmp.defanged = (obj.data === "true");
-            setCurrentSTIXObject(currentSTIXObjectTmp);
-        },
-        //пункт "набор терминов, используемых для описания данного объекта"        
-        handlerElementLabels = (obj) => {
-            let currentSTIXObjectTmp = _.cloneDeep(currentSTIXObject);
-
-            if(!Array.isArray(currentSTIXObjectTmp.labels)){
-                currentSTIXObjectTmp.labels = [];
-            }
-
-            currentSTIXObjectTmp.labels = obj.listTokenValue;
-            setCurrentSTIXObject(currentSTIXObjectTmp);
-        },
-        handlerDeleteElementAdditionalTechnicalInformation = (obj) => {
-            let currentSTIXObjectTmp = _.cloneDeep(currentSTIXObject);
-
-            if(obj.itemType === "external_references"){
-                if(obj.orderNumber < 0){
-                    return;
-                }
-
-                currentSTIXObjectTmp.external_references.splice(obj.orderNumber, 1);
-                setCurrentSTIXObject(currentSTIXObjectTmp);
-            }
-
-            if(obj.itemType === "granular_markings"){
-                if(obj.orderNumber < 0){
-                    return;
-                }
-
-                currentSTIXObjectTmp.granular_markings.splice(obj.orderNumber, 1);
-                setCurrentSTIXObject(currentSTIXObjectTmp);
-            }
-
-            if(obj.itemType === "extensions"){
-                delete currentSTIXObjectTmp.extensions[obj.item];
-                setCurrentSTIXObject(currentSTIXObjectTmp);
-            }
-     
-        },
-        handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-            let currentSTIXObjectTmp = _.cloneDeep(currentSTIXObject);
-
-            if(obj.modalType === "external_references"){
-                if(obj.actionType === "new"){
-                    if(!Array.isArray(currentSTIXObjectTmp.external_references)){
-                        currentSTIXObjectTmp.external_references = [];
-                    }
-
-                    currentSTIXObjectTmp.external_references.push(obj.data);
-                    setCurrentSTIXObject(currentSTIXObjectTmp);
-                }
-
-                if(obj.actionType === "update"){
-                    currentSTIXObjectTmp.external_references[obj.orderNumber] = obj.data;
-                    setCurrentSTIXObject(currentSTIXObjectTmp);
-                }
-
-                if(obj.actionType === "hashes_update"){
-                    if((!currentSTIXObjectTmp.external_references[obj.orderNumber].hashes) || (typeof currentSTIXObjectTmp.external_references[obj.orderNumber].hashes === "undefined")){
-                        currentSTIXObjectTmp.external_references[obj.orderNumber].hashes = {};
-                    }
-
-                    currentSTIXObjectTmp.external_references[obj.orderNumber].hashes[obj.data.type] = obj.data.hash;
-                    setCurrentSTIXObject(currentSTIXObjectTmp);
-                }
-
-                if(obj.actionType === "hashes_delete"){
-                    delete currentSTIXObjectTmp.external_references[obj.orderNumber].hashes[obj.hashName];
-                    setCurrentSTIXObject(currentSTIXObjectTmp);
-                }
-            }
-    
-            if((obj.modalType === "granular_markings") && (obj.actionType === "new")) {
-                if(!Array.isArray(currentSTIXObjectTmp.granular_markings)){
-                    currentSTIXObjectTmp.granular_markings = [];
-                }
-
-                currentSTIXObjectTmp.granular_markings.push(obj.data);
-                setCurrentSTIXObject(currentSTIXObjectTmp);
-            }
-    
-            if(obj.modalType === "extensions") {
-                if((!currentSTIXObjectTmp.extensions) || (typeof currentSTIXObjectTmp.extensions === "undefined")){
-                    currentSTIXObjectTmp.extensions = {};
-                }
-
-                currentSTIXObjectTmp.extensions[obj.data.name] = obj.data.description;
-                setCurrentSTIXObject(currentSTIXObjectTmp);
-            }
-        },
-        handlerSave = () => {
-            let currentSTIXObjectTmp = _.cloneDeep(currentSTIXObject);
-            currentSTIXObjectTmp.lang = "RU";
-    
-            if(currentSTIXObjectTmp.labels === null){
-                delete currentSTIXObjectTmp.labels;
-            }
-
-            if(currentSTIXObjectTmp.external_references === null){
-                delete currentSTIXObjectTmp.external_references;
-            }
-
-            if(currentSTIXObjectTmp.object_marking_refs === null){
-                delete currentSTIXObjectTmp.object_marking_refs;
-            }
-
-            if(currentSTIXObjectTmp.granular_markings === null){
-                delete currentSTIXObjectTmp.granular_markings;
-            }
-
-            if(currentSTIXObjectTmp.extensions === null){
-                delete currentSTIXObjectTmp.extensions;
-            }
-
-            if(currentSTIXObjectTmp.aliases === null){
-                delete currentSTIXObjectTmp.aliases;
-            }
-
-            if(currentSTIXObjectTmp.kill_chain_phases === null){
-                delete currentSTIXObjectTmp.kill_chain_phases;
-            }
-
-            setCurrentSTIXObject(currentSTIXObjectTmp);
-
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [currentSTIXObjectTmp] });
-
-            handlerDialog(currentSTIXObjectTmp);
-        };
-
-    if((!listObjectInfo[currentIdSTIXObject]) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<DialogContent>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={12} justifyContent="center" className="pb-3">
-                    поиск информации об STIX объекте типа Реагирование (Course of Action DO STIX)
-                </Grid>
-            </Grid>
-            <LinearProgress />
-        </DialogContent>);
-    }
 
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" spacing={3}>
-                <Grid item container md={8}>
-                    <Grid container direction="row" className="pt-3">
-                        <Grid container direction="row" spacing={3}>
-                            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование</span>:</Grid>
-                            <Grid item container md={8} >{currentSTIXObject.name}</Grid>
-                        </Grid>
-
-                        <Grid container direction="row" spacing={3}>
-                            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Дата и время</span>&nbsp;&nbsp;&nbsp;&nbsp;</Grid>
-                            <Grid item container md={8}></Grid>
-                        </Grid>      
-
-                        <Grid container direction="row" spacing={3}>
-                            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания</span>:</Grid>
-                            <Grid item container md={8}>
-                                {helpers.convertDateFromString(currentSTIXObject.created, { monthDescription: "long", dayDescription: "numeric" })}
-                            </Grid>
-                        </Grid>
-
-                        <Grid container direction="row" spacing={3}>
-                            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления</span>:</Grid>
-                            <Grid item container md={8}>
-                                {helpers.convertDateFromString(currentSTIXObject.modified, { monthDescription: "long", dayDescription: "numeric" })}
-                            </Grid>
-                        </Grid>
-
-                        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание</span>:</Grid>
-                            <Grid item container md={8}>
-                                <TextField
-                                    id="outlined-multiline-static"
-                                    multiline
-                                    minRows={3}
-                                    maxRows={8}
-                                    fullWidth
-                                    onChange={handlerDescription}
-                                    defaultValue={currentSTIXObject.description}
-                                    variant="outlined"/>
-                            </Grid>
-                        </Grid>
-                    </Grid> 
-
-                    <Grid container direction="row" className="pt-3">
-                        <Grid item container md={12} justifyContent="center">
-                            <h3>
-                            Здесь нужно разместить область с ссылками на объекты Report с которыми может быть связан данный объект. 
-                            При чем нужно ограничить переходы по этим ссылка для непривелегированных пользователей. Это надо доделать.
-                            </h3>
-                            {/*<Row className="mt-2">
-                                <Col md={12} className="pl-3 pr-3">
-                                Просмотр и редактирование STIX объекта типа Реагирование (Course of Action DO STIX)
-                                </Col>
-                                <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
-                            </Row>*/}
-                        </Grid>
-                    </Grid>
-
-                    <CreateElementAdditionalTechnicalInformationDO 
-                        objectId={currentIdSTIXObject}
-                        reportInfo={currentSTIXObject}
-                        handlerElementConfidence={handlerElementConfidence}
-                        handlerElementDefanged={handlerElementDefanged}
-                        handlerElementLabels={handlerElementLabels}
-                        handlerElementDelete={handlerDeleteElementAdditionalTechnicalInformation}
-                        handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
-                        isNotDisabled={isNotDisabled} />       
-                </Grid>
+                <CreateMajorContent 
+                    socketIo={socketIo}
+                    parentIdSTIXObject={parentIdSTIXObject}
+                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
+                    buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+                    isNotDisabled={isNotDisabled}
+                    handelrDialogClose={handelrDialogClose}
+                    handlerButtonIsDisabled={handlerButtonIsDisabled}
+                    handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
+                />
 
                 <Grid item container md={4} style={{ display: "block" }}>
-                    <CreateListPreviousStateSTIXObject 
+                    <CreateListPreviousStateSTIX 
                         socketIo={socketIo} 
-                        searchObjectId={currentIdSTIXObject}
-                        optionsPreviousState={optionsPreviousState}
-                        showListPreviousState={showListPreviousState}
-                        listPreviousState={listPreviousState} /> 
+                        searchObjectId={currentAdditionalIdSTIXObject} 
+                    />
                 </Grid>
-            </Grid> 
+            </Grid>            
         </DialogContent>
         <DialogActions>
-            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
-            <Button 
-                disabled={_.isEqual(currentSTIXObject, listObjectInfo[currentIdSTIXObject])}
-                onClick={handlerSave}
+            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>            
+            {isNotDisabled && <Button
+                disabled={buttonIsDisabled} 
+                onClick={() => setButtonSaveChangeTrigger(true)}
                 color="primary">
-                    сохранить
-            </Button>
+                сохранить
+            </Button>}
         </DialogActions>
     </React.Fragment>);
 }
 
 CreateDialogContentCourseOfActionSTIXObject.propTypes = {
-    listObjectInfo: PropTypes.object.isRequired,
-    listPreviousState: PropTypes.array.isRequired,
-    optionsPreviousState: PropTypes.object.isRequired,
-    currentIdSTIXObject: PropTypes.string.isRequired,
-    showListPreviousState: PropTypes.bool.isRequired,
     socketIo: PropTypes.object.isRequired,
-    handlerDialog: PropTypes.func.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+    handelrDialogClose: PropTypes.func.isRequired,
+};
+
+function CreateMajorContent(props){
+    let {
+        socketIo,
+        parentIdSTIXObject,
+        currentIdSTIXObject,
+        buttonSaveChangeTrigger,
+        isNotDisabled,
+        handelrDialogClose,
+        handlerButtonIsDisabled,
+        handlerButtonSaveChangeTrigger,
+    } = props;
+
+    const [ state, dispatch ] = useReducer(reducer, {});
+
+    const listener = (data) => {
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return;
+        }
+
+        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+            return;
+        }
+
+        if(data.information.additional_parameters.transmitted_data.length === 0){
+            return;
+        }
+
+        for(let obj of data.information.additional_parameters.transmitted_data){
+
+            console.log("++++++++++++ func 'listener', reseived data: ", obj);
+
+            dispatch({ type: "newAll", data: obj });
+        }
+    };
+    useEffect(() => {
+        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+
+        return () => {
+            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
+            dispatch({ type: "newAll", data: {} });
+        };
+    }, []);
+    useEffect(() => {
+        if(currentIdSTIXObject !== ""){
+            console.log("func 'CreateMajorContent', socketIo.emit for STIX object current ID: ", currentIdSTIXObject);
+
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentIdSTIXObject,
+                parentObjectId: parentIdSTIXObject,
+            }});
+        }
+    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    useEffect(() => {
+        if(buttonSaveChangeTrigger){
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            handlerButtonSaveChangeTrigger();
+            handelrDialogClose();
+        }
+    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
+        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
+        console.log(state);
+        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
+        console.log(obj);
+
+        if(obj.modalType === "external_references"){
+            switch(obj.actionType){
+            case "hashes_update":
+                console.log("external_references - hashes_update");
+
+                dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
+
+                break;
+            case "hashes_delete":
+                console.log("external_references - hashes_delete");
+                console.log(obj);
+
+                dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
+
+                break;
+            default:
+                console.log("external_references - default");
+                console.log("obj.modalType - ", obj.modalType);
+
+                dispatch({ type: "updateExternalReferences", data: obj.data });
+                handlerButtonIsDisabled();
+            }
+        }
+    
+        if(obj.modalType === "granular_markings") {
+            console.log("updateGranularMarkings......");
+            console.log(obj);
+
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerButtonIsDisabled();
+        }
+    
+        if(obj.modalType === "extensions") {
+            console.log("obj.modalType === extensions, obj: ", obj);
+
+            dispatch({ type: "updateExtensions", data: obj.data });
+            handlerButtonIsDisabled();
+        }
+    };
+
+    return (<Grid item container md={8}>
+        <Grid container direction="row" className="pt-3">
+            <CreateCourseOfActionPatternElements 
+                campaignPatterElement={state}
+                handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+            />
+        </Grid> 
+
+        <Grid container direction="row" className="pt-3">
+            <Grid item container md={12} justifyContent="center">
+                <h3>
+                    Здесь нужно разместить область с ссылками на объекты Report с которыми может быть связан данный объект. 
+                    При чем нужно ограничить переходы по этим ссылка для непривелегированных пользователей. Это надо доделать.
+                </h3>
+            </Grid>
+        </Grid>
+
+        <CreateElementAdditionalTechnicalInformationDO
+            objectId={currentIdSTIXObject}
+            reportInfo={state}
+            isNotDisabled={isNotDisabled}
+            handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
+            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
+            handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
+            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+        />
+    </Grid>);
+}
+
+CreateMajorContent.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
+    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
+    handelrDialogClose: PropTypes.func.isRequired,
+    handlerButtonIsDisabled: PropTypes.func.isRequired,
+    handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
+};
+
+function CreateCourseOfActionPatternElements(props){
+    let { campaignPatterElement, handlerDescription } = props;
+
+    console.log("func 'CreateCourseOfActionPatternElements', campaignPatterElement: ", campaignPatterElement);
+    console.log("_______________________________________");
+
+    return (<React.Fragment>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
+            <Grid item container md={8} >{campaignPatterElement.name}</Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Дата и время</span>&nbsp;&nbsp;&nbsp;&nbsp;</Grid>
+            <Grid item container md={8}></Grid>
+        </Grid>      
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания:</span></Grid>
+            <Grid item container md={8}>
+                {helpers.convertDateFromString(campaignPatterElement.created, { monthDescription: "long", dayDescription: "numeric" })}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления:</span></Grid>
+            <Grid item container md={8}>
+                {helpers.convertDateFromString(campaignPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание:</span></Grid>
+            <Grid item container md={8}>
+                <TextField
+                    id="outlined-description-static"
+                    multiline
+                    minRows={3}
+                    maxRows={8}
+                    fullWidth
+                    onChange={handlerDescription}
+                    defaultValue={campaignPatterElement.description}
+                    variant="outlined"/>
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+}
+
+CreateCourseOfActionPatternElements.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerDescription: PropTypes.func.isRequired,
 };
