@@ -2,24 +2,65 @@ import React, { useState, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
 import {
     Button,
-    Grid,
-    List,
-    ListItem,
-    ListItemText,
-    Menu,
+    Chip,
+    Select,
     Tooltip,
     TextField, 
     Typography,
+    FormControl,
+    Input,
+    InputLabel,
     MenuItem,
     IconButton,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green, red } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
 import dictionaryLists from "../../common_helpers/dictionaryLists.js";
+
+const useStyles = makeStyles((theme) => ({
+    formControl: {
+        //margin: theme.spacing(1),
+        minWidth: 300,
+        maxWidth: 1500,
+    },
+    chips: {
+        display: "flex",
+        flexWrap: "wrap",
+    },
+    chip: {
+        margin: 2,
+    },
+    noLabel: {
+        marginTop: theme.spacing(3),
+    },
+}));
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+
+  
+
+function getStyles(name, personName, theme) {
+    return {
+        fontWeight: theme.typography.fontWeightMedium
+        //personName.indexOf(name) === -1? 
+        //    theme.typography.fontWeightRegular: 
+        //    theme.typography.fontWeightMedium,
+    };
+}
 
 /**
  * 
@@ -280,4 +321,56 @@ export function CreateListIdentityClass(props){
 CreateListIdentityClass.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,
     handlerIdentityClass: PropTypes.func.isRequired,
+};
+
+export function CreateListSectors(props){
+    let { campaignPatterElement, headerSectors } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const getSummary = (value) => {
+        for(let i = 0; i < dictionaryLists["industry-sector-ov"].content.length; i++){
+            if(value === dictionaryLists["industry-sector-ov"].content[i].name){
+                return dictionaryLists["industry-sector-ov"].content[i].summary;
+            }
+        }
+
+        return value;
+    };
+
+    return (dictionaryLists["industry-sector-ov"] && <FormControl fullWidth className={classes.formControl}>
+        <InputLabel id="demo-mutiple-chip-label">тип промышленного сектора</InputLabel>
+        <Select
+            labelId="demo-mutiple-chip-label"
+            id="mutiple-chip"
+            multiple
+            value={campaignPatterElement.sectors? campaignPatterElement.sectors: []}
+            onChange={(e) => headerSectors.call(null, e)}
+            input={<Input id="select-multiple-chip" />}
+            //renderValue={(selected) => selected.join(', ')}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["industry-sector-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`industry-sector-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.sectors, theme)}
+                >
+                    {item.summary}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+}
+
+CreateListSectors.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired, 
+    headerSectors: PropTypes.func.isRequired,
 };

@@ -12,7 +12,7 @@ import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import { CreateListIdentityClass } from "../anyElements.jsx";
+import { CreateListIdentityClass, CreateListSectors } from "../anyElements.jsx";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
@@ -32,6 +32,10 @@ const reducer = (state, action) => {
         return {...state, roles: action.data};
     case "updateIdentityClass":
         return {...state, identity_class: action.data};
+    case "updateSectors":
+        console.log("func 'reducer', action.type: ", action.type, " action.data: ", action.data);
+
+        return {...state, sectors: action.data};
     case "updateContactInformation":
         return {...state, contact_information: action.data};
     case "updateConfidence":
@@ -299,6 +303,7 @@ function CreateMajorContent(props){
         <Grid container direction="row" className="pt-3">
             <CreateIdentityPatternElements 
                 campaignPatterElement={state}
+                handlerSectors={(e) => { dispatch({ type: "updateSectors", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerIdentityClass={(e) => { dispatch({ type: "updateIdentityClass", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
@@ -341,7 +346,8 @@ CreateMajorContent.propTypes = {
 
 function CreateIdentityPatternElements(props){
     let { 
-        campaignPatterElement, 
+        campaignPatterElement,
+        handlerSectors, 
         handlerDescription, 
         handlerIdentityClass,
         handlerTokenValuesChange,
@@ -401,17 +407,23 @@ function CreateIdentityPatternElements(props){
             </Grid>
         </Grid>
 
-        <CreateListIdentityClass
-            campaignPatterElement={campaignPatterElement}
-            handlerIdentityClass={handlerIdentityClass}
-        />
-        {/* 
-        
-        Надо сделать еще этот список (но у него должна быть возможность выбирать несколько пунктов)
-        <CreateListSectors /> 
-        
-        
-        */}
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <CreateListIdentityClass
+                    campaignPatterElement={campaignPatterElement}
+                    handlerIdentityClass={handlerIdentityClass}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <CreateListSectors 
+                    campaignPatterElement={campaignPatterElement}
+                    headerSectors={handlerSectors}
+                />
+            </Grid>
+        </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
@@ -434,6 +446,7 @@ function CreateIdentityPatternElements(props){
 
 CreateIdentityPatternElements.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,
+    handlerSectors: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired,
     handlerIdentityClass: PropTypes.func.isRequired,
     handlerTokenValuesChange: PropTypes.func.isRequired,

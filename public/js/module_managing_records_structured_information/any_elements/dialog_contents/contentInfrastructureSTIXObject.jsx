@@ -81,9 +81,9 @@ export default function CreateDialogContentInfrastructureSTIXObject(props){
 }
 
 CreateDialogContentInfrastructureSTIXObject.propTypes = {
-    listObjectInfo: PropTypes.object.isRequired,
-    currentIdSTIXObject: PropTypes.string.isRequired,
-    handlerDialog: PropTypes.func.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
-    isNotDisabled: PropTypes.bool.isRequired,
+    //socketIo: PropTypes.object.isRequired,
+    //isNotDisabled: PropTypes.bool.isRequired,
+    //parentIdSTIXObject: PropTypes.string.isRequired,
+    //currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+    //handelrDialogClose: PropTypes.func.isRequired,
 };
