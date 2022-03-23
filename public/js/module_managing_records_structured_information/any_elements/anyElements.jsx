@@ -8,6 +8,7 @@ import {
     TextField, 
     Typography,
     FormControl,
+    Grid,
     Input,
     InputLabel,
     MenuItem,
@@ -342,13 +343,12 @@ export function CreateListSectors(props){
     return (dictionaryLists["industry-sector-ov"] && <FormControl fullWidth className={classes.formControl}>
         <InputLabel id="demo-mutiple-chip-label">тип промышленного сектора</InputLabel>
         <Select
-            labelId="demo-mutiple-chip-label"
-            id="mutiple-chip"
+            labelId="sector-mutiple-chip-label"
+            id="sector-mutiple-chip"
             multiple
             value={campaignPatterElement.sectors? campaignPatterElement.sectors: []}
             onChange={(e) => headerSectors.call(null, e)}
             input={<Input id="select-multiple-chip" />}
-            //renderValue={(selected) => selected.join(', ')}
             renderValue={(selected) => (
                 <div className={classes.chips}>
                     {selected.map((value) => (
@@ -373,4 +373,219 @@ export function CreateListSectors(props){
 CreateListSectors.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired, 
     headerSectors: PropTypes.func.isRequired,
+};
+
+export function CreateListInfrastructureTypes(props){
+    let { campaignPatterElement, handlerInfrastructureTypes } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const getSummary = (value) => {
+        for(let i = 0; i < dictionaryLists["infrastructure-type-ov"].content.length; i++){
+            if(value === dictionaryLists["infrastructure-type-ov"].content[i].name){
+                return dictionaryLists["infrastructure-type-ov"].content[i].summary;
+            }
+        }
+
+        return value;
+    };
+
+    return (dictionaryLists["infrastructure-type-ov"] && <FormControl fullWidth className={classes.formControl}>
+        <InputLabel id="infrastructure-mutiple-chip-label">тип инфраструктуры</InputLabel>
+        <Select
+            labelId="infrastructure-mutiple-chip-label"
+            id="infrastructure-mutiple-chip"
+            multiple
+            value={campaignPatterElement.infrastructure_types? campaignPatterElement.infrastructure_types: []}
+            onChange={(e) => handlerInfrastructureTypes.call(null, e)}
+            input={<Input id="infrastructure-multiple-chip" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["infrastructure-type-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`infrastructure_types-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.infrastructure_types, theme)}
+                >
+                    {item.summary}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+
+    /*const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["infrastructure-type-ov"].content.length; i++){
+            if(elem === dictionaryLists["infrastructure-type-ov"].content[i].name){
+                return dictionaryLists["infrastructure-type-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    console.log("func 'CreateListInfrastructureTypes', getContentText = ", getContentText(campaignPatterElement.infrastructure_types), " infrastructure_types: ", campaignPatterElement.infrastructure_types);
+
+    let text = getContentText(campaignPatterElement.infrastructure_types);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["infrastructure-type-ov"] && <React.Fragment>
+        <TextField
+            id={"select-search-infrastructure_type"}
+            select
+            fullWidth
+            label={"тип инфраструктуры"}
+            value={campaignPatterElement.infrastructure_types? campaignPatterElement.infrastructure_types: "" }
+            onChange={(e) => {
+                handlerInfrastructureTypes.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="infrastructure-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["infrastructure-type-ov"].content.map((item, key) => {
+                return (<MenuItem key={`infrastructure-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);*/
+}
+
+CreateListInfrastructureTypes.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired, 
+    handlerInfrastructureTypes: PropTypes.func.isRequired,
+};
+
+/**
+ * Формирование набора элементов цепочки фактов, приведших к какому либо урону
+ * @param {*} props 
+ * @returns 
+ */
+export function CreateKillChainPhases(props){
+    let { handlerAddKillChainPhases } = props;
+
+    let [ invalidNameChain, setInvalidNameChain ] = useState(true);
+    let [ invalidNamePhases, setInvalidNamePhases ] = useState(true);
+    let [ valueNameChain, setValueNameChain ] = useState("");
+    let [ valueNamePhases, setValueNamePhases ] = useState("");
+    let [ isDisabledButtonNewKillChain, setIsDisabledButtonNewKillChain ] = useState(true);
+
+    const handlerNameChain = (obj) => {
+            setValueNameChain(obj.target.value);
+
+            if(!new RegExp("^[a-zA-Z0-9_-]{3,}$").test(obj.target.value)){
+                setInvalidNameChain(true);
+                setIsDisabledButtonNewKillChain(true);
+
+                return;
+            }
+
+            setInvalidNameChain(false);
+
+            if(!invalidNamePhases){
+                setIsDisabledButtonNewKillChain(false);
+            }
+        },
+        handlerNamePhases = (obj) => {
+            setValueNamePhases(obj.target.value);
+
+            if(!new RegExp("^[a-zA-Z0-9_-]{3,}$").test(obj.target.value)){
+                setInvalidNamePhases(true);
+                setIsDisabledButtonNewKillChain(true); 
+
+                return;
+            }
+
+            setInvalidNamePhases(false);
+
+            if(!invalidNameChain){
+                setIsDisabledButtonNewKillChain(false);
+            }
+        };
+
+    return (<Grid container direction="row" spacing={1}>
+        <Grid item container md={5}>
+            <TextField
+                id="input_new_name_kill_chain"
+                fullWidth
+                error={invalidNameChain}
+                label="имя цепочки"
+                value={valueNameChain}
+                onChange={handlerNameChain} />
+        </Grid>
+        <Grid item container md={5}>
+            <TextField
+                id="input_new_name_phases"
+                fullWidth
+                error={invalidNamePhases}
+                label="наименование фазы"
+                value={valueNamePhases}
+                onChange={handlerNamePhases} />
+        </Grid>
+        <Grid item container md={2} justifyContent="center">
+            <Button onClick={() => {
+                if(invalidNameChain || invalidNamePhases){
+                    return;
+                }
+
+                handlerAddKillChainPhases.call(null, {
+                    kill_chain_name: valueNameChain,
+                    phase_name: valueNamePhases,
+                });
+
+                setInvalidNameChain(true);
+                setInvalidNamePhases(true);
+                setValueNameChain("");
+                setValueNamePhases("");
+                setIsDisabledButtonNewKillChain(true);
+            }} disabled={isDisabledButtonNewKillChain}>добавить цепочку</Button>
+        </Grid>
+    </Grid>);
+}
+
+CreateKillChainPhases.propTypes = {
+    handlerAddKillChainPhases: PropTypes.func.isRequired,
+};
+
+/**
+ * Формирование списка элементов цепочки фактов, приведших к какому либо урону
+ * @param {*} props 
+ * @returns 
+ */
+export function CreateKillChainPhasesList(props){
+    let { listKillChainPhases, handlerDeleteItem } = props;
+
+    if(listKillChainPhases.length === 0){
+        return "";
+    }
+
+    return (<Grid container direction="row" className="mt-3">
+        <Grid item container md={12} justifyContent="flex-start">
+            <ol>
+                {listKillChainPhases.map((item, num) => {
+                    return (<li key={`key_item_kill_phases_${num}`}>
+                        <span className="text-muted">наименование:</span> {item.kill_chain_name}, <span className="text-muted">фаза:</span> {item.phase_name}&nbsp;
+                        <IconButton aria-label="delete-hash" onClick={handlerDeleteItem.bind(null, num)}>
+                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                        </IconButton>
+                    </li>);
+                })}
+            </ol>
+        </Grid>
+    </Grid>);
+}
+
+CreateKillChainPhasesList.propTypes = {
+    listKillChainPhases: PropTypes.array.isRequired,
+    handlerDeleteItem: PropTypes.func.isRequired,
 };

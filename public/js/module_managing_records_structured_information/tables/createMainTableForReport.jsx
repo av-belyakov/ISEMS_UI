@@ -238,8 +238,6 @@ function ShowDocumentCount(props){
         let listenerCountFoundElem = (data) => {
             let num = data.information.additional_parameters.number_documents_found;
     
-            console.log(11111111);
-    
             handlerCountSearchedReports(num);
             setCountSearchReports(num);
         };

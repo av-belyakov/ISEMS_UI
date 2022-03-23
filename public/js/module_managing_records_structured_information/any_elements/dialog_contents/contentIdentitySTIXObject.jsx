@@ -33,8 +33,6 @@ const reducer = (state, action) => {
     case "updateIdentityClass":
         return {...state, identity_class: action.data};
     case "updateSectors":
-        console.log("func 'reducer', action.type: ", action.type, " action.data: ", action.data);
-
         return {...state, sectors: action.data};
     case "updateContactInformation":
         return {...state, contact_information: action.data};
@@ -219,9 +217,6 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
-
-            console.log("++++++++++++ func 'listener', reseived data: ", obj);
-
             dispatch({ type: "newAll", data: obj });
         }
     };
@@ -235,8 +230,6 @@ function CreateMajorContent(props){
     }, []);
     useEffect(() => {
         if(currentIdSTIXObject !== ""){
-            console.log("func 'CreateMajorContent', socketIo.emit for STIX object current ID: ", currentIdSTIXObject);
-
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: parentIdSTIXObject,
@@ -252,48 +245,30 @@ function CreateMajorContent(props){
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
-        console.log(state);
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
-        console.log(obj);
-
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
             case "hashes_update":
-                console.log("external_references - hashes_update");
-
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             case "hashes_delete":
-                console.log("external_references - hashes_delete");
-                console.log(obj);
-
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             default:
-                console.log("external_references - default");
-                console.log("obj.modalType - ", obj.modalType);
-
                 dispatch({ type: "updateExternalReferences", data: obj.data });
                 handlerButtonIsDisabled();
             }
         }
     
         if(obj.modalType === "granular_markings") {
-            console.log("updateGranularMarkings......");
-            console.log(obj);
-
             dispatch({ type: "updateGranularMarkings", data: obj.data });
             handlerButtonIsDisabled();
         }
     
         if(obj.modalType === "extensions") {
-            console.log("obj.modalType === extensions, obj: ", obj);
-
             dispatch({ type: "updateExtensions", data: obj.data });
             handlerButtonIsDisabled();
         }
@@ -353,9 +328,6 @@ function CreateIdentityPatternElements(props){
         handlerTokenValuesChange,
         handlerContactInformation,
     } = props;
-
-    console.log("func 'CreateIdentityPatternElements', campaignPatterElement: ", campaignPatterElement);
-    console.log("_______________________________________");
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -452,23 +424,3 @@ CreateIdentityPatternElements.propTypes = {
     handlerTokenValuesChange: PropTypes.func.isRequired,
     handlerContactInformation: PropTypes.func.isRequired,
 };
-
-/**
-//IdentityDomainObjectsSTIX объект "Identity", по терминалогии STIX, содержит основную идентификационную информацию физичиских лиц, организаций и т.д.
-// Name - имя используемое для идентификации "Identity" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
-// Description - более подробное описание
-// Roles - список ролей для идентификации действий
-// IdentityClass - одно, из заранее определенных (предложенных) значений физического лица или организации
-// Sectors - заранее определенный (предложенный) перечень отраслей промышленности, к которой принадлежит физическое лицо или организация
-// ContactInformation - любая контактная информация (email, phone number and etc.)
-type IdentityDomainObjectsSTIX struct {
-	CommonPropertiesObjectSTIX
-	CommonPropertiesDomainObjectSTIX
-	Name               string              `json:"name" bson:"name" required:"true"`
-	Description        string              `json:"description" bson:"description"`
-	Roles              []string            `json:"roles" bson:"roles"`
-	IdentityClass      OpenVocabTypeSTIX   `json:"identity_class" bson:"identity_class"`
-	Sectors            []OpenVocabTypeSTIX `json:"sectors" bson:"sectors"`
-	ContactInformation string              `json:"contact_information" bson:"contact_information"`
-}
- */

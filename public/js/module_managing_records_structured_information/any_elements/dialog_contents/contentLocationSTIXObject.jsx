@@ -87,3 +87,33 @@ CreateDialogContentLocationSTIXObject.propTypes = {
     handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
+
+/**
+//LocationDomainObjectsSTIX объект "Location", по терминалогии STIX, содержит описание географического местоположения
+// Name - имя используемое для идентификации "Location"
+// Description - более подробное описание
+// Latitude - широта
+// Longitude - долгота
+// Precision - определяет точность координат, заданных свойствами широта и долгота (измеряется в метрах)
+// Region - один, из заранее определенного (предложенного) перечня регионов
+// Country - наименование страны
+// AdministrativeArea - административный округ
+// City - наименование города
+// StreetAddress - физический адрес
+// PostalCode - почтовый адрес
+type LocationDomainObjectsSTIX struct {
+	CommonPropertiesObjectSTIX
+	CommonPropertiesDomainObjectSTIX
+	Name               string            `json:"name" bson:"name"`
+	Description        string            `json:"description" bson:"description"`
+	Latitude           float32           `json:"latitude" bson:"latitude"`
+	Longitude          float32           `json:"longitude" bson:"longitude"`
+	Precision          float32           `json:"precision" bson:"precision"`
+	Region             OpenVocabTypeSTIX `json:"region" bson:"region"`
+	Country            string            `json:"country" bson:"country"`
+	AdministrativeArea string            `json:"administrative_area" bson:"administrative_area"`
+	City               string            `json:"city" bson:"city"`
+	StreetAddress      string            `json:"street_address" bson:"street_address"`
+	PostalCode         string            `json:"postal_code" bson:"postal_code"`
+}
+ */

@@ -207,9 +207,6 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
-
-            console.log("++++++++++++ func 'listener', reseived data: ", obj);
-
             dispatch({ type: "newAll", data: obj });
         }
     };
@@ -223,8 +220,6 @@ function CreateMajorContent(props){
     }, []);
     useEffect(() => {
         if(currentIdSTIXObject !== ""){
-            console.log("func 'CreateMajorContent', socketIo.emit for STIX object current ID: ", currentIdSTIXObject);
-
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: parentIdSTIXObject,
@@ -240,48 +235,30 @@ function CreateMajorContent(props){
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
-        console.log(state);
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
-        console.log(obj);
-
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
             case "hashes_update":
-                console.log("external_references - hashes_update");
-
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             case "hashes_delete":
-                console.log("external_references - hashes_delete");
-                console.log(obj);
-
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             default:
-                console.log("external_references - default");
-                console.log("obj.modalType - ", obj.modalType);
-
                 dispatch({ type: "updateExternalReferences", data: obj.data });
                 handlerButtonIsDisabled();
             }
         }
     
         if(obj.modalType === "granular_markings") {
-            console.log("updateGranularMarkings......");
-            console.log(obj);
-
             dispatch({ type: "updateGranularMarkings", data: obj.data });
             handlerButtonIsDisabled();
         }
     
         if(obj.modalType === "extensions") {
-            console.log("obj.modalType === extensions, obj: ", obj);
-
             dispatch({ type: "updateExtensions", data: obj.data });
             handlerButtonIsDisabled();
         }
@@ -330,9 +307,6 @@ CreateMajorContent.propTypes = {
 
 function CreateCourseOfActionPatternElements(props){
     let { campaignPatterElement, handlerDescription } = props;
-
-    console.log("func 'CreateCourseOfActionPatternElements', campaignPatterElement: ", campaignPatterElement);
-    console.log("_______________________________________");
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>

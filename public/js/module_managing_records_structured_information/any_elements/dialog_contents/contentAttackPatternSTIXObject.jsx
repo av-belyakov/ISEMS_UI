@@ -1,28 +1,20 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { 
     Button,
     DialogActions,
     DialogContent,
     Grid,
     TextField,
-    IconButton,
 } from "@material-ui/core";
-import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
-import { red } from "@material-ui/core/colors";
 import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
+import { CreateKillChainPhases, CreateKillChainPhasesList } from "../anyElements.jsx";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 const reducer = (state, action) => {
-   
-    //console.log("____ reducer _____");
-    //console.log("action.type: ", action.type);
-    //console.log("action: ", action);
-    //console.log("state: ", state);
-
     switch(action.type){
     case "newAll":
         return action.data;
@@ -37,6 +29,10 @@ const reducer = (state, action) => {
     case "updateTokenValuesChange":
         return {...state, aliases: action.data};
     case "updateKillChainPhases":
+        if(!state.kill_chain_phases){
+            state.kill_chain_phases = [];
+        }
+        
         state.kill_chain_phases.push(action.data);
 
         return {...state};    
@@ -238,8 +234,6 @@ function CreateMajorContent(props){
     }, []);
     useEffect(() => {
         if(currentIdSTIXObject !== ""){
-            console.log("func 'CreateMajorContent', socketIo.emit for STIX object current ID: ", currentIdSTIXObject);
-
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: parentIdSTIXObject,
@@ -255,48 +249,30 @@ function CreateMajorContent(props){
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
-        console.log(state);
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
-        console.log(obj);
-
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
             case "hashes_update":
-                console.log("external_references - hashes_update");
-
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             case "hashes_delete":
-                console.log("external_references - hashes_delete");
-                console.log(obj);
-
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             default:
-                console.log("external_references - default");
-                console.log("obj.modalType - ", obj.modalType);
-
                 dispatch({ type: "updateExternalReferences", data: obj.data });
                 handlerButtonIsDisabled();
             }
         }
     
         if(obj.modalType === "granular_markings") {
-            console.log("updateGranularMarkings......");
-            console.log(obj);
-
             dispatch({ type: "updateGranularMarkings", data: obj.data });
             handlerButtonIsDisabled();
         }
     
         if(obj.modalType === "extensions") {
-            console.log("obj.modalType === extensions, obj: ", obj);
-
             dispatch({ type: "updateExtensions", data: obj.data });
             handlerButtonIsDisabled();
         }
@@ -356,9 +332,6 @@ function CreateAttackPatternElements(props){
         handlerDeleteKillChain,
         handlerAddKillChainPhases,
     } = props;
-
-    console.log("func 'CreateAttackPatternElements', campaignPatterElement: ", campaignPatterElement);
-    console.log("_______________________________________");
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -430,118 +403,4 @@ CreateAttackPatternElements.propTypes = {
     handlerTokenValuesChange: PropTypes.func.isRequired,
     handlerDeleteKillChain: PropTypes.func.isRequired,
     handlerAddKillChainPhases: PropTypes.func.isRequired,
-};
-
-function CreateKillChainPhases(props){
-    let { handlerAddKillChainPhases } = props;
-
-    let [ invalidNameChain, setInvalidNameChain ] = useState(true);
-    let [ invalidNamePhases, setInvalidNamePhases ] = useState(true);
-    let [ valueNameChain, setValueNameChain ] = useState("");
-    let [ valueNamePhases, setValueNamePhases ] = useState("");
-    let [ isDisabledButtonNewKillChain, setIsDisabledButtonNewKillChain ] = useState(true);
-
-    const handlerNameChain = (obj) => {
-            setValueNameChain(obj.target.value);
-
-            if(!new RegExp("^[a-zA-Z0-9_-]{3,}$").test(obj.target.value)){
-                setInvalidNameChain(true);
-                setIsDisabledButtonNewKillChain(true);
-
-                return;
-            }
-
-            setInvalidNameChain(false);
-
-            if(!invalidNamePhases){
-                setIsDisabledButtonNewKillChain(false);
-            }
-        },
-        handlerNamePhases = (obj) => {
-            setValueNamePhases(obj.target.value);
-
-            if(!new RegExp("^[a-zA-Z0-9_-]{3,}$").test(obj.target.value)){
-                setInvalidNamePhases(true);
-                setIsDisabledButtonNewKillChain(true); 
-
-                return;
-            }
-
-            setInvalidNamePhases(false);
-
-            if(!invalidNameChain){
-                setIsDisabledButtonNewKillChain(false);
-            }
-        };
-
-    return (<Grid container direction="row" spacing={1}>
-        <Grid item container md={5}>
-            <TextField
-                id="input_new_name_kill_chain"
-                fullWidth
-                error={invalidNameChain}
-                label="имя цепочки"
-                value={valueNameChain}
-                onChange={handlerNameChain} />
-        </Grid>
-        <Grid item container md={5}>
-            <TextField
-                id="input_new_name_phases"
-                fullWidth
-                error={invalidNamePhases}
-                label="наименование фазы"
-                value={valueNamePhases}
-                onChange={handlerNamePhases} />
-        </Grid>
-        <Grid item container md={2} justifyContent="center">
-            <Button onClick={() => {
-                if(invalidNameChain || invalidNamePhases){
-                    return;
-                }
-
-                handlerAddKillChainPhases.call(null, {
-                    kill_chain_name: valueNameChain,
-                    phase_name: valueNamePhases,
-                });
-
-                setInvalidNameChain(true);
-                setInvalidNamePhases(true);
-                setValueNameChain("");
-                setValueNamePhases("");
-                setIsDisabledButtonNewKillChain(true);
-            }} disabled={isDisabledButtonNewKillChain}>добавить цепочку</Button>
-        </Grid>
-    </Grid>);
-}
-
-CreateKillChainPhases.propTypes = {
-    handlerAddKillChainPhases: PropTypes.func.isRequired,
-};
-
-function CreateKillChainPhasesList(props){
-    let { listKillChainPhases, handlerDeleteItem } = props;
-
-    if(listKillChainPhases.length === 0){
-        return "";
-    }
-
-    return (<Grid container direction="row" className="mt-3">
-        <Grid item container md={12} justifyContent="flex-start">
-            <ol>
-                {listKillChainPhases.map((item, num) => {
-                    return (<li key={`key_item_kill_phases_${num}`}>
-                        <span className="text-muted">наименование:</span> {item.kill_chain_name}, <span className="text-muted">фаза:</span> {item.phase_name}&nbsp;
-                        <IconButton aria-label="delete-hash" onClick={handlerDeleteItem.bind(null, num)}>
-                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                        </IconButton>
-                    </li>);
-                })}
-            </ol>
-        </Grid>
-    </Grid>);
-}
-
-CreateKillChainPhasesList.propTypes = {
-    listKillChainPhases: PropTypes.array.isRequired,
-    handlerDeleteItem: PropTypes.func.isRequired,
 };
