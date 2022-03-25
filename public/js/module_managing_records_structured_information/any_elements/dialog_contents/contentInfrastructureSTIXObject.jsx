@@ -30,17 +30,17 @@ const reducer = (state, action) => {
     case "newAll":
 
         console.log("func 'reducer' ___________, action.type:", action.type, " action.data:", action.data);
-
+        
         lastSeen = Date.parse(action.data.last_seen);
         firstSeen = Date.parse(action.data.first_seen);
         currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
-    
+
         if(currentTimeZoneOffsetInHours < 0){
-            action.data.last_seen = new Date(lastSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-            action.data.first_seen = new Date(firstSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            action.data.last_seen = new Date(lastSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            action.data.first_seen = new Date(firstSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
         } else {
-            action.data.last_seen = new Date(lastSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-            action.data.first_seen = new Date(firstSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            action.data.last_seen = new Date(lastSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            action.data.first_seen = new Date(firstSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
         }
 
         return action.data;
@@ -279,7 +279,20 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            let data = state;
+            let lastSeen = Date.parse(state.last_seen);
+            let firstSeen = Date.parse(state.first_seen);
+            let currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
+    
+            if(currentTimeZoneOffsetInHours < 0){
+                data.last_seen = new Date(lastSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+                data.first_seen = new Date(firstSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            } else {
+                data.last_seen = new Date(lastSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+                data.first_seen = new Date(firstSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            }
+
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ data ] });
             handlerButtonSaveChangeTrigger();
             handelrDialogClose();
         }
@@ -395,8 +408,8 @@ function CreateInfrastructurePatternElements(props){
     console.log("func 'CreateInfrastructurePatternElements', campaignPatterElement: ", campaignPatterElement);
     console.log("_______________________________________");
 
-    let firstSeen = (campaignPatterElement.first_seen === minDefaultData)? defaultData: campaignPatterElement.first_seen;
-    let lastSeen = (campaignPatterElement.last_seen === minDefaultData)? defaultData: campaignPatterElement.last_seen;
+    let firstSeen = (!campaignPatterElement.first_seen || (campaignPatterElement.first_seen === minDefaultData))? defaultData: campaignPatterElement.first_seen;
+    let lastSeen = (!campaignPatterElement.last_seen || (campaignPatterElement.last_seen === minDefaultData))? defaultData: campaignPatterElement.last_seen;
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>

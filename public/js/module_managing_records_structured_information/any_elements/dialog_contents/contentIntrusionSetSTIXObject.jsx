@@ -14,7 +14,11 @@ import PropTypes from "prop-types";
 import { helpers } from "../../../common_helpers/helpers";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import { CreateKillChainPhases, CreateKillChainPhasesList, CreateListInfrastructureTypes } from "../anyElements.jsx";
+import { 
+    CreateListResourceLevelAttack, 
+    CreateListPrimaryMotivation, 
+    CreateListSecondaryMotivations,
+} from "../anyElements.jsx";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
@@ -34,13 +38,13 @@ const reducer = (state, action) => {
         lastSeen = Date.parse(action.data.last_seen);
         firstSeen = Date.parse(action.data.first_seen);
         currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
-    
+
         if(currentTimeZoneOffsetInHours < 0){
-            action.data.last_seen = new Date(lastSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-            action.data.first_seen = new Date(firstSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            action.data.last_seen = new Date(lastSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            action.data.first_seen = new Date(firstSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
         } else {
-            action.data.last_seen = new Date(lastSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-            action.data.first_seen = new Date(firstSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            action.data.last_seen = new Date(lastSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            action.data.first_seen = new Date(firstSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
         }
 
         return action.data;
@@ -62,6 +66,12 @@ const reducer = (state, action) => {
         return {...state, first_seen: new Date(action.data).toISOString()};
     case "updateDateTimeLastSeen":
         return {...state, last_seen: new Date(action.data).toISOString()};
+    case "updateResourceLevelAttack":
+        return {...state, resource_level: action.data};
+    case "updatePrimaryMotivation":
+        return {...state, primary_motivation: action.data};
+    case "updateSecondaryMotivations":
+        return {...state, secondary_motivations: action.data};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};
@@ -269,7 +279,20 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            let data = state;
+            let lastSeen = Date.parse(state.last_seen);
+            let firstSeen = Date.parse(state.first_seen);
+            let currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
+    
+            if(currentTimeZoneOffsetInHours < 0){
+                data.last_seen = new Date(lastSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+                data.first_seen = new Date(firstSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            } else {
+                data.last_seen = new Date(lastSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+                data.first_seen = new Date(firstSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            }
+
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ data ] });
             handlerButtonSaveChangeTrigger();
             handelrDialogClose();
         }
@@ -322,12 +345,15 @@ function CreateMajorContent(props){
             handlerButtonIsDisabled();
         }
     };
-
+    
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
             <CreateIntrusionSetPatternElements 
                 campaignPatterElement={state}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerPrimaryMotivation={(e) => { dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerResourceLevelAttack={(e) => { dispatch({ type: "updateResourceLevelAttack", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerSecondaryMotivations={(e) => { dispatch({ type: "updateSecondaryMotivations", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerGoalsTokenValuesChange={(e) => { dispatch({ type: "updateGoalsTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
                 handlerChangeDateTimeLastSeen={(e) => { dispatch({ type: "updateDateTimeLastSeen", data: e }); handlerButtonIsDisabled(); }}
                 handlerChangeDateTimeFirstSeen={(e) => { dispatch({ type: "updateDateTimeFirstSeen", data: e }); handlerButtonIsDisabled(); }}
@@ -372,7 +398,9 @@ function CreateIntrusionSetPatternElements(props){
     let { 
         campaignPatterElement,
         handlerDescription, 
-        //handlerInfrastructureTypes,
+        handlerPrimaryMotivation,
+        handlerResourceLevelAttack,
+        handlerSecondaryMotivations,
         handlerGoalsTokenValuesChange,
         handlerChangeDateTimeLastSeen,
         handlerChangeDateTimeFirstSeen,
@@ -382,8 +410,8 @@ function CreateIntrusionSetPatternElements(props){
     console.log("func 'CreateInfrastructurePatternElements', campaignPatterElement: ", campaignPatterElement);
     console.log("_______________________________________");
 
-    let firstSeen = (campaignPatterElement.first_seen === minDefaultData)? defaultData: campaignPatterElement.first_seen;
-    let lastSeen = (campaignPatterElement.last_seen === minDefaultData)? defaultData: campaignPatterElement.last_seen;
+    let firstSeen = (!campaignPatterElement.first_seen || (campaignPatterElement.first_seen === minDefaultData))? defaultData: campaignPatterElement.first_seen;
+    let lastSeen = (!campaignPatterElement.last_seen || (campaignPatterElement.last_seen === minDefaultData))? defaultData: campaignPatterElement.last_seen;
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -483,34 +511,29 @@ function CreateIntrusionSetPatternElements(props){
             </Grid>
         </Grid>
 
-        {/*
-        
-        Надо доделать: 
-            ResourceLevel        OpenVocabTypeSTIX   `json:"resource_level" bson:"resource_level"`
-                "attack-resource-level-ov"
+        <CreateListResourceLevelAttack 
+            campaignPatterElement={campaignPatterElement}
+            handlerResourceLevelAttack={handlerResourceLevelAttack}
+        />
 
-	        PrimaryMotivation    OpenVocabTypeSTIX   `json:"primary_motivation" bson:"primary_motivation"`
-                "attack-motivation-ov"
+        <CreateListPrimaryMotivation 
+            campaignPatterElement={campaignPatterElement}
+            handlerPrimaryMotivation={handlerPrimaryMotivation}
+        />
 
-            SecondaryMotivations []OpenVocabTypeSTIX `json:"secondary_motivations" bson:"secondary_motivations"`
-                "attack-motivation-ov"
-        
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={12} justifyContent="flex-start">
-                <CreateListInfrastructureTypes
-                    campaignPatterElement={campaignPatterElement}
-                    handlerInfrastructureTypes={handlerInfrastructureTypes}
-                />
-            </Grid>
-        </Grid>*/}
-
+        <CreateListSecondaryMotivations 
+            campaignPatterElement={campaignPatterElement}
+            handlerSecondaryMotivations={handlerSecondaryMotivations}
+        />
     </React.Fragment>);
 }
 
 CreateIntrusionSetPatternElements.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,
     handlerDescription: PropTypes.func.isRequired, 
-    //handlerInfrastructureTypes: PropTypes.func.isRequired,
+    handlerPrimaryMotivation: PropTypes.func.isRequired,
+    handlerResourceLevelAttack: PropTypes.func.isRequired,
+    handlerSecondaryMotivations: PropTypes.func.isRequired,
     handlerGoalsTokenValuesChange: PropTypes.func.isRequired,
     handlerChangeDateTimeLastSeen: PropTypes.func.isRequired,
     handlerChangeDateTimeFirstSeen: PropTypes.func.isRequired,

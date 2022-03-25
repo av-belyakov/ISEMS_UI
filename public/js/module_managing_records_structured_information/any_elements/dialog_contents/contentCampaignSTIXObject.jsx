@@ -30,13 +30,13 @@ const reducer = (state, action) => {
         lastSeen = Date.parse(action.data.last_seen);
         firstSeen = Date.parse(action.data.first_seen);
         currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
-    
+
         if(currentTimeZoneOffsetInHours < 0){
-            action.data.last_seen = new Date(lastSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-            action.data.first_seen = new Date(firstSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            action.data.last_seen = new Date(lastSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            action.data.first_seen = new Date(firstSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
         } else {
-            action.data.last_seen = new Date(lastSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-            action.data.first_seen = new Date(firstSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            action.data.last_seen = new Date(lastSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            action.data.first_seen = new Date(firstSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
         }
 
         return action.data;

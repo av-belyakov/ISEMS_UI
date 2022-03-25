@@ -299,7 +299,7 @@ export function CreateListIdentityClass(props){
 
     return (dictionaryLists["identity-class-ov"] && <React.Fragment>
         <TextField
-            id={"select-search-computer_threat_type"}
+            id={"select-search-identity-class"}
             select
             fullWidth
             label={"тип физического лица или организации"}
@@ -341,14 +341,14 @@ export function CreateListSectors(props){
     };
 
     return (dictionaryLists["industry-sector-ov"] && <FormControl fullWidth className={classes.formControl}>
-        <InputLabel id="demo-mutiple-chip-label">тип промышленного сектора</InputLabel>
+        <InputLabel id="industry-sector-mutiple-chip-lable">тип промышленного сектора</InputLabel>
         <Select
-            labelId="sector-mutiple-chip-label"
-            id="sector-mutiple-chip"
+            labelId="industry-sector-mutiple-chip"
+            id="industry-sector-mutiple-chip-id"
             multiple
             value={campaignPatterElement.sectors? campaignPatterElement.sectors: []}
             onChange={(e) => headerSectors.call(null, e)}
-            input={<Input id="select-multiple-chip" />}
+            input={<Input id="industry-sector-multiple-chip-input" />}
             renderValue={(selected) => (
                 <div className={classes.chips}>
                     {selected.map((value) => (
@@ -394,8 +394,8 @@ export function CreateListInfrastructureTypes(props){
     return (dictionaryLists["infrastructure-type-ov"] && <FormControl fullWidth className={classes.formControl}>
         <InputLabel id="infrastructure-mutiple-chip-label">тип инфраструктуры</InputLabel>
         <Select
-            labelId="infrastructure-mutiple-chip-label"
-            id="infrastructure-mutiple-chip"
+            labelId="infrastructure-mutiple-chip"
+            id="infrastructure-mutiple-chip-id"
             multiple
             value={campaignPatterElement.infrastructure_types? campaignPatterElement.infrastructure_types: []}
             onChange={(e) => handlerInfrastructureTypes.call(null, e)}
@@ -410,7 +410,7 @@ export function CreateListInfrastructureTypes(props){
         >
             {dictionaryLists["infrastructure-type-ov"].content.map((item, key) => (
                 <MenuItem 
-                    key={`infrastructure_types-item-${key}`} 
+                    key={`infrastructure-types-item-${key}`} 
                     value={item.name} 
                     style={getStyles(item.name, campaignPatterElement.infrastructure_types, theme)}
                 >
@@ -419,51 +419,156 @@ export function CreateListInfrastructureTypes(props){
             ))}
         </Select>
     </FormControl>);
+}
 
-    /*const getContentText = (elem) => {
+CreateListInfrastructureTypes.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired, 
+    handlerInfrastructureTypes: PropTypes.func.isRequired,
+};
+
+export function CreateListResourceLevelAttack(props){
+    let { campaignPatterElement, handlerResourceLevelAttack } = props;
+
+    const getContentText = (elem) => {
         if(elem === "" || !elem){
             return "";
         }
 
-        for(let i = 0; i < dictionaryLists["infrastructure-type-ov"].content.length; i++){
-            if(elem === dictionaryLists["infrastructure-type-ov"].content[i].name){
-                return dictionaryLists["infrastructure-type-ov"].content[i].text;
+        for(let i = 0; i < dictionaryLists["attack-resource-level-ov"].content.length; i++){
+            if(elem === dictionaryLists["attack-resource-level-ov"].content[i].name){
+                return dictionaryLists["attack-resource-level-ov"].content[i].text;
             }
         }
 
         return "";
     };
 
-    console.log("func 'CreateListInfrastructureTypes', getContentText = ", getContentText(campaignPatterElement.infrastructure_types), " infrastructure_types: ", campaignPatterElement.infrastructure_types);
-
-    let text = getContentText(campaignPatterElement.infrastructure_types);
+    let text = getContentText(campaignPatterElement.resource_level);
     let [ textMenuItem, setTextMenuItem ] = useState(text);
 
-    return (dictionaryLists["infrastructure-type-ov"] && <React.Fragment>
+    return (dictionaryLists["attack-resource-level-ov"] && <React.Fragment>
         <TextField
-            id={"select-search-infrastructure_type"}
+            id={"select-search-attack-resource-level-id"}
             select
             fullWidth
-            label={"тип инфраструктуры"}
-            value={campaignPatterElement.infrastructure_types? campaignPatterElement.infrastructure_types: "" }
+            label={"уровень ресурсов атаки"}
+            value={campaignPatterElement.resource_level? campaignPatterElement.resource_level: "" }
             onChange={(e) => {
-                handlerInfrastructureTypes.call(null, e);
+                handlerResourceLevelAttack.call(null, e);
                 setTextMenuItem(getContentText(e.target.value));
             }} >
-            <MenuItem key="infrastructure-item-value-empty" value="">пустое значение</MenuItem>
-            {dictionaryLists["infrastructure-type-ov"].content.map((item, key) => {
-                return (<MenuItem key={`infrastructure-item-${key}`} value={item.name}>
+            <MenuItem key="attack-resource-level-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["attack-resource-level-ov"].content.map((item, key) => {
+                return (<MenuItem key={`attack-resource-level-item-${key}`} value={item.name}>
                     {item.summary}
                 </MenuItem>);
             })}
         </TextField>
         <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
-    </React.Fragment>);*/
+    </React.Fragment>);
 }
 
-CreateListInfrastructureTypes.propTypes = {
+CreateListResourceLevelAttack.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired, 
-    handlerInfrastructureTypes: PropTypes.func.isRequired,
+    handlerResourceLevelAttack: PropTypes.func.isRequired,
+};
+
+export function CreateListPrimaryMotivation(props){
+    let { campaignPatterElement, handlerPrimaryMotivation } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["attack-motivation-ov"].content.length; i++){
+            if(elem === dictionaryLists["attack-motivation-ov"].content[i].name){
+                return dictionaryLists["attack-motivation-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.primary_motivation);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["attack-motivation-ov"] && <React.Fragment>
+        <TextField
+            id={"select-search-primary-motivation-id"}
+            select
+            fullWidth
+            label={"основной перечень причин, мотиваций или целей определяющий данный набор вторжения"}
+            value={campaignPatterElement.primary_motivation? campaignPatterElement.primary_motivation: "" }
+            onChange={(e) => {
+                handlerPrimaryMotivation.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="primary-motivation-level-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["attack-motivation-ov"].content.map((item, key) => {
+                return (<MenuItem key={`primary-motivation-level-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListPrimaryMotivation.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired, 
+    handlerPrimaryMotivation: PropTypes.func.isRequired,
+};
+
+export function CreateListSecondaryMotivations(props){
+    let { campaignPatterElement, handlerSecondaryMotivations } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const getSummary = (value) => {
+        for(let i = 0; i < dictionaryLists["attack-motivation-ov"].content.length; i++){
+            if(value === dictionaryLists["attack-motivation-ov"].content[i].name){
+                return dictionaryLists["attack-motivation-ov"].content[i].summary;
+            }
+        }
+
+        return value;
+    };
+
+    return (dictionaryLists["attack-motivation-ov"] && <FormControl fullWidth className={classes.formControl}>
+        <InputLabel id="secondary-motivations-mutiple-chip-id">тип инфраструктуры</InputLabel>
+        <Select
+            labelId="secondary-motivations-mutiple-chip-label"
+            id="secondary-motivations-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.secondary_motivations? campaignPatterElement.secondary_motivations: []}
+            onChange={(e) => handlerSecondaryMotivations.call(null, e)}
+            input={<Input id="secondary-motivations-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["attack-motivation-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`secondary-motivations-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.secondary_motivations, theme)}
+                >
+                    {item.summary}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+}
+
+CreateListSecondaryMotivations.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired, 
+    handlerSecondaryMotivations: PropTypes.func.isRequired,
 };
 
 /**
