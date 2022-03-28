@@ -11,6 +11,7 @@ import {
     Grid,
     Input,
     InputLabel,
+    NativeSelect,
     MenuItem,
     IconButton,
 } from "@material-ui/core";
@@ -693,4 +694,32 @@ export function CreateKillChainPhasesList(props){
 CreateKillChainPhasesList.propTypes = {
     listKillChainPhases: PropTypes.array.isRequired,
     handlerDeleteItem: PropTypes.func.isRequired,
+};
+
+export function CreateListRegion(props){
+    let { campaignPatterElement, handlerRegion } = props;
+    const classes = useStyles();
+
+    return (dictionaryLists["region-ov"] && <FormControl fullWidth className={classes.formControl}>
+        <InputLabel htmlFor="region-select">Регион</InputLabel>
+        <NativeSelect
+            value={campaignPatterElement.region}
+            onChange={handlerRegion}
+            name="name">
+            {dictionaryLists["region-ov"].content.map((item, key) => {
+                return (<optgroup label={item.summary} key={`region-menu-subheader-${key}`}>
+                    {item.content && item.content.map((item, key) => {
+                        return (<option value={item.name} key={`region-menu-item-${item.name}-${key}`}>
+                            {item.summary}
+                        </option>);
+                    })}                        
+                </optgroup>);
+            })}
+        </NativeSelect>
+    </FormControl>);
+}
+
+CreateListRegion.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired, 
+    handlerRegion: PropTypes.func.isRequired,
 };

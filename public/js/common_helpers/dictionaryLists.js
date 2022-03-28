@@ -441,5 +441,191 @@ export default {
             }
         ]
     },
-
+    "region-ov": {
+        "id": "region-ov",
+        "name": "region-ov",
+        "summary": "Регион",
+        "text": "Открытый словарь используется в следующих STIX-объектах: Location (Местоположение). Список регионов мира, основанный на геосхеме Организации Объединенных Наций",
+        "content": [
+            {
+                "id": "africa",
+                "name": "africa",
+                "summary": "Африка",
+                "content": [
+                    {
+                        "id": "eastern-africa",
+                        "name": "eastern-africa",
+                        "summary": "восточная Африка",
+                        "text": ""
+                    },
+                    {
+                        "id": "middle-africa",
+                        "name": "middle-africa",
+                        "summary": "ближний восток Африка",
+                        "text": ""
+                    },
+                    {
+                        "id": "northern-africa",
+                        "name": "northern-africa",
+                        "summary": "северная Африка",
+                        "text": ""
+                    },
+                    {
+                        "id": "southern-africa",
+                        "name": "southern-africa",
+                        "summary": "юг Африки",
+                        "text": ""
+                    },
+                    {
+                        "id": "western-africa",
+                        "name": "western-africa",
+                        "summary": "западная Африка",
+                        "text": ""
+                    },
+                ],
+            },
+            { 
+                "id": "americas",
+                "name": "americas",
+                "summary": "Америка",
+                "content": [
+                    {
+                        "id": "caribbean",
+                        "name": "caribbean",
+                        "summary": "Карибы",
+                        "text": ""
+                    },
+                    {
+                        "id": "central-america",
+                        "name": "central-america",
+                        "summary": "центральная Америка",
+                        "text": ""
+                    },
+                    {
+                        "id": "latin-america-caribbean",
+                        "name": "latin-america-caribbean",
+                        "summary": "латинская Америка Карибский бассейн",
+                        "text": ""
+                    },
+                    {
+                        "id": "northern-america",
+                        "name": "northern-america",
+                        "summary": "северная Америка",
+                        "text": ""
+                    },
+                    {
+                        "id": "south-america",
+                        "name": "south-america",
+                        "summary": "южная Америка",
+                        "text": ""
+                    },                
+                ],
+            },
+            { 
+                "id": "asia",
+                "name": "asia",
+                "summary": "Азия",
+                "content": [
+                    {
+                        "id": "central-asia",
+                        "name": "central-asia",
+                        "summary": "центральная Азия",
+                        "text": ""
+                    },
+                    {
+                        "id": "eastern-asia",
+                        "name": "eastern-asia",
+                        "summary": "восточная Азия",
+                        "text": ""
+                    },
+                    {
+                        "id": "southern-asia",
+                        "name": "southern-asia",
+                        "summary": "южная Азия",
+                        "text": ""
+                    },
+                    {
+                        "id": "south-eastern-asia",
+                        "name": "south-eastern-asia",
+                        "summary": "юго-восточная Азия",
+                        "text": ""
+                    },
+                    {
+                        "id": "western-asia",
+                        "name": "western-asia",
+                        "summary": "западная Азия",
+                        "text": ""
+                    },
+                ],
+            },
+            { 
+                "id": "europe",
+                "name": "europe",
+                "summary": "Европа",
+                "content": [
+                    {
+                        "id": "eastern-europe",
+                        "name": "eastern-europe",
+                        "summary": "восточная Европа",
+                        "text": ""
+                    },
+                    {
+                        "id": "northern-europe",
+                        "name": "northern-europe",
+                        "summary": "северная Европа",
+                        "text": ""
+                    },
+                    {
+                        "id": "southern-europe",
+                        "name": "southern-europe",
+                        "summary": "южная Европа",
+                        "text": ""
+                    },
+                    {
+                        "id": "western-europe",
+                        "name": "western-europe",
+                        "summary": "западная Европа",
+                        "text": ""
+                    },
+                ],
+            },
+            { 
+                "id": "oceania",
+                "name": "oceania",
+                "summary": "Океания",
+                "content": [
+                    {
+                        "id": "antarctica",
+                        "name": "antarctica",
+                        "summary": "Антарктида",
+                        "text": ""
+                    },
+                    {
+                        "id": "australia-new-zealand",
+                        "name": "australia-new-zealand",
+                        "summary": "Австралия-новая-Зеландия",
+                        "text": ""
+                    },
+                    {
+                        "id": "melanesia",
+                        "name": "melanesia",
+                        "summary": "Меланезия",
+                        "text": ""
+                    },
+                    {
+                        "id": "micronesia",
+                        "name": "micronesia",
+                        "summary": "Микронезия",
+                        "text": ""
+                    },
+                    {
+                        "id": "polynesia",
+                        "name": "polynesia",
+                        "summary": "Полинезия",
+                        "text": ""
+                    },
+                ],
+            },                
+        ]
+    }
 };
