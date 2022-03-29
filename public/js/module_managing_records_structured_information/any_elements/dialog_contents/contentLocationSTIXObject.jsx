@@ -1,6 +1,6 @@
 "use strict";
 
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { 
     Button,
     DialogActions,
@@ -9,6 +9,7 @@ import {
     TextField,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
+import validatorjs from "validatorjs";
 
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateListRegion } from "../anyElements.jsx";
@@ -24,6 +25,8 @@ const reducer = (state, action) => {
         return action.data;
     case "cleanAll":
         return {};
+    case "updateName":
+        return {...state, name: action.data};            
     case "updateDescription":
         if(state.description === action.data){
             return {...state};
@@ -32,6 +35,22 @@ const reducer = (state, action) => {
         return {...state, description: action.data};
     case "updateRegion":
         return {...state, region: action.data};
+    case "updateLatitude":
+        return {...state, latitude: action.data};
+    case "updateLongitude":
+        return {...state, longitude: action.data};
+    case "updatePrecision":
+        return {...state, precision: action.data};
+    case "updateCity":
+        return {...state, city: action.data};
+    case "updateCountry":
+        return {...state, country: action.data};
+    case "updateAdministrativeArea":
+        return {...state, administrative_area: action.data};
+    case "updateStreetAddress":
+        return {...state, street_address: action.data};
+    case "updatePostalCode":
+        return {...state, postal_code: action.data};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};
@@ -239,20 +258,7 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-            let data = state;
-            let lastSeen = Date.parse(state.last_seen);
-            let firstSeen = Date.parse(state.first_seen);
-            let currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
-    
-            if(currentTimeZoneOffsetInHours < 0){
-                data.last_seen = new Date(lastSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-                data.first_seen = new Date(firstSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-            } else {
-                data.last_seen = new Date(lastSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-                data.first_seen = new Date(firstSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-            }
-
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ data ] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
             handelrDialogClose();
         }
@@ -305,20 +311,22 @@ function CreateMajorContent(props){
             handlerButtonIsDisabled();
         }
     };
-    
+
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
             <CreateLocationPatternElements 
                 campaignPatterElement={state}
-                handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerCity={(e) => { dispatch({ type: "updateCity", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerRegion={(e) => { dispatch({ type: "updateRegion", data: e.target.value }); handlerButtonIsDisabled(); }}
-                //handlerPrimaryMotivation={(e) => { dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}
-                //handlerResourceLevelAttack={(e) => { dispatch({ type: "updateResourceLevelAttack", data: e.target.value }); handlerButtonIsDisabled(); }}
-                //handlerSecondaryMotivations={(e) => { dispatch({ type: "updateSecondaryMotivations", data: e.target.value }); handlerButtonIsDisabled(); }}
-                //handlerGoalsTokenValuesChange={(e) => { dispatch({ type: "updateGoalsTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
-                //handlerChangeDateTimeLastSeen={(e) => { dispatch({ type: "updateDateTimeLastSeen", data: e }); handlerButtonIsDisabled(); }}
-                //handlerChangeDateTimeFirstSeen={(e) => { dispatch({ type: "updateDateTimeFirstSeen", data: e }); handlerButtonIsDisabled(); }}
-                //handlerAliasesTokenValuesChange={(e) => { dispatch({ type: "updateAliasesTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
+                handlerCountry={(e) => { dispatch({ type: "updateCountry", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerLatitude={(e) => { dispatch({ type: "updateLatitude", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerLongitude={(e) => { dispatch({ type: "updateLongitude", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerPrecision={(e) => { dispatch({ type: "updatePrecision", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerPostalCode={(e) => { dispatch({ type: "updatePostalCode", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerStreetAddress={(e) => { dispatch({ type: "updateStreetAddress", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerAdministrativeArea={(e) => { dispatch({ type: "updateAdministrativeArea", data: e.target.value }); handlerButtonIsDisabled(); }}
             />
         </Grid> 
         
@@ -358,17 +366,46 @@ CreateMajorContent.propTypes = {
 function CreateLocationPatternElements(props){
     let { 
         campaignPatterElement,
-        handlerDescription,
+        handlerCity,
+        handlerName,
         handlerRegion,
+        handlerCountry,
+        handlerLatitude,
+        handlerLongitude,
+        handlerPrecision,
+        handlerPostalCode,
+        handlerDescription,
+        handlerStreetAddress,    
+	    handlerAdministrativeArea,
     } = props;
 
     console.log("func 'CreateInfrastructurePatternElements', campaignPatterElement: ", campaignPatterElement);
     console.log("_______________________________________");
 
+    let [ isInvalidCountry, setIsInvalidCountry ] = useState(false);
+    let [ isInvalidLatitude, setIsInvalidLatitude ] = useState(false);
+    let [ isInvalidLongitude, setIsInvalidLongitude ] = useState(false);
+
+    const pattern = new RegExp("^(\\-?([0-8]?[0-9](\\.\\d+)?|90(.[0]+)?))$");
+
+    /**
+    
+    Надо разобратся с регуляркой для Latitude и Longitude
+
+     */
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >{campaignPatterElement.name}</Grid>
+            {/*<Grid item container md={8} >{campaignPatterElement.name}</Grid>*/}
+            <Grid item container md={8} justifyContent="flex-start">
+                <TextField
+                    fullWidth
+                    id="name-element"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handlerName}
+                />
+            </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
@@ -405,37 +442,134 @@ function CreateLocationPatternElements(props){
             </Grid>
         </Grid>
 
-        <CreateListRegion 
-            campaignPatterElement={campaignPatterElement}
-            handlerRegion={handlerRegion}        
-        />
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={3} justifyContent="flex-start">
+                <TextField
+                    id="latitude-number"
+                    label="Широта (Latitude)"
+                    type="number"
+                    error={isInvalidLatitude}
+                    InputLabelProps={{ shrink: true }}
+                    onChange={(e) => {
+                        if(!pattern.test(e.target.value)){
+                            console.log("11111111111");
+                            setIsInvalidLatitude(true);
 
-        {/**
-         * Дописать остальные поля для ввода
-         * 
-    Latitude           float32           `json:"latitude" bson:"latitude"`
-	Longitude          float32           `json:"longitude" bson:"longitude"`
-	Precision          float32           `json:"precision" bson:"precision"`
-	Region             OpenVocabTypeSTIX `json:"region" bson:"region"`
-	Country            string            `json:"country" bson:"country"`
-	AdministrativeArea string            `json:"administrative_area" bson:"administrative_area"`
-	City               string            `json:"city" bson:"city"`
-	StreetAddress      string            `json:"street_address" bson:"street_address"`
-	PostalCode         string            `json:"postal_code" bson:"postal_code"`
-    
+                            return;
+                        }
 
-        <CreateListSecondaryMotivations 
-            campaignPatterElement={campaignPatterElement}
-            handlerSecondaryMotivations={handlerSecondaryMotivations}
-        />
-        */}
+                        console.log("22222222222");
+
+                        setIsInvalidLatitude(false);
+                        handlerLatitude.call(this, e);
+                    }}
+                />
+            </Grid>
+            <Grid item container md={3} justifyContent="center">
+                <TextField
+                    id="longitude-number"
+                    label="Долгота (Longitude)"
+                    type="number"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handlerLongitude}
+                />
+            </Grid>
+            <Grid item container md={3} justifyContent="center">
+                <TextField
+                    id="precision-number"
+                    label="Точность (Precision)"
+                    type="number"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handlerPrecision}
+                />
+            </Grid>
+            <Grid item container md={3} justifyContent="flex-end">
+                <CreateListRegion 
+                    campaignPatterElement={campaignPatterElement}
+                    handlerRegion={handlerRegion}        
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
+            <Grid item container md={3} justifyContent="flex-start">
+                <TextField
+                    id="country-element"
+                    error={isInvalidCountry}
+                    label="Страна (на латинице)"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={(e) => {
+                        if(e.target.value.length === 0){
+                            setIsInvalidCountry(false);
+                            handlerCountry.call(null, e);
+
+                            return;
+                        }
+
+                        if(!validatorjs.isAlpha(e.target.value, "en-US")){
+                            setIsInvalidCountry(true);
+
+                            return;
+                        }                
+
+                        setIsInvalidCountry(false);
+                        handlerCountry.call(null, e);
+                    }}
+                />
+            </Grid>
+            <Grid item container md={3} justifyContent="center">
+                <TextField
+                    id="administrative-area-element"
+                    label="Административный округ"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handlerAdministrativeArea}
+                />
+            </Grid>
+            <Grid item container md={3} justifyContent="center">
+                <TextField
+                    id="city-element"
+                    label="Город"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handlerCity}
+                />
+            </Grid>
+            <Grid item container md={3} justifyContent="flex-end">
+                <TextField
+                    id="postal-code-element"
+                    label="Почтовый код"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handlerPostalCode}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <TextField
+                    fullWidth
+                    id="street-address-element"
+                    label="Адрес"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handlerStreetAddress}
+                />
+            </Grid>
+        </Grid>
     </React.Fragment>);
 }
 
 CreateLocationPatternElements.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,
-    handlerDescription: PropTypes.func.isRequired, 
+    handlerCity: PropTypes.func.isRequired,
+    handlerName: PropTypes.func.isRequired,
     handlerRegion: PropTypes.func.isRequired,
+    handlerCountry: PropTypes.func.isRequired,
+    handlerLatitude: PropTypes.func.isRequired,
+    handlerLongitude: PropTypes.func.isRequired,
+    handlerPrecision: PropTypes.func.isRequired,
+    handlerPostalCode: PropTypes.func.isRequired,
+    handlerDescription: PropTypes.func.isRequired,
+    handlerStreetAddress: PropTypes.func.isRequired,
+    handlerAdministrativeArea: PropTypes.func.isRequired,
 };
 
 /**
