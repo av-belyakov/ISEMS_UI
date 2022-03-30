@@ -40,7 +40,7 @@ const reducer = (state, action) => {
     case "updateLongitude":
         return {...state, longitude: action.data};
     case "updatePrecision":
-        return {...state, precision: action.data};
+        return {...state, precision: +action.data};
     case "updateCity":
         return {...state, city: action.data};
     case "updateCountry":
@@ -50,7 +50,7 @@ const reducer = (state, action) => {
     case "updateStreetAddress":
         return {...state, street_address: action.data};
     case "updatePostalCode":
-        return {...state, postal_code: action.data};
+        return {...state, postal_code: action.data+""};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};
@@ -320,8 +320,8 @@ function CreateMajorContent(props){
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerRegion={(e) => { dispatch({ type: "updateRegion", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerCountry={(e) => { dispatch({ type: "updateCountry", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerLatitude={(e) => { dispatch({ type: "updateLatitude", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerLongitude={(e) => { dispatch({ type: "updateLongitude", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerLatitude={(e) => { dispatch({ type: "updateLatitude", data: e }); handlerButtonIsDisabled(); }}
+                handlerLongitude={(e) => { dispatch({ type: "updateLongitude", data: e }); handlerButtonIsDisabled(); }}
                 handlerPrecision={(e) => { dispatch({ type: "updatePrecision", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerPostalCode={(e) => { dispatch({ type: "updatePostalCode", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
@@ -375,8 +375,8 @@ function CreateLocationPatternElements(props){
         handlerPrecision,
         handlerPostalCode,
         handlerDescription,
-        handlerStreetAddress,    
-	    handlerAdministrativeArea,
+        handlerStreetAddress,
+        handlerAdministrativeArea,
     } = props;
 
     console.log("func 'CreateInfrastructurePatternElements', campaignPatterElement: ", campaignPatterElement);
@@ -385,14 +385,6 @@ function CreateLocationPatternElements(props){
     let [ isInvalidCountry, setIsInvalidCountry ] = useState(false);
     let [ isInvalidLatitude, setIsInvalidLatitude ] = useState(false);
     let [ isInvalidLongitude, setIsInvalidLongitude ] = useState(false);
-
-    const pattern = new RegExp("^(\\-?([0-8]?[0-9](\\.\\d+)?|90(.[0]+)?))$");
-
-    /**
-    
-    Надо разобратся с регуляркой для Latitude и Longitude
-
-     */
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -404,6 +396,7 @@ function CreateLocationPatternElements(props){
                     id="name-element"
                     InputLabelProps={{ shrink: true }}
                     onChange={handlerName}
+                    value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
                 />
             </Grid>
         </Grid>
@@ -450,18 +443,21 @@ function CreateLocationPatternElements(props){
                     type="number"
                     error={isInvalidLatitude}
                     InputLabelProps={{ shrink: true }}
+                    value={(campaignPatterElement.latitude)? campaignPatterElement.latitude: ""}
                     onChange={(e) => {
-                        if(!pattern.test(e.target.value)){
-                            console.log("11111111111");
+                        let latitude = e.target.value;
+                        if((e.target.value > 90.0) || (e.target.value < -90.0)){
                             setIsInvalidLatitude(true);
 
                             return;
                         }
 
-                        console.log("22222222222");
+                        if((latitude+"").includes(",")){
+                            latitude = latitude.replace("\\,", ".");
+                        }
 
                         setIsInvalidLatitude(false);
-                        handlerLatitude.call(this, e);
+                        handlerLatitude.call(this, +latitude);
                     }}
                 />
             </Grid>
@@ -470,8 +466,24 @@ function CreateLocationPatternElements(props){
                     id="longitude-number"
                     label="Долгота (Longitude)"
                     type="number"
+                    error={isInvalidLongitude}
                     InputLabelProps={{ shrink: true }}
-                    onChange={handlerLongitude}
+                    value={(campaignPatterElement.longitude)? campaignPatterElement.longitude: ""}
+                    onChange={(e) => {
+                        let longitude = e.target.value;
+                        if((e.target.value > 180.0) || (e.target.value < -180.0)){
+                            setIsInvalidLongitude(true);
+
+                            return;
+                        }
+
+                        if((longitude+"").includes(",")){
+                            longitude = longitude.replace("\\,", ".");
+                        }
+
+                        setIsInvalidLongitude(false);
+                        handlerLongitude.call(this, +longitude);
+                    }}
                 />
             </Grid>
             <Grid item container md={3} justifyContent="center">
@@ -480,6 +492,7 @@ function CreateLocationPatternElements(props){
                     label="Точность (Precision)"
                     type="number"
                     InputLabelProps={{ shrink: true }}
+                    value={(campaignPatterElement.precision)? campaignPatterElement.precision: 0}
                     onChange={handlerPrecision}
                 />
             </Grid>
@@ -498,6 +511,7 @@ function CreateLocationPatternElements(props){
                     error={isInvalidCountry}
                     label="Страна (на латинице)"
                     InputLabelProps={{ shrink: true }}
+                    value={(campaignPatterElement.country)? campaignPatterElement.country: ""}
                     onChange={(e) => {
                         if(e.target.value.length === 0){
                             setIsInvalidCountry(false);
@@ -522,6 +536,7 @@ function CreateLocationPatternElements(props){
                     id="administrative-area-element"
                     label="Административный округ"
                     InputLabelProps={{ shrink: true }}
+                    value={(campaignPatterElement.administrative_area)? campaignPatterElement.administrative_area: ""}
                     onChange={handlerAdministrativeArea}
                 />
             </Grid>
@@ -530,6 +545,7 @@ function CreateLocationPatternElements(props){
                     id="city-element"
                     label="Город"
                     InputLabelProps={{ shrink: true }}
+                    value={(campaignPatterElement.city)? campaignPatterElement.city: ""}
                     onChange={handlerCity}
                 />
             </Grid>
@@ -537,7 +553,9 @@ function CreateLocationPatternElements(props){
                 <TextField
                     id="postal-code-element"
                     label="Почтовый код"
+                    type="number"
                     InputLabelProps={{ shrink: true }}
+                    value={(campaignPatterElement.postal_code)? campaignPatterElement.postal_code: ""}
                     onChange={handlerPostalCode}
                 />
             </Grid>
@@ -550,6 +568,7 @@ function CreateLocationPatternElements(props){
                     id="street-address-element"
                     label="Адрес"
                     InputLabelProps={{ shrink: true }}
+                    value={(campaignPatterElement.street_address)? campaignPatterElement.street_address: ""}
                     onChange={handlerStreetAddress}
                 />
             </Grid>
