@@ -42,19 +42,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
-
-  
-
 function getStyles(name, personName, theme) {
     return {
         fontWeight: theme.typography.fontWeightMedium
@@ -219,7 +206,7 @@ export function CreateListObjectRefs(props){
 
     return (<React.Fragment>
         <Row className="mt-4">
-            <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с Отчётом</span></Col>
+            <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с данным Отчётом</span></Col>
         </Row>
         <Row>
             <Col md={12}>
