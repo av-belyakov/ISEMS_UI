@@ -1,32 +1,23 @@
 "use strict";
 
-
 import React, { useEffect, useReducer } from "react";
-import { 
+import {
     Button,
     DialogActions,
     DialogContent,
     Grid,
-    Tooltip,
     TextField,
     Typography,
 } from "@material-ui/core";
-import { Col, Row } from "react-bootstrap";
 import { red } from "@material-ui/core/colors";
 import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import { CreateListObjectRefs } from "../anyElements.jsx";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 const reducer = (state, action) => {
-    let elemTmp = "";
-    let lastSeen = "";
-    let firstSeen = "";
-    let currentTimeZoneOffsetInHours = "";
-
     switch(action.type){
     case "newAll":
         return action.data;
@@ -144,12 +135,8 @@ export default function CreateDialogContentNoteSTIXObject(props){
     let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
     let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
 
-    const handlerButtonIsDisabled = () => {
-            if(!buttonIsDisabled){
-                return;
-            }
-
-            setButtonIsDisabled();
+    const handlerButtonIsDisabled = (valueButton) => {
+            setButtonIsDisabled(valueButton);
         },
         handlerButtonSaveChangeTrigger = () => {
             setButtonSaveChangeTrigger((prevState) => !prevState);
@@ -229,8 +216,9 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
-
-            console.log("++++++++++++ func 'listener', reseived data: ", obj);
+            if(!obj.object_refs.find((item) => item === parentIdSTIXObject)){
+                obj.object_refs.push(parentIdSTIXObject);
+            }
 
             dispatch({ type: "newAll", data: obj });
         }
@@ -245,8 +233,6 @@ function CreateMajorContent(props){
     }, []);
     useEffect(() => {
         if(currentIdSTIXObject !== ""){
-            console.log("func 'CreateMajorContent', socketIo.emit for STIX object current ID: ", currentIdSTIXObject);
-
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: parentIdSTIXObject,
@@ -255,70 +241,72 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-            let data = state;
-            let lastSeen = Date.parse(state.last_seen);
-            let firstSeen = Date.parse(state.first_seen);
-            let currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
-    
-            if(currentTimeZoneOffsetInHours < 0){
-                data.last_seen = new Date(lastSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-                data.first_seen = new Date(firstSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-            } else {
-                data.last_seen = new Date(lastSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-                data.first_seen = new Date(firstSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-            }
-
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ data ] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
             handelrDialogClose();
         }
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
-    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
-        console.log(state);
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
-        console.log(obj);
+    const checkRequiredValue = (content, objectRefs, parentId) => {
+        if(content !== "" && objectRefs.find((item) => item === parentId)){
+            return true;
+        }
 
+        return false;
+    };
+
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
             case "hashes_update":
-                console.log("external_references - hashes_update");
-
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
+
+                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                    handlerButtonIsDisabled(false);
+                } else {
+                    handlerButtonIsDisabled(true);
+                }
 
                 break;
             case "hashes_delete":
-                console.log("external_references - hashes_delete");
-                console.log(obj);
-
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
+                
+                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                    handlerButtonIsDisabled(false);
+                } else {
+                    handlerButtonIsDisabled(true);
+                }
 
                 break;
             default:
-                console.log("external_references - default");
-                console.log("obj.modalType - ", obj.modalType);
-
                 dispatch({ type: "updateExternalReferences", data: obj.data });
-                handlerButtonIsDisabled();
+                
+                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                    handlerButtonIsDisabled(false);
+                } else {
+                    handlerButtonIsDisabled(true);
+                }
             }
         }
     
         if(obj.modalType === "granular_markings") {
-            console.log("updateGranularMarkings......");
-            console.log(obj);
-
             dispatch({ type: "updateGranularMarkings", data: obj.data });
-            handlerButtonIsDisabled();
+            
+            if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                handlerButtonIsDisabled(false);
+            } else {
+                handlerButtonIsDisabled(true);
+            }
         }
     
         if(obj.modalType === "extensions") {
-            console.log("obj.modalType === extensions, obj: ", obj);
-
             dispatch({ type: "updateExtensions", data: obj.data });
-            handlerButtonIsDisabled();
+            
+            if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                handlerButtonIsDisabled(false);
+            } else {
+                handlerButtonIsDisabled(true);
+            }
         }
     };
     
@@ -326,15 +314,33 @@ function CreateMajorContent(props){
         <Grid container direction="row" className="pt-3">
             <CreateNotePatternElements 
                 campaignPatterElement={state}
-                handlerAuthors={(e) => { dispatch({ type: "updateAuthors", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerAuthors={(value) => { 
+                    dispatch({ type: "updateAuthors", data: value }); 
+                    
+                    if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                        handlerButtonIsDisabled(false);
+                    } else {
+                        handlerButtonIsDisabled(true);
+                    }
+                }}
                 handlerContent={(e) => { 
                     dispatch({ type: "updateContent", data: e.target.value }); 
 
-                    if(e.target.value !== ""){
-                        handlerButtonIsDisabled(); 
+                    if(checkRequiredValue(e.target.value, state.object_refs, parentIdSTIXObject)){
+                        handlerButtonIsDisabled(false);
+                    } else {
+                        handlerButtonIsDisabled(true);
                     }
                 }}
-                handlerAbstract={(e) => { dispatch({ type: "updateAbstract", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerAbstract={(e) => { 
+                    dispatch({ type: "updateAbstract", data: e.target.value }); 
+                    
+                    if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                        handlerButtonIsDisabled(false);
+                    } else {
+                        handlerButtonIsDisabled(true);
+                    } 
+                }}
             />
         </Grid> 
 
@@ -342,10 +348,42 @@ function CreateMajorContent(props){
             objectId={currentIdSTIXObject}
             reportInfo={state}
             isNotDisabled={isNotDisabled}
-            handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
-            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
-            handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
-            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
+            handlerElementConfidence={(e) => { 
+                dispatch({ type: "updateConfidence", data: e }); 
+                
+                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                    handlerButtonIsDisabled(false);
+                } else {
+                    handlerButtonIsDisabled(true);
+                }
+            }}
+            handlerElementDefanged={(e) => { 
+                dispatch({ type: "updateDefanged", data: e }); 
+                
+                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                    handlerButtonIsDisabled(false);
+                } else {
+                    handlerButtonIsDisabled(true);
+                }
+            }}
+            handlerElementLabels={(e) => { 
+                dispatch({ type: "updateLabels", data: e }); 
+                
+                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                    handlerButtonIsDisabled(false);
+                } else {
+                    handlerButtonIsDisabled(true);
+                } 
+            }}
+            handlerElementDelete={(e) => { 
+                dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); 
+                
+                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                    handlerButtonIsDisabled(false);
+                } else {
+                    handlerButtonIsDisabled(true);
+                }
+            }}
             handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
         />
     </Grid>);
@@ -370,17 +408,9 @@ function CreateNotePatternElements(props){
         handlerAbstract,
     } = props;
 
-    console.log("func 'CreateInfrastructurePatternElements', campaignPatterElement: ", campaignPatterElement);
-    console.log("_______________________________________");
-
     let valuesIsInvalideContent = campaignPatterElement.content === "";
 
     return (<React.Fragment>
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >{campaignPatterElement.name}</Grid>
-        </Grid>
-
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Дата и время</span>&nbsp;&nbsp;&nbsp;&nbsp;</Grid>
             <Grid item container md={8}></Grid>
@@ -405,9 +435,7 @@ function CreateNotePatternElements(props){
             <Grid item container md={8}>
                 <TextField
                     id="outlined-abstract-static"
-                    //                    multiline
-                    //                    minRows={3}
-                    //                    maxRows={8}
+                    multiline
                     fullWidth
                     onChange={handlerAbstract}
                     defaultValue={campaignPatterElement.abstract}
@@ -465,29 +493,18 @@ function CreateNotePatternElements(props){
                         return "";
                     }
 
-                    {/**
-Надо продумать!
-Так как object_refs обязательно для заполнения, то в нем должна быть ссылка на тот элемент,
-в данном случае Отчет, дополнительное описание которого содержится в Примечании.
-Соответственно надо добавить, при просмотре, если нет подобной ссылки. Думаю если
-нет подобной ссылки надо добавлять ее и активировать кнопку Сохранить, все это
-делать автоматически, кроме нажатии кнопки Сохранить
-*/}
-
-                    return (<Row key={`key_object_ref_${key}`}>
-                        <Col md={12}>
-                            <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                                <Button onClick={() => {}}>
-                                    <img 
-                                        key={`key_object_ref_type_${key}`} 
-                                        src={`/images/stix_object/${objectElem.link}`} 
-                                        width="35" 
-                                        height="35" />
+                    return (<Grid container direction="row" key={`key_object_ref_${key}`}>
+                        <Grid item container md={12} justifyContent="flex-start">
+                            <Button onClick={() => {}} disabled>
+                                <img 
+                                    key={`key_object_ref_type_${key}`} 
+                                    src={`/images/stix_object/${objectElem.link}`} 
+                                    width="35" 
+                                    height="35" />
                                     &nbsp;{item}&nbsp;
-                                </Button>
-                            </Tooltip>
-                        </Col>
-                    </Row>);
+                            </Button>
+                        </Grid>
+                    </Grid>);
                 });
         })()}
     </React.Fragment>);

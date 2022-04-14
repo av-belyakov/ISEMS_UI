@@ -87,3 +87,20 @@ CreateDialogContentObservedDataSTIXObject.propTypes = {
     handelrDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
+
+/**
+//ObservedDataDomainObjectsSTIX объект "Observed Data", по терминалогии STIX, содержит информацию о сущностях связанных с кибер безопасностью, таких как файлы,
+//  системы или сети. Наблюдаемые данные это не результат анализа или заключение искусственного интеллекта, это просто сырая информация без какого-либо контекста.
+// FirstObserved - время, в формате "2016-05-12T08:17:27.000Z", начала временного окна, в течение которого были замечены данные (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// LastObserved - время, в формате "2016-05-12T08:17:27.000Z", окончание временного окна, в течение которого были замечены данные (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// NumberObserved - количество раз, когда фиксировался каждый наблюдаемый кибер объект SCO, представленный в свойстве ObjectRef (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// ObjectRefs - список идентификаторов на другие наблюдаемые кибер объекты SCO
+type ObservedDataDomainObjectsSTIX struct {
+	CommonPropertiesObjectSTIX
+	CommonPropertiesDomainObjectSTIX
+	FirstObserved  time.Time            `json:"first_observed" bson:"first_observed" required:"true"`
+	LastObserved   time.Time            `json:"last_observed" bson:"last_observed" required:"true"`
+	NumberObserved int                  `json:"number_observed" bson:"number_observed" required:"true"`
+	ObjectRefs     []IdentifierTypeSTIX `json:"object_refs" bson:"object_refs"`
+}
+ */
