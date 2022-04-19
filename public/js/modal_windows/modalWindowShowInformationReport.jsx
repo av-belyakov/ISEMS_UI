@@ -25,7 +25,7 @@ import PropTypes from "prop-types";
 import { helpers } from "../common_helpers/helpers";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
-import { CreateListObjectRefs } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
+import { CreateListObjectRefs, CreateListObjectRefsReport } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
 import CreateListPreviousStateSTIX from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
@@ -519,13 +519,26 @@ function CreateReportInformation(props){
             </Col>  
         </Row>
 
-        {state.object_refs && <CreateListObjectRefs
+        {state.object_refs && <CreateListObjectRefsReport
             objectRefs={state.object_refs} 
             handlerDeleteObjectRef={(key) => {
                 dispatch({ type: "deleteObjectRefs", data: key });
                 handlerButtonSaveIsNotDisabled();
             }} 
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+            handlerChangeCurrentSTIXObject={() => {
+                handlerShowModalWindowCreateNewSTIXObject(showReportId);
+            }}
+        />}
+
+
+        {state.object_refs && <CreateListObjectRefs
+            objectRefs={state.object_refs} 
+            handlerDeleteObjectRef={(key) => {
+                dispatch({ type: "deleteObjectRefs", data: key });
+                handlerButtonSaveIsNotDisabled();
+            }} 
+            handlerShowObjectRefSTIXObject={ (e) => { console.log("TYYHHJJJJJ"); handlerShowObjectRefSTIXObject.call(null, e); }}
             handlerChangeCurrentSTIXObject={() => {
                 handlerShowModalWindowCreateNewSTIXObject(showReportId);
             }}

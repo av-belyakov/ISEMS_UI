@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
 import {
     Button,
+    Collapse,
     Chip,
     Select,
     Tooltip,
@@ -14,8 +15,15 @@ import {
     NativeSelect,
     MenuItem,
     IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemIcon,
+    ListSubheader,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green, red } from "@material-ui/core/colors";
@@ -259,6 +267,151 @@ export function CreateListObjectRefs(props){
 }
 
 CreateListObjectRefs.propTypes = {
+    objectRefs: PropTypes.array.isRequired, 
+    handlerDeleteObjectRef: PropTypes.func.isRequired, 
+    handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
+    handlerChangeCurrentSTIXObject: PropTypes.func.isRequired, 
+};
+
+/**
+ * Формирует список из свойства object_refs, а также элементы его управления
+ * @param {*} props 
+ * @returns 
+ */
+export function CreateListObjectRefsReport(props){
+    let { 
+        objectRefs,
+        handlerDeleteObjectRef, 
+        handlerShowObjectRefSTIXObject,
+        handlerChangeCurrentSTIXObject 
+    } = props;
+
+    let listExtendedObject = [
+        //SDO
+        "grouping", //object_refs (any STIX object)
+        "malware", //operating_system_refs (SCO software) and sample_refs (SCO file and artifact)
+        "malware-analysis", //host_vm_ref (SCO software), 
+        // operating_system_ref (SCO software),
+        // installed_software_refs (SCO software),
+        // sample_ref (SCO file, artifact and network traffic)
+        "note", //object_refs (any STIX object)
+        "observed-data", //object_refs (any SCO)
+        "opinion", //object_refs (any STIX object)
+        //SCO
+        "domain-name", //resolves_to_refs (ipv4-addr, ipv6-addr, domain-name)
+        "file", //contains_refs (any STIX object)
+        "network-traffic", //src_ref or dst_ref (ipv4-addr, ipv6-addr, domain-name, mac-addr)
+        // src_payload_ref or dst_payload_ref (SCO artifact)
+        // "encapsulates_refs" or encapsulated_by_ref (network-traffic)
+        "http-request-ext", //message_body_data_ref (SCO artifact)
+        "process", //opened_connection_refs (SCO network-traffic)
+        // creator_user_ref (SCO user-account), image_ref (SCO file), parent_ref (process)
+        // child_refs (process)
+    ];
+
+    const [open, setOpen] = React.useState(false);
+    const [ numElem, setNumElem ] = React.useState(0);
+
+    const handleClick = (num) => {
+        setOpen(!open);
+        setNumElem(num);
+    };
+
+    return (<React.Fragment>
+        <Row className="mt-4">
+            <Col md={12}><span className="text-muted">___ Идентификаторы объектов связанных с данным Отчётом ___</span></Col>
+        </Row>
+        <Row>
+            <Col md={12}>
+                {objectRefs && (objectRefs.length === 0)? 
+                    <Typography variant="caption">
+                        <span  style={{ color: red[800] }}>
+                            * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Отчётом
+                        </span>
+                    </Typography>:
+                    <List
+                        component="nav"
+                        aria-labelledby="nested-list-subheader"
+                        //subheader={}
+                    >
+                        {objectRefs.map((item, key) => {
+                            let type = item.split("--");
+                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+                            let elemIsExist = listExtendedObject.find((item) => item === type[0]);
+                    
+                            if(typeof objectElem === "undefined"){
+                                return "";
+                            }
+
+                            return (<React.Fragment key={`rf_${key}`}>
+                                <ListItem 
+                                    button 
+                                    key={`key_list_item_button_ref_${key}`} 
+                                    onClick={() => {
+                                        if(!elemIsExist){
+                                            return;
+                                        }
+
+                                        handleClick.call(null, key);
+                                    }}
+                                >
+                                    <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item)}>
+                                        <img 
+                                            key={`key_object_ref_type_${key}`} 
+                                            src={`/images/stix_object/${objectElem.link}`} 
+                                            width="35" 
+                                            height="35" />&nbsp;
+                                        <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
+                                            <ListItemText primary={item}/>
+                                        </Tooltip>
+                                    </Button>
+                                    <IconButton aria-label="delete" onClick={handlerDeleteObjectRef.bind(null, key)}>
+                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                    </IconButton>
+                                    {elemIsExist?
+                                        (open? <ExpandLess />: <ExpandMore />):
+                                        ""}
+                                </ListItem>
+                                {elemIsExist && open && (numElem === key)?
+                                    <Collapse in={open} timeout="auto" unmountOnExit>
+                                        <List component="div" disablePadding>
+                                            <ListItem button 
+                                            //className={classes.nested}
+                                            >
+                                                <ListItemIcon>
+                                Тут будет список STIX объектов на которые имеет ссылки данный объект
+                                При этом в функцию CreateListObjectRefsReport надо пробросить socketIo
+                                и выполнять дополнительный запрос к тем STIX объектам на которые ссылается
+                                объекты из списка. Кроме того нужно все же постараться сделать что бы галочки
+                                при открытии и закрытии списка срабатывали только для выбранного списка (сейчас 
+                                они срабатывают для всех, что не красиво). Что ьы можно было одновременно открыть
+                                несколько элементов списка 
+                                                </ListItemIcon>
+                                                <ListItemText primary="Starred" />
+                                            </ListItem>
+                                        </List>
+                                    </Collapse>:
+                                    ""}
+                            </React.Fragment>);
+                        })}
+                    </List>
+                }
+            </Col>
+        </Row>
+        <Row>
+            <Col md={12} className="text-end">
+                <Button
+                    size="small"
+                    startIcon={<AddIcon style={{ color: green[500] }} />}
+                    onClick={handlerChangeCurrentSTIXObject}>
+                        прикрепить дополнительный объект
+                </Button>
+            </Col>
+        </Row>
+    </React.Fragment>);
+}
+
+CreateListObjectRefsReport.propTypes = {
     objectRefs: PropTypes.array.isRequired, 
     handlerDeleteObjectRef: PropTypes.func.isRequired, 
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
@@ -709,4 +862,53 @@ export function CreateListRegion(props){
 CreateListRegion.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired, 
     handlerRegion: PropTypes.func.isRequired,
+};
+
+export function CreateListContextGrouping(props){
+    let { campaignPatterElement, handlerContext } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["grouping-context-ov"].content.length; i++){
+            if(elem === dictionaryLists["grouping-context-ov"].content[i].name){
+                return dictionaryLists["grouping-context-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.context);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+    let isError = campaignPatterElement.context === "";
+
+    return (dictionaryLists["grouping-context-ov"] && <React.Fragment>
+        <TextField
+            id={"select-search-grouping-context-id"}
+            select
+            error={isError}
+            fullWidth
+            label={"контекст группировки"}
+            value={campaignPatterElement.context? campaignPatterElement.context: "" }
+            onChange={(e) => {
+                handlerContext.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="grouping-context-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["grouping-context-ov"].content.map((item, key) => {
+                return (<MenuItem key={`grouping-context-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListContextGrouping.propTypes = {
+    campaignPatterElement: PropTypes.object.isRequired, 
+    handlerContext: PropTypes.func.isRequired,
 };
