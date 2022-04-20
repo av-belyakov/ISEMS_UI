@@ -214,7 +214,7 @@ export function CreateListObjectRefs(props){
 
     return (<React.Fragment>
         <Row className="mt-4">
-            <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с данным Отчётом</span></Col>
+            <Col md={12}><span className="text-muted"> 2.22 Идентификаторы объектов связанных с данным Отчётом</span></Col>
         </Row>
         <Row>
             <Col md={12}>
@@ -279,7 +279,8 @@ CreateListObjectRefs.propTypes = {
  * @returns 
  */
 export function CreateListObjectRefsReport(props){
-    let { 
+    let {
+        socketIo,
         objectRefs,
         handlerDeleteObjectRef, 
         handlerShowObjectRefSTIXObject,
@@ -309,17 +310,43 @@ export function CreateListObjectRefsReport(props){
         // child_refs (process)
     ];
 
+    useEffect(() => {
+        let listId = objectRefs.filter((item) => {
+            let type = item.split("--");
+        
+            return listExtendedObject.find((item) => item === type[0]);
+        });
+
+        console.log("func 'CreateListObjectRefsReport', useEffect, listId: ", listId);
+
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for list id", (data) => {
+            console.log("isems-mrsi response ui: send search request, get STIX object for list id, receided data, ", data.information.additional_parameters.transmitted_data);
+            /**
+             * список объектов на которые ссылается объект Отчет получен, данные объекты имеют в своем составе свойства которые в свою
+             * очередь ссылаются на другие объекты, теперь нужно сохранить эти объекты и выстроить выподающий список из ссылок
+             * на другие объекты
+             */
+        });
+        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { arguments: listId});
+    }, []);
+
     const [open, setOpen] = React.useState(false);
     const [ numElem, setNumElem ] = React.useState(0);
 
     const handleClick = (num) => {
-        setOpen(!open);
+        if((num !== numElem) && open){
+            setNumElem(num);    
+
+            return;
+        }
+
         setNumElem(num);
+        setOpen(!open);
     };
 
     return (<React.Fragment>
         <Row className="mt-4">
-            <Col md={12}><span className="text-muted">___ Идентификаторы объектов связанных с данным Отчётом ___</span></Col>
+            <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с данным Отчётом</span></Col>
         </Row>
         <Row>
             <Col md={12}>
@@ -369,7 +396,7 @@ export function CreateListObjectRefsReport(props){
                                         <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                                     </IconButton>
                                     {elemIsExist?
-                                        (open? <ExpandLess />: <ExpandMore />):
+                                        ((open && (numElem === key))? <ExpandLess />: <ExpandMore />):
                                         ""}
                                 </ListItem>
                                 {elemIsExist && open && (numElem === key)?
@@ -379,15 +406,15 @@ export function CreateListObjectRefsReport(props){
                                             //className={classes.nested}
                                             >
                                                 <ListItemIcon>
-                                Тут будет список STIX объектов на которые имеет ссылки данный объект
+                                
+                                                </ListItemIcon>
+                                                <ListItemText primary="Тут будет список STIX объектов на которые имеет ссылки данный объект
                                 При этом в функцию CreateListObjectRefsReport надо пробросить socketIo
                                 и выполнять дополнительный запрос к тем STIX объектам на которые ссылается
                                 объекты из списка. Кроме того нужно все же постараться сделать что бы галочки
                                 при открытии и закрытии списка срабатывали только для выбранного списка (сейчас 
                                 они срабатывают для всех, что не красиво). Что ьы можно было одновременно открыть
-                                несколько элементов списка 
-                                                </ListItemIcon>
-                                                <ListItemText primary="Starred" />
+                                несколько элементов списка " />
                                             </ListItem>
                                         </List>
                                     </Collapse>:
@@ -412,6 +439,7 @@ export function CreateListObjectRefsReport(props){
 }
 
 CreateListObjectRefsReport.propTypes = {
+    socketIo: PropTypes.object.isRequired,
     objectRefs: PropTypes.array.isRequired, 
     handlerDeleteObjectRef: PropTypes.func.isRequired, 
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,

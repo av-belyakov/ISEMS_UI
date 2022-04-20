@@ -318,6 +318,7 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
                     "send search request, table page report",
                     "send search request, get report for id",
                     "send search request, get STIX object for id",
+                    "send search request, get STIX object for list id",
                     "send search request, count found elem, table page report",
                     "send search request, list different objects STIX object for id",
                     "send search request, count list different objects STIX object for id",

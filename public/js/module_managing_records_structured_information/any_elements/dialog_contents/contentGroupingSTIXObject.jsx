@@ -225,8 +225,6 @@ function CreateMajorContent(props){
     }, []);
     useEffect(() => {
         if(currentIdSTIXObject !== ""){
-            console.log("func 'CreateMajorContent', socketIo.emit for STIX object current ID: ", currentIdSTIXObject);
-
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: parentIdSTIXObject,

@@ -43,8 +43,6 @@ export default function CreatePageReport(props) {
             setShowModalWindowInformationReport(false);
         },
         handlerChangeAddedNewReport = () => {
-            console.log("func 'handlerChangeAddedNewReport' &&&&&&&&&&&&&");
-
             setAddedNewReport((prevStatus) => !prevStatus);
         },
         handlerShowObjectRefSTIXObject = (objectId) => {

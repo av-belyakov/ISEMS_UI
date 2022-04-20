@@ -520,6 +520,7 @@ function CreateReportInformation(props){
         </Row>
 
         {state.object_refs && <CreateListObjectRefsReport
+            socketIo={socketIo}
             objectRefs={state.object_refs} 
             handlerDeleteObjectRef={(key) => {
                 dispatch({ type: "deleteObjectRefs", data: key });
@@ -532,7 +533,7 @@ function CreateReportInformation(props){
         />}
 
 
-        {state.object_refs && <CreateListObjectRefs
+        {/*state.object_refs && <CreateListObjectRefs
             objectRefs={state.object_refs} 
             handlerDeleteObjectRef={(key) => {
                 dispatch({ type: "deleteObjectRefs", data: key });
@@ -542,7 +543,7 @@ function CreateReportInformation(props){
             handlerChangeCurrentSTIXObject={() => {
                 handlerShowModalWindowCreateNewSTIXObject(showReportId);
             }}
-        />}
+        />*/}
 
         <Row className="mt-3">
             <Col md={12}>

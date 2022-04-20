@@ -465,7 +465,7 @@ module.exports.sendSearchRequestGetSTIXObjectForId = function(socketIo, data){
                 created_by_ref: "",
                 specific_search_fields: [],
                 outside_specification_search_fields: {
-                // принятые решения по компьютерной угрозе
+                    // принятые решения по компьютерной угрозе
                     decisions_made_computer_threat: "",
                     // тип компьютерной угрозы
                     computer_threat_type: "",
@@ -544,6 +544,166 @@ module.exports.sendSearchRequestGetSTIXObjectForId = function(socketIo, data){
                                 socketId: socketIo.id,
                             });
     
+                            conn.sendMessage({
+                                task_id: taskID,
+                                section: "handling search requests",
+                                user_name_generated_task: result.userName,
+                                request_details: searchRequestTmp,
+                            });
+                        } catch(err){
+                            reject(err);
+                        }
+
+                        resolve();
+                    });
+                });
+            }
+
+            if (conn === null) {
+                return;
+            }
+
+            globalObject.setData("tasks", taskID, {
+                eventName: section,
+                eventForWidgets: false,
+                userSessionID: result.sessionId,
+                generationTime: +new Date(),
+                socketId: socketIo.id,
+            });
+
+            conn.sendMessage({
+                task_id: taskID,
+                section: "handling search requests",
+                user_name_generated_task: result.userName,
+                request_details: searchRequestTmp,
+            });
+        }).catch((err) => {
+            if ((err.name === "management auth") || (err.name === "management MRSICT")) {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: err.message.toString()
+                });
+            } else {
+                showNotify({
+                    socketIo: socketIo,
+                    type: "danger",
+                    message: "Внутренняя ошибка приложения. Пожалуйста обратитесь к администратору.",
+                });
+            }
+
+            writeLogFile("error", err.toString() + funcName);
+        });
+};
+
+/**
+ * 
+ * @param {*} socketIo - дескриптор соединения
+ * @param {*} data - данные запроса
+ */
+module.exports.sendSearchRequestGetSTIXObjectForListId = function(socketIo, data){
+    let funcName = " (func 'sendSearchRequestGetSTIXObjectForListId')",
+        section = "send search request, get STIX object for list id",
+        searchRequestTmp = {
+            collection_name: "stix object",
+            paginate_parameters: {
+                max_part_size: 150,
+                current_part_number: 1,
+            },
+            sortable_field: "data_created",
+            search_parameters: {
+                documents_id: data.arguments,
+                documents_type: [],
+                created: {
+                    start: "0001-01-01T00:00:00.000+00:00",
+                    end: "0001-01-01T00:00:00.000+00:00",
+                },
+                modified: {
+                    start: "0001-01-01T00:00:00.000+00:00",
+                    end: "0001-01-01T00:00:00.000+00:00",
+                },
+                created_by_ref: "",
+                specific_search_fields: [],
+                outside_specification_search_fields: {
+                    // принятые решения по компьютерной угрозе
+                    decisions_made_computer_threat: "",
+                    // тип компьютерной угрозы
+                    computer_threat_type: "",
+                },
+            },
+        };
+
+    checkUserAuthentication(socketIo)
+        .then((authData) => {
+        //авторизован ли пользователь
+            if (!authData.isAuthentication) {
+                throw new MyError("management auth", "Пользователь не авторизован.");
+            }
+
+            return { 
+                userLogin: authData.document.userLogin, 
+                userName: authData.document.userName,
+                userGroup: authData.document.userGroup,
+                isPrivilegedGroup: authData.document.groupSettings.management_security_event_management.element_settings.privileged_group.status,
+            };
+        }).then((result) => {
+            return new Promise((resolve, reject) => {
+                getSessionId("socketIo", socketIo, (err, sid) => {
+                    if(err){
+                        return reject(err);
+                    }
+
+                    result.sessionId = sid;
+
+                    resolve(result);
+                });
+            });
+        }).then((result) => {
+            if (!globalObject.hasData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connectionEstablished")) {
+                throw(new MyError("management MRSICT", "Невозможно обработать запрос, модуль учета информации о компьютерных угрозах не подключен."));
+            }
+
+            let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection"),
+                taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
+
+            if(!result.isPrivilegedGroup){
+                //не привилегированная группа
+                return new Promise((resolve, reject) => {
+                    if(data.arguments.parentObjectId === ""){
+                        resolve();
+                    }
+            
+                    //проверяем разрешен ли доступ группы к STIX объектам, родительским Отчётом которых является Отчёт с id data.arguments.parentObjectId
+                    mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
+                        query: { group_name: result.userGroup, object_id: data.arguments.parentObjectId },
+                        select: { _id: 0, __v: 0 }
+                    }, (err, queryResult) => {
+                        if(err) {
+                            reject(err);
+                        }
+
+                        console.log(`func '${funcName}', queryResult: '${queryResult}'`);
+
+                        if(isNull(queryResult)){
+                            //доступ к Отчёту данной группе запрещен
+                            return resolve();
+                        }
+
+                        try {            
+                            if (conn === null) {
+                                resolve();
+                            }
+                        
+                            console.log(`func '${funcName}', user is NOT privileged, send new request ---->`);
+
+                            globalObject.setData("tasks", taskID, {
+                                eventName: section,
+                                eventForWidgets: false,
+                                userSessionID: result.sessionId,
+                                generationTime: +new Date(),
+                                socketId: socketIo.id,
+                            });
+
                             conn.sendMessage({
                                 task_id: taskID,
                                 section: "handling search requests",

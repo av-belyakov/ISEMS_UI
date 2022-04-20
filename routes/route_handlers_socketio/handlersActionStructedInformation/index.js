@@ -22,6 +22,7 @@ module.exports.addHandlers = function(socketIo) {
         "isems-mrsi ui request: send search request, cound found elem, table page report": handlerSender.sendSearchRequestCountFoundElemPageReport,
         "isems-mrsi ui request: send search request, get report for id": handlerSender.sendSearchRequestGetReportForId,
         "isems-mrsi ui request: send search request, get STIX object for id": handlerSender.sendSearchRequestGetSTIXObjectForId,
+        "isems-mrsi ui request: send search request, get STIX object for list id": handlerSender.sendSearchRequestGetSTIXObjectForListId,
         "isems-mrsi ui request: send search request, get different objects STIX object for id": handlerSender.sendSearchRequestGetDifferentObjectsSTIXObjectForId,
         "isems-mrsi ui request: send search request, get count different objects STIX object for id": handlerSender.sendSearchRequestGetCountDifferentObjectsSTIXObjectForId,
         "isems-mrsi ui request: allow the group to access the report": handlerAny.allowGroupAccessReport,
