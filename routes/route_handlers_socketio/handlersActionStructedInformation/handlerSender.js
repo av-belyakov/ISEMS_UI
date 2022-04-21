@@ -612,7 +612,7 @@ module.exports.sendSearchRequestGetSTIXObjectForListId = function(socketIo, data
             },
             sortable_field: "data_created",
             search_parameters: {
-                documents_id: data.arguments,
+                documents_id: data.arguments.searchListObjectId,
                 documents_type: [],
                 created: {
                     start: "0001-01-01T00:00:00.000+00:00",
@@ -666,59 +666,6 @@ module.exports.sendSearchRequestGetSTIXObjectForListId = function(socketIo, data
             let conn = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection"),
                 taskID = createUniqID.getMD5(`sid_${uuid.v4()}_${(+new Date).toString(16)}`);
 
-            if(!result.isPrivilegedGroup){
-                //не привилегированная группа
-                return new Promise((resolve, reject) => {
-                    if(data.arguments.parentObjectId === ""){
-                        resolve();
-                    }
-            
-                    //проверяем разрешен ли доступ группы к STIX объектам, родительским Отчётом которых является Отчёт с id data.arguments.parentObjectId
-                    mongodbQueryProcessor.querySelect(models.modelStorageSpecialGroupParameters, {
-                        query: { group_name: result.userGroup, object_id: data.arguments.parentObjectId },
-                        select: { _id: 0, __v: 0 }
-                    }, (err, queryResult) => {
-                        if(err) {
-                            reject(err);
-                        }
-
-                        console.log(`func '${funcName}', queryResult: '${queryResult}'`);
-
-                        if(isNull(queryResult)){
-                            //доступ к Отчёту данной группе запрещен
-                            return resolve();
-                        }
-
-                        try {            
-                            if (conn === null) {
-                                resolve();
-                            }
-                        
-                            console.log(`func '${funcName}', user is NOT privileged, send new request ---->`);
-
-                            globalObject.setData("tasks", taskID, {
-                                eventName: section,
-                                eventForWidgets: false,
-                                userSessionID: result.sessionId,
-                                generationTime: +new Date(),
-                                socketId: socketIo.id,
-                            });
-
-                            conn.sendMessage({
-                                task_id: taskID,
-                                section: "handling search requests",
-                                user_name_generated_task: result.userName,
-                                request_details: searchRequestTmp,
-                            });
-                        } catch(err){
-                            reject(err);
-                        }
-
-                        resolve();
-                    });
-                });
-            }
-
             if (conn === null) {
                 return;
             }
@@ -727,6 +674,7 @@ module.exports.sendSearchRequestGetSTIXObjectForListId = function(socketIo, data
 
             globalObject.setData("tasks", taskID, {
                 eventName: section,
+                parentObjectId: data.arguments.parentObjectId,
                 eventForWidgets: false,
                 userSessionID: result.sessionId,
                 generationTime: +new Date(),

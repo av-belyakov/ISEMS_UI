@@ -332,6 +332,7 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
                 if (!helpersFunc.sendMessageByUserSocketIo(taskInfo.socketId, eventStr, { 
                     section: taskInfo.eventName,
                     eventForWidgets: taskInfo.eventForWidgets,
+                    parentObjectId: taskInfo.parentObjectId? taskInfo.parentObjectId: "",
                     information: msg,
                 })) {
                     helpersFunc.sendBroadcastSocketIo("isems-mrsi response ui", msg);

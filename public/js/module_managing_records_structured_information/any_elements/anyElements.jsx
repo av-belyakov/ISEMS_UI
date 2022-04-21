@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { Col, Row } from "react-bootstrap";
 import {
     Button,
@@ -19,7 +19,6 @@ import {
     ListItem,
     ListItemText,
     ListItemIcon,
-    ListSubheader,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import ExpandLess from "@material-ui/icons/ExpandLess";
@@ -273,6 +272,124 @@ CreateListObjectRefs.propTypes = {
     handlerChangeCurrentSTIXObject: PropTypes.func.isRequired, 
 };
 
+const listExtendedObject = [
+    //SDO
+    {name: "grouping", listProperties: [ 
+        "object_refs" 
+    ]}, //object_refs (any STIX object)
+    {name: "malware", listProperties: [ 
+        "operating_system_refs", 
+        "sample_refs" 
+    ]},//operating_system_refs (SCO software) 
+    // and sample_refs (SCO file and artifact)
+    {name: "malware-analysis", listProperties: [ 
+        "host_vm_ref",
+        "operating_system_ref",
+        "installed_software_refs",
+        "sample_ref",
+    ]}, //host_vm_ref (SCO software), 
+    // operating_system_ref (SCO software),
+    // installed_software_refs (SCO software),
+    // sample_ref (SCO file, artifact and network traffic)
+    {name: "note", listProperties: [ 
+        "object_refs" 
+    ]}, //object_refs (any STIX object)
+    {name: "observed-data", listProperties: [ 
+        "object_refs" 
+    ]}, //object_refs (any SCO)
+    {name: "opinion", listProperties: [ 
+        "object_refs" 
+    ]}, //object_refs (any STIX object)
+    //SCO
+    {name: "domain-name", listProperties: [ 
+        "resolves_to_refs" 
+    ]}, //resolves_to_refs (ipv4-addr, ipv6-addr, domain-name)
+    {name: "file", listProperties: [ 
+        "contains_refs" 
+    ]}, //contains_refs (any STIX object)
+    {name: "network-traffic", listProperties: [ 
+        "src_ref", 
+        "dst_ref",
+        "src_payload_ref", 
+        "dst_payload_ref",
+        "encapsulates_refs", 
+        "encapsulated_by_ref", 
+    ]}, //src_ref or dst_ref (ipv4-addr, ipv6-addr, domain-name, mac-addr)
+    // src_payload_ref or dst_payload_ref (SCO artifact)
+    // encapsulates_refs or encapsulated_by_ref (network-traffic)
+    {name: "http-request-ext", listProperties: [ 
+        "message_body_data_ref" 
+    ]}, //message_body_data_ref (SCO artifact)
+    {name: "process", listProperties: [ 
+        "opened_connection_refs",
+        "creator_user_ref",
+        "image_ref",
+        "parent_ref",
+        "child_refs",
+    ]}, //opened_connection_refs (SCO network-traffic)
+    // creator_user_ref (SCO user-account), image_ref (SCO file), parent_ref (process)
+    // child_refs (process)
+];
+
+const reducerListObjectRefsReport = (state, action) => {
+    let updateState = (parentId, data) => {
+
+        console.log("func 'updateState' ========, parentId: ", parentId, " data: ", data);
+        console.log("\\\\\\\\\\ state length: ", state.length);
+
+        if(data.length === 0){
+            return;
+        }
+
+        for(let i = 0; i < state.length; i++){
+            if(state[i].childId.length > 0){
+                updateState(state[i], parentId, data);
+            }
+
+            data.forEach((item) => {
+                console.log("state(i).currentId: ", state[i].currentId, " item.id: ", item.id);
+
+                if(item.id === state[i].currentId){
+                    let name = state[i].currentId.split("--")[0];
+                    listExtendedObject.forEach((elem) => {
+                        if(elem.name === name){
+                            elem.listProperties.forEach((value) => {
+                                console.log("item[value]: ", item[value]);
+
+                                state[i].childId = state[i].childId.concat(item[value]);
+
+                                /**
+ * yflо сделать проверку на наличие null и пустых значений в массиве
+ */
+
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        console.log("func 'updateState' ___________ new state: ", state);
+    };
+
+    switch(action.type){
+    case "newAll":
+        return action.data;
+    case "cleanAll":
+        return {};
+    case "update":
+
+        console.log("func 'reducerListObjectRefsReport', 'state' BEFORE: ", state);
+        console.log("action.parentId: ", action.data.parentId, " action: ", action.data);
+
+        updateState(action.data.parentId, action.data.objList);
+        
+        console.log("func 'reducerListObjectRefsReport', 'state' AFTER: ", state);
+
+        return {...state};
+    }
+};
+
 /**
  * Формирует список из свойства object_refs, а также элементы его управления
  * @param {*} props 
@@ -287,62 +404,65 @@ export function CreateListObjectRefsReport(props){
         handlerChangeCurrentSTIXObject 
     } = props;
 
-    let listExtendedObject = [
-        //SDO
-        "grouping", //object_refs (any STIX object)
-        "malware", //operating_system_refs (SCO software) and sample_refs (SCO file and artifact)
-        "malware-analysis", //host_vm_ref (SCO software), 
-        // operating_system_ref (SCO software),
-        // installed_software_refs (SCO software),
-        // sample_ref (SCO file, artifact and network traffic)
-        "note", //object_refs (any STIX object)
-        "observed-data", //object_refs (any SCO)
-        "opinion", //object_refs (any STIX object)
-        //SCO
-        "domain-name", //resolves_to_refs (ipv4-addr, ipv6-addr, domain-name)
-        "file", //contains_refs (any STIX object)
-        "network-traffic", //src_ref or dst_ref (ipv4-addr, ipv6-addr, domain-name, mac-addr)
-        // src_payload_ref or dst_payload_ref (SCO artifact)
-        // "encapsulates_refs" or encapsulated_by_ref (network-traffic)
-        "http-request-ext", //message_body_data_ref (SCO artifact)
-        "process", //opened_connection_refs (SCO network-traffic)
-        // creator_user_ref (SCO user-account), image_ref (SCO file), parent_ref (process)
-        // child_refs (process)
-    ];
+    let objListBegin = objectRefs.map((item) => {
+        return { currentId: item, childId: [] };
+    });
+
+    const [ state, dispatch ] = useReducer(reducerListObjectRefsReport, objListBegin);
 
     useEffect(() => {
         let listId = objectRefs.filter((item) => {
             let type = item.split("--");
         
-            return listExtendedObject.find((item) => item === type[0]);
+            return listExtendedObject.find((item) => item.name === type[0]);
         });
 
-        console.log("func 'CreateListObjectRefsReport', useEffect, listId: ", listId);
+        socketIo.on("isems-mrsi response ui: send search request, get STIX object for list id", (data) => {
 
-        socketIo.once("isems-mrsi response ui: send search request, get STIX object for list id", (data) => {
-            console.log("isems-mrsi response ui: send search request, get STIX object for list id, receided data, ", data.information.additional_parameters.transmitted_data);
-            /**
-             * список объектов на которые ссылается объект Отчет получен, данные объекты имеют в своем составе свойства которые в свою
-             * очередь ссылаются на другие объекты, теперь нужно сохранить эти объекты и выстроить выподающий список из ссылок
-             * на другие объекты
-             */
+            console.log("isems-mrsi response ui: send search request, get STIX object for list id, receided data, ", data);//data.information.additional_parameters.transmitted_data);
+
+            //dispatch({ type: "update", data: { parentId: data.parentObjectId, objList: tmpList } });
+            dispatch({ type: "update", data: { 
+                parentId: data.parentObjectId, objList: 
+                data.information.additional_parameters.transmitted_data, 
+            }});
         });
-        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { arguments: listId});
+        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
+            arguments: { 
+                searchListObjectId: listId,
+                parentObjectId: "",
+            }});
     }, []);
 
     const [open, setOpen] = React.useState(false);
     const [ numElem, setNumElem ] = React.useState(0);
 
-    const handleClick = (num) => {
+    const handleClick = (id, num) => {
         if((num !== numElem) && open){
             setNumElem(num);    
 
             return;
         }
 
+        //console.log("func 'handleClick', ID = ", id);
+
+        /*socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
+            arguments: { 
+                searchListObjectId: listId,
+                parentObjectId: "",
+            }});*/
+
         setNumElem(num);
         setOpen(!open);
     };
+
+    let list = [];
+
+    //console.log("------------------- state: ", state);
+
+    for(let item in state){
+        list.push(item);
+    }
 
     return (<React.Fragment>
         <Row className="mt-4">
@@ -361,10 +481,11 @@ export function CreateListObjectRefsReport(props){
                         aria-labelledby="nested-list-subheader"
                         //subheader={}
                     >
-                        {objectRefs.map((item, key) => {
+                        {list.map((item, key) => {
+                        ///objectRefs.map((item, key) => {
                             let type = item.split("--");
                             let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-                            let elemIsExist = listExtendedObject.find((item) => item === type[0]);
+                            let elemIsExist = listExtendedObject.find((item) => item.name === type[0]);
                     
                             if(typeof objectElem === "undefined"){
                                 return "";
@@ -379,7 +500,7 @@ export function CreateListObjectRefsReport(props){
                                             return;
                                         }
 
-                                        handleClick.call(null, key);
+                                        handleClick.call(null, item, key);
                                     }}
                                 >
                                     <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item)}>
