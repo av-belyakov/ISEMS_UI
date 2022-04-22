@@ -331,37 +331,36 @@ const listExtendedObject = [
     // child_refs (process)
 ];
 
-const reducerListObjectRefsReport = (state, action) => {
+/*const reducerListObjectRefsReport = (state, action) => {
     let updateState = (parentId, data) => {
-
-        console.log("func 'updateState' ========, parentId: ", parentId, " data: ", data);
-        console.log("\\\\\\\\\\ state length: ", state.length);
-
         if(data.length === 0){
             return;
         }
 
+        console.log("func 'updateState', BEFORE STATE is ARRAY", Array.isArray(state));
+
         for(let i = 0; i < state.length; i++){
             if(state[i].childId.length > 0){
-                updateState(state[i], parentId, data);
+                console.log("GGGGGGGGGGGGGGGGGG");
+                
+                updateState(state[i].childId, parentId, data);
             }
 
             data.forEach((item) => {
-                console.log("state(i).currentId: ", state[i].currentId, " item.id: ", item.id);
-
                 if(item.id === state[i].currentId){
                     let name = state[i].currentId.split("--")[0];
                     listExtendedObject.forEach((elem) => {
                         if(elem.name === name){
                             elem.listProperties.forEach((value) => {
-                                console.log("item[value]: ", item[value]);
-
-                                state[i].childId = state[i].childId.concat(item[value]);
-
-                                /**
- * yflо сделать проверку на наличие null и пустых значений в массиве
- */
-
+                                if(Array.isArray(item[value])){
+                                    item[value].forEach((ce) => {
+                                        state[i].childId.push({ currentId: ce, childId: [] });
+                                    });
+                                } else {
+                                    if((item[value] !== null) && (item[value] !== "")){
+                                        state[i].childId.push({ currentId: item[value], childId: [] });
+                                    }
+                                }
                             });
                         }
                     });
@@ -369,7 +368,8 @@ const reducerListObjectRefsReport = (state, action) => {
             });
         }
 
-        console.log("func 'updateState' ___________ new state: ", state);
+        console.log("func 'updateState', AFTER STATE is ARRAY", Array.isArray(state));
+
     };
 
     switch(action.type){
@@ -379,16 +379,17 @@ const reducerListObjectRefsReport = (state, action) => {
         return {};
     case "update":
 
-        console.log("func 'reducerListObjectRefsReport', 'state' BEFORE: ", state);
-        console.log("action.parentId: ", action.data.parentId, " action: ", action.data);
+        //console.log("func 'reducerListObjectRefsReport', 'state' BEFORE: ", state);
+        //console.log("action.parentId: ", action.data.parentId, " action: ", action.data);
 
         updateState(action.data.parentId, action.data.objList);
         
-        console.log("func 'reducerListObjectRefsReport', 'state' AFTER: ", state);
+        console.log("func 'reducerListObjectRefsReport', updateState = 'state' AFTER: ", state);
 
-        return {...state};
+        //return {...state};
+        return state;
     }
-};
+};*/
 
 /**
  * Формирует список из свойства object_refs, а также элементы его управления
@@ -398,6 +399,7 @@ const reducerListObjectRefsReport = (state, action) => {
 export function CreateListObjectRefsReport(props){
     let {
         socketIo,
+        parentId,
         objectRefs,
         handlerDeleteObjectRef, 
         handlerShowObjectRefSTIXObject,
@@ -408,7 +410,118 @@ export function CreateListObjectRefsReport(props){
         return { currentId: item, childId: [] };
     });
 
-    const [ state, dispatch ] = useReducer(reducerListObjectRefsReport, objListBegin);
+    let updateState = (parentId, data, state) => {
+        if(data.length === 0){
+            return;
+        }
+
+        console.log("func 'updateState', BEFORE STATE is ARRAY", Array.isArray(state));
+        console.log("state: ", state);
+
+        for(let i = 0; i < state.length; i++){
+            if(state[i].childId.length > 0){
+                console.log("GGGGGGGGGGGGGGGGGG");
+                
+                state[i].childId = updateState(state[i].childId, parentId, data);
+            }
+
+            data.forEach((item) => {
+                if(item.id === state[i].currentId){
+                    let name = state[i].currentId.split("--")[0];
+                    listExtendedObject.forEach((elem) => {
+                        if(elem.name === name){
+                            elem.listProperties.forEach((value) => {
+                                if(Array.isArray(item[value])){
+                                    item[value].forEach((ce) => {
+                                        state[i].childId.push({ currentId: ce, childId: [] });
+                                    });
+                                } else {
+                                    if((item[value] !== null) && (item[value] !== "")){
+                                        state[i].childId.push({ currentId: item[value], childId: [] });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        console.log("func 'updateState', AFTER STATE is ARRAY", Array.isArray(state));
+
+        return state;
+    };
+
+    let getListId = (list, parentId) => {
+
+        console.log("func 'getListId', parentId: ", parentId);
+        console.log("func 'getListId', list: ", list);
+        console.log("func 'getListId', list is ARRAY: ", Array.isArray(list));
+
+        return list.map((item, key) => {
+            let type = item.currentId.split("--");
+            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+            let elemIsExist = listExtendedObject.find((item) => item.name === type[0]);
+        
+            if(typeof objectElem === "undefined"){
+                return "";
+            }
+
+            console.log("------- ITEM: ", item);
+
+            return (<React.Fragment key={`rf_${key}`}>
+                <ListItem 
+                    button 
+                    key={`key_list_item_button_ref_${key}`} 
+                    onClick={() => {
+                        if(!elemIsExist){
+                            return;
+                        }
+
+                        handleClick.call(null, item.currentId, key);
+                    }}
+                >
+                    <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item.currentId)}>
+                        <img 
+                            key={`key_object_ref_type_${key}`} 
+                            src={`/images/stix_object/${objectElem.link}`} 
+                            width="35" 
+                            height="35" />&nbsp;
+                        <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
+                            <ListItemText primary={item.currentId}/>
+                        </Tooltip>
+                    </Button>
+                    <IconButton aria-label="delete" onClick={handlerDeleteObjectRef.bind(null, key)}>
+                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                    </IconButton>
+
+                    {console.log("item.currentId: ", item.currentId, "item.childId.length = ", item.childId.length, " item.childId: ", item.childId)}
+
+                    {item.childId.length > 0?
+                        ((open && (numElem === key))? <ExpandLess />: <ExpandMore />):
+                        ""}
+                </ListItem>
+                {item.childId.length > 0 && open && (numElem === key)?
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <ListItem button >
+                                <ListItemIcon>
+                    
+                                </ListItemIcon>
+                                <ListItemText primary={getListId(item.childId, item.childId.currentId)} />
+                            </ListItem>
+                        </List>
+                    </Collapse>:
+                    ""}
+            </React.Fragment>);
+        });
+
+    };
+
+    //const [ state, dispatch ] = useReducer(reducerListObjectRefsReport, objListBegin);
+    const [ state, setState ] = useState(objListBegin);
+
+    //console.log("func 'CreateListObjectRefsReport', 11111 objListBegin: ", objListBegin);
 
     useEffect(() => {
         let listId = objectRefs.filter((item) => {
@@ -421,11 +534,15 @@ export function CreateListObjectRefsReport(props){
 
             console.log("isems-mrsi response ui: send search request, get STIX object for list id, receided data, ", data);//data.information.additional_parameters.transmitted_data);
 
-            //dispatch({ type: "update", data: { parentId: data.parentObjectId, objList: tmpList } });
-            dispatch({ type: "update", data: { 
-                parentId: data.parentObjectId, objList: 
-                data.information.additional_parameters.transmitted_data, 
-            }});
+            /*dispatch({ type: "update", data: { 
+                parentId: data.parentObjectId, 
+                objList: data.information.additional_parameters.transmitted_data, 
+            }});*/
+
+            let stateTmp = state.slice();
+            stateTmp = updateState(data.parentObjectId, data.information.additional_parameters.transmitted_data, stateTmp);
+
+            setState(stateTmp);
         });
         socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
             arguments: { 
@@ -444,25 +561,11 @@ export function CreateListObjectRefsReport(props){
             return;
         }
 
-        //console.log("func 'handleClick', ID = ", id);
-
-        /*socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
-            arguments: { 
-                searchListObjectId: listId,
-                parentObjectId: "",
-            }});*/
-
         setNumElem(num);
         setOpen(!open);
     };
 
-    let list = [];
-
-    //console.log("------------------- state: ", state);
-
-    for(let item in state){
-        list.push(item);
-    }
+    console.log("------------------- state: ", state);
 
     return (<React.Fragment>
         <Row className="mt-4">
@@ -470,7 +573,7 @@ export function CreateListObjectRefsReport(props){
         </Row>
         <Row>
             <Col md={12}>
-                {objectRefs && (objectRefs.length === 0)? 
+                {(state.length === 0)? 
                     <Typography variant="caption">
                         <span  style={{ color: red[800] }}>
                             * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Отчётом
@@ -481,7 +584,8 @@ export function CreateListObjectRefsReport(props){
                         aria-labelledby="nested-list-subheader"
                         //subheader={}
                     >
-                        {list.map((item, key) => {
+                        {getListId(state, parentId)}   
+                        {/*list.map((item, key) => {
                         ///objectRefs.map((item, key) => {
                             let type = item.split("--");
                             let objectElem = helpers.getLinkImageSTIXObject(type[0]);
@@ -541,7 +645,7 @@ export function CreateListObjectRefsReport(props){
                                     </Collapse>:
                                     ""}
                             </React.Fragment>);
-                        })}
+                        })*/}
                     </List>
                 }
             </Col>
@@ -561,6 +665,7 @@ export function CreateListObjectRefsReport(props){
 
 CreateListObjectRefsReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
+    parentId: PropTypes.string.isRequired,
     objectRefs: PropTypes.array.isRequired, 
     handlerDeleteObjectRef: PropTypes.func.isRequired, 
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,

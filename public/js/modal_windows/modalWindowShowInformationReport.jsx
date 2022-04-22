@@ -521,7 +521,8 @@ function CreateReportInformation(props){
 
         {state.object_refs && <CreateListObjectRefsReport
             socketIo={socketIo}
-            objectRefs={state.object_refs} 
+            parentId={showReportId}
+            objectRefs={state.object_refs}
             handlerDeleteObjectRef={(key) => {
                 dispatch({ type: "deleteObjectRefs", data: key });
                 handlerButtonSaveIsNotDisabled();
