@@ -30,6 +30,7 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
 import dictionaryLists from "../../common_helpers/dictionaryLists.js";
+import { forEach } from "async";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -415,24 +416,30 @@ export function CreateListObjectRefsReport(props){
             return;
         }
 
-        console.log("func 'updateState', BEFORE STATE is ARRAY", Array.isArray(state));
-        console.log("state: ", state);
+        //console.log("func 'updateState', BEFORE STATE is ARRAY", Array.isArray(state));
+        //console.log("state: ", state);
 
         for(let i = 0; i < state.length; i++){
             if(state[i].childId.length > 0){
-                console.log("GGGGGGGGGGGGGGGGGG");
+                //console.log("==== LENGTH state[i].childId: ", state[i].childId.length);
                 
-                state[i].childId = updateState(state[i].childId, parentId, data);
+                state[i].childId = updateState(parentId, data, state[i].childId);
             }
 
             data.forEach((item) => {
                 if(item.id === state[i].currentId){
                     let name = state[i].currentId.split("--")[0];
                     listExtendedObject.forEach((elem) => {
+
+                        //console.log("==== elem.name: ", elem.name, ", name:", name, " ----");
+
                         if(elem.name === name){
                             elem.listProperties.forEach((value) => {
                                 if(Array.isArray(item[value])){
                                     item[value].forEach((ce) => {
+
+                                        //                                        console.log(")))))) CE = ", ce);
+
                                         state[i].childId.push({ currentId: ce, childId: [] });
                                     });
                                 } else {
@@ -447,27 +454,37 @@ export function CreateListObjectRefsReport(props){
             });
         }
 
-        console.log("func 'updateState', AFTER STATE is ARRAY", Array.isArray(state));
+        //console.log("func 'updateState', AFTER STATE is ARRAY", Array.isArray(state));
 
         return state;
     };
 
-    let getListId = (list, parentId) => {
+    let getListId = (list, parentId, depth) => {
 
-        console.log("func 'getListId', parentId: ", parentId);
-        console.log("func 'getListId', list: ", list);
-        console.log("func 'getListId', list is ARRAY: ", Array.isArray(list));
+        console.log("func 'getListId', parentId: ", parentId, " depth:", depth);
+        //        console.log("func 'getListId', list: ", list);
+        //        console.log("func 'getListId', list is ARRAY: ", Array.isArray(list));
 
         return list.map((item, key) => {
             let type = item.currentId.split("--");
             let objectElem = helpers.getLinkImageSTIXObject(type[0]);
             let elemIsExist = listExtendedObject.find((item) => item.name === type[0]);
-        
+
+            if(type[0] === "grouping" || type[0] === "note"){
+                console.log("------- ITEM: ", item);
+            }
+
             if(typeof objectElem === "undefined"){
                 return "";
             }
 
-            console.log("------- ITEM: ", item);
+            let isExist = listExtendedObject.filter((item) => item.name === type[0]);
+            let opn = testArray[depth] && (testArray[depth] === key);
+
+            /*let isExist = listExtendedObject.filter((item) => item.name === type[0]);
+            if(isExist.length > 0){
+                console.log("______ TYPE[0]: ", type[0], " ________");
+            }*/
 
             return (<React.Fragment key={`rf_${key}`}>
                 <ListItem 
@@ -478,7 +495,7 @@ export function CreateListObjectRefsReport(props){
                             return;
                         }
 
-                        handleClick.call(null, item.currentId, key);
+                        handleClick.call(null, item.currentId, key, isExist.length > 0? item.currentId: "", depth);
                     }}
                 >
                     <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item.currentId)}>
@@ -495,27 +512,33 @@ export function CreateListObjectRefsReport(props){
                         <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                     </IconButton>
 
-                    {console.log("item.currentId: ", item.currentId, "item.childId.length = ", item.childId.length, " item.childId: ", item.childId)}
+                    {
+                        //listExtendedObject
+                        //console.log("(((((( )))))) type[0]: ", type[0])
 
-                    {item.childId.length > 0?
-                        ((open && (numElem === key))? <ExpandLess />: <ExpandMore />):
+                        //console.log("item.currentId: ", item.currentId, "item.childId.length = ", item.childId.length, " item.childId: ", item.childId)
+                    }
+
+                    {((item.childId.length > 0) || ((isExist.length > 0)))?
+                        ((testArray[depth] && (testArray[depth] === key) && (numElem === key))? <ExpandLess />: <ExpandMore />):
+                        //((open && (numElem === key))? <ExpandLess />: <ExpandMore />):
                         ""}
                 </ListItem>
-                {item.childId.length > 0 && open && (numElem === key)?
-                    <Collapse in={open} timeout="auto" unmountOnExit>
+                {item.childId.length > 0 && (testArray[depth] && (testArray[depth] === key)) && (numElem === key)?
+                //item.childId.length > 0 && open && (numElem === key)?
+                    <Collapse in={opn} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                             <ListItem button >
                                 <ListItemIcon>
                     
                                 </ListItemIcon>
-                                <ListItemText primary={getListId(item.childId, item.childId.currentId)} />
+                                <ListItemText primary={getListId(item.childId, item.childId.currentId, depth++)} />
                             </ListItem>
                         </List>
                     </Collapse>:
                     ""}
             </React.Fragment>);
         });
-
     };
 
     //const [ state, dispatch ] = useReducer(reducerListObjectRefsReport, objListBegin);
@@ -532,7 +555,7 @@ export function CreateListObjectRefsReport(props){
 
         socketIo.on("isems-mrsi response ui: send search request, get STIX object for list id", (data) => {
 
-            console.log("isems-mrsi response ui: send search request, get STIX object for list id, receided data, ", data);//data.information.additional_parameters.transmitted_data);
+            //console.log("isems-mrsi response ui: send search request, get STIX object for list id, receided data, ", data);//data.information.additional_parameters.transmitted_data);
 
             /*dispatch({ type: "update", data: { 
                 parentId: data.parentObjectId, 
@@ -541,6 +564,8 @@ export function CreateListObjectRefsReport(props){
 
             let stateTmp = state.slice();
             stateTmp = updateState(data.parentObjectId, data.information.additional_parameters.transmitted_data, stateTmp);
+
+            console.log("!!!!!!!!!! spcketIo.on stateTmp: ", stateTmp);
 
             setState(stateTmp);
         });
@@ -553,8 +578,58 @@ export function CreateListObjectRefsReport(props){
 
     const [open, setOpen] = React.useState(false);
     const [ numElem, setNumElem ] = React.useState(0);
+    const [ testArray, setTestArray ] = React.useState([]);
 
-    const handleClick = (id, num) => {
+    console.log("!(!(!((!(!(! TEST ARRAY: ", testArray);
+
+    const findObjectId = (list, id) => {
+        for(let i = 0; i < list.length; i++){
+            if(list[i].currentId === id){
+                return list[i];
+            }
+
+            if(list[i].childId.length > 0){
+                findObjectId(list[i], id);
+            }
+        }
+
+        return [];
+    };
+    const handleClick = (id, num, currentId, depth) => {
+        
+        console.log("func 'handleClick', START, ID = ", id, " NUM = ", num, " depth: ", depth);
+        
+        let tmp = testArray.slice();
+        console.log("%%%%%% BEFORE TMP = ", tmp);
+        console.log("testArray[depth] && testArray[depth] === num: ", testArray[depth] === num);
+        if(testArray[depth] && testArray[depth] === num){
+            console.log("DDDDDELETE");
+            tmp.splice(depth, 10);
+        } else {
+            console.log("AAAAADDDD");
+            tmp.push(num);
+        }
+
+        console.log("%%%%%% AFTER TMP = ", tmp);
+        setTestArray(tmp);
+        
+        if(currentId !== ""){
+            let searchListObjectId = findObjectId(state, currentId);
+            let listId = [];
+            searchListObjectId.childId.forEach((item) => {
+                listId.push(item.currentId);
+            });
+
+            console.log("send request information about elem name: ", currentId);
+            console.log("func findObjectId = ", searchListObjectId);
+
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
+                arguments: { 
+                    searchListObjectId: listId,
+                    parentObjectId: currentId,
+                }});
+        }
+
         if((num !== numElem) && open){
             setNumElem(num);    
 
@@ -584,68 +659,7 @@ export function CreateListObjectRefsReport(props){
                         aria-labelledby="nested-list-subheader"
                         //subheader={}
                     >
-                        {getListId(state, parentId)}   
-                        {/*list.map((item, key) => {
-                        ///objectRefs.map((item, key) => {
-                            let type = item.split("--");
-                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-                            let elemIsExist = listExtendedObject.find((item) => item.name === type[0]);
-                    
-                            if(typeof objectElem === "undefined"){
-                                return "";
-                            }
-
-                            return (<React.Fragment key={`rf_${key}`}>
-                                <ListItem 
-                                    button 
-                                    key={`key_list_item_button_ref_${key}`} 
-                                    onClick={() => {
-                                        if(!elemIsExist){
-                                            return;
-                                        }
-
-                                        handleClick.call(null, item, key);
-                                    }}
-                                >
-                                    <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item)}>
-                                        <img 
-                                            key={`key_object_ref_type_${key}`} 
-                                            src={`/images/stix_object/${objectElem.link}`} 
-                                            width="35" 
-                                            height="35" />&nbsp;
-                                        <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                                            <ListItemText primary={item}/>
-                                        </Tooltip>
-                                    </Button>
-                                    <IconButton aria-label="delete" onClick={handlerDeleteObjectRef.bind(null, key)}>
-                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                                    </IconButton>
-                                    {elemIsExist?
-                                        ((open && (numElem === key))? <ExpandLess />: <ExpandMore />):
-                                        ""}
-                                </ListItem>
-                                {elemIsExist && open && (numElem === key)?
-                                    <Collapse in={open} timeout="auto" unmountOnExit>
-                                        <List component="div" disablePadding>
-                                            <ListItem button 
-                                            //className={classes.nested}
-                                            >
-                                                <ListItemIcon>
-                                
-                                                </ListItemIcon>
-                                                <ListItemText primary="Тут будет список STIX объектов на которые имеет ссылки данный объект
-                                При этом в функцию CreateListObjectRefsReport надо пробросить socketIo
-                                и выполнять дополнительный запрос к тем STIX объектам на которые ссылается
-                                объекты из списка. Кроме того нужно все же постараться сделать что бы галочки
-                                при открытии и закрытии списка срабатывали только для выбранного списка (сейчас 
-                                они срабатывают для всех, что не красиво). Что ьы можно было одновременно открыть
-                                несколько элементов списка " />
-                                            </ListItem>
-                                        </List>
-                                    </Collapse>:
-                                    ""}
-                            </React.Fragment>);
-                        })*/}
+                        {getListId(state, parentId, 0)}   
                     </List>
                 }
             </Col>
