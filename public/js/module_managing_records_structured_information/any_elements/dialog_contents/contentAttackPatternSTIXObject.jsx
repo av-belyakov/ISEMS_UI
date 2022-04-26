@@ -130,7 +130,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         isNotDisabled,
         parentIdSTIXObject,
         currentAdditionalIdSTIXObject,
-        handelrDialogClose,
+        handlerDialogClose,
     } = props;
 
     let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
@@ -156,7 +156,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                     currentIdSTIXObject={currentAdditionalIdSTIXObject}
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
                     isNotDisabled={isNotDisabled}
-                    handelrDialogClose={handelrDialogClose}
+                    handlerDialogClose={handlerDialogClose}
                     handlerButtonIsDisabled={handlerButtonIsDisabled}
                     handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
                 />
@@ -170,7 +170,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
             </Grid>            
         </DialogContent>
         <DialogActions>
-            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>            
+            <Button onClick={handlerDialogClose} color="primary">закрыть</Button>            
             {isNotDisabled && <Button
                 disabled={buttonIsDisabled} 
                 onClick={() => setButtonSaveChangeTrigger(true)}
@@ -186,7 +186,7 @@ CreateDialogContentAttackPatternSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
 };
 
 function CreateMajorContent(props){
@@ -196,7 +196,7 @@ function CreateMajorContent(props){
         currentIdSTIXObject,
         buttonSaveChangeTrigger,
         isNotDisabled,
-        handelrDialogClose,
+        handlerDialogClose,
         handlerButtonIsDisabled,
         handlerButtonSaveChangeTrigger,
     } = props;
@@ -244,7 +244,7 @@ function CreateMajorContent(props){
         if(buttonSaveChangeTrigger){
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
-            handelrDialogClose();
+            handlerDialogClose();
         }
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
@@ -319,7 +319,7 @@ CreateMajorContent.propTypes = {
     currentIdSTIXObject: PropTypes.string.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
     handlerButtonIsDisabled: PropTypes.func.isRequired,
     handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
 };

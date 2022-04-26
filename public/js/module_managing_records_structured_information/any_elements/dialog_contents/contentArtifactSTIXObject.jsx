@@ -53,7 +53,7 @@ export default function CreateDialogContentArtifactSTIXObject(props){
         listObjectInfo, 
         currentIdSTIXObject,
         handlerDialog,
-        handelrDialogClose,
+        handlerDialogClose,
         isNotDisabled, 
     } = props;
 
@@ -84,6 +84,6 @@ CreateDialogContentArtifactSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
     handlerDialog: PropTypes.func.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };

@@ -25,7 +25,7 @@ import PropTypes from "prop-types";
 import { helpers } from "../common_helpers/helpers";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
-import { CreateListObjectRefs, CreateListObjectRefsReport } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
+import { CreateListObjectRefsReport } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
 import CreateListPreviousStateSTIX from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
@@ -194,6 +194,7 @@ export default function ModalWindowShowInformationReport(props) {
         handlerButtonSave,
         handlerShowObjectRefSTIXObject,
         handlerShowModalWindowCreateNewSTIXObject,
+        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
     const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
@@ -223,7 +224,7 @@ export default function ModalWindowShowInformationReport(props) {
             title={showReportId}
             nameDialogButton="сохранить"
             buttonSaveIsDisabled={buttonSaveIsDisabled}
-            handelrDialogClose={() => { 
+            handlerDialogClose={() => { 
                 onHide();
             }}
             handlerDialogButton={() => setButtonSaveChangeTrigger(true)} />            
@@ -237,6 +238,7 @@ export default function ModalWindowShowInformationReport(props) {
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
             handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
+            handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
         />
     </Dialog>); 
 }
@@ -251,6 +253,7 @@ ModalWindowShowInformationReport.propTypes = {
     handlerButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
+    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.func.isRequired,
 };
 
 function CreateAppBar(props){
@@ -259,13 +262,13 @@ function CreateAppBar(props){
         title, 
         nameDialogButton,
         buttonSaveIsDisabled, 
-        handelrDialogClose, 
+        handlerDialogClose, 
         handlerDialogButton 
     } = props;
     
     return (<AppBar className={classes.appBar}>
         <Toolbar>
-            <IconButton edge="start" color="inherit" onClick={handelrDialogClose} aria-label="close">
+            <IconButton edge="start" color="inherit" onClick={handlerDialogClose} aria-label="close">
                 <CloseIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>{title}</Typography>
@@ -284,7 +287,7 @@ CreateAppBar.propTypes = {
     title: PropTypes.string.isRequired,
     nameDialogButton: PropTypes.string.isRequired,
     buttonSaveIsDisabled: PropTypes.bool.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
     handlerDialogButton: PropTypes.func.isRequired,
 };
 
@@ -299,6 +302,7 @@ function CreateAppBody(props){
         handlerShowObjectRefSTIXObject,
         handlerButtonSaveIsNotDisabled,
         handlerShowModalWindowCreateNewSTIXObject,
+        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
     console.log("func 'CreateAppBody', START");
@@ -315,6 +319,7 @@ function CreateAppBody(props){
                     handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
                     handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
                     handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
+                    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
                 />
             </Col>
             <Col md={5}>
@@ -344,6 +349,7 @@ CreateAppBody.propTypes = {
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerButtonSaveIsNotDisabled: PropTypes.func.isRequired,
     handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
+    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.func.isRequired,
 };
 
 function CreateReportInformation(props){
@@ -356,6 +362,7 @@ function CreateReportInformation(props){
         handlerShowObjectRefSTIXObject,
         handlerButtonSaveIsNotDisabled,
         handlerShowModalWindowCreateNewSTIXObject,
+        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
     console.log("func 'CreateReportInformation', START...");
@@ -518,34 +525,21 @@ function CreateReportInformation(props){
                     variant="outlined"/>
             </Col>  
         </Row>
-
         {state.object_refs && <CreateListObjectRefsReport
             socketIo={socketIo}
-            parentId={showReportId}
             objectRefs={state.object_refs}
-            handlerDeleteObjectRef={(key) => {
-                dispatch({ type: "deleteObjectRefs", data: key });
-                handlerButtonSaveIsNotDisabled();
+            showReportId={showReportId}
+            handlerDeleteObjectRef={(parentId, deleteId) => {
+                //dispatch({ type: "deleteObjectRefs", data: key });
+                handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId);
+                //                handlerButtonSaveIsNotDisabled();
             }} 
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerChangeCurrentSTIXObject={() => {
                 handlerShowModalWindowCreateNewSTIXObject(showReportId);
             }}
+            //handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
         />}
-
-
-        {/*state.object_refs && <CreateListObjectRefs
-            objectRefs={state.object_refs} 
-            handlerDeleteObjectRef={(key) => {
-                dispatch({ type: "deleteObjectRefs", data: key });
-                handlerButtonSaveIsNotDisabled();
-            }} 
-            handlerShowObjectRefSTIXObject={ (e) => { console.log("TYYHHJJJJJ"); handlerShowObjectRefSTIXObject.call(null, e); }}
-            handlerChangeCurrentSTIXObject={() => {
-                handlerShowModalWindowCreateNewSTIXObject(showReportId);
-            }}
-        />*/}
-
         <Row className="mt-3">
             <Col md={12}>
                 <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
@@ -649,6 +643,7 @@ CreateReportInformation.propTypes = {
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerButtonSaveIsNotDisabled: PropTypes.func.isRequired,
     handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
+    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.func.isRequired,
 };
 
 function MadePublished(props){

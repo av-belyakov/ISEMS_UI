@@ -53,7 +53,7 @@ export default function CreateDialogContentNewSTIXObject(props){
         isNotDisabled,
         currentIdSTIXObject, 
         handlerDialog,
-        handelrDialogClose,
+        handlerDialogClose,
     } = props;
 
     return (<React.Fragment>
@@ -67,7 +67,7 @@ export default function CreateDialogContentNewSTIXObject(props){
         </DialogContent>
 
         <DialogActions>
-            <Button onClick={handelrDialogClose} color="primary">закрыть</Button>
+            <Button onClick={handlerDialogClose} color="primary">закрыть</Button>
             <Button 
                 //disabled={_.isEqual(dataPatterElement, listObjectInfo[currentIdSTIXObject])}
                 onClick={() => {
@@ -85,5 +85,5 @@ CreateDialogContentNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired, 
     handlerDialog: PropTypes.func.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
 };

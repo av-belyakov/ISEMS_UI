@@ -53,7 +53,7 @@ export default function CreateDialogContentDomainNameSTIXObject(props){
         listObjectInfo, 
         currentIdSTIXObject,
         handlerDialog,
-        handelrDialogClose,
+        handlerDialogClose,
         isNotDisabled,
     } = props;
 
@@ -82,6 +82,6 @@ CreateDialogContentDomainNameSTIXObject.propTypes = {
     listObjectInfo: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
     handlerDialog: PropTypes.func.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };

@@ -12,8 +12,9 @@ import CreateWidgetsPageReport from "../widgets/createWidgetsPageReport.jsx";
 import ContentCreateNewSTIXObject from "../../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx";
 import CreateSearchAreaOutputReports from "../any_elements/createSearchAreaOutputReports.jsx";
 import ModalWindowAddReportSTIX from "../../modal_windows/modalWindowAddReportSTIX.jsx";
-import ModalWindowShowInformationReport from "../../modal_windows/modalWindowShowInformationReport.jsx";
 import ModalWindowAnySTIXObject from "../../modal_windows/modalWindowAnySTIXObject.jsx";
+import ModalWindowShowInformationReport from "../../modal_windows/modalWindowShowInformationReport.jsx";
+import ModalWindowConfirmDeleteLinkFromObjRefs from "../../modal_windows/ModalWindowConfirmDeleteLinkFromObjRefs.jsx";
 
 export default function CreatePageReport(props) {
     let { socketIo, receivedData } = props;
@@ -23,10 +24,12 @@ export default function CreatePageReport(props) {
     let [ addedNewReport, setAddedNewReport ] = React.useState(false);
     let [ objectId, setObjectId ] = React.useState("");
     let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
+    let [ objectsIdModalWindowConfirmDeleteLinkFromObjRefs, setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState([]);
     let [ showModalWindowSTIXObject, setShowModalWindowSTIXObject ] = React.useState(false);
     let [ showModalWindowAddNewReport, setShowModalWindowAddNewReport ] = React.useState(false);
     let [ showModalWindowInformationReport, setShowModalWindowInformationReport ] = React.useState(false);
     let [ showModalWindowCreateNewSTIXObject, setShowModalWindowCreateNewSTIXObject ] = React.useState(false);
+    let [ showModalWindowConfirmDeleteLinkFromObjRefs, setShowModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState(false);
 
     let handlerShowModalWindowAddNewReport = () => {
             setShowModalWindowAddNewReport(true);
@@ -61,8 +64,8 @@ export default function CreatePageReport(props) {
             setAddedNewReport(true);
             handlerCloseModalWindowInformationReport();
         },
-        handelrDialogCloseModalWindowSTIXObject = (obj) => {
-            console.log("func 'handelrDialogCloseModalWindowSTIXObject', obj = ", obj);
+        handlerDialogCloseModalWindowSTIXObject = (obj) => {
+            console.log("func 'handlerDialogCloseModalWindowSTIXObject', obj = ", obj);
             console.log("------------------------------------------------------");
 
             setCurrentAdditionalIdSTIXObject("");
@@ -88,6 +91,21 @@ export default function CreatePageReport(props) {
              * 4. При нажатии кнопки Сохранить Отчета отправить серверу информацию как о самом Отчете, так и об STIX объекте который
              *   теперь связан с Отчетом
              */
+        },
+        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs = (parentId, deleteId) => {
+            console.log("func 'handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs', START... DATA: ", parentId, deleteId);
+
+            setShowModalWindowConfirmDeleteLinkFromObjRefs(true);
+            setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([ parentId, deleteId ]);
+        },
+        handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs = () => {
+            setShowModalWindowConfirmDeleteLinkFromObjRefs(false);
+            setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([]);
+        },
+        handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs = (data) => {
+            console.log("func 'handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs', START... data = ", data);
+
+
         };
 
     return (<React.Fragment>
@@ -123,6 +141,7 @@ export default function CreatePageReport(props) {
             handlerButtonSave={handlerButtonSaveModalWindowReportSTIX} 
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
+            handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
         />}
 
         {showModalWindowSTIXObject && <ModalWindowAnySTIXObject
@@ -131,7 +150,15 @@ export default function CreatePageReport(props) {
             showModalWindow={showModalWindowSTIXObject}
             parentIdSTIXObject={objectId}
             currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
-            handelrDialogClose={handelrDialogCloseModalWindowSTIXObject}
+            handlerDialogClose={handlerDialogCloseModalWindowSTIXObject}
+        />}
+
+        {/** модальное окно для подтверждения удаления ссылки на STIX объект из свойства obj_refs Отчета */}
+        {showModalWindowConfirmDeleteLinkFromObjRefs && <ModalWindowConfirmDeleteLinkFromObjRefs
+            objectsId={objectsIdModalWindowConfirmDeleteLinkFromObjRefs}
+            showModalWindow={showModalWindowConfirmDeleteLinkFromObjRefs}
+            handlerDialogClose={handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs}
+            handlerDialogConfirm={handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs}
         />}
 
         {/** показать модальное окно в котором будут создаваться любые виды STIX объектов кроме Отчетов */}
@@ -153,7 +180,7 @@ export default function CreatePageReport(props) {
                     isNotDisabled={true}
                     currentIdSTIXObject={objectId} 
                     handlerDialog={handlerDialogSaveNewSTIXObject}
-                    handelrDialogClose={handlerCloseModalWindowCreateNewSTIXObject}
+                    handlerDialogClose={handlerCloseModalWindowCreateNewSTIXObject}
                 />
             </Suspense>
         </Dialog>}

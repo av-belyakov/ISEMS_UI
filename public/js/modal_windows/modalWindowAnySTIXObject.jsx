@@ -1,6 +1,6 @@
 "use strict";
 
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense } from "react";
 import { 
     Dialog,
     DialogTitle,
@@ -56,7 +56,7 @@ export default function ModalWindowAnySTIXObject(props){
         showModalWindow,
         parentIdSTIXObject,
         currentAdditionalIdSTIXObject,
-        handelrDialogClose,
+        handlerDialogClose,
     } = props;
 
     let idSTIXObject = currentAdditionalIdSTIXObject;
@@ -90,7 +90,7 @@ export default function ModalWindowAnySTIXObject(props){
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={11}>{img}&nbsp;<span className="pt-2">{titleName}</span></Grid>
                 <Grid item container md={1} justifyContent="flex-end">
-                    <IconButton edge="start" color="inherit" onClick={handelrDialogClose} aria-label="close">
+                    <IconButton edge="start" color="inherit" onClick={handlerDialogClose} aria-label="close">
                         <CloseIcon />
                     </IconButton>
                 </Grid>
@@ -104,7 +104,7 @@ export default function ModalWindowAnySTIXObject(props){
                     isNotDisabled={isNotDisabled}
                     parentIdSTIXObject={parentIdSTIXObject}
                     currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
-                    handelrDialogClose={handelrDialogClose}
+                    handlerDialogClose={handlerDialogClose}
                 />}
             </Suspense>
         </ErrorBoundary>
@@ -117,7 +117,7 @@ ModalWindowAnySTIXObject.propTypes = {
     showModalWindow: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
-    handelrDialogClose: PropTypes.func.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
 };
 
 function somethingModule(nameSTIX){
