@@ -22,6 +22,7 @@ export default function CreatePageReport(props) {
     console.log("class 'CreatePageReport', START...");
 
     let [ addedNewReport, setAddedNewReport ] = React.useState(false);
+    let [ buttonDelModalWindowConfirmDeleteLinkFromObjRefs, setButtonDelModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState(false);
     let [ objectId, setObjectId ] = React.useState("");
     let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
     let [ objectsIdModalWindowConfirmDeleteLinkFromObjRefs, setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState([]);
@@ -101,11 +102,13 @@ export default function CreatePageReport(props) {
         handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs = () => {
             setShowModalWindowConfirmDeleteLinkFromObjRefs(false);
             setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([]);
+            //setButtonDelModalWindowConfirmDeleteLinkFromObjRefs(false);
         },
         handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs = (data) => {
             console.log("func 'handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs', START... data = ", data);
 
-
+            setButtonDelModalWindowConfirmDeleteLinkFromObjRefs((prevState) => !prevState);
+            handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs();
         };
 
     return (<React.Fragment>
@@ -138,6 +141,7 @@ export default function CreatePageReport(props) {
             groupList={receivedData.groupList}
             showReportId={objectId}
             userPermissions={receivedData.userPermissions}
+            confirmDeleteLink={buttonDelModalWindowConfirmDeleteLinkFromObjRefs}
             handlerButtonSave={handlerButtonSaveModalWindowReportSTIX} 
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}

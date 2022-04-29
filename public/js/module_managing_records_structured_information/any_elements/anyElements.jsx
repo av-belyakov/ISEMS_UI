@@ -332,6 +332,27 @@ const listExtendedObject = [
     // child_refs (process)
 ];
 
+const loreducer = (state, action) => {
+    switch(action.type){
+    case "updateList":
+        state.list[action.data.parent.id] = action.data.parent;
+
+        console.log("loreducer, 'updateList' - action.data.current:", action.data.current);
+
+        for(let item of action.data.current){
+
+            console.log("ID:", item.id);
+
+            state.list[item.id] = item; 
+        }
+
+        return {...state};
+    case "getObject":
+
+        break;
+    }
+};
+
 /**
  * Формирует список из свойства object_refs, а также элементы его управления
  * @param {*} props 
@@ -340,39 +361,79 @@ const listExtendedObject = [
 export function CreateListObjectRefsReport(props){
     let {
         socketIo,
-        objectRefs,
+        stateReport,
         showReportId,
+        confirmDeleteLink,
         handlerDeleteObjectRef, 
         handlerShowObjectRefSTIXObject,
         handlerChangeCurrentSTIXObject,
     } = props;
 
-    let objListBegin = objectRefs.map((item) => {
+    let objListBegin = stateReport.object_refs.map((item) => {
         return { currentId: item, childId: [] };
     });
 
+    console.log("func 'CreateListObjectRefsReport' ---------------");
+
     const [ state, setState ] = useState(objListBegin);
+    const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: {}});
+    const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
+
+    let listener = (data) => {
+        let stateTmp = state.slice();
+        stateTmp = updateState(data.parentObjectId, data.information.additional_parameters.transmitted_data, stateTmp);
+        setState(stateTmp);
+
+        setListObjReducer({ type: "updateList", data: { current: data.information.additional_parameters.transmitted_data, parent: stateReport }});
+
+        console.log("%%$$%^&&&&&&& listObjReducer: ", listObjReducer);
+
+
+        /**
+    * 
+    * При нажатии кнопки УДАЛИТЬ нужно подготовить объект из которого удаляется ссылка и удалить ссылку из list
+    * сохранять объекты можно в listObj, при этом первый объект добавляемый при инициализации может быть REPORT
+    * добавить в CreateListObjectRefsReport полную информацию об объекте REPORT
+    * 
+    *             //listObjReducer
+    */
+
+    };
+
     useEffect(() => {
-        let listId = objectRefs.filter((item) => {
+        console.log("-------======== START DELETE ELEMENT REFS ======--------");
+
+        /**
+         * 
+         * Здесь отрабатывает тригер который информирует функцию CreateListObjectRefsReport о нажатии 
+         * кнопки УДАЛИТ модального окна подтверждения удаления ссылки
+         * 
+         */
+
+    }, [confirmDeleteLink]);
+
+    useEffect(() => {
+        socketIo.on("isems-mrsi response ui: send search request, get STIX object for list id", listener);
+
+        return () => {
+            socketIo.off("isems-mrsi response ui: send search request, get STIX object for list id", listener);
+            setListActivatedObjectNumbers([]);
+        };
+    }, []);
+
+    useEffect(() => {
+        let listId = stateReport.object_refs.filter((item) => {
             let type = item.split("--");
         
             return listExtendedObject.find((item) => item.name === type[0]);
         });
 
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for list id", (data) => {
-            let stateTmp = state.slice();
-            stateTmp = updateState(data.parentObjectId, data.information.additional_parameters.transmitted_data, stateTmp);
-
-            setState(stateTmp);
-        });
         socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
             arguments: { 
                 searchListObjectId: listId,
                 parentObjectId: "",
             }});
-    }, []);
-
-    const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
+    }, [ socketIo, stateReport ]);
 
     let updateState = (parentId, data, state) => {
         if(data.length === 0){
@@ -420,65 +481,11 @@ export function CreateListObjectRefsReport(props){
         return state;
     };
 
-    let getListId = (list, parentId, depth) => {
+    let deleteElementState = (deleteId, state) => {
+        console.log("func 'deleteElementState', START");
+        console.log(state);
 
-        console.log("func 'getListId' depth:", depth);
-
-        return list.map((item, key) => {
-            let type = item.currentId.split("--");
-            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-
-            if(typeof objectElem === "undefined"){
-                return "";
-            }
-
-            let elemIsExist = listExtendedObject.find((item) => item.name === type[0]);
-            let isExist = listExtendedObject.filter((item) => item.name === type[0]);
-            let open = listActivatedObjectNumbers[depth] && (listActivatedObjectNumbers[depth] === key);
-
-            return (<React.Fragment key={`rf_${key}`}>
-                <ListItem 
-                    button 
-                    key={`key_list_item_button_ref_${key}`} 
-                    onClick={() => {
-                        if(!elemIsExist){
-                            return;
-                        }
-
-                        handleClick.call(null, item.currentId, key, isExist.length > 0? item.currentId: "", depth);
-                    }}
-                >
-                    <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item.currentId)}>
-                        <img 
-                            key={`key_object_ref_type_${key}`} 
-                            src={`/images/stix_object/${objectElem.link}`} 
-                            width="35" 
-                            height="35" />&nbsp;
-                        <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
-                            <ListItemText primary={item.currentId}/>
-                        </Tooltip>
-                    </Button>
-                    <IconButton aria-label="delete" onClick={handlerDeleteObjectRef.bind(null, parentId, item.currentId)}>
-                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                    </IconButton>
-                    {((item.childId.length > 0) || ((isExist.length > 0)))?
-                        (listActivatedObjectNumbers[depth] && (listActivatedObjectNumbers[depth] === key)? 
-                            <ExpandLess />: 
-                            <ExpandMore />):
-                        ""}
-                </ListItem>
-                {item.childId.length > 0 && (listActivatedObjectNumbers[depth] && (listActivatedObjectNumbers[depth] === key))?
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItem button >
-                                <ListItemIcon></ListItemIcon>
-                                <ListItemText primary={getListId(item.childId, item.currentId, depth+1)} />
-                            </ListItem>
-                        </List>
-                    </Collapse>:
-                    ""}
-            </React.Fragment>);
-        });
+        return state;
     };
 
     const findObjectId = (list, id) => {
@@ -559,7 +566,23 @@ export function CreateListObjectRefsReport(props){
                         aria-labelledby="nested-list-subheader"
                         //subheader={}
                     >
-                        {getListId(state, showReportId, 0)}   
+                        {/*getListId(state, showReportId, 0)*/}
+                        <CreateListObjectRefsReportGetListId
+                            list={state}
+                            depth={0}
+                            parentId={showReportId}
+                            listActivatedObjectNumbers={listActivatedObjectNumbers}
+                            handleClick={handleClick}
+                            handlerDeleteObjectRef={(parentId, currentId) => {
+
+                                console.log("func handlerDeleteObjectRef, parentId:", parentId, " currentId:", currentId);
+                                console.log("STATE:", state);
+
+                                handlerDeleteObjectRef(parentId, currentId);
+                                
+                            }}
+                            handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+                        />   
                     </List>
                 }
             </Col>
@@ -579,11 +602,96 @@ export function CreateListObjectRefsReport(props){
 
 CreateListObjectRefsReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    objectRefs: PropTypes.array.isRequired,
+    stateReport: PropTypes.object.isRequired,
     showReportId: PropTypes.string.isRequired,
     handlerDeleteObjectRef: PropTypes.func.isRequired, 
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerChangeCurrentSTIXObject: PropTypes.func.isRequired,
+};
+
+function CreateListObjectRefsReportGetListId(props){
+    let {
+        list,
+        depth,
+        parentId,
+        listActivatedObjectNumbers,
+        handleClick,
+        handlerDeleteObjectRef,
+        handlerShowObjectRefSTIXObject,
+    } = props;
+
+    let getListId = (list, parentId, depth) => {
+
+        console.log("func 'getListId' depth:", depth);
+
+        return list.map((item, key) => {
+            let type = item.currentId.split("--");
+            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+
+            if(typeof objectElem === "undefined"){
+                return "";
+            }
+
+            let elemIsExist = listExtendedObject.find((item) => item.name === type[0]);
+            let isExist = listExtendedObject.filter((item) => item.name === type[0]);
+            let open = listActivatedObjectNumbers[depth] && (listActivatedObjectNumbers[depth] === key);
+
+            return (<React.Fragment key={`rf_${key}`}>
+                <ListItem 
+                    button 
+                    key={`key_list_item_button_ref_${key}`} 
+                    onClick={() => {
+                        if(!elemIsExist){
+                            return;
+                        }
+
+                        handleClick.call(null, item.currentId, key, isExist.length > 0? item.currentId: "", depth);
+                    }}
+                >
+                    <Button onClick={handlerShowObjectRefSTIXObject.bind(null, item.currentId)}>
+                        <img 
+                            key={`key_object_ref_type_${key}`} 
+                            src={`/images/stix_object/${objectElem.link}`} 
+                            width="35" 
+                            height="35" />&nbsp;
+                        <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
+                            <ListItemText primary={item.currentId}/>
+                        </Tooltip>
+                    </Button>
+                    <IconButton aria-label="delete" onClick={handlerDeleteObjectRef.bind(null, parentId, item.currentId)}>
+                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                    </IconButton>
+                    {((item.childId.length > 0) || ((isExist.length > 0)))?
+                        (listActivatedObjectNumbers[depth] && (listActivatedObjectNumbers[depth] === key)? 
+                            <ExpandLess />: 
+                            <ExpandMore />):
+                        ""}
+                </ListItem>
+                {item.childId.length > 0 && (listActivatedObjectNumbers[depth] && (listActivatedObjectNumbers[depth] === key))?
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <ListItem button >
+                                <ListItemIcon></ListItemIcon>
+                                <ListItemText primary={getListId(item.childId, item.currentId, depth+1)} />
+                            </ListItem>
+                        </List>
+                    </Collapse>:
+                    ""}
+            </React.Fragment>);
+        });
+    };
+
+    return getListId(list, parentId, depth);
+}
+
+CreateListObjectRefsReportGetListId.propTypes = {
+    list: PropTypes.array.isRequired,
+    depth: PropTypes.number.isRequired,
+    parentId: PropTypes.string.isRequired,
+    listActivatedObjectNumbers: PropTypes.array.isRequired,
+    handleClick: PropTypes.func.isRequired,
+    handlerDeleteObjectRef: PropTypes.func.isRequired,
+    handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
 };
 
 export function CreateListIdentityClass(props){

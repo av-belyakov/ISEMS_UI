@@ -184,7 +184,20 @@ const reducer = (state, action) => {
 };
 
 export default function ModalWindowShowInformationReport(props) {
-    let { 
+    let {
+        show,
+        onHide,
+        socketIo,
+        groupList,
+        showReportId,
+        userPermissions,
+        confirmDeleteLink,
+        handlerButtonSave, 
+        handlerShowObjectRefSTIXObject,
+        handlerShowModalWindowCreateNewSTIXObject,
+        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
+
+        /*
         show,
         onHide,
         showReportId,
@@ -194,7 +207,7 @@ export default function ModalWindowShowInformationReport(props) {
         handlerButtonSave,
         handlerShowObjectRefSTIXObject,
         handlerShowModalWindowCreateNewSTIXObject,
-        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
+        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,*/
     } = props;
 
     const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
@@ -233,6 +246,7 @@ export default function ModalWindowShowInformationReport(props) {
             groupList={groupList}
             showReportId={showReportId}
             userPermissions={userPermissions.editing_information.status}
+            confirmDeleteLink={confirmDeleteLink}
             buttonSaveChangeTrigger={buttonSaveChangeTrigger}
             handlerPressButtonSave={handlerPressButtonSave}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
@@ -247,9 +261,10 @@ ModalWindowShowInformationReport.propTypes = {
     show: PropTypes.bool,
     onHide: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
-    showReportId: PropTypes.string.isRequired,
     groupList: PropTypes.array.isRequired,
+    showReportId: PropTypes.string.isRequired,
     userPermissions: PropTypes.object.isRequired,
+    confirmDeleteLink: PropTypes.bool.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
@@ -297,6 +312,7 @@ function CreateAppBody(props){
         groupList,
         showReportId,
         userPermissions,
+        confirmDeleteLink,
         buttonSaveChangeTrigger,
         handlerPressButtonSave,
         handlerShowObjectRefSTIXObject,
@@ -314,6 +330,7 @@ function CreateAppBody(props){
                     socketIo={socketIo}
                     showReportId={showReportId}
                     userPermissions={userPermissions}
+                    confirmDeleteLink={confirmDeleteLink}
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
                     handlerPressButtonSave={handlerPressButtonSave}
                     handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
@@ -344,6 +361,7 @@ CreateAppBody.propTypes = {
     groupList: PropTypes.array.isRequired,
     showReportId: PropTypes.string.isRequired,
     userPermissions: PropTypes.bool.isRequired,
+    confirmDeleteLink: PropTypes.bool.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
     handlerPressButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
@@ -357,6 +375,7 @@ function CreateReportInformation(props){
         socketIo,
         showReportId,
         userPermissions,
+        confirmDeleteLink,
         buttonSaveChangeTrigger,
         handlerPressButtonSave,
         handlerShowObjectRefSTIXObject,
@@ -527,8 +546,9 @@ function CreateReportInformation(props){
         </Row>
         {state.object_refs && <CreateListObjectRefsReport
             socketIo={socketIo}
-            objectRefs={state.object_refs}
+            stateReport={state}
             showReportId={showReportId}
+            confirmDeleteLink={confirmDeleteLink}
             handlerDeleteObjectRef={(parentId, deleteId) => {
                 //dispatch({ type: "deleteObjectRefs", data: key });
                 handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId);
@@ -638,6 +658,7 @@ CreateReportInformation.propTypes = {
     socketIo: PropTypes.object.isRequired,
     showReportId: PropTypes.string.isRequired,
     userPermissions: PropTypes.bool.isRequired,
+    confirmDeleteLink: PropTypes.bool.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
     handlerPressButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
