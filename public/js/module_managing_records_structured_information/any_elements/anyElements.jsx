@@ -275,6 +275,9 @@ CreateListObjectRefs.propTypes = {
 
 const listExtendedObject = [
     //SDO
+    {name: "report", listProperties: [ 
+        "object_refs" 
+    ]}, //object_refs (any STIX object)
     {name: "grouping", listProperties: [ 
         "object_refs" 
     ]}, //object_refs (any STIX object)
@@ -377,9 +380,14 @@ export function CreateListObjectRefsReport(props){
 
     const [ state, setState ] = useState(objListBegin);
     const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: {}});
+    const [ currentParentId, setCurrentParentId ] = useState("");
+    const [ currentDeleteId, setCurrentDeleteId ] = useState("");
     const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
 
     let listener = (data) => {
+
+        console.log("LISTENER SEARCH SEND REQUEST,  data: ", data);
+
         let stateTmp = state.slice();
         stateTmp = updateState(data.parentObjectId, data.information.additional_parameters.transmitted_data, stateTmp);
         setState(stateTmp);
@@ -396,21 +404,10 @@ export function CreateListObjectRefsReport(props){
     * добавить в CreateListObjectRefsReport полную информацию об объекте REPORT
     * 
     *             //listObjReducer
+    * 
     */
 
     };
-
-    useEffect(() => {
-        console.log("-------======== START DELETE ELEMENT REFS ======--------");
-
-        /**
-         * 
-         * Здесь отрабатывает тригер который информирует функцию CreateListObjectRefsReport о нажатии 
-         * кнопки УДАЛИТ модального окна подтверждения удаления ссылки
-         * 
-         */
-
-    }, [confirmDeleteLink]);
 
     useEffect(() => {
         socketIo.on("isems-mrsi response ui: send search request, get STIX object for list id", listener);
@@ -420,7 +417,27 @@ export function CreateListObjectRefsReport(props){
             setListActivatedObjectNumbers([]);
         };
     }, []);
+    useEffect(() => {
+        console.log("-------======== START DELETE ELEMENT REFS ======--------");
+        console.log("Здесь отрабатывает тригер который информирует функцию CreateListObjectRefsReport о нажатии кнопки УДАЛИТ модального окна подтверждения удаления ссылки");
 
+        let parrentObject = listObjReducer.list[currentParentId];
+
+        let id = currentParentId.split("--")[0];
+        let listSaveRefs = [];
+
+        for(let value of listExtendedObject){
+            if(value.name === id){
+                listSaveRefs = value.listProperties;
+
+                break;
+            }
+        }
+
+        console.log("currentParentId: ", currentParentId, " ID: ", id); 
+        console.log("Object from who need DELETE element: ", parrentObject);
+        console.log("LIST settings with somethings elements: ",  listSaveRefs);
+    }, [confirmDeleteLink]);
     useEffect(() => {
         let listId = stateReport.object_refs.filter((item) => {
             let type = item.split("--");
@@ -577,6 +594,9 @@ export function CreateListObjectRefsReport(props){
 
                                 console.log("func handlerDeleteObjectRef, parentId:", parentId, " currentId:", currentId);
                                 console.log("STATE:", state);
+
+                                setCurrentParentId(parentId);
+                                setCurrentDeleteId(currentId);
 
                                 handlerDeleteObjectRef(parentId, currentId);
                                 

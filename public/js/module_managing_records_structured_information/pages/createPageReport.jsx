@@ -14,7 +14,7 @@ import CreateSearchAreaOutputReports from "../any_elements/createSearchAreaOutpu
 import ModalWindowAddReportSTIX from "../../modal_windows/modalWindowAddReportSTIX.jsx";
 import ModalWindowAnySTIXObject from "../../modal_windows/modalWindowAnySTIXObject.jsx";
 import ModalWindowShowInformationReport from "../../modal_windows/modalWindowShowInformationReport.jsx";
-import ModalWindowConfirmDeleteLinkFromObjRefs from "../../modal_windows/ModalWindowConfirmDeleteLinkFromObjRefs.jsx";
+import ModalWindowConfirmDeleteLinkFromObjRefs from "../../modal_windows/modalWindowConfirmDeleteLinkFromObjRefs.jsx";
 
 export default function CreatePageReport(props) {
     let { socketIo, receivedData } = props;
