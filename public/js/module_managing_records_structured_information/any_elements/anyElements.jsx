@@ -390,6 +390,9 @@ export function CreateListObjectRefsReport(props){
 
         let stateTmp = state.slice();
         stateTmp = updateState(data.parentObjectId, data.information.additional_parameters.transmitted_data, stateTmp);
+
+        console.log("LISTENER SEARCH SEND REQUEST,  stateTmp: ", stateTmp);
+
         setState(stateTmp);
 
         setListObjReducer({ type: "updateList", data: { current: data.information.additional_parameters.transmitted_data, parent: stateReport }});
@@ -406,6 +409,7 @@ export function CreateListObjectRefsReport(props){
     *             //listObjReducer
     * 
     */
+   
 
     };
 
@@ -421,22 +425,15 @@ export function CreateListObjectRefsReport(props){
         console.log("-------======== START DELETE ELEMENT REFS ======--------");
         console.log("Здесь отрабатывает тригер который информирует функцию CreateListObjectRefsReport о нажатии кнопки УДАЛИТ модального окна подтверждения удаления ссылки");
 
-        let parrentObject = listObjReducer.list[currentParentId];
+        let stateTmp = state.slice();
+        setState(deleteIDFromState(stateTmp));
+        deleteIdFromSTIXObject();
 
-        let id = currentParentId.split("--")[0];
-        let listSaveRefs = [];
+        /**
+         * после проверки функций которые вызываются выше нужно отправить новый, откорректированный STIX объект через
+         * socketIo.emit
+         */
 
-        for(let value of listExtendedObject){
-            if(value.name === id){
-                listSaveRefs = value.listProperties;
-
-                break;
-            }
-        }
-
-        console.log("currentParentId: ", currentParentId, " ID: ", id); 
-        console.log("Object from who need DELETE element: ", parrentObject);
-        console.log("LIST settings with somethings elements: ",  listSaveRefs);
     }, [confirmDeleteLink]);
     useEffect(() => {
         let listId = stateReport.object_refs.filter((item) => {
@@ -452,9 +449,90 @@ export function CreateListObjectRefsReport(props){
             }});
     }, [ socketIo, stateReport ]);
 
+    let deleteIDFromState = (stateList) => {
+        if(stateList.length === 0){
+            return stateList;
+        }
+
+        for(let i = 0; i < stateList.length; i++){
+            if(stateList[i].currentId === currentDeleteId){
+                console.log("func 'deleteIDFromState' ======= DELETED currentId: ", stateList.splice(i, 1));
+
+                return stateList;
+            }
+
+            if(stateList[i].childId.length > 0){
+                stateList[i].childId = deleteIDFromState(state[i].childId);
+            }
+
+            /*
+            for(let item of data){
+                if(item.id !== state[i].currentId){
+                    continue;
+                }
+
+                let name = state[i].currentId.split("--")[0];
+
+                for(let elem of listExtendedObject){
+                    if(elem.name !== name){
+                        continue;
+                    }
+                        
+                    elem.listProperties.forEach((value) => {
+                        if(Array.isArray(item[value])){
+                            for(let ce of item[value]){
+                                if(state[i].childId.find((e) => e.currentId === ce)){
+                                    continue;
+                                }           
+                                
+                                state[i].childId.push({ currentId: ce, childId: [] });
+                            }
+                        } else {
+                            if((item[value] !== null) && (item[value] !== "")){
+                                if(!state[i].childId.find((e) => e.currentId === item[value])){
+                                    state[i].childId.push({ currentId: item[value], childId: [] });
+                                }
+                            }
+                        }
+                    });
+                }
+            }*/
+        }
+
+        return state;
+    };
+    let deleteIdFromSTIXObject = () => {
+        let parrentObject = listObjReducer.list[currentParentId];
+        let id = currentParentId.split("--")[0];
+        let listSaveRefs = [];
+
+        for(let value of listExtendedObject){
+            if(value.name === id){
+                listSaveRefs = value.listProperties;
+
+                break;
+            }
+        }
+
+        for(let value of listSaveRefs){
+            if(Array.isArray(parrentObject[value])){
+                let tmp = parrentObject[value].filter((item) => item !== currentDeleteId);
+
+                parrentObject[value] = tmp;
+            } else {
+                if(parrentObject[value] === currentDeleteId){
+                    parrentObject[value] = "";
+                }
+            }
+        }
+
+        console.log("currentParentId: ", currentParentId, " ID: ", id); 
+        console.log("NEW PARRENT Object from who was DELETED element: ", parrentObject);
+        console.log("LIST settings with somethings elements: ",  listSaveRefs);
+    };
     let updateState = (parentId, data, state) => {
         if(data.length === 0){
-            return;
+            return state;
         }
 
         for(let i = 0; i < state.length; i++){
@@ -551,6 +629,13 @@ export function CreateListObjectRefsReport(props){
         if(currentId !== ""){
             let searchListObjectId = findObjectId(state, currentId);
             let listId = [];
+
+            console.log("OPINION REPORT: searchListObjectId = ", searchListObjectId);
+
+            if(!Array.isArray(searchListObjectId.childId)){
+                return;
+            }
+
             searchListObjectId.childId.forEach((item) => {
                 listId.push(item.currentId);
             });
