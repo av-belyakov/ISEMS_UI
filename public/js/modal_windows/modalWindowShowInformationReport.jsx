@@ -101,6 +101,13 @@ const reducer = (state, action) => {
         state.outside_specification.computer_threat_type = action.data;
 
         return {...state};
+    case "updateObjectRefs":
+
+        console.log("func 'reducer', type: ", action.type, " new object_refs: ", action.data);
+
+        state.object_refs = action.data;
+  
+        return {...state};
     case "deleteObjectRefs":
         if(state.object_refs.length === 0){
             return {...state};
@@ -196,18 +203,6 @@ export default function ModalWindowShowInformationReport(props) {
         handlerShowObjectRefSTIXObject,
         handlerShowModalWindowCreateNewSTIXObject,
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
-
-        /*
-        show,
-        onHide,
-        showReportId,
-        groupList,
-        userPermissions,
-        socketIo,
-        handlerButtonSave,
-        handlerShowObjectRefSTIXObject,
-        handlerShowModalWindowCreateNewSTIXObject,
-        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,*/
     } = props;
 
     const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
@@ -421,6 +416,9 @@ function CreateReportInformation(props){
     }, []);
     useEffect(() => {
         if(showReportId !== ""){
+
+            console.log("SEND REQUEST: isems-mrsi ui request: send search request, get report for id");
+
             //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
             socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
             socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: showReportId });
@@ -549,16 +547,10 @@ function CreateReportInformation(props){
             stateReport={state}
             showReportId={showReportId}
             confirmDeleteLink={confirmDeleteLink}
-            handlerDeleteObjectRef={(parentId, deleteId) => {
-                //dispatch({ type: "deleteObjectRefs", data: key });
-                handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId);
-                //                handlerButtonSaveIsNotDisabled();
-            }} 
+            handlerDeleteObjectRef={(parentId, deleteId) => handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId)} 
+            handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
-            handlerChangeCurrentSTIXObject={() => {
-                handlerShowModalWindowCreateNewSTIXObject(showReportId);
-            }}
-            //handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
+            handlerChangeCurrentSTIXObject={() => handlerShowModalWindowCreateNewSTIXObject(showReportId)}
         />}
         <Row className="mt-3">
             <Col md={12}>
