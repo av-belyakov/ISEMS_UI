@@ -199,7 +199,8 @@ export default function ModalWindowShowInformationReport(props) {
         showReportId,
         userPermissions,
         confirmDeleteLink,
-        handlerButtonSave, 
+        handlerButtonSave,
+        handlerDialogConfirm, 
         handlerShowObjectRefSTIXObject,
         handlerShowModalWindowCreateNewSTIXObject,
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
@@ -243,6 +244,7 @@ export default function ModalWindowShowInformationReport(props) {
             userPermissions={userPermissions.editing_information.status}
             confirmDeleteLink={confirmDeleteLink}
             buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+            handlerDialogConfirm={handlerDialogConfirm}
             handlerPressButtonSave={handlerPressButtonSave}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
@@ -261,6 +263,7 @@ ModalWindowShowInformationReport.propTypes = {
     userPermissions: PropTypes.object.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
+    handlerDialogConfirm: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
     handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.func.isRequired,
@@ -309,6 +312,7 @@ function CreateAppBody(props){
         userPermissions,
         confirmDeleteLink,
         buttonSaveChangeTrigger,
+        handlerDialogConfirm,
         handlerPressButtonSave,
         handlerShowObjectRefSTIXObject,
         handlerButtonSaveIsNotDisabled,
@@ -326,6 +330,7 @@ function CreateAppBody(props){
                     showReportId={showReportId}
                     userPermissions={userPermissions}
                     confirmDeleteLink={confirmDeleteLink}
+                    handlerDialogConfirm={handlerDialogConfirm}
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
                     handlerPressButtonSave={handlerPressButtonSave}
                     handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
@@ -358,6 +363,7 @@ CreateAppBody.propTypes = {
     userPermissions: PropTypes.bool.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    handlerDialogConfirm: PropTypes.func.isRequired,
     handlerPressButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerButtonSaveIsNotDisabled: PropTypes.func.isRequired,
@@ -372,6 +378,7 @@ function CreateReportInformation(props){
         userPermissions,
         confirmDeleteLink,
         buttonSaveChangeTrigger,
+        handlerDialogConfirm,
         handlerPressButtonSave,
         handlerShowObjectRefSTIXObject,
         handlerButtonSaveIsNotDisabled,
@@ -547,6 +554,7 @@ function CreateReportInformation(props){
             stateReport={state}
             showReportId={showReportId}
             confirmDeleteLink={confirmDeleteLink}
+            handlerDialogConfirm={handlerDialogConfirm}
             handlerDeleteObjectRef={(parentId, deleteId) => handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId)} 
             handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
@@ -652,6 +660,7 @@ CreateReportInformation.propTypes = {
     userPermissions: PropTypes.bool.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    handlerDialogConfirm: PropTypes.func.isRequired,
     handlerPressButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerButtonSaveIsNotDisabled: PropTypes.func.isRequired,

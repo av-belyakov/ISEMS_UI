@@ -143,6 +143,7 @@ export default function CreatePageReport(props) {
             userPermissions={receivedData.userPermissions}
             confirmDeleteLink={buttonDelModalWindowConfirmDeleteLinkFromObjRefs}
             handlerButtonSave={handlerButtonSaveModalWindowReportSTIX} 
+            handlerDialogConfirm={handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
             handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
