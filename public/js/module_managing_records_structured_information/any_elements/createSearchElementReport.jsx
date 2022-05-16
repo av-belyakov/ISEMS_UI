@@ -23,7 +23,8 @@ import validatorjs from "validatorjs";
 
 import { helpers } from "../../common_helpers/helpers";
 import CreatePatternSearchFilters from "./createPatternSearchFilters.jsx";
-import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "./anyElements.jsx";
+import CreateListTypesDecisionsMadeComputerThreat from "./createListTypesDecisionsMadeComputerThreat.jsx";
+import CreateListTypesComputerThreat from "./createListTypesComputerThreat.jsx";
 
 const listSearchTypeElement = [
     {

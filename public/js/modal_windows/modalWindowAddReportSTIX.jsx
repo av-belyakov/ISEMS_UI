@@ -21,7 +21,8 @@ import PropTypes from "prop-types";
 
 import { CreateListObjectRefs } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
-import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
+import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
+import CreateListTypesComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesComputerThreat.jsx";
 
 const tzoffset = (new Date()).getTimezoneOffset() * 60000;
 const myDate = (new Date(Date.now() - tzoffset)).toISOString();

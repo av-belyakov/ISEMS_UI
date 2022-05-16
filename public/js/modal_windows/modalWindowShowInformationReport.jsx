@@ -25,11 +25,12 @@ import PropTypes from "prop-types";
 import { helpers } from "../common_helpers/helpers";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
-import { CreateListObjectRefsReport } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
+import CreateListObjectRefsReport from "../module_managing_records_structured_information/any_elements/createListObjectRefsReport.jsx";
 import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
 import CreateListPreviousStateSTIX from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
-import { CreateListTypesDecisionsMadeComputerThreat, CreateListTypesComputerThreat } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
+import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
+import CreateListTypesComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesComputerThreat.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
