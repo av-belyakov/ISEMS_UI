@@ -21,6 +21,42 @@ import PropTypes from "prop-types";
 import { helpers } from "../../common_helpers/helpers.js";
 import listExtendedObject from "../../common_helpers/listExtendedObject";
 
+const getListPropertiesExtendedObject = (objName) => {
+    for(let elem of listExtendedObject){
+        if(elem.name === objName){
+            return elem.listProperties;
+        }
+    } 
+
+    return [];
+};
+
+const addElemToChildId = (listData /** item[value] */, stateTmp /** stateTmp[i] */) => {
+    let newArr = [];
+
+    if(Array.isArray(listData)){
+        for(let ce of listData){
+            if(stateTmp.childId.find((e) => e.currentId === ce)){
+                continue;
+            }           
+
+            newArr.push({ currentId: ce, childId: [] });
+
+            //console.log("func 'updateState' 10000, stateTmp[i].currentId ", stateTmp[i].currentId, " stateTmp[i].childId: ", stateTmp[i].childId);
+        }
+    } else {
+        if((listData !== null) && (listData !== "")){
+            if(!stateTmp.childId.find((e) => e.currentId === listData)){
+                newArr.push({ currentId: listData, childId: [] });
+
+                //console.log("func 'updateState' 20000, stateTmp[i].currentId ", stateTmp[i].currentId, " stateTmp[i].childId: ", stateTmp[i].childId);
+            }
+        }
+    }
+
+    return newArr;
+};
+
 const loreducer = (state, action) => {
     let deleteIDFromState = (stateList, currentDepth) => {
         if(deleteIdDepthAndKey.length < 1){
@@ -57,158 +93,67 @@ const loreducer = (state, action) => {
             return stateTmp;
         }
     
+        console.log("func 'updateState', START, parentId: ", parentId, " data: ", data, " stateTmp: ", stateTmp);
+
         let parentType = parentId.split("--")[0];
     
         for(let i = 0; i < stateTmp.length; i++){
-            //            console.log("func 'updateState' parentId: ", parentId, " stateTmp[i].currentId: ", stateTmp[i].currentId, " parentId === stateTmp[i].currentId ", parentId === stateTmp[i].currentId);
-                
-            if((parentType !== "report") && (parentId !== stateTmp[i].currentId)){
-                continue;
-            }
-    
-            if(stateTmp[i].childId.length > 0){
-                stateTmp[i].childId = updateState(parentId, data, stateTmp[i].childId);
-            }
-    
-            console.log("func 'updateState' 11111 ADD NEW ELEMENT,  stateTmp[i].currentId: ", stateTmp[i].currentId);
-    
-            //
             for(let item of data){
-                if(parentType === "report"){
-                    let name = stateTmp[i].currentId.split("--")[0];
-    
-                    for(let elem of listExtendedObject){
-                        if(elem.name !== name){
-                            continue;
-                        }
-                        
-
-
-                        for(let value of elem.listProperties){
-                            if(!item[value] || stateTmp[i].currentId !== item.id){
-                                continue;
-                            }
-
-                            if(Array.isArray(item[value])){
-                                for(let ce of item[value]){
-                                    if(stateTmp[i].childId.find((e) => e.currentId === ce)){
-                                        continue;
-                                    }           
-    
-                                    stateTmp[i].childId.push({ currentId: ce, childId: [] });
-
-                                    console.log("func 'updateState' 10000 stateTmp[i].childId: ", stateTmp[i].childId);
-                                }
-                            } else {
-                                if((item[value] !== null) && (item[value] !== "")){
-                                    if(!stateTmp[i].childId.find((e) => e.currentId === item[value])){
-                                        stateTmp[i].childId.push({ currentId: item[value], childId: [] });
-
-                                        console.log("func 'updateState' 20000 stateTmp[i].childId: ", stateTmp[i].childId);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    //                    return stateTmp;
-                } else {
-                    if(parentId === stateTmp[i].currentId){
-                        console.log("func 'updateState' &&&&&&&& parentId: (", parentId, "), stateTmp[i].currentId: ", stateTmp[i].currentId, " stateTmp[i].childId: ", stateTmp[i].childId);
-    
-                        continue;
-                    }                    
-                }
-
-
-                /**
- * if(parentType === "report"){
-                    let name = stateTmp[i].currentId.split("--")[0];
-    
-                    for(let elem of listExtendedObject){
-                        if(elem.name !== name){
-                            continue;
-                        }
-                        
-
-                        
-                        for(let value of elem.listProperties){
-                            if(!item[value] || stateTmp[i].currentId !== item.id){
-                                continue;
-                            }
-
-                            if(Array.isArray(item[value])){
-                                for(let ce of item[value]){
-                                    if(stateTmp[i].childId.find((e) => e.currentId === ce)){
-                                        continue;
-                                    }           
-    
-                                    stateTmp[i].childId.push({ currentId: ce, childId: [] });
-
-                                    console.log("func 'updateState' 10000 stateTmp[i].childId: ", stateTmp[i].childId);
-                                }
-                            } else {
-                                if((item[value] !== null) && (item[value] !== "")){
-                                    if(!stateTmp[i].childId.find((e) => e.currentId === item[value])){
-                                        stateTmp[i].childId.push({ currentId: item[value], childId: [] });
-
-                                        console.log("func 'updateState' 20000 stateTmp[i].childId: ", stateTmp[i].childId);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    //                    return stateTmp;
-                } else {
-                    if(parentId === stateTmp[i].currentId){
-                        console.log("func 'updateState' &&&&&&&& parentId: (", parentId, "), stateTmp[i].currentId: ", stateTmp[i].currentId, " stateTmp[i].childId: ", stateTmp[i].childId);
-    
-                        continue;
-                    }                    
-                }
- */
-
-
-                /*if(parentId !== stateTmp[i].currentId){
-                    console.log("func 'updateState' ERROR item.id !== stateTmp[i].currentId: ", item.id, " !== ", stateTmp[i].currentId, " parentId: (", parentId, ")");
-
+                let name = stateTmp[i].currentId.split("--")[0];
+                let listProperties = getListPropertiesExtendedObject(name);
+                if(listProperties.length === 0){
                     continue;
                 }
 
-                /*
-                let name = stateTmp[i].currentId.split("--")[0];
-    
-                for(let elem of listExtendedObject){
-                    if(elem.name !== name){
+                if(stateTmp[i].childId.length > 0 && parentId === stateTmp[i].currentId){
+                    console.log("TTTTTTTTTTTTTTTTT parentId:", parentId, "  stateTmp[i].childId:", stateTmp[i].childId);
+
+                    stateTmp[i].childId = updateState(parentId, data, stateTmp[i].childId);
+                }
+
+                for(let value of listProperties){
+                    if(!item[value]){
                         continue;
                     }
-                        
-                    //                    elem.listProperties.forEach((value) => {
-                    for(let value of elem.listProperties){
-                        if(Array.isArray(item[value])){
-                            for(let ce of item[value]){
-                                if(stateTmp[i].childId.find((e) => e.currentId === ce)){
-                                    continue;
-                                }           
-    
-                                stateTmp[i].childId.push({ currentId: ce, childId: [] });
 
-                                console.log("func 'updateState' 10000 stateTmp[i].childId: ", stateTmp[i].childId);
-                            }
-                        } else {
-                            if((item[value] !== null) && (item[value] !== "")){
-                                if(!stateTmp[i].childId.find((e) => e.currentId === item[value])){
-                                    stateTmp[i].childId.push({ currentId: item[value], childId: [] });
+                    if(stateTmp[i].currentId === item.id){
+                    //if(parentType === "report" && stateTmp[i].currentId === item.id){
+                        stateTmp[i].childId = stateTmp[i].childId.concat(addElemToChildId(item[value], stateTmp[i]));
 
-                                    console.log("func 'updateState' 20000 stateTmp[i].childId: ", stateTmp[i].childId);
-                                }
-                            }
-                        }
-                    }//);
-                }*/
+                        continue;
+                    }
+                }
             }
         }
+
+        /*for(let i = 0; i < stateTmp.length; i++){
+            for(let item of data){
+                let name = stateTmp[i].currentId.split("--")[0];
+                let listProperties = getListPropertiesExtendedObject(name);
+                if(listProperties.length === 0){
+                    continue;
+                }
+
+                if(parentType !== "report" && parentId === stateTmp[i].currentId){
+                    console.log("TTTTTTTTTTTTTTTTT parentId:", parentId, "  stateTmp[i].childId:", stateTmp[i].childId);
+
+                    stateTmp[i].childId = updateState(parentId, data, stateTmp[i].childId);
+                }
+
+                for(let value of listProperties){
+                    if(!item[value]){
+                        continue;
+                    }
+
+                    if(stateTmp[i].currentId === item.id){
+                    //if(parentType === "report" && stateTmp[i].currentId === item.id){
+                        stateTmp[i].childId = stateTmp[i].childId.concat(addElemToChildId(item[value], stateTmp[i]));
+
+                        continue;
+                    }
+                }
+            }
+        }*/
     
         return stateTmp;
     };
@@ -225,17 +170,10 @@ const loreducer = (state, action) => {
 
         return {...state};
     case "updateListId":
-        //{ parentObjectId: data.parentObjectId, listObject: data.information.additional_parameters.transmitted_data }
-        console.log("loreducer, 'updateListId' - action.data:", action.data);
 
-        //        state.listId = action.data;
+        //console.log("loreducer, 'updateListId' - action.data:", action.data);
 
         return {...state, listId: updateState(action.data.parentObjectId, action.data.listObject, state.listId)};
-
-        //return {...state, listId: action.data};
-        //case "deleteElementListId":
-
-
     case "getObject":
 
         break;
@@ -422,17 +360,34 @@ export default function CreateListObjectRefsReport(props){
     };
     
     const findObjectId = (list, id) => {
+        let listTmp = [];
+
         for(let i = 0; i < list.length; i++){
-            if(list[i].currentId === id){
-                return list[i];
+            if(list[i].currentId === id && Array.isArray(list[i].childId)){
+                for(let value of list[i].childId){
+                    listTmp.push(value.currentId);
+                }
+
+                continue;
             }
 
-            if(list[i].childId.length > 0){
-                findObjectId(list[i], id);
+
+            /**
+             * здесь надо разобраться, какие то проблеммы при глубоком расскрытии списка, особенно когда доходишь до report котогрый после note
+             * 
+             */
+            let tmp = findObjectId(list[i].childId, id);
+            if(tmp.length > 0){
+                listTmp = listTmp.concat(tmp);
             }
+            //            if(list[i].childId.length > 0){
+
+            console.log("2384848484848488448 func 'findObjectId' if(list[i].childId.length > 0){ list[i] = ", list[i], " id = ", id);
+            console.log("********************* findObjectId(list[i], id) = ", findObjectId(list[i].childId, id));
+            //            }
         }
 
-        return [];
+        return listTmp;
     };
     const handleClick = (id, num, currentId, depth) => { 
         
@@ -457,23 +412,16 @@ export default function CreateListObjectRefsReport(props){
         
         if(currentId !== ""){
             let searchListObjectId = findObjectId(listObjReducer.listId, currentId);
-            let listId = [];
 
-            console.log("func 'handleClick', searchListObjectId = ", searchListObjectId);
+            console.log("func 'handleClick', send REGUEST 'isems-mrsi ui request: send search request, get STIX object for list id' searchListObjectId: ", searchListObjectId, " parentObjectId: ", currentId);
 
-            if(!Array.isArray(searchListObjectId.childId)){
+            if(searchListObjectId.length === 0){
                 return;
             }
 
-            searchListObjectId.childId.forEach((item) => {
-                listId.push(item.currentId);
-            });
-
-            console.log("func 'handleClick', send REGUEST 'isems-mrsi ui request: send search request, get STIX object for list id' searchListObjectId: ", listId, " parentObjectId: ", currentId);
-
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
                 arguments: { 
-                    searchListObjectId: listId,
+                    searchListObjectId: searchListObjectId,//listId,
                     parentObjectId: currentId,
                 }});
         }
