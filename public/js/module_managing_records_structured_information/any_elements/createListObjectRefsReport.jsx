@@ -58,7 +58,7 @@ const addElemToChildId = (listData /** item[value] */, stateTmp /** stateTmp[i] 
 };
 
 const loreducer = (state, action) => {
-    let deleteIDFromState = (stateList, currentDepth) => {
+    let deleteIdFromListId = (stateList, currentParentId, currentDeleteId, deleteIdDepthAndKey, currentDepth) => {
         if(deleteIdDepthAndKey.length < 1){
             return stateList;
         }
@@ -70,7 +70,7 @@ const loreducer = (state, action) => {
         for(let i = 0; i < stateList.length; i++){
             if((depth !== currentDepth) && (stateList[i].childId.length > 0)){
                 //stateList[i].childId = deleteIDFromState(state[i].childId, currentDepth+1);
-                stateList[i].childId = deleteIDFromState(listObjReducer.listId[i].childId, currentDepth+1);
+                stateList[i].childId = deleteIdFromListId(stateList[i].childId, currentParentId, currentDeleteId, deleteIdDepthAndKey, currentDepth+1);
     
                 return stateList;
             }
@@ -78,7 +78,7 @@ const loreducer = (state, action) => {
             if((key === i) && (stateList[i].currentId === currentDeleteId)){
                 let tmpd = stateList.splice(i, 1);
     
-                //console.log("func 'deleteIDFromState' ======= DELETED currentId: ", tmpd);
+                console.log("func 'deleteIDFromState' ======= DELETED currentId: ", tmpd);
     
                 return stateList;
             }
@@ -123,6 +123,8 @@ const loreducer = (state, action) => {
         return stateTmp;
     };
 
+    let newListId = {};
+
     switch(action.type){
     case "updateList":
         state.list[action.data.parent.id] = action.data.parent;
@@ -136,6 +138,15 @@ const loreducer = (state, action) => {
         return {...state};
     case "updateListId":
         return {...state, listId: updateState(action.data.listObject, state.listId)};
+    case "deleteIdFromListId":
+        console.log("loreducer, 'deleteIdFromListId' - action.data", action.data);
+        
+        newListId = deleteIdFromListId(state, action.data.currentParentId, action.data.currentDeleteId, action.data.deleteIdDepthAndKey, 0); 
+
+        console.log("loreducer, 'deleteIdFromListId' newListId = ", newListId);
+
+        return {...state};
+        //return {...state, listId: newListId};
     case "getObject":
 
         break;
@@ -176,24 +187,11 @@ export default function CreateListObjectRefsReport(props){
 
     let listener = (data) => {
 
-        //
-        // Не пойму, но похоже что после удаления из listObjReducer.listId какого либо элемента
-        // при изменении setListObjReducer в следствии получения новых данных этот элемент остается на месте,
-        // хотя не отображается в списке на странице
-        // 
-        //
-
         console.log("LISTENER SEARCH SEND REQUEST,  data: ", data);
         console.log("LISTENER SEARCH SEND REQUEST, stateTmp BEFORE: ", listObjReducer);
         console.log("data.parentObjectId: ", data.parentObjectId, ", data.information.additional_parameters.transmitted_data: ", data.information.additional_parameters.transmitted_data);
 
-        setListObjReducer({ 
-            type: "updateListId", 
-            data: { 
-                parentObjectId: data.parentObjectId, 
-                listObject: data.information.additional_parameters.transmitted_data,
-                //listActivatedObjectNumbers: listActivatedObjectNumbers,
-            }});
+        setListObjReducer({ type: "updateListId", data: { listObject: data.information.additional_parameters.transmitted_data }});
         setListObjReducer({ type: "updateList", data: { current: data.information.additional_parameters.transmitted_data, parent: stateReport }});
     };
     useEffect(() => {
@@ -235,19 +233,24 @@ export default function CreateListObjectRefsReport(props){
 
         //let stateTmp = state.slice();
         //setState(deleteIDFromState(stateTmp, 0));
-        let stateTmp = lodash.cloneDeep(listObjReducer);
-        let newState = deleteIDFromState(stateTmp.listId, 0);
+        //let stateTmp = lodash.cloneDeep(listObjReducer);
+        //let newState = deleteIDFromState(stateTmp.listId, 0);
+        //console.log("REsult delete func 'deleteIDFromState' = ", newState);
+        //setListObjReducer({ type: "deleteElementListId", data: newState });
 
-        console.log("REsult delete func 'deleteIDFromState' = ", newState);
+        setListObjReducer({ type: "deleteIdFromListId", data: { 
+            currentParentId: currentParentId, 
+            currentDeleteId: currentDeleteId,
+            deleteIdDepthAndKey: deleteIdDepthAndKey, 
+        }});
 
-        setListObjReducer({ type: "deleteElementListId", data: newState });
         deleteIdFromSTIXObject();
         handlerDialogConfirm();
 
         //        console.log("stateTmp = ", stateTmp);
     }, [confirmDeleteLink]);
 
-    let deleteIDFromState = (stateList, currentDepth) => {
+    /*let deleteIDFromState = (stateList, currentDepth) => {
         if(deleteIdDepthAndKey.length < 1){
             return stateList;
         }
@@ -275,7 +278,8 @@ export default function CreateListObjectRefsReport(props){
 
         //        return state;
         return stateList;
-    };
+    };*/
+
     let deleteIdFromSTIXObject = () => {
         let parrentObject = lodash.cloneDeep(listObjReducer.list[currentParentId]);
 
@@ -311,126 +315,93 @@ export default function CreateListObjectRefsReport(props){
         console.log("NEW PARRENT Object from who was DELETED element: ", parrentObject);
         console.log("LIST settings with somethings elements: ",  listSaveRefs);
 
-        
         if(parrentObject.type === "report"){
             handlerReportUpdateObjectRefs(parrentObject.object_refs);  
         }
         
-
+        //Пока временно закоментил, так как для тестов не нужно что бы значения в БД изменялись
         //socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ parrentObject ] });
     };
     
     const findObjectId = (list, id) => {
-        let listTmp = new Set([]);
+            let listTmp = new Set([]);
 
-        for(let i = 0; i < list.length; i++){
-            if(!Array.isArray(list[i].childId)){
-                continue;
-            }
+            for(let i = 0; i < list.length; i++){
+                if(!Array.isArray(list[i].childId)){
+                    continue;
+                }
 
-            if(list[i].currentId === id){                
-                for(let value of list[i].childId){
-                    listTmp.add(value.currentId);
+                if(list[i].currentId === id){                
+                    for(let value of list[i].childId){
+                        listTmp.add(value.currentId);
+                    }
+                } else {
+                    let tmp = findObjectId(list[i].childId, id);                
+                    for(let value of tmp){
+                        listTmp.add(value);
+                    }
                 }
-            } else {
-                let tmp = findObjectId(list[i].childId, id);                
-                for(let value of tmp){
-                    listTmp.add(value);
-                }
-            }
     
-        }
-
-        return listTmp;
-    };
-    /**
-const findObjectId = (list, id) => {
-        let listTmp = [];
-
-        for(let i = 0; i < list.length; i++){
-            if(!Array.isArray(list[i].childId)){
-                continue;
             }
 
-            if(list[i].currentId === id){
-                
-                console.log("------------- func 'findObjectId', 1111");
-                
-                for(let value of list[i].childId){
-                    listTmp.push(value.currentId);
+            return listTmp;
+        },
+        handleClick = (id, num, currentId, depth) => { 
+        
+            console.log("func 'handleClick', START... num:", num, " currentId:", currentId, " depth:", depth);
+        
+            let tmp = listActivatedObjectNumbers.slice();
+        
+            console.log("func 'handleClick', tmp Before = ", tmp);
+
+            if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] === num){        
+                tmp.splice(depth, 10);
+            } else if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] !== num && depth === 0) {
+                tmp = [];
+                tmp.push(num);
+            } else {        
+                tmp.push(num);
+            }
+
+            console.log("func 'handleClick', tmp After = ", tmp);
+
+            setListActivatedObjectNumbers(tmp);
+        
+            if(currentId !== ""){
+                let searchListObjectId = findObjectId(listObjReducer.listId, currentId);
+                let listSearchId = [];
+                for(let value of searchListObjectId){
+                    listSearchId.push(value);
                 }
-            } else {
-                let tmp = findObjectId(list[i].childId, id);
-                
-                console.log("------------- func 'findObjectId', 2222 tmp findObjectId = ", tmp);
-                
-                if(tmp.length > 0){
-                    listTmp = listTmp.concat(tmp);
-                }    
+
+                console.log("func 'handleClick', send REGUEST 'isems-mrsi ui request: send search request, get STIX object for list id' searchListObjectId: ", searchListObjectId, " parentObjectId: ", currentId);
+
+                if(searchListObjectId.length === 0){
+                    return;
+                }
+
+                socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
+                    arguments: { 
+                        searchListObjectId: listSearchId,//searchListObjectId,//listId,
+                        parentObjectId: currentId,
+                    }});
             }
-    
-        }
+        },
+        handlerDeleteObjRef = (parentId, currentId, depth, key) => {
 
-        return listTmp;
-    };
-     */
-    const handleClick = (id, num, currentId, depth) => { 
-        
-        console.log("func 'handleClick', START... num:", num, " currentId:", currentId, " depth:", depth);
-        
-        let tmp = listActivatedObjectNumbers.slice();
-        
-        console.log("func 'handleClick', tmp Before = ", tmp);
+            console.log("func handlerDeleteObjectRef, parentId:", parentId, " currentId:", currentId);
+            console.log("STATE:", listObjReducer.listId);
 
-        if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] === num){        
-            tmp.splice(depth, 10);
-        } else if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] !== num && depth === 0) {
-            tmp = [];
-            tmp.push(num);
-        } else {        
-            tmp.push(num);
-        }
+            setCurrentParentId(parentId);
+            setCurrentDeleteId(currentId);
+            setDeleteIdDepthAndKey([ depth, key ]);
 
-        console.log("func 'handleClick', tmp After = ", tmp);
-
-        setListActivatedObjectNumbers(tmp);
-        
-        if(currentId !== ""){
-            let searchListObjectId = findObjectId(listObjReducer.listId, currentId);
-            let listSearchId = [];
-            for(let value of searchListObjectId){
-                listSearchId.push(value);
-            }
-
-            console.log("func 'handleClick', send REGUEST 'isems-mrsi ui request: send search request, get STIX object for list id' searchListObjectId: ", searchListObjectId, " parentObjectId: ", currentId);
-
-            if(searchListObjectId.length === 0){
-                return;
-            }
-
-            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
-                arguments: { 
-                    searchListObjectId: listSearchId,//searchListObjectId,//listId,
-                    parentObjectId: currentId,
-                }});
-        }
-    };
-
-    const handlerDeleteObjRef = (parentId, currentId, depth, key) => {
-
-        console.log("func handlerDeleteObjectRef, parentId:", parentId, " currentId:", currentId);
-        console.log("STATE:", listObjReducer.listId);
-
-        setCurrentParentId(parentId);
-        setCurrentDeleteId(currentId);
-        setDeleteIdDepthAndKey([ depth, key ]);
-
-        handlerDeleteObjectRef(parentId, currentId);                
-    };
+            handlerDeleteObjectRef(parentId, currentId);                
+        };
 
     let getListId = (list, parentId, depth) => {
 
-        console.log("func 'getListId' depth:", depth, " list: ", list);
+        //console.log("func 'getListId' depth:", depth, " list: ", list);
 
         return list.map((item, key) => {
             let type = item.currentId.split("--");
