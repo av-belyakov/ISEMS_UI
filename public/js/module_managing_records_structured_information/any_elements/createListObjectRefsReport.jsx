@@ -168,7 +168,6 @@ export default function CreateListObjectRefsReport(props){
     console.log("stateReport: ", stateReport, " objListBegin: ", objListBegin);
     console.log("confirmDeleteLink = ", confirmDeleteLink);
 
-    //const [ state, setState ] = useState(objListBegin);
     const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: {}, listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
     const [ currentDeleteId, setCurrentDeleteId ] = useState("");
