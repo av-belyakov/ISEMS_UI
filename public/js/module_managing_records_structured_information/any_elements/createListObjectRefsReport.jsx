@@ -15,7 +15,7 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { green, red } from "@material-ui/core/colors";
-import lodash from "lodash";
+import lodash, { templateSettings } from "lodash";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
@@ -88,27 +88,22 @@ const loreducer = (state, action) => {
         return stateList;
     };
 
-    let updateState = (parentId, data, stateTmp) => {
+    let updateState = (data, stateTmp) => {
         if(data.length === 0){
             return stateTmp;
         }
-    
-        console.log("func 'updateState', START, parentId: ", parentId, " data: ", data, " stateTmp: ", stateTmp);
 
-        let parentType = parentId.split("--")[0];
-    
         for(let i = 0; i < stateTmp.length; i++){
             for(let item of data){
-                let name = stateTmp[i].currentId.split("--")[0];
-                let listProperties = getListPropertiesExtendedObject(name);
-                if(listProperties.length === 0){
+                if(stateTmp[i].currentId !== item.id){
                     continue;
                 }
 
-                if(stateTmp[i].childId.length > 0 && parentId === stateTmp[i].currentId){
-                    console.log("TTTTTTTTTTTTTTTTT parentId:", parentId, "  stateTmp[i].childId:", stateTmp[i].childId);
+                let name = stateTmp[i].currentId.split("--")[0];
+                let listProperties = getListPropertiesExtendedObject(name);
 
-                    stateTmp[i].childId = updateState(parentId, data, stateTmp[i].childId);
+                if(listProperties.length === 0){
+                    continue;
                 }
 
                 for(let value of listProperties){
@@ -116,45 +111,15 @@ const loreducer = (state, action) => {
                         continue;
                     }
 
-                    if(stateTmp[i].currentId === item.id){
-                    //if(parentType === "report" && stateTmp[i].currentId === item.id){
-                        stateTmp[i].childId = stateTmp[i].childId.concat(addElemToChildId(item[value], stateTmp[i]));
-
-                        continue;
-                    }
+                    stateTmp[i].childId = stateTmp[i].childId.concat(addElemToChildId(item[value], stateTmp[i]));
                 }
+            }
+
+            if(stateTmp[i].childId.length > 0){
+                stateTmp[i].childId = updateState(data, stateTmp[i].childId);
             }
         }
 
-        /*for(let i = 0; i < stateTmp.length; i++){
-            for(let item of data){
-                let name = stateTmp[i].currentId.split("--")[0];
-                let listProperties = getListPropertiesExtendedObject(name);
-                if(listProperties.length === 0){
-                    continue;
-                }
-
-                if(parentType !== "report" && parentId === stateTmp[i].currentId){
-                    console.log("TTTTTTTTTTTTTTTTT parentId:", parentId, "  stateTmp[i].childId:", stateTmp[i].childId);
-
-                    stateTmp[i].childId = updateState(parentId, data, stateTmp[i].childId);
-                }
-
-                for(let value of listProperties){
-                    if(!item[value]){
-                        continue;
-                    }
-
-                    if(stateTmp[i].currentId === item.id){
-                    //if(parentType === "report" && stateTmp[i].currentId === item.id){
-                        stateTmp[i].childId = stateTmp[i].childId.concat(addElemToChildId(item[value], stateTmp[i]));
-
-                        continue;
-                    }
-                }
-            }
-        }*/
-    
         return stateTmp;
     };
 
@@ -170,10 +135,7 @@ const loreducer = (state, action) => {
 
         return {...state};
     case "updateListId":
-
-        //console.log("loreducer, 'updateListId' - action.data:", action.data);
-
-        return {...state, listId: updateState(action.data.parentObjectId, action.data.listObject, state.listId)};
+        return {...state, listId: updateState(action.data.listObject, state.listId)};
     case "getObject":
 
         break;
@@ -360,35 +322,59 @@ export default function CreateListObjectRefsReport(props){
     };
     
     const findObjectId = (list, id) => {
-        let listTmp = [];
+        let listTmp = new Set([]);
 
         for(let i = 0; i < list.length; i++){
-            if(list[i].currentId === id && Array.isArray(list[i].childId)){
-                for(let value of list[i].childId){
-                    listTmp.push(value.currentId);
-                }
-
+            if(!Array.isArray(list[i].childId)){
                 continue;
             }
 
-
-            /**
-             * здесь надо разобраться, какие то проблеммы при глубоком расскрытии списка, особенно когда доходишь до report котогрый после note
-             * 
-             */
-            let tmp = findObjectId(list[i].childId, id);
-            if(tmp.length > 0){
-                listTmp = listTmp.concat(tmp);
+            if(list[i].currentId === id){                
+                for(let value of list[i].childId){
+                    listTmp.add(value.currentId);
+                }
+            } else {
+                let tmp = findObjectId(list[i].childId, id);                
+                for(let value of tmp){
+                    listTmp.add(value);
+                }
             }
-            //            if(list[i].childId.length > 0){
-
-            console.log("2384848484848488448 func 'findObjectId' if(list[i].childId.length > 0){ list[i] = ", list[i], " id = ", id);
-            console.log("********************* findObjectId(list[i], id) = ", findObjectId(list[i].childId, id));
-            //            }
+    
         }
 
         return listTmp;
     };
+    /**
+const findObjectId = (list, id) => {
+        let listTmp = [];
+
+        for(let i = 0; i < list.length; i++){
+            if(!Array.isArray(list[i].childId)){
+                continue;
+            }
+
+            if(list[i].currentId === id){
+                
+                console.log("------------- func 'findObjectId', 1111");
+                
+                for(let value of list[i].childId){
+                    listTmp.push(value.currentId);
+                }
+            } else {
+                let tmp = findObjectId(list[i].childId, id);
+                
+                console.log("------------- func 'findObjectId', 2222 tmp findObjectId = ", tmp);
+                
+                if(tmp.length > 0){
+                    listTmp = listTmp.concat(tmp);
+                }    
+            }
+    
+        }
+
+        return listTmp;
+    };
+     */
     const handleClick = (id, num, currentId, depth) => { 
         
         console.log("func 'handleClick', START... num:", num, " currentId:", currentId, " depth:", depth);
@@ -412,6 +398,10 @@ export default function CreateListObjectRefsReport(props){
         
         if(currentId !== ""){
             let searchListObjectId = findObjectId(listObjReducer.listId, currentId);
+            let listSearchId = [];
+            for(let value of searchListObjectId){
+                listSearchId.push(value);
+            }
 
             console.log("func 'handleClick', send REGUEST 'isems-mrsi ui request: send search request, get STIX object for list id' searchListObjectId: ", searchListObjectId, " parentObjectId: ", currentId);
 
@@ -421,7 +411,7 @@ export default function CreateListObjectRefsReport(props){
 
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
                 arguments: { 
-                    searchListObjectId: searchListObjectId,//listId,
+                    searchListObjectId: listSearchId,//searchListObjectId,//listId,
                     parentObjectId: currentId,
                 }});
         }
