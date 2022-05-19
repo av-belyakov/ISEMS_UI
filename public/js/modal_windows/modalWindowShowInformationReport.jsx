@@ -103,9 +103,6 @@ const reducer = (state, action) => {
 
         return {...state};
     case "updateObjectRefs":
-
-        console.log("func 'reducer', type: ", action.type, " new object_refs: ", action.data);
-
         state.object_refs = action.data;
   
         return {...state};
