@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 //import { Alert, Card, Spinner, Button, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
@@ -52,6 +52,6 @@ PageManagingAnalytics.propTypes = {
     socketIo: PropTypes.object.isRequired,
 }; 
 
-ReactDOM.render(<PageManagingAnalytics
+ReactDOM.createRoot(document.getElementById("main-page-content")).render(<PageManagingAnalytics
     ss={ss}
-    socketIo={socket} />, document.getElementById("main-page-content"));
+    socketIo={socket} />);

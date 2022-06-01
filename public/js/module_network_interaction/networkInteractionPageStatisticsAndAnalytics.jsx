@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Col, Row, Table, Spinner } from "react-bootstrap";
 import { Pagination as Paginationmui } from "@material-ui/lab";
 import PropTypes from "prop-types";
@@ -341,6 +341,6 @@ CreatePageStatisticsAndAnalytics.propTypes = {
     listItems: PropTypes.object.isRequired,
 };
 
-ReactDOM.render(<CreatePageStatisticsAndAnalytics
+ReactDOM.createRoot(document.getElementById("main-page-content")).render(<CreatePageStatisticsAndAnalytics
     socketIo={socket}
-    listItems={receivedFromServer} />, document.getElementById("main-page-content"));
+    listItems={receivedFromServer} />);

@@ -7,7 +7,7 @@
 "use strict";
 
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 
 import { Button, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
@@ -416,8 +416,8 @@ CreateTable.propTypes = {
     listWorkGroup: PropTypes.array.isRequired,
 };
 
-ReactDOM.render(<CreateTable 
+ReactDOM.createRoot(document.getElementById("field_information")).render(<CreateTable 
     socketIo={socket}
     mainInformation={receivedFromServerMain} 
     accessRights={receivedFromServerAccess} 
-    listWorkGroup={receivedFromServerListWorkGroup} />, document.getElementById("field_information"));
+    listWorkGroup={receivedFromServerListWorkGroup} />);

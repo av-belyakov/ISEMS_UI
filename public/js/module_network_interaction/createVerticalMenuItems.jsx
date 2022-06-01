@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Tab, Tabs } from "@material-ui/core";
 
 class CreateMenuItemsVertical extends React.Component {
@@ -51,4 +51,4 @@ class CreateMenuItemsVertical extends React.Component {
     }
 }
 
-ReactDOM.render(<CreateMenuItemsVertical />, document.getElementById("header-page-vertical_menu"));
+ReactDOM.createRoot(document.getElementById("header-page-vertical_menu")).render(<CreateMenuItemsVertical />);

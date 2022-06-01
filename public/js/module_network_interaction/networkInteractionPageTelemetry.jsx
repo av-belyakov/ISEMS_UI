@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Button, Col, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 
@@ -276,6 +276,6 @@ CreatePageTelemetry.propTypes = {
     listItems: PropTypes.object.isRequired,
 }; 
 
-ReactDOM.render(<CreatePageTelemetry
+ReactDOM.createRoot(document.getElementById("main-page-content")).render(<CreatePageTelemetry
     socketIo={socket}
-    listItems={receivedFromServer} />, document.getElementById("main-page-content"));
+    listItems={receivedFromServer} />);

@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Button, Col, Row } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
 import { blue, red } from "@material-ui/core/colors";
@@ -840,6 +840,6 @@ CreatePageTemplateLog.propTypes = {
     listItems: PropTypes.object.isRequired,
 }; 
 
-ReactDOM.render(<CreatePageTemplateLog
+ReactDOM.createRoot(document.getElementById("main-page-content")).render(<CreatePageTemplateLog
     socketIo={socket}
-    listItems={receivedFromServer} />, document.getElementById("main-page-content"));
+    listItems={receivedFromServer} />);

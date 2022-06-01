@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Button, Col, Row } from "react-bootstrap";
 import { Alert } from "material-ui-lab";
 import { LinearProgress } from "@material-ui/core";
@@ -326,6 +326,6 @@ CreatePageManagingNetworkInteractions.propTypes = {
     listItems: PropTypes.object.isRequired,
 };
 
-ReactDOM.render(<CreatePageManagingNetworkInteractions
+ReactDOM.clientRoot(document.getElementById("header-page-content")).render(<CreatePageManagingNetworkInteractions
     socketIo={socket}
-    listItems={receivedFromServer} />, document.getElementById("header-page-content"));
+    listItems={receivedFromServer} />);

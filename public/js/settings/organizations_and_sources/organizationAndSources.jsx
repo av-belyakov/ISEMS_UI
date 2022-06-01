@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Button, Col, Row, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
@@ -739,8 +739,8 @@ CreatePageOrganizationAndSources.propTypes = {
     listFieldActivity: PropTypes.array.isRequired,
 };
 
-ReactDOM.render(<CreatePageOrganizationAndSources 
+ReactDOM.createRoot(document.getElementById("main-page-content")).render(<CreatePageOrganizationAndSources 
     socketIo={socket}
     listShortEntity={receivedFromServerMain}
     userPermissions={receivedFromServerAccess}
-    listFieldActivity={receivedFromServerListFieldActivity} />, document.getElementById("main-page-content"));
+    listFieldActivity={receivedFromServerListFieldActivity} />);

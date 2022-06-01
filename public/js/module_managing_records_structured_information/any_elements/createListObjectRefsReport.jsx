@@ -15,7 +15,7 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { green, red } from "@material-ui/core/colors";
-import lodash, { templateSettings } from "lodash";
+import lodash from "lodash";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";

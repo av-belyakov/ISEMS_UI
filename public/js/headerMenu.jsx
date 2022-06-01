@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Button, Container, Navbar, Nav, NavDropdown, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
 
@@ -249,6 +249,6 @@ CreateHeaderMenu.protoTypes = {
     listItems: PropTypes.object.isRequired,
 };
 
-ReactDOM.render(<CreateHeaderMenu
+ReactDOM.createRoot(document.getElementById("menu-top")).render(<CreateHeaderMenu
     socketIo={socket}
-    listItems={resivedFromServer} />, document.getElementById("menu-top"));
+    listItems={resivedFromServer} />);

@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import PropTypes from "prop-types";
 
 import CreateBodyAddFile from "./createBodyAddFile.jsx";
@@ -96,9 +96,9 @@ CreatePageRulesSOASourse.propTypes ={
 };
 
 
-ReactDOM.render(<CreatePageRulesSOASourse 
+ReactDOM.createRoot(document.getElementById("page-rules-soa")).render(<CreatePageRulesSOASourse 
     ss={ss}
     socketIo={socket}
     listShortEntity={receivedFromServerMain}
-    userPermissions = {receivedFromServerAccess}/>, document.getElementById("page-rules-soa"));
+    userPermissions = {receivedFromServerAccess}/>);
 

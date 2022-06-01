@@ -7,7 +7,7 @@
 "use strict";
 
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Alert, Button, Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 
@@ -676,8 +676,8 @@ CreateTable.propTypes = {
     mainInformation: PropTypes.object.isRequired,
 };
 
-ReactDOM.render(<CreateTable 
+ReactDOM.createRoot(document.getElementById("field_information")).render(<CreateTable 
     mainInformation={receivedFromServerMain} 
     accessRights={receivedFromServerAccess}
-    socketIo={socket} />, document.getElementById("field_information"));
+    socketIo={socket} />);
 

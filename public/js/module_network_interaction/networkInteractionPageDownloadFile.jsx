@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Col, Row, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
 
@@ -152,6 +152,6 @@ CreatePageDownloadFile.propTypes = {
     listItems: PropTypes.object.isRequired,
 }; 
 
-ReactDOM.render(<CreatePageDownloadFile
+ReactDOM.createRoot(document.getElementById("main-page-content")).render(<CreatePageDownloadFile
     socketIo={socket}
-    listItems={receivedFromServer} />, document.getElementById("main-page-content"));
+    listItems={receivedFromServer} />);

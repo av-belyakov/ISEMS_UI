@@ -26,11 +26,13 @@ import { helpers } from "../common_helpers/helpers";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
 import CreateListObjectRefsReport from "../module_managing_records_structured_information/any_elements/createListObjectRefsReport.jsx";
-import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
 import CreateListPreviousStateSTIX from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIX.jsx";
-import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
-import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
+import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
 import CreateListTypesComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesComputerThreat.jsx";
+import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
+import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
+
+import CreateListObjectRefsReportTreeView from "../module_managing_records_structured_information/any_elements/createListObjectRefsReportTreeView.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -547,6 +549,21 @@ function CreateReportInformation(props){
                     variant="outlined"/>
             </Col>  
         </Row>
+
+        { /** Пока это исключительно для теста ---=== НАЧАЛО ===--- */
+            /*state.object_refs && <CreateListObjectRefsReportTreeView
+                socketIo={socketIo}
+                stateReport={state}
+                showReportId={showReportId}
+                confirmDeleteLink={confirmDeleteLink}
+                handlerDialogConfirm={handlerDialogConfirm}
+                handlerDeleteObjectRef={(parentId, deleteId) => handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId)} 
+                handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
+                handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+                handlerChangeCurrentSTIXObject={() => handlerShowModalWindowCreateNewSTIXObject(showReportId)}
+            />
+            /** ---=== КОНЕЦ ===--- */ }
+
         {state.object_refs && <CreateListObjectRefsReport
             socketIo={socketIo}
             stateReport={state}

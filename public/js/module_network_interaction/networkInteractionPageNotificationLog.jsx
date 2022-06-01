@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Button, Col, Form, Row, Spinner, Table, Tooltip, OverlayTrigger } from "react-bootstrap";
 import PropTypes from "prop-types";
 
@@ -287,6 +287,6 @@ CreatePageNotificationLog.propTypes = {
     listItems: PropTypes.object.isRequired,
 }; 
 
-ReactDOM.render(<CreatePageNotificationLog
+ReactDOM.createRoot(document.getElementById("main-page-content")).render(<CreatePageNotificationLog
     socketIo={socket}
-    listItems={receivedFromServer} />, document.getElementById("main-page-content"));
+    listItems={receivedFromServer} />);

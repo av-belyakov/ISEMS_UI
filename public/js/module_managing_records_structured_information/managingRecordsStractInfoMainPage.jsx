@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Col, Row } from "react-bootstrap";
 import { 
     CssBaseline, 
@@ -296,6 +296,6 @@ CreateMainPage.propTypes = {
     receivedData: PropTypes.object.isRequired,
 };
 
-ReactDOM.render(<CreateMainPage
+ReactDOM.createRoot(document.getElementById("main-page-content")).render(<CreateMainPage
     socketIo={socket}
-    receivedData={receivedFromServer} />, document.getElementById("main-page-content"));
+    receivedData={receivedFromServer} />);

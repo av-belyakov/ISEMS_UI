@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Badge, Button, Col, Row, OverlayTrigger, Tooltip, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
 
@@ -446,6 +446,6 @@ CreatePageStatisticsAndAnalyticsDetalTask.propTypes = {
     listItems: PropTypes.object.isRequired,
 };
 
-ReactDOM.render(<CreatePageStatisticsAndAnalyticsDetalTask
+ReactDOM.createRoot(document.getElementById("main-page-content")).render(<CreatePageStatisticsAndAnalyticsDetalTask
     socketIo={socket}
-    listItems={receivedFromServer} />, document.getElementById("main-page-content"));
+    listItems={receivedFromServer} />);
