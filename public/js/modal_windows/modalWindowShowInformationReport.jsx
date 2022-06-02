@@ -32,8 +32,6 @@ import CreateListTypesComputerThreat from "../module_managing_records_structured
 import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
 
-import CreateListObjectRefsReportTreeView from "../module_managing_records_structured_information/any_elements/createListObjectRefsReportTreeView.jsx";
-
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: "fixed",
@@ -550,19 +548,16 @@ function CreateReportInformation(props){
             </Col>  
         </Row>
 
-        { /** Пока это исключительно для теста ---=== НАЧАЛО ===--- */
-            /*state.object_refs && <CreateListObjectRefsReportTreeView
-                socketIo={socketIo}
-                stateReport={state}
-                showReportId={showReportId}
-                confirmDeleteLink={confirmDeleteLink}
-                handlerDialogConfirm={handlerDialogConfirm}
-                handlerDeleteObjectRef={(parentId, deleteId) => handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId)} 
-                handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
-                handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
-                handlerChangeCurrentSTIXObject={() => handlerShowModalWindowCreateNewSTIXObject(showReportId)}
-            />
-            /** ---=== КОНЕЦ ===--- */ }
+        <Row>
+            <Col md={12}>
+                Tree Drag and Drob использовать не буду. Добавление объекта в соновное дерево по прожнему будет осуществлятся с использованием кнопки "прикрепить дополнительный объект".
+                Аналог этой кнопки и соответвенно модальное окно с обработчиками добавления объекта будет вызыватся через кнопку рядом с id объекта из списка для которого ВООБЩЕ
+                ВОЗМОЖНО добавление ссылки на другие объекты (не у каждого STIX объекта есть свойство для хранения ссылок). А так как некоторые из объектов имеют несколько полей
+                для хранения ссылок то нужно предусмотреть в открывшемся окне шаг по выбору свойства объекта в которое будем добавлять ссылку. Если свойство в текущем объекте только
+                одно, то этот шаг автоматически исключается. Перенос ссылок между объектами выполняется путем поиска и добавления ссылки объекта на который ссылаются в один объект и
+                удаления этой же ссылки из другого объекта.
+            </Col>
+        </Row>
 
         {state.object_refs && <CreateListObjectRefsReport
             socketIo={socketIo}
