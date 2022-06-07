@@ -74,11 +74,9 @@ export default function ModalWindowAnySTIXObject(props){
             width="35" 
             height="35" />;
     }
-    
+
     let MyModule = somethingModule(idSTIXObject);
-    let titleName = (currentAdditionalIdSTIXObject === "create-new-stix-object")? 
-            "Создание нового объекта или добавление существующего": 
-            `${(typeof objectElem === "undefined")? "": objectElem.description} id: ${currentAdditionalIdSTIXObject}`,
+    let titleName = `${(typeof objectElem === "undefined")? "": objectElem.description} id: ${currentAdditionalIdSTIXObject}`,
         img = (typeof objectElem === "undefined")? "": <img src={`/images/stix_object/${objectElem.link}`} width="35" height="35" />;
 
     return (<Dialog 

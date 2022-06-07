@@ -24,6 +24,7 @@ export default function CreatePageReport(props) {
     let [ addedNewReport, setAddedNewReport ] = React.useState(false);
     let [ buttonDelModalWindowConfirmDeleteLinkFromObjRefs, setButtonDelModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState(false);
     let [ objectId, setObjectId ] = React.useState("");
+    let [ listRefsForObjectSTIX, setListRefsForObjectSTIX ] = React.useState([]);
     let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
     let [ objectsIdModalWindowConfirmDeleteLinkFromObjRefs, setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState([]);
     let [ showModalWindowSTIXObject, setShowModalWindowSTIXObject ] = React.useState(false);
@@ -72,8 +73,9 @@ export default function CreatePageReport(props) {
             setCurrentAdditionalIdSTIXObject("");
             setShowModalWindowSTIXObject(false);
         },
-        handlerShowModalWindowCreateNewSTIXObject = (elemId) => {
+        handlerShowModalWindowCreateNewSTIXObject = (elemId, listRefsForObjectSTIX) => {
             setObjectId(elemId);
+            setListRefsForObjectSTIX(listRefsForObjectSTIX);
             setShowModalWindowCreateNewSTIXObject(true);
         },
         handlerCloseModalWindowCreateNewSTIXObject = () => {
@@ -173,10 +175,15 @@ export default function CreatePageReport(props) {
             scroll="paper"
             open={showModalWindowCreateNewSTIXObject}>
             <DialogTitle>
-                <Grid item container md={12} justifyContent="flex-end">
-                    <IconButton edge="start" color="inherit" onClick={handlerCloseModalWindowCreateNewSTIXObject} aria-label="close">
-                        <CloseIcon />
-                    </IconButton>
+                <Grid container direction="row">
+                    <Grid item container md={11} justifyContent="flex-start">
+                        Создание ссылки на новый объект или уже существующий
+                    </Grid>
+                    <Grid item container md={1} justifyContent="flex-end">
+                        <IconButton edge="start" color="inherit" onClick={handlerCloseModalWindowCreateNewSTIXObject} aria-label="close">
+                            <CloseIcon />
+                        </IconButton>
+                    </Grid>
                 </Grid>
             </DialogTitle>
             <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22 }}>Загрузка...</div>}>
@@ -184,6 +191,7 @@ export default function CreatePageReport(props) {
                     socketIo={socketIo}
                     isNotDisabled={true}
                     currentIdSTIXObject={objectId} 
+                    listRefsForObjectSTIX={listRefsForObjectSTIX}
                     handlerDialog={handlerDialogSaveNewSTIXObject}
                     handlerDialogClose={handlerCloseModalWindowCreateNewSTIXObject}
                 />

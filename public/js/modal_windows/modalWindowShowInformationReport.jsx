@@ -562,13 +562,13 @@ function CreateReportInformation(props){
         {state.object_refs && <CreateListObjectRefsReport
             socketIo={socketIo}
             stateReport={state}
-            showReportId={showReportId}
+            majorParentId={showReportId}
             confirmDeleteLink={confirmDeleteLink}
             handlerDialogConfirm={handlerDialogConfirm}
             handlerDeleteObjectRef={(parentId, deleteId) => handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId)} 
+            handlerAddRefObjectSTIX={handlerShowModalWindowCreateNewSTIXObject}
             handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
-            handlerChangeCurrentSTIXObject={() => handlerShowModalWindowCreateNewSTIXObject(showReportId)}
         />}
         <Row className="mt-3">
             <Col md={12}>
