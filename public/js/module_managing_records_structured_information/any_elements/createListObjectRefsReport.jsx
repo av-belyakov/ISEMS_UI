@@ -6,12 +6,11 @@ import {
     Tooltip,
     Typography,
     IconButton,
-    Grid,
+    //    Grid,
     List,
     ListItem,
     ListItemText,
 } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
@@ -22,7 +21,7 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
 import listExtendedObject from "../../common_helpers/listExtendedObject";
-import { CollectionsBookmarkSharp } from "@material-ui/icons";
+//import { CollectionsBookmarkSharp } from "@material-ui/icons";
 
 const getListPropertiesExtendedObject = (objName) => {
     for(let elem of listExtendedObject){

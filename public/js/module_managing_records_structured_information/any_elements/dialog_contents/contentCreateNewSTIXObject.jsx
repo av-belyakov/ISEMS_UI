@@ -17,7 +17,7 @@ import {
     Toolbar,
     Typography,
 } from "@material-ui/core";
-import { teal, grey } from "@material-ui/core/colors";
+import { teal, grey, red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
@@ -54,6 +54,29 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const listRefPropertyObject = {
+    "object_refs": [ "any" ],
+    "operating_system_refs": [ "software" ],
+    "sample_refs": [ "file", "artifact" ],
+    "host_vm_ref": [ "software" ],
+    "operating_system_ref": [ "software" ],
+    "installed_software_refs": [ "software" ],
+    "resolves_to_refs": [ "ipv4-addr", "ipv6-addr", "domain-name" ],
+    "contains_refs": [ "file", "directory" ], 
+    "src_ref": [ "ipv4-addr", "ipv6-addr", "mac-addr", "domain-name" ], 
+    "dst_ref": [ "ipv4-addr", "ipv6-addr", "mac-addr", "domain-name" ],
+    "src_payload_ref": [ "artifact" ], 
+    "dst_payload_ref": [ "artifact" ],
+    "encapsulates_refs": [ "network-traffic" ], 
+    "encapsulated_by_ref": [ "network-traffic" ], 
+    "message_body_data_ref": [ "artifact" ],          
+    "opened_connection_refs": [ "network-traffic" ],
+    "creator_user_ref": [ "user-account" ],
+    "image_ref": [ "file" ],
+    "parent_ref": [ "process" ],
+    "child_refs": [ "process" ],
+};
+
 export default function CreateDialogContentNewSTIXObject(props){
     let { 
         socketIo,
@@ -73,10 +96,29 @@ export default function CreateDialogContentNewSTIXObject(props){
     console.log("func 'CreateDialogContentNewSTIXObject' currentRefObjectSTIX = ", currentRefObjectSTIX);
     console.log(helpers.getListLinkImageSTIXObject());
 
+    console.log("helpers.getListOnceProperties() = ", helpers.getListOnceProperties());
+    console.log("helpers.getListManyProperties() = ", helpers.getListManyProperties());
+
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" className="pt-3" spacing={3}>
                 <Grid item container md={4}>
+                    <Grid container direction="row">
+                        <Grid item container md={12} justifyContent="flex-start">
+                            <TextField
+                                id={"select-type-create-object"}
+                                select
+                                fullWidth
+                                label={"тип искомого или создаваемого объекта (не обязательный параметр)"}
+                                value={typeObjectSTIX}
+                                onChange={(obj) => setTypeObjectSTIX(obj.target.value)}>
+                                <MenuItem key={"key-type-none"} value="">тип не определен</MenuItem>
+                                {listLinkImageSTIXObject.map((item) => <MenuItem key={`key-${item}`} value={item}>{helpers.getLinkImageSTIXObject(item).description}</MenuItem>)}
+                            </TextField>
+                        </Grid>
+                    </Grid>
+                    Может быть свойство обеспечивающее связь родительского и дочернего объектов имеет смысл сделать в виде radio button? Их максимум
+                    может быть 6. Сразу будет выдно какие активны, а какие нет.
                     {(listRefsForObjectSTIX.length > 1)?
                         <Grid container direction="row">
                             <Grid item container md={12} justifyContent="flex-start">
@@ -87,35 +129,20 @@ export default function CreateDialogContentNewSTIXObject(props){
                                     label={"свойство обеспечивающее связь родительского и дочернего объектов"}
                                     value={currentRefObjectSTIX}
                                     onChange={(obj) => { 
-                                
-                                        console.log("func 'change select-property-connect-parent-child-object', obj = ", obj);
-
-                                        /**
-                                 * надо добавить обработчик сюда!!!
-                                 */
-
-                                        //setCurrentTypesComputerThreat(obj.target.value);
-                                        //handlerTypesComputerThreat(obj.target.value);
-            
+                                        setCurrentRefObjectSTIX(obj.target.value);            
                                     }}>
                                     {listRefsForObjectSTIX.map((item) => <MenuItem key={`key-${item}`} value={item}>{item}</MenuItem>)}
                                 </TextField>
                             </Grid>
                         </Grid>:
                         ""}
-                    <Grid container direction="row">
-                        <Grid item container md={12} justifyContent="flex-start">
-                            <TextField
-                                id={"select-type-create-object"}
-                                select
-                                fullWidth
-                                label={"тип искомого или создаваемого объекта (не обязательный параметр)"}
-                                value={typeObjectSTIX}
-                                onChange={(obj) => setTypeObjectSTIX(obj.target.value)}>
-                                {listLinkImageSTIXObject.map((item) => <MenuItem key={`key-${item}`} value={item}>{helpers.getLinkImageSTIXObject(item).description}</MenuItem>)}
-                            </TextField>
-                        </Grid>
-                    </Grid>
+                    {helpers.getListOnceProperties().find((item) => item === currentRefObjectSTIX)?
+                        <Typography variant="caption" display="block" gutterBottom style={{ color: red[400] }}>
+                            Внимание!!! Выбранное свойство объекта может содержать только одну ссылку, если вы добавите новую ссылку, то предидущая,
+                            если она есть, будет перезаписанна.
+                        </Typography>:
+                        ""}
+                    
                     <Grid container direction="row" className="pt-3">
                         <Grid item container md={12} justifyContent="flex-start">
                     1. Выбор свойства куда нужно добавить объект, если listRefsForObjectSTIX то вообще нельзя ничего делать, а 
@@ -123,6 +150,8 @@ export default function CreateDialogContentNewSTIXObject(props){
                     2. Тип создоваемого объекта, при поиске не обязателен.
                     3. Строка поиска по id, name, domainame, ip и т.д. (поиск из кеша).
                     4. Вывод списка найденных ссылок.
+
+                    Не для каждого типа родительского объекта и свойств данного объекта, возможно добавление всех видов дочерних объектов 
                         </Grid>
                     </Grid>
                 </Grid>
@@ -130,6 +159,17 @@ export default function CreateDialogContentNewSTIXObject(props){
                 Добавление какого либо нового STIX объекта. При это можно как добавить новый STIX объект, так и выполнить поиск
             уже существующих STIX объектов по их типам, времени создания, идентификатору и т.д. Родительский объект {currentIdSTIXObject}.
             listRefsForObjectSTIX = {listRefsForObjectSTIX}
+            *  На основе типа родительского объекта и его свойств, которые позволяют прекрипить определенный объект, ограничить 
+ * добавление ссылки на новый объект или поиск (в том числе по id) уже существующего объекта
+
+ 1. выбираем stix объект к которому нужно добавить ссылку на другой объект (автоматически выбираются свойства для родительского объекта) +
+ 2. на основе выбранных свойств формируется список из активных для выбора и неактивных stix объектов ссылки на которые можно добавить данному
+ родительскому объекту
+ 3. данный факт касается как создании нового объекта так и поиск уже существующих (поиск выполняется не явно по типам)
+ 4. если поиск выполняется по id то надо автоматически проверить тип объетка по его id
+ 5. а при выборе типа объекта автоматически выбирать свойство в которое добавлять свойство (если данный тип можно добавить в несколько свойств то приоритет тому
+ в котором хранится список), если такого нет или их несколько то выбирать первое попавшийся свойство
+
                 </Grid>
             </Grid>
         </DialogContent>

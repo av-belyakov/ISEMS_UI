@@ -166,6 +166,33 @@ const listLink = {
     //"": "victim-target-square-dark-300-dpi.png",
 };
 
+let listOnceProperties = [
+    "src_ref", 
+    "dst_ref",
+    "image_ref",
+    "sample_ref",
+    "parent_ref",
+    "host_vm_ref",
+    "src_payload_ref", 
+    "dst_payload_ref",
+    "creator_user_ref",
+    "encapsulated_by_ref", 
+    "operating_system_ref",
+    "message_body_data_ref",
+];
+
+let listManyProperties = [
+    "child_refs",
+    "object_refs",
+    "sample_refs",
+    "contains_refs",
+    "resolves_to_refs",
+    "encapsulates_refs", 
+    "operating_system_refs", 
+    "opened_connection_refs",
+    "installed_software_refs",
+];
+
 let helpers = {
     //настраивает высоту отступа для элемента выводящего загрузку сетевых интерфейсов
     loadNetworkMarginTop() {
@@ -344,6 +371,14 @@ let helpers = {
 
     getLinkImageSTIXObject(nameSTIXObject){
         return listLink[nameSTIXObject];
+    },
+
+    getListOnceProperties(){
+        return listOnceProperties;
+    },
+    
+    getListManyProperties(){
+        return listManyProperties;
     },
 
     getHumanNameSTIXElement(value){
