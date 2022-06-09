@@ -10,7 +10,10 @@ import {
     DialogContent,
     Grid,
     Select,
+    Radio,
+    RadioGroup,
     TextField,
+    FormControlLabel,    
     InputLabel,
     FormControl,
     MenuItem,
@@ -55,7 +58,47 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const listRefPropertyObject = {
-    "object_refs": [ "any" ],
+    "object_refs": [ 
+        "artifact",				
+        "directory",				
+        "file",					
+        "mutex",				
+        "process",			
+        "software",				
+        "url",				
+        "windows-registry-key",			
+        "x509-certificate",		
+        "attack-pattern",
+        "autonomous-system",
+        "campaign",		
+        "course-of-action",	
+        "domain-name",		
+        "email-addr",	
+        "email-message",	
+        "grouping",	
+        "identity",		
+        "incident",	
+        "indicator",		
+        "infrastructure",	
+        "intrusion-set",
+        "ipv4-addr",
+        "ipv6-addr",
+        "location",
+        "mac-addr",
+        "malware",
+        "malware-analysis",
+        "network-traffic",
+        "note",
+        "observed-data",
+        "opinion",
+        "relationship",
+        "report",
+        "sighting",
+        "threat-actor",
+        "tool",
+        "user-account",
+        "vulnerability",
+    ],
     "operating_system_refs": [ "software" ],
     "sample_refs": [ "file", "artifact" ],
     "host_vm_ref": [ "software" ],
@@ -91,13 +134,40 @@ export default function CreateDialogContentNewSTIXObject(props){
     let [ currentRefObjectSTIX, setCurrentRefObjectSTIX ] = React.useState(listRefsForObjectSTIX.find((item) => item === "object_refs")? "object_refs": listRefsForObjectSTIX[0]);
 
     let buttonSaveIsDisabled = (listRefsForObjectSTIX.length === 0);
-    let listLinkImageSTIXObject = Object.keys(helpers.getListLinkImageSTIXObject());
+    let listObjectTypeTmp = new Set();
+    for(let value of listRefsForObjectSTIX){
+        if(listRefPropertyObject[value]){
+            listRefPropertyObject[value].forEach((item) => listObjectTypeTmp.add(item));
+        }
+    }
+
+    console.log("_________________ listObjectTypeTmp: ", listObjectTypeTmp);
+
+    let listLinkImageSTIXObjectTmp = Object.keys(helpers.getListLinkImageSTIXObject());
+    let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) =>  listObjectTypeTmp.has(item));
+    if(listRefsForObjectSTIX.find((item) => item === "object_refs")){
+        listLinkImageSTIXObject = listLinkImageSTIXObjectTmp;
+    }
+    
+    React.useEffect(() => {
+        for(let item of listRefsForObjectSTIX){
+            if(listRefPropertyObject[item] && listRefPropertyObject[item].find((v) => v === typeObjectSTIX)){
+                setCurrentRefObjectSTIX(item);
+
+                return;
+            }
+        }
+    }, [ typeObjectSTIX ]);
 
     console.log("func 'CreateDialogContentNewSTIXObject' currentRefObjectSTIX = ", currentRefObjectSTIX);
     console.log(helpers.getListLinkImageSTIXObject());
-
+    console.log("listRefsForObjectSTIX = ", listRefsForObjectSTIX);
     console.log("helpers.getListOnceProperties() = ", helpers.getListOnceProperties());
     console.log("helpers.getListManyProperties() = ", helpers.getListManyProperties());
+
+    let handleRadioChange = (obj) => {
+        setCurrentRefObjectSTIX(obj.target.value);
+    };
 
     return (<React.Fragment>
         <DialogContent>
@@ -117,26 +187,27 @@ export default function CreateDialogContentNewSTIXObject(props){
                             </TextField>
                         </Grid>
                     </Grid>
-                    Может быть свойство обеспечивающее связь родительского и дочернего объектов имеет смысл сделать в виде radio button? Их максимум
-                    может быть 6. Сразу будет выдно какие активны, а какие нет.
                     {(listRefsForObjectSTIX.length > 1)?
-                        <Grid container direction="row">
+                        <Grid container direction="row" className="pt-3">
                             <Grid item container md={12} justifyContent="flex-start">
-                                <TextField
-                                    id={"select-property-connect-parent-child-object"}
-                                    select
-                                    fullWidth
-                                    label={"свойство обеспечивающее связь родительского и дочернего объектов"}
-                                    value={currentRefObjectSTIX}
-                                    onChange={(obj) => { 
-                                        setCurrentRefObjectSTIX(obj.target.value);            
-                                    }}>
-                                    {listRefsForObjectSTIX.map((item) => <MenuItem key={`key-${item}`} value={item}>{item}</MenuItem>)}
-                                </TextField>
+                                <RadioGroup row aria-label="quiz" name="quiz" value={currentRefObjectSTIX} onChange={handleRadioChange}>
+                                    {listRefsForObjectSTIX.map((item) => {
+                                        let isDisabled = false;
+                                        if(typeObjectSTIX === ""){
+                                            isDisabled = true;
+                                        } else {
+                                            if(listRefPropertyObject[item] && !listRefPropertyObject[item].find((v) => v === typeObjectSTIX)){
+                                                isDisabled = true;    
+                                            }
+                                        }
+
+                                        return <FormControlLabel disabled={isDisabled} key={`key-${item}`} value={item} control={<Radio size="small"/>} label={item} />;
+                                    })}
+                                </RadioGroup>
                             </Grid>
                         </Grid>:
                         ""}
-                    {helpers.getListOnceProperties().find((item) => item === currentRefObjectSTIX)?
+                    {helpers.getListOnceProperties().find((item) => item === currentRefObjectSTIX && typeObjectSTIX !== "")?
                         <Typography variant="caption" display="block" gutterBottom style={{ color: red[400] }}>
                             Внимание!!! Выбранное свойство объекта может содержать только одну ссылку, если вы добавите новую ссылку, то предидущая,
                             если она есть, будет перезаписанна.
