@@ -2,30 +2,27 @@
 
 import React from "react";
 import { 
-    AppBar,
     Button,
-    Container,
-    Dialog,
     DialogActions,
     DialogContent,
+    Container,
     Grid,
-    Select,
+    Paper,
     Radio,
     RadioGroup,
     TextField,
     FormControlLabel,    
-    InputLabel,
-    FormControl,
     MenuItem,
-    Toolbar,
     Typography,
 } from "@material-ui/core";
 import { teal, grey, red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
+import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
+import ContentAttackPatternSTIXObject from "./contentAttackPatternSTIXObject.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -131,6 +128,7 @@ export default function CreateDialogContentNewSTIXObject(props){
     } = props;
 
     let [ typeObjectSTIX, setTypeObjectSTIX ] = React.useState("");
+    let [ itemReactSearchAutocomplete, setItemReactSearchAutocomplete ] = React.useState([]);
     let [ currentRefObjectSTIX, setCurrentRefObjectSTIX ] = React.useState(listRefsForObjectSTIX.find((item) => item === "object_refs")? "object_refs": listRefsForObjectSTIX[0]);
 
     let buttonSaveIsDisabled = (listRefsForObjectSTIX.length === 0);
@@ -161,14 +159,35 @@ export default function CreateDialogContentNewSTIXObject(props){
 
     console.log("func 'CreateDialogContentNewSTIXObject' currentRefObjectSTIX = ", currentRefObjectSTIX);
     console.log(helpers.getListLinkImageSTIXObject());
-    console.log("listRefsForObjectSTIX = ", listRefsForObjectSTIX);
-    console.log("helpers.getListOnceProperties() = ", helpers.getListOnceProperties());
-    console.log("helpers.getListManyProperties() = ", helpers.getListManyProperties());
+    console.log("------ listRefsForObjectSTIX = ", listRefsForObjectSTIX);
+    //console.log("helpers.getListOnceProperties() = ", helpers.getListOnceProperties());
+    //console.log("helpers.getListManyProperties() = ", helpers.getListManyProperties());
 
-    let handleRadioChange = (obj) => {
-        setCurrentRefObjectSTIX(obj.target.value);
+    const formatResult = (item) => {
+        return (
+            <>
+                <span style={{ display: "block", textAlign: "left" }}>id: {item.id}</span>
+                <span style={{ display: "block", textAlign: "left" }}>name: {item.name}</span>
+            </>
+        );
     };
 
+    let handleRadioChange = (obj) => {
+            setCurrentRefObjectSTIX(obj.target.value);
+        },
+        handleOnSearch = () => {
+
+        },
+        handleOnHover = () => {
+
+        },
+        handleOnSelect = () => {
+
+        },
+        handleOnFocus = () => {
+
+        };
+    //<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" className="pt-3" spacing={3}>
@@ -213,12 +232,24 @@ export default function CreateDialogContentNewSTIXObject(props){
                             если она есть, будет перезаписанна.
                         </Typography>:
                         ""}
-                    
+                    <Grid container direction="row" className="pt-3">
+                        <div style={{ width: "100%" }}>
+                            <ReactSearchAutocomplete
+                                items={itemReactSearchAutocomplete}
+                                onSearch={handleOnSearch}
+                                onHover={handleOnHover}
+                                onSelect={handleOnSelect}
+                                onFocus={handleOnFocus}
+                                autoFocus
+                                formatResult={formatResult}
+                            />
+                        </div>
+                    </Grid>
                     <Grid container direction="row" className="pt-3">
                         <Grid item container md={12} justifyContent="flex-start">
                     1. Выбор свойства куда нужно добавить объект, если listRefsForObjectSTIX то вообще нельзя ничего делать, а 
                     если только object_refs то не показывать этот шаг.
-                    2. Тип создоваемого объекта, при поиске не обязателен.
+                    2. Тип создаваемого объекта, при поиске не обязателен.
                     3. Строка поиска по id, name, domainame, ip и т.д. (поиск из кеша).
                     4. Вывод списка найденных ссылок.
 
@@ -226,8 +257,16 @@ export default function CreateDialogContentNewSTIXObject(props){
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item container md={8} justifyContent="center">
-                Добавление какого либо нового STIX объекта. При это можно как добавить новый STIX объект, так и выполнить поиск
+                <Grid item container md={8}>
+                    <Paper>
+                        <ContentAttackPatternSTIXObject 
+                            socketIo={socketIo}
+                            isNotDisabled={isNotDisabled}
+                            parentIdSTIXObject={currentIdSTIXObject}
+                            currentAdditionalIdSTIXObject={""}
+                            handlerDialogClose={handlerDialogClose}
+                        />
+                    Добавление какого либо нового STIX объекта. При это можно как добавить новый STIX объект, так и выполнить поиск
             уже существующих STIX объектов по их типам, времени создания, идентификатору и т.д. Родительский объект {currentIdSTIXObject}.
             listRefsForObjectSTIX = {listRefsForObjectSTIX}
             *  На основе типа родительского объекта и его свойств, которые позволяют прекрипить определенный объект, ограничить 
@@ -240,7 +279,7 @@ export default function CreateDialogContentNewSTIXObject(props){
  4. если поиск выполняется по id то надо автоматически проверить тип объетка по его id
  5. а при выборе типа объекта автоматически выбирать свойство в которое добавлять свойство (если данный тип можно добавить в несколько свойств то приоритет тому
  в котором хранится список), если такого нет или их несколько то выбирать первое попавшийся свойство
-
+                    </Paper>
                 </Grid>
             </Grid>
         </DialogContent>

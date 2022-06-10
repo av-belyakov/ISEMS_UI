@@ -42,6 +42,7 @@ module.exports = {
             "react-router-dom",
             "react-customize-token-input",
             "react-infinite-scroll-component",
+            "react-search-autocomplete",
             "validatorjs",
         ],
         authPage: "./authPage.js",
@@ -134,6 +135,7 @@ module.exports = {
             "react-router-dom": "react-router-dom",
             "react-customize-token-input": "react-customize-token-input/lib/index.js",
             "react-infinite-scroll-component": "react-infinite-scroll-component/dist/index.js",
+            "react-search-autocomplete": "react-search-autocomplete/dist/index.js",
             "validatorjs": "validator/validator.min.js",
         }
     },
