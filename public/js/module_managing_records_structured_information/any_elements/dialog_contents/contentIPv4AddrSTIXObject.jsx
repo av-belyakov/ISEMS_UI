@@ -18,6 +18,8 @@ import { makeStyles } from "@material-ui/core/styles";
 //import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
+import CreateIpv4AddrPatternElements from "./ipv4AddrPatternElements.jsx";
+
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: "fixed",
