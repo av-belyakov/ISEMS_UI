@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 
-import CreateNotePatternElements from "./notePatternElements.jsx";
+import CreateNotePatternElements from "../type_elements_stix/notePatternElements.jsx";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
@@ -309,6 +309,7 @@ function CreateMajorContent(props){
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
             <CreateNotePatternElements 
+                isDisabled={false}
                 campaignPatterElement={state}
                 handlerAuthors={(value) => { 
                     dispatch({ type: "updateAuthors", data: value }); 

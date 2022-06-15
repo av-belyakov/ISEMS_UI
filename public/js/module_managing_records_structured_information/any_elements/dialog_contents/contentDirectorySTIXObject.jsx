@@ -18,7 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 //import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import CreateDirectoryPatternElements from "./directoryPatternElements.jsx";
+import CreateDirectoryPatternElements from "../type_elements_stix/directoryPatternElements.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {

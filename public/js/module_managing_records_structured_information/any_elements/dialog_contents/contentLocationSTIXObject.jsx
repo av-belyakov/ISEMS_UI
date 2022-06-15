@@ -14,7 +14,7 @@ import validatorjs from "validatorjs";
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateListRegion } from "../anyElements.jsx";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
-import CreateLocationPatternElements from "./locationPatternElements.jsx";
+import CreateLocationPatternElements from "../type_elements_stix/locationPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 const reducer = (state, action) => {
@@ -316,6 +316,7 @@ function CreateMajorContent(props){
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
             <CreateLocationPatternElements 
+                isDisabled={false}
                 campaignPatterElement={state}
                 handlerCity={(e) => { dispatch({ type: "updateCity", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(); }}

@@ -18,7 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 //import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import CreateDomainNamePatternElements from "./domainNamePatternElements.jsx";
+import CreateDomainNamePatternElements from "../type_elements_stix/domainNamePatternElements.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {

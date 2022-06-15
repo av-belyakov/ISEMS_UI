@@ -10,7 +10,7 @@ import {
 import PropTypes from "prop-types";
 
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
-import CreateIntrusionSetPatternElements from "./intrusionSetPatternElements.jsx";
+import CreateIntrusionSetPatternElements from "../type_elements_stix/intrusionSetPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 const reducer = (state, action) => {
@@ -337,6 +337,7 @@ function CreateMajorContent(props){
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
             <CreateIntrusionSetPatternElements 
+                isDisabled={false}
                 campaignPatterElement={state}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerPrimaryMotivation={(e) => { dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}

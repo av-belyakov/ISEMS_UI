@@ -8,7 +8,7 @@ import {
 import PropTypes from "prop-types";
 
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
-import CreateAttackPatternElements from "./attackPatternElements.jsx";
+import CreateAttackPatternElements from "../type_elements_stix/attackPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 const reducer = (state, action) => {
@@ -279,6 +279,7 @@ function CreateMajorContent(props){
         <Grid item container md={8}>
             <Grid container direction="row" className="pt-3">
                 <CreateAttackPatternElements 
+                    isDisabled={false}
                     campaignPatterElement={state}
                     handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}

@@ -18,7 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 //import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import CreateIpv6AddrPatternElements from "./ipv6AddrPatternElements.jsx";
+import CreateIpv6AddrPatternElements from "../type_elements_stix/ipv6AddrPatternElements.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {

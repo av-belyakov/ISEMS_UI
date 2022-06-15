@@ -10,7 +10,7 @@ import {
 import PropTypes from "prop-types";
 
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
-import CreateIdentityPatternElements from "./identityPatternElements.jsx";
+import CreateIdentityPatternElements from "../type_elements_stix/identityPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 const reducer = (state, action) => {
@@ -274,6 +274,7 @@ function CreateMajorContent(props){
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
             <CreateIdentityPatternElements 
+                isDisabled={false}
                 campaignPatterElement={state}
                 handlerSectors={(e) => { dispatch({ type: "updateSectors", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}

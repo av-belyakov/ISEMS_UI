@@ -18,7 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 //import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import CreateMacAddrPatternElements from "./macAddrPatternElements.jsx";
+import CreateMacAddrPatternElements from "../type_elements_stix/macAddrPatternElements.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {

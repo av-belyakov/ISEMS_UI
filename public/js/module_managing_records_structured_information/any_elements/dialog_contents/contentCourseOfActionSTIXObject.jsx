@@ -10,7 +10,7 @@ import {
 import PropTypes from "prop-types";
 
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
-import CreateCourseOfActionPatternElements from "./courseOfActionPatternElements.jsx";
+import CreateCourseOfActionPatternElements from "../type_elements_stix/courseOfActionPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 const reducer = (state, action) => {
@@ -265,7 +265,8 @@ function CreateMajorContent(props){
 
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
-            <CreateCourseOfActionPatternElements 
+            <CreateCourseOfActionPatternElements
+                isDisabled={false} 
                 campaignPatterElement={state}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
             />

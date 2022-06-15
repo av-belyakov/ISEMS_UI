@@ -18,7 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 //import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import CreateUserAccountPatternElements from "./userAccountPatternElements.jsx";
+import CreateUserAccountPatternElements from "../type_elements_stix/userAccountPatternElements.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -75,6 +75,8 @@ export default function CreateDialogContentUserAccountSTIXObject(props){
             <Row className="mt-2">
                 <Col md={12} className="pl-3 pr-3">
                 Просмотр и редактирование STIX объекта типа Учетная запись пользователя (User account CO STIX)
+                -----------------------------------------------------------------------------------------------
+                Заполненного объекта в БД НЕТ, можно попробовать сделать ручное формирование пользователем нового объекта
                 </Col>
                 <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
             </Row>

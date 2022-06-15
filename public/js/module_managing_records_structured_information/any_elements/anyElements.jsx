@@ -259,7 +259,11 @@ CreateListObjectRefsReportGetListId.propTypes = {
 };
 
 export function CreateListIdentityClass(props){
-    let { campaignPatterElement, handlerIdentityClass } = props;
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerIdentityClass 
+    } = props;
 
     const getContentText = (elem) => {
         if(elem === "" || !elem){
@@ -282,6 +286,7 @@ export function CreateListIdentityClass(props){
         <TextField
             id={"select-search-identity-class"}
             select
+            disabled={isDisabled}
             fullWidth
             label={"тип физического лица или организации"}
             value={campaignPatterElement.identity_class? campaignPatterElement.identity_class: "" }
@@ -301,12 +306,17 @@ export function CreateListIdentityClass(props){
 }
 
 CreateListIdentityClass.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerIdentityClass: PropTypes.func.isRequired,
 };
 
 export function CreateListSectors(props){
-    let { campaignPatterElement, headerSectors } = props;
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        headerSectors 
+    } = props;
 
     const classes = useStyles();
     const theme = useTheme();
@@ -321,7 +331,7 @@ export function CreateListSectors(props){
         return value;
     };
 
-    return (dictionaryLists["industry-sector-ov"] && <FormControl fullWidth className={classes.formControl}>
+    return (dictionaryLists["industry-sector-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
         <InputLabel id="industry-sector-mutiple-chip-lable">тип промышленного сектора</InputLabel>
         <Select
             labelId="industry-sector-mutiple-chip"
@@ -352,12 +362,17 @@ export function CreateListSectors(props){
 }
 
 CreateListSectors.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired, 
     headerSectors: PropTypes.func.isRequired,
 };
 
 export function CreateListInfrastructureTypes(props){
-    let { campaignPatterElement, handlerInfrastructureTypes } = props;
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerInfrastructureTypes 
+    } = props;
 
     const classes = useStyles();
     const theme = useTheme();
@@ -372,7 +387,7 @@ export function CreateListInfrastructureTypes(props){
         return value;
     };
 
-    return (dictionaryLists["infrastructure-type-ov"] && <FormControl fullWidth className={classes.formControl}>
+    return (dictionaryLists["infrastructure-type-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
         <InputLabel id="infrastructure-mutiple-chip-label">тип инфраструктуры</InputLabel>
         <Select
             labelId="infrastructure-mutiple-chip"
@@ -403,12 +418,17 @@ export function CreateListInfrastructureTypes(props){
 }
 
 CreateListInfrastructureTypes.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired, 
     handlerInfrastructureTypes: PropTypes.func.isRequired,
 };
 
 export function CreateListResourceLevelAttack(props){
-    let { campaignPatterElement, handlerResourceLevelAttack } = props;
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerResourceLevelAttack 
+    } = props;
 
     const getContentText = (elem) => {
         if(elem === "" || !elem){
@@ -431,6 +451,7 @@ export function CreateListResourceLevelAttack(props){
         <TextField
             id={"select-search-attack-resource-level-id"}
             select
+            disabled={isDisabled}
             fullWidth
             label={"уровень ресурсов атаки"}
             value={campaignPatterElement.resource_level? campaignPatterElement.resource_level: "" }
@@ -450,12 +471,17 @@ export function CreateListResourceLevelAttack(props){
 }
 
 CreateListResourceLevelAttack.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired, 
     handlerResourceLevelAttack: PropTypes.func.isRequired,
 };
 
 export function CreateListPrimaryMotivation(props){
-    let { campaignPatterElement, handlerPrimaryMotivation } = props;
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerPrimaryMotivation 
+    } = props;
 
     const getContentText = (elem) => {
         if(elem === "" || !elem){
@@ -478,6 +504,7 @@ export function CreateListPrimaryMotivation(props){
         <TextField
             id={"select-search-primary-motivation-id"}
             select
+            disabled={isDisabled}
             fullWidth
             label={"основной перечень причин, мотиваций или целей определяющий данный набор вторжения"}
             value={campaignPatterElement.primary_motivation? campaignPatterElement.primary_motivation: "" }
@@ -497,12 +524,17 @@ export function CreateListPrimaryMotivation(props){
 }
 
 CreateListPrimaryMotivation.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired, 
     handlerPrimaryMotivation: PropTypes.func.isRequired,
 };
 
 export function CreateListSecondaryMotivations(props){
-    let { campaignPatterElement, handlerSecondaryMotivations } = props;
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerSecondaryMotivations 
+    } = props;
 
     const classes = useStyles();
     const theme = useTheme();
@@ -517,7 +549,7 @@ export function CreateListSecondaryMotivations(props){
         return value;
     };
 
-    return (dictionaryLists["attack-motivation-ov"] && <FormControl fullWidth className={classes.formControl}>
+    return (dictionaryLists["attack-motivation-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
         <InputLabel id="secondary-motivations-mutiple-chip-id">тип инфраструктуры</InputLabel>
         <Select
             labelId="secondary-motivations-mutiple-chip-label"
@@ -548,6 +580,7 @@ export function CreateListSecondaryMotivations(props){
 }
 
 CreateListSecondaryMotivations.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired, 
     handlerSecondaryMotivations: PropTypes.func.isRequired,
 };
@@ -558,7 +591,7 @@ CreateListSecondaryMotivations.propTypes = {
  * @returns 
  */
 export function CreateKillChainPhases(props){
-    let { handlerAddKillChainPhases } = props;
+    let { isDisabled, handlerAddKillChainPhases } = props;
 
     let [ invalidNameChain, setInvalidNameChain ] = useState(true);
     let [ invalidNamePhases, setInvalidNamePhases ] = useState(true);
@@ -604,6 +637,7 @@ export function CreateKillChainPhases(props){
             <TextField
                 id="input_new_name_kill_chain"
                 fullWidth
+                disabled={isDisabled}
                 error={invalidNameChain}
                 label="имя цепочки"
                 value={valueNameChain}
@@ -613,6 +647,7 @@ export function CreateKillChainPhases(props){
             <TextField
                 id="input_new_name_phases"
                 fullWidth
+                disabled={isDisabled}
                 error={invalidNamePhases}
                 label="наименование фазы"
                 value={valueNamePhases}
@@ -640,6 +675,7 @@ export function CreateKillChainPhases(props){
 }
 
 CreateKillChainPhases.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     handlerAddKillChainPhases: PropTypes.func.isRequired,
 };
 
@@ -649,7 +685,11 @@ CreateKillChainPhases.propTypes = {
  * @returns 
  */
 export function CreateKillChainPhasesList(props){
-    let { listKillChainPhases, handlerDeleteItem } = props;
+    let { 
+        isDisabled,
+        listKillChainPhases, 
+        handlerDeleteItem 
+    } = props;
 
     if(listKillChainPhases.length === 0){
         return "";
@@ -662,7 +702,7 @@ export function CreateKillChainPhasesList(props){
                     return (<li key={`key_item_kill_phases_${num}`}>
                         <span className="text-muted">наименование:</span> {item.kill_chain_name}, <span className="text-muted">фаза:</span> {item.phase_name}&nbsp;
                         <IconButton aria-label="delete-hash" onClick={handlerDeleteItem.bind(null, num)}>
-                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                            {isDisabled? "": <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />}
                         </IconButton>
                     </li>);
                 })}
@@ -672,15 +712,20 @@ export function CreateKillChainPhasesList(props){
 }
 
 CreateKillChainPhasesList.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     listKillChainPhases: PropTypes.array.isRequired,
     handlerDeleteItem: PropTypes.func.isRequired,
 };
 
 export function CreateListRegion(props){
-    let { campaignPatterElement, handlerRegion } = props;
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerRegion 
+    } = props;
     const classes = useStyles();
 
-    return (dictionaryLists["region-ov"] && <FormControl fullWidth className={classes.formControl}>
+    return (dictionaryLists["region-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
         <InputLabel htmlFor="region-select">Регион</InputLabel>
         <NativeSelect
             value={campaignPatterElement.region}
@@ -700,12 +745,17 @@ export function CreateListRegion(props){
 }
 
 CreateListRegion.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired, 
     handlerRegion: PropTypes.func.isRequired,
 };
 
 export function CreateListContextGrouping(props){
-    let { campaignPatterElement, handlerContext } = props;
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerContext 
+    } = props;
 
     const getContentText = (elem) => {
         if(elem === "" || !elem){
@@ -730,6 +780,7 @@ export function CreateListContextGrouping(props){
             id={"select-search-grouping-context-id"}
             select
             error={isError}
+            disabled={isDisabled}
             fullWidth
             label={"контекст группировки"}
             value={campaignPatterElement.context? campaignPatterElement.context: "" }
@@ -749,6 +800,7 @@ export function CreateListContextGrouping(props){
 }
 
 CreateListContextGrouping.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired, 
     handlerContext: PropTypes.func.isRequired,
 };

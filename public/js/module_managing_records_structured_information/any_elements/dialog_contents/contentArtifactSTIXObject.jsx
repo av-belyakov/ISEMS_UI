@@ -18,7 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 //import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import CreateArtifactPatternElements from "./artifactPatternElements.jsx";
+import CreateArtifactPatternElements from "../type_elements_stix/artifactPatternElements.jsx";
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
