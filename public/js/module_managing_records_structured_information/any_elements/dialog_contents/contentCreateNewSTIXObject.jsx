@@ -5,7 +5,7 @@ import {
     Button,
     DialogActions,
     DialogContent,
-    Container,
+    IconButton,
     Grid,
     Paper,
     Radio,
@@ -18,6 +18,7 @@ import {
 import { teal, grey, red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
+import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
@@ -156,6 +157,7 @@ export default function CreateDialogContentNewSTIXObject(props){
     let { 
         socketIo,
         isNotDisabled,
+        parentSTIXObject,
         currentIdSTIXObject,
         listRefsForObjectSTIX,
         handlerDialog,
@@ -165,6 +167,8 @@ export default function CreateDialogContentNewSTIXObject(props){
     let [ typeObjectSTIX, setTypeObjectSTIX ] = React.useState("");
     let [ itemReactSearchAutocomplete, setItemReactSearchAutocomplete ] = React.useState([]);
     let [ currentRefObjectSTIX, setCurrentRefObjectSTIX ] = React.useState(listRefsForObjectSTIX.find((item) => item === "object_refs")? "object_refs": listRefsForObjectSTIX[0]);
+    let [ parentObject, setParentObject ] = React.useState(parentSTIXObject);
+    let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = React.useState([]);
 
     let buttonSaveIsDisabled = (listRefsForObjectSTIX.length === 0);
     let listObjectTypeTmp = new Set();
@@ -175,6 +179,7 @@ export default function CreateDialogContentNewSTIXObject(props){
     }
 
     console.log("_________________ listObjectTypeTmp: ", listObjectTypeTmp);
+    console.log("***************** listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
     let listLinkImageSTIXObjectTmp = Object.keys(helpers.getListLinkImageSTIXObject());
     let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) =>  listObjectTypeTmp.has(item));
@@ -232,6 +237,32 @@ export default function CreateDialogContentNewSTIXObject(props){
         <DialogContent>
             <Grid container direction="row" className="pt-3" spacing={3}>
                 <Grid item container md={4}>
+                    <Grid container direction="row">
+                        <Grid item container md={12} justifyContent="flex-start">
+                        В родительский объект &nbsp;<strong className="text-muted">{currentIdSTIXObject}</strong>&nbsp; добавлены ссылки на следующие объекты:
+                            {listNewOrModifySTIXObject.map((item, key) => {
+                                let objectElem = helpers.getLinkImageSTIXObject(item.type);
+
+                                return (<Grid container direction="row" key={`key_new_or_modify_${key}`}>
+                                    <Grid item container md={12} justifyContent="flex-start"><img 
+                                        key={`key_img_new_or_modify_${key}`} 
+                                        src={`/images/stix_object/${objectElem.link}`} 
+                                        width="30" 
+                                        height="30" />&nbsp;
+                                    <strong className="text-muted pt-1">{item.id}</strong>&nbsp;
+                                    <IconButton className="mb-2" size="small" aria-label="delete" onClick={() => {
+                                        let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
+                                        listNewOrModifySTIXObjectTmp.splice(key, 1);
+
+                                        setListNewOrModifySTIXObject(listNewOrModifySTIXObjectTmp);
+                                    }}>
+                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                    </IconButton>
+                                    </Grid>
+                                </Grid>);
+                            })}
+                        </Grid>
+                    </Grid>                    
                     <Grid container direction="row">
                         <Grid item container md={12} justifyContent="flex-start">
                             <TextField
@@ -326,6 +357,12 @@ export default function CreateDialogContentNewSTIXObject(props){
  4. если поиск выполняется по id то надо автоматически проверить тип объетка по его id
  5. а при выборе типа объекта автоматически выбирать свойство в которое добавлять свойство (если данный тип можно добавить в несколько свойств то приоритет тому
  в котором хранится список), если такого нет или их несколько то выбирать первое попавшийся свойство
+
+/
+здесь должно быть поле для просмотра и редактирования найденных STIX объектов и вновь созданных объектов, при этом вся обработка данных объекта
+должна выполнятся здесь. Нужно предусмотреть кнопку 'добавить' для добавления вновь созданных объектов и объектов по которым выполнялось редактирование
+в listNewOrModifySTIXObject для последующей отправки отредактированных объектов в СУБД
+/
                     </Paper>
                 </Grid>
             </Grid>
@@ -339,7 +376,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                     handlerDialog({});
                 }}
                 color="primary">
-                сохранить
+                подтвердить
             </Button>
         </DialogActions>
     </React.Fragment>);
@@ -348,6 +385,7 @@ export default function CreateDialogContentNewSTIXObject(props){
 CreateDialogContentNewSTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
+    parentSTIXObject: PropTypes.object.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired, 
     listRefsForObjectSTIX: PropTypes.array.isRequired,
     handlerDialog: PropTypes.func.isRequired,

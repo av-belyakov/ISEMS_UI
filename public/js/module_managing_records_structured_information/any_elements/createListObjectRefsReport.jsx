@@ -163,6 +163,7 @@ export default function CreateListObjectRefsReport(props){
     });
 
     console.log("func 'CreateListObjectRefsReport' ---------------");
+    console.log("majorParentId: ", majorParentId, " stateReport: ", stateReport);
 
     const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: {}, listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
@@ -174,6 +175,7 @@ export default function CreateListObjectRefsReport(props){
 
         console.log("LISTENER SEARCH SEND REQUEST,  data: ", data);
         console.log("LISTENER SEARCH SEND REQUEST, stateTmp BEFORE: ", listObjReducer);
+
         console.log("data.parentObjectId: ", data.parentObjectId, ", data.information.additional_parameters.transmitted_data: ", data.information.additional_parameters.transmitted_data);
 
         setListObjReducer({ type: "updateListId", data: { listObject: data.information.additional_parameters.transmitted_data }});
@@ -379,7 +381,15 @@ export default function CreateListObjectRefsReport(props){
                             <ExpandMore />):
                         ""}
                     {listProperties.length > 0? 
-                        <IconButton size="small" aria-label="create" onClick={handlerAddRefObjectSTIX.bind(null, item.currentId, listProperties)}>
+                        <IconButton size="small" aria-label="create" onClick={() => {
+                            let parentSTIXObject = stateReport;
+
+                            if(item.currentId.split("--")[0] !== "report"){
+                                parentSTIXObject = listObjReducer.list[item.currentId];
+                            }
+
+                            handlerAddRefObjectSTIX(item.currentId, listProperties, parentSTIXObject);
+                        }}>
                             <AddCircleOutlineIcon style={{ color: green[400] }} />
                         </IconButton>: 
                         ""}
@@ -409,7 +419,15 @@ export default function CreateListObjectRefsReport(props){
                 <Button
                     //size="small"
                     startIcon={<AddCircleOutlineIcon style={{ color: green[400] }} />}
-                    onClick={handlerAddRefObjectSTIX.bind(null, majorParentId, ["object_refs"])}>
+                    onClick={() => {
+                        let parentSTIXObject = stateReport;
+
+                        if(majorParentId.split("--")[0] !== "report"){
+                            parentSTIXObject = listObjReducer.list[majorParentId];
+                        }
+
+                        handlerAddRefObjectSTIX(majorParentId, ["object_refs"], parentSTIXObject);
+                    }}>
                     <span style={{ paddingTop: "3px" }}>прикрепить доп. объект</span>
                 </Button>
             </Col>

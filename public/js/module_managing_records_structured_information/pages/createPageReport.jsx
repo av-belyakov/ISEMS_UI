@@ -24,6 +24,7 @@ export default function CreatePageReport(props) {
     let [ addedNewReport, setAddedNewReport ] = React.useState(false);
     let [ buttonDelModalWindowConfirmDeleteLinkFromObjRefs, setButtonDelModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState(false);
     let [ objectId, setObjectId ] = React.useState("");
+    let [ parentSTIXObject, setParentSTIXObject ] = React.useState({});
     let [ listRefsForObjectSTIX, setListRefsForObjectSTIX ] = React.useState([]);
     let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
     let [ objectsIdModalWindowConfirmDeleteLinkFromObjRefs, setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState([]);
@@ -73,8 +74,12 @@ export default function CreatePageReport(props) {
             setCurrentAdditionalIdSTIXObject("");
             setShowModalWindowSTIXObject(false);
         },
-        handlerShowModalWindowCreateNewSTIXObject = (elemId, listRefsForObjectSTIX) => {
+        handlerShowModalWindowCreateNewSTIXObject = (elemId, listRefsForObjectSTIX, parentSTIXObject) => {
+            
+            console.log("++++++++++ func 'handlerShowModalWindowCreateNewSTIXObject' ++++++++++++ elemId: ", elemId, " listRefsForObjectSTIX: ", listRefsForObjectSTIX, " parentSTIXObject:", parentSTIXObject);
+            
             setObjectId(elemId);
+            setParentSTIXObject(parentSTIXObject);
             setListRefsForObjectSTIX(listRefsForObjectSTIX);
             setShowModalWindowCreateNewSTIXObject(true);
         },
@@ -190,6 +195,7 @@ export default function CreatePageReport(props) {
                 <ContentCreateNewSTIXObject 
                     socketIo={socketIo}
                     isNotDisabled={true}
+                    parentSTIXObject={parentSTIXObject}
                     currentIdSTIXObject={objectId} 
                     listRefsForObjectSTIX={listRefsForObjectSTIX}
                     handlerDialog={handlerDialogSaveNewSTIXObject}

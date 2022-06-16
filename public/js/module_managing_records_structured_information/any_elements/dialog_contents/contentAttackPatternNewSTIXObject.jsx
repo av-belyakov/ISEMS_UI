@@ -121,12 +121,20 @@ const reducer = (state, action) => {
 
 export default function CreateDialogContentAttackPatternNewSTIXObject(props){
     let { 
+        socketIo,
         isNotDisabled,
+        parentSTIXObject,
         parentIdSTIXObject,
         currentAdditionalIdSTIXObject,
         handlerAddNewSTIXObject,
         handlerButtonIsDisabled,
     } = props;
+
+    /**
+     * наверное тут надо принимать общий обработчик для всех типов STIX объектов а саму обработку и 
+     * добавление данных проводить в contentCreateNewSTIXObject, тогда будет проще обработать доступность
+     * кнопки "сохранить" и действие при ее нажатии 
+     */
 
     const [ state, dispatch ] = useReducer(reducer, {});
 
@@ -140,7 +148,9 @@ export default function CreateDialogContentAttackPatternNewSTIXObject(props){
 }
 
 CreateDialogContentAttackPatternNewSTIXObject.propTypes = {
+    socketIo: PropTypes.object.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
+    parentSTIXObject: PropTypes.object.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handlerAddNewSTIXObject: PropTypes.func.isRequired,
