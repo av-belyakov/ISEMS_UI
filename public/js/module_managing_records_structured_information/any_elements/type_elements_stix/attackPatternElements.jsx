@@ -13,16 +13,40 @@ export default function CreateAttackPatternElements(props){
     let { 
         isDisabled,
         campaignPatterElement, 
+        handlerName,
         handlerDescription, 
         handlerTokenValuesChange,
         handlerDeleteKillChain,
         handlerAddKillChainPhases,
     } = props;
 
+    let currentTime = helpers.getToISODatetime();
+    
+    if(!campaignPatterElement.created){
+        campaignPatterElement.created = currentTime;
+    }
+    if(!campaignPatterElement.modified){
+        campaignPatterElement.modified = currentTime;
+    }
+
+    console.log("func 'CreateAttackPatternElements', current date: ", helpers.getDate(+new Date()));
+    console.log("campaignPatterElement.created: ", campaignPatterElement.created, " helpers.getToISODatetime(): ", helpers.getToISODatetime());
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >{campaignPatterElement.name}</Grid>
+            <Grid item container md={8} >
+                {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
+                    campaignPatterElement.name:
+                    <TextField
+                        fullWidth
+                        disabled={isDisabled}
+                        id="name-element"
+                        InputLabelProps={{ shrink: true }}
+                        onChange={handlerName}
+                        value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
+                    />}
+            </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
@@ -91,6 +115,7 @@ export default function CreateAttackPatternElements(props){
 CreateAttackPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
+    handlerName: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired,
     handlerTokenValuesChange: PropTypes.func.isRequired,
     handlerDeleteKillChain: PropTypes.func.isRequired,

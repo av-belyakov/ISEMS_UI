@@ -268,6 +268,7 @@ function CreateMajorContent(props){
             <CreateCourseOfActionPatternElements
                 isDisabled={false} 
                 campaignPatterElement={state}
+                handlerName={(e) => {}}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
             />
         </Grid> 

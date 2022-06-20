@@ -276,6 +276,7 @@ function CreateMajorContent(props){
             <CreateIdentityPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
+                handlerName={(e) => {}}
                 handlerSectors={(e) => { dispatch({ type: "updateSectors", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerIdentityClass={(e) => { dispatch({ type: "updateIdentityClass", data: e.target.value }); handlerButtonIsDisabled(); }}

@@ -22,6 +22,7 @@ export default function CreateIntrusionSetPatternElements(props){
     let { 
         isDisabled,
         campaignPatterElement,
+        handlerName,
         handlerDescription, 
         handlerPrimaryMotivation,
         handlerResourceLevelAttack,
@@ -32,13 +33,33 @@ export default function CreateIntrusionSetPatternElements(props){
         handlerAliasesTokenValuesChange,
     } = props;
 
+    let currentTime = helpers.getToISODatetime();
+    
+    if(!campaignPatterElement.created){
+        campaignPatterElement.created = currentTime;
+    }
+    if(!campaignPatterElement.modified){
+        campaignPatterElement.modified = currentTime;
+    }
+
     let firstSeen = (!campaignPatterElement.first_seen || (campaignPatterElement.first_seen === minDefaultData))? defaultData: campaignPatterElement.first_seen;
     let lastSeen = (!campaignPatterElement.last_seen || (campaignPatterElement.last_seen === minDefaultData))? defaultData: campaignPatterElement.last_seen;
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >{campaignPatterElement.name}</Grid>
+            <Grid item container md={8} >
+                {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
+                    campaignPatterElement.name:
+                    <TextField
+                        fullWidth
+                        disabled={isDisabled}
+                        id="name-element"
+                        InputLabelProps={{ shrink: true }}
+                        onChange={handlerName}
+                        value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
+                    />}
+            </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
@@ -163,6 +184,7 @@ export default function CreateIntrusionSetPatternElements(props){
 CreateIntrusionSetPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
+    handlerName: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired, 
     handlerPrimaryMotivation: PropTypes.func.isRequired,
     handlerResourceLevelAttack: PropTypes.func.isRequired,

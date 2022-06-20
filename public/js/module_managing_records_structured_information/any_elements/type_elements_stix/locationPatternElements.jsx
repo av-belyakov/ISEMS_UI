@@ -30,6 +30,15 @@ export default function CreateLocationPatternElements(props){
     let [ isInvalidLatitude, setIsInvalidLatitude ] = useState(false);
     let [ isInvalidLongitude, setIsInvalidLongitude ] = useState(false);
 
+    let currentTime = helpers.getToISODatetime();
+    
+    if(!campaignPatterElement.created){
+        campaignPatterElement.created = currentTime;
+    }
+    if(!campaignPatterElement.modified){
+        campaignPatterElement.modified = currentTime;
+    }
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>

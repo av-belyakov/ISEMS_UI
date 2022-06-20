@@ -304,6 +304,7 @@ function CreateMajorContent(props){
             <CreateCampaingPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
+                handlerName={(e) => {}}
                 handlerObjective={(e) => { dispatch({ type: "updateObjective", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}

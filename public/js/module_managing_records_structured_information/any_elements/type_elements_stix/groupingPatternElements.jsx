@@ -15,6 +15,7 @@ export default function CreateGroupingPatternElements(props){
     let { 
         isDisabled,
         campaignPatterElement,
+        handlerName,
         handlerContext,
         handlerDescription,
     } = props;
@@ -22,10 +23,30 @@ export default function CreateGroupingPatternElements(props){
     console.log("func 'CreateInfrastructurePatternElements', campaignPatterElement: ", campaignPatterElement);
     console.log("_______________________________________");
 
+    let currentTime = helpers.getToISODatetime();
+    
+    if(!campaignPatterElement.created){
+        campaignPatterElement.created = currentTime;
+    }
+    if(!campaignPatterElement.modified){
+        campaignPatterElement.modified= currentTime;
+    }
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >{campaignPatterElement.name}</Grid>
+            <Grid item container md={8} >
+                {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
+                    campaignPatterElement.name:
+                    <TextField
+                        fullWidth
+                        disabled={isDisabled}
+                        id="name-element"
+                        InputLabelProps={{ shrink: true }}
+                        onChange={handlerName}
+                        value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
+                    />}
+            </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
@@ -109,6 +130,7 @@ export default function CreateGroupingPatternElements(props){
 CreateGroupingPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
+    handlerName: PropTypes.func.isRequired,
     handlerContext: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired, 
 };

@@ -281,6 +281,7 @@ function CreateMajorContent(props){
                 <CreateAttackPatternElements 
                     isDisabled={false}
                     campaignPatterElement={state}
+                    handlerName={(e) => {}}
                     handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
                     handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}

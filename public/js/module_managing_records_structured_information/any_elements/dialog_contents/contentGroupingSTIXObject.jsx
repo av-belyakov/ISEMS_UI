@@ -354,6 +354,7 @@ function CreateMajorContent(props){
             objectId={currentIdSTIXObject}
             reportInfo={state}
             isNotDisabled={isNotDisabled}
+            handlerName={(e) => {}}
             handlerElementConfidence={(e) => { 
                 dispatch({ type: "updateConfidence", data: e }); 
                 

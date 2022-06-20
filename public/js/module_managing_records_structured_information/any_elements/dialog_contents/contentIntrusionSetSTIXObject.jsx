@@ -339,6 +339,7 @@ function CreateMajorContent(props){
             <CreateIntrusionSetPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
+                handlerName={(e) => {}}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerPrimaryMotivation={(e) => { dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerResourceLevelAttack={(e) => { dispatch({ type: "updateResourceLevelAttack", data: e.target.value }); handlerButtonIsDisabled(); }}

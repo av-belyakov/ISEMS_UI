@@ -4,10 +4,13 @@ import {
     DialogActions,
     DialogContent,
     Grid,
+    Typography, 
 } from "@material-ui/core";
+import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import CreateAttackPatternElements from "../type_elements_stix/attackPatternElements.jsx";
+import { helpers } from "../../../common_helpers/helpers.js";
+import CreateCourseOfActionPatternElements from "../type_elements_stix/courseOfActionPatternElements.jsx";
 
 const reducer = (state, action) => {
     switch(action.type){
@@ -21,16 +24,6 @@ const reducer = (state, action) => {
         }
 
         return {...state, description: action.data};
-    case "updateTokenValuesChange":
-        return {...state, aliases: action.data};
-    case "updateKillChainPhases":
-        if(!state.kill_chain_phases){
-            state.kill_chain_phases = [];
-        }
-        
-        state.kill_chain_phases.push(action.data);
-
-        return {...state};    
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};
@@ -97,10 +90,6 @@ const reducer = (state, action) => {
         state.extensions[action.data.name] = action.data.description;
 
         return {...state};
-    case "deleteKillChain":
-        state.kill_chain_phases.splice(action.data, 1);
-
-        return {...state};
     case "deleteElementAdditionalTechnicalInformation":
         switch(action.data.itemType){
         case "extensions":
@@ -119,21 +108,26 @@ const reducer = (state, action) => {
     }
 };
 
-export default function CreateDialogContentAttackPatternNewSTIXObject(props){
+export default function CreateCourseOfActionPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         parentIdSTIXObject,
         projectPatterElement,
         handlerAddSTIXObject,
     } = props;
-
     /**
      * наверное тут надо принимать общий обработчик для всех типов STIX объектов а саму обработку и 
      * добавление данных проводить в contentCreateNewSTIXObject, тогда будет проще обработать доступность
      * кнопки "сохранить" и действие при ее нажатии 
      */
 
-    const [ state, dispatch ] = useReducer(reducer, {});
+    const [ state, dispatch ] = useReducer(reducer, projectPatterElement);
+
+    console.log("func CreateCourseOfActionPatternNewSTIXObject campaignPatterElement: ", projectPatterElement);
+
+    if(!projectPatterElement.id){
+        projectPatterElement.id = `course-of-action--${uuidv4()}`;
+    }
 
     const handlerButtonIsDisabled = () => {
         /*if(!buttonIsDisabled){
@@ -145,18 +139,30 @@ export default function CreateDialogContentAttackPatternNewSTIXObject(props){
         handlerButtonSaveChangeTrigger = () => {
             //        setButtonSaveChangeTrigger((prevState) => !prevState);
         };
-
-    return (<CreateAttackPatternElements 
-        isDisabled={false}
-        campaignPatterElement={state}
-        handlerName={(e) => {}}
-        handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-        handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
-        handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
-        handlerAddKillChainPhases={(e) => { dispatch({ type: "updateKillChainPhases", data: e }); handlerButtonIsDisabled(); }}/>);
+     
+    return (<React.Fragment>
+        <Grid container direction="row">
+            <Grid item container md={12} justifyContent="center">
+                <Typography variant="overline" display="block" gutterBottom>
+                    {`${helpers.getLinkImageSTIXObject("course-of-action").description} id:${campaignPatterElement.id}`}
+                </Typography> 
+            </Grid>
+        </Grid>
+        <Grid container direction="row">
+            <Grid item container md={12} justifyContent="flex-end">
+                <Button onClick={handlerAddSTIXObject} color="primary">добавить</Button>
+            </Grid>
+        </Grid>
+        <CreateCourseOfActionPatternElements
+            isDisabled={false} 
+            campaignPatterElement={state}
+            handlerName={(e) => {}}
+            handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+        />
+    </React.Fragment>);
 }
-
-CreateDialogContentAttackPatternNewSTIXObject.propTypes = {
+     
+CreateCourseOfActionPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
