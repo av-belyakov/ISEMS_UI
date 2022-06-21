@@ -1,12 +1,14 @@
 import React, { useReducer } from "react";
 import { 
+    Box,
     Button,
-    DialogActions,
-    DialogContent,
     Grid,
+    Paper,
+    Typography,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 
+import { helpers } from "../../../common_helpers/helpers.js";
 import CreateAttackPatternElements from "../type_elements_stix/attackPatternElements.jsx";
 
 const reducer = (state, action) => {
@@ -133,7 +135,9 @@ export default function CreateDialogContentAttackPatternNewSTIXObject(props){
      * кнопки "сохранить" и действие при ее нажатии 
      */
 
-    const [ state, dispatch ] = useReducer(reducer, {});
+    const [ state, dispatch ] = useReducer(reducer, projectPatterElement);
+
+    let buttonIsDisabled = true;
 
     const handlerButtonIsDisabled = () => {
         /*if(!buttonIsDisabled){
@@ -146,14 +150,29 @@ export default function CreateDialogContentAttackPatternNewSTIXObject(props){
             //        setButtonSaveChangeTrigger((prevState) => !prevState);
         };
 
-    return (<CreateAttackPatternElements 
-        isDisabled={false}
-        campaignPatterElement={state}
-        handlerName={(e) => {}}
-        handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-        handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
-        handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
-        handlerAddKillChainPhases={(e) => { dispatch({ type: "updateKillChainPhases", data: e }); handlerButtonIsDisabled(); }}/>);
+    return (<Paper elevation={3} style={{ width: "100%" }}>
+        <Box m={2} pb={2}>
+            <Grid container direction="row">
+                <Grid item container md={8} justifyContent="flex-start">
+                    <Typography variant="overline" display="block" gutterBottom>
+                        {`${helpers.getLinkImageSTIXObject("attack-pattern").description}`}
+                    </Typography> 
+                </Grid>
+                <Grid item container md={4} justifyContent="flex-end">
+                    <Button onClick={handlerAddSTIXObject} color="primary" disabled={buttonIsDisabled}>добавить</Button>
+                </Grid>
+            </Grid>
+            <CreateAttackPatternElements 
+                isDisabled={false}
+                campaignPatterElement={state}
+                handlerName={(e) => {}}
+                handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
+                handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
+                handlerAddKillChainPhases={(e) => { dispatch({ type: "updateKillChainPhases", data: e }); handlerButtonIsDisabled(); }}
+            />
+        </Box>
+    </Paper>);
 }
 
 CreateDialogContentAttackPatternNewSTIXObject.propTypes = {

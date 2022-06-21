@@ -1,16 +1,20 @@
 import React from "react";
-import { Col, Row } from "react-bootstrap";
-import { 
+import {
+    Grid,
     DialogContent,
+    Typography,
 } from "@material-ui/core";
+import { red } from "@material-ui/core/colors";
 
 export default function CreateNullSTIXObject(){ 
     return (<DialogContent>
-        <Row className="mt-2">
-            <Col md={12} className="pl-3 pr-3">
-                Подходящий для отрисовки STIX объект не найден
-            </Col>
-        </Row>
+        <Grid container direction="row" className="pt-3">
+            <Grid item container md={12} justifyContent="center">
+                <Typography variant="caption" display="block" gutterBottom style={{ color: red[400] }}>
+                    Подходящий для отрисовки STIX объект не найден
+                </Typography>
+            </Grid>
+        </Grid>
     </DialogContent>);
 }
 

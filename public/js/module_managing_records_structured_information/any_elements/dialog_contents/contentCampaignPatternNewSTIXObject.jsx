@@ -1,12 +1,14 @@
 import React, { useReducer } from "react";
-import { 
+import {
+    Box, 
     Button,
-    DialogActions,
-    DialogContent,
+    Paper,
     Grid,
+    Typography,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 
+import { helpers } from "../../../common_helpers/helpers.js";
 import CreateCampaingPatternElements from "../type_elements_stix/campaingPatternElements.jsx";
 
 const reducer = (state, action) => {
@@ -142,7 +144,9 @@ export default function CreateCampaignPatternNewSTIXObject(props){
      * кнопки "сохранить" и действие при ее нажатии 
      */
 
-    const [ state, dispatch ] = useReducer(reducer, {});
+    const [ state, dispatch ] = useReducer(reducer, projectPatterElement);
+
+    let buttonIsDisabled = true;
 
     const handlerButtonIsDisabled = () => {
         /*if(!buttonIsDisabled){
@@ -155,16 +159,30 @@ export default function CreateCampaignPatternNewSTIXObject(props){
             //        setButtonSaveChangeTrigger((prevState) => !prevState);
         };
      
-    return (<CreateCampaingPatternElements 
-        isDisabled={false}
-        campaignPatterElement={state}
-        handlerName={(e) => {}}
-        handlerObjective={(e) => { dispatch({ type: "updateObjective", data: e.target.value }); handlerButtonIsDisabled(); }}
-        handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-        handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
-        handlerChangeDateTimeFirstSeen={(e) => { dispatch({ type: "updateDateTimeFirstSeen", data: e }); handlerButtonIsDisabled(); }}
-        handlerChangeDateTimeLastSeen={(e) => { dispatch({ type: "updateDateTimeLastSeen", data: e }); handlerButtonIsDisabled(); }}
-    />);
+    return (<Paper elevation={3} style={{ width: "100%" }}>
+        <Box m={2} pb={2}>
+            <Grid container direction="row">
+                <Grid item container md={8} justifyContent="flex-start">
+                    <Typography variant="overline" display="block" gutterBottom>
+                        {`${helpers.getLinkImageSTIXObject("campaign").description}`}
+                    </Typography> 
+                </Grid>
+                <Grid item container md={4} justifyContent="flex-end">
+                    <Button onClick={handlerAddSTIXObject} color="primary" disabled={buttonIsDisabled}>добавить</Button>
+                </Grid>
+            </Grid>
+            <CreateCampaingPatternElements 
+                isDisabled={false}
+                campaignPatterElement={state}
+                handlerName={(e) => {}}
+                handlerObjective={(e) => { dispatch({ type: "updateObjective", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
+                handlerChangeDateTimeFirstSeen={(e) => { dispatch({ type: "updateDateTimeFirstSeen", data: e }); handlerButtonIsDisabled(); }}
+                handlerChangeDateTimeLastSeen={(e) => { dispatch({ type: "updateDateTimeLastSeen", data: e }); handlerButtonIsDisabled(); }}
+            />
+        </Box>
+    </Paper>);
 }
      
 CreateCampaignPatternNewSTIXObject.propTypes = {

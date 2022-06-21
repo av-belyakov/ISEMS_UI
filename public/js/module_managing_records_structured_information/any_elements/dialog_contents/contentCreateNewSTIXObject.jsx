@@ -252,88 +252,92 @@ export default function CreateDialogContentNewSTIXObject(props){
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" className="pt-3" spacing={3}>
-                <Grid item container md={4}>
-                    <Grid container direction="row">
-                        <Grid item container md={12} justifyContent="flex-start">
-                        В родительский объект &nbsp;<strong className="text-muted">{currentIdSTIXObject}</strong>&nbsp; добавлены ссылки на следующие объекты:
-                            {listNewOrModifySTIXObject.map((item, key) => {
-                                let objectElem = helpers.getLinkImageSTIXObject(item.type);
+                <Grid item container md={5}>
+                    <Box m={2} pb={2}>
+                        <Grid container direction="row">
+                            <Grid item container md={12} justifyContent="flex-start">
+                                <Typography variant="overline" display="block" gutterBottom>
+                                    {`родительский объект ${currentIdSTIXObject}`}
+                                </Typography>
+                                    добавлены ссылки на следующие STIX объекты:
+                                {listNewOrModifySTIXObject.map((item, key) => {
+                                    let objectElem = helpers.getLinkImageSTIXObject(item.type);
 
-                                return (<Grid container direction="row" key={`key_new_or_modify_${key}`}>
-                                    <Grid item container md={12} justifyContent="flex-start"><img 
-                                        key={`key_img_new_or_modify_${key}`} 
-                                        src={`/images/stix_object/${objectElem.link}`} 
-                                        width="30" 
-                                        height="30" />&nbsp;
-                                    <strong className="text-muted pt-1">{item.id}</strong>&nbsp;
-                                    <IconButton className="mb-2" size="small" aria-label="delete" onClick={() => {
-                                        let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
-                                        listNewOrModifySTIXObjectTmp.splice(key, 1);
+                                    return (<Grid container direction="row" key={`key_new_or_modify_${key}`}>
+                                        <Grid item container md={12} justifyContent="flex-start"><img 
+                                            key={`key_img_new_or_modify_${key}`} 
+                                            src={`/images/stix_object/${objectElem.link}`} 
+                                            width="30" 
+                                            height="30" />&nbsp;
+                                        <strong className="text-muted pt-1">{item.id}</strong>&nbsp;
+                                        <IconButton className="mb-2" size="small" aria-label="delete" onClick={() => {
+                                            let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
+                                            listNewOrModifySTIXObjectTmp.splice(key, 1);
 
-                                        setListNewOrModifySTIXObject(listNewOrModifySTIXObjectTmp);
-                                    }}>
-                                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                                    </IconButton>
-                                    </Grid>
-                                </Grid>);
-                            })}
+                                            setListNewOrModifySTIXObject(listNewOrModifySTIXObjectTmp);
+                                        }}>
+                                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                        </IconButton>
+                                        </Grid>
+                                    </Grid>);
+                                })}
+                            </Grid>
+                        </Grid>                    
+                        <Grid container direction="row">
+                            <Grid item container md={12} justifyContent="flex-start">
+                                <TextField
+                                    id={"select-type-create-object"}
+                                    select
+                                    fullWidth
+                                    label={"тип искомого или создаваемого объекта (не обязательный параметр)"}
+                                    value={typeObjectSTIX}
+                                    onChange={(obj) => setTypeObjectSTIX(obj.target.value)}>
+                                    <MenuItem key={"key-type-none"} value="">тип не определен</MenuItem>
+                                    {listLinkImageSTIXObject.map((item) => <MenuItem key={`key-${item}`} value={item}>{helpers.getLinkImageSTIXObject(item).description}</MenuItem>)}
+                                </TextField>
+                            </Grid>
                         </Grid>
-                    </Grid>                    
-                    <Grid container direction="row">
-                        <Grid item container md={12} justifyContent="flex-start">
-                            <TextField
-                                id={"select-type-create-object"}
-                                select
-                                fullWidth
-                                label={"тип искомого или создаваемого объекта (не обязательный параметр)"}
-                                value={typeObjectSTIX}
-                                onChange={(obj) => setTypeObjectSTIX(obj.target.value)}>
-                                <MenuItem key={"key-type-none"} value="">тип не определен</MenuItem>
-                                {listLinkImageSTIXObject.map((item) => <MenuItem key={`key-${item}`} value={item}>{helpers.getLinkImageSTIXObject(item).description}</MenuItem>)}
-                            </TextField>
+                        {(listRefsForObjectSTIX.length > 1)?
+                            <Grid container direction="row" className="pt-3">
+                                <Grid item container md={12} justifyContent="flex-start">
+                                    <RadioGroup row aria-label="quiz" name="quiz" value={currentRefObjectSTIX} onChange={handleRadioChange}>
+                                        {listRefsForObjectSTIX.map((item) => {
+                                            let isDisabled = false;
+                                            if(typeObjectSTIX === ""){
+                                                isDisabled = true;
+                                            } else {
+                                                if(listRefPropertyObject[item] && !listRefPropertyObject[item].find((v) => v === typeObjectSTIX)){
+                                                    isDisabled = true;    
+                                                }
+                                            }
+
+                                            return <FormControlLabel disabled={isDisabled} key={`key-${item}`} value={item} control={<Radio size="small"/>} label={item} />;
+                                        })}
+                                    </RadioGroup>
+                                </Grid>
+                            </Grid>:
+                            ""}
+                        {helpers.getListOnceProperties().find((item) => item === currentRefObjectSTIX && typeObjectSTIX !== "")?
+                            <Typography variant="caption" display="block" gutterBottom style={{ color: red[400] }}>
+                                Внимание!!! Выбранное свойство объекта может содержать только одну ссылку, если вы добавите новую ссылку, то предидущая,
+                                если она есть, будет перезаписанна.
+                            </Typography>:
+                            ""}
+                        <Grid container direction="row" className="pt-3">
+                            <div style={{ width: "100%" }}>
+                                <ReactSearchAutocomplete
+                                    items={itemReactSearchAutocomplete}
+                                    onSearch={handleOnSearch}
+                                    onHover={handleOnHover}
+                                    onSelect={handleOnSelect}
+                                    onFocus={handleOnFocus}
+                                    autoFocus
+                                    formatResult={formatResult}
+                                />
+                            </div>
                         </Grid>
-                    </Grid>
-                    {(listRefsForObjectSTIX.length > 1)?
                         <Grid container direction="row" className="pt-3">
                             <Grid item container md={12} justifyContent="flex-start">
-                                <RadioGroup row aria-label="quiz" name="quiz" value={currentRefObjectSTIX} onChange={handleRadioChange}>
-                                    {listRefsForObjectSTIX.map((item) => {
-                                        let isDisabled = false;
-                                        if(typeObjectSTIX === ""){
-                                            isDisabled = true;
-                                        } else {
-                                            if(listRefPropertyObject[item] && !listRefPropertyObject[item].find((v) => v === typeObjectSTIX)){
-                                                isDisabled = true;    
-                                            }
-                                        }
-
-                                        return <FormControlLabel disabled={isDisabled} key={`key-${item}`} value={item} control={<Radio size="small"/>} label={item} />;
-                                    })}
-                                </RadioGroup>
-                            </Grid>
-                        </Grid>:
-                        ""}
-                    {helpers.getListOnceProperties().find((item) => item === currentRefObjectSTIX && typeObjectSTIX !== "")?
-                        <Typography variant="caption" display="block" gutterBottom style={{ color: red[400] }}>
-                            Внимание!!! Выбранное свойство объекта может содержать только одну ссылку, если вы добавите новую ссылку, то предидущая,
-                            если она есть, будет перезаписанна.
-                        </Typography>:
-                        ""}
-                    <Grid container direction="row" className="pt-3">
-                        <div style={{ width: "100%" }}>
-                            <ReactSearchAutocomplete
-                                items={itemReactSearchAutocomplete}
-                                onSearch={handleOnSearch}
-                                onHover={handleOnHover}
-                                onSelect={handleOnSelect}
-                                onFocus={handleOnFocus}
-                                autoFocus
-                                formatResult={formatResult}
-                            />
-                        </div>
-                    </Grid>
-                    <Grid container direction="row" className="pt-3">
-                        <Grid item container md={12} justifyContent="flex-start">
 
                     1. Выбор свойства куда нужно добавить объект, если listRefsForObjectSTIX то вообще нельзя ничего делать, а 
                     если только object_refs то не показывать этот шаг.
@@ -341,35 +345,8 @@ export default function CreateDialogContentNewSTIXObject(props){
                     3. Строка поиска по id, name, domainame, ip и т.д. (поиск из кеша).
                     4. Вывод списка найденных ссылок.
 
-                    Не для каждого типа родительского объекта и свойств данного объекта, возможно добавление всех видов дочерних объектов 
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item container md={8}>
-                    <Paper>
-                        <Box m={2} pb={2}>
-                            {MyModule && <MyModule 
-                                isNotDisabled={isNotDisabled}
-                                parentIdSTIXObject={currentIdSTIXObject}
-                                projectPatterElement={projectPatterElement}
-                                handlerAddSTIXObject={handlerAddSTIXObject}
-                            />}
-                        
-                        
-                        
-                            {/*
-                        <MyModule
-                            campaignPatterElement={{}}
-                            handlerCommon={(id, fieldType) => {
-                                console.log("func 'handlerCommon', id:", id, " fieldType:", fieldType);
-                            }}
-                        <ContentAttackPatternSTIXObject 
-                            socketIo={socketIo}
-                            isNotDisabled={isNotDisabled}
-                            parentIdSTIXObject={currentIdSTIXObject}
-                            currentAdditionalIdSTIXObject={""}
-                            handlerDialogClose={handlerDialogClose}
-                                />*/}
+                    Не для каждого типа родительского объекта и свойств данного объекта, возможно добавление всех видов дочерних объектов
+
                     Добавление какого либо нового STIX объекта. При это можно как добавить новый STIX объект, так и выполнить поиск
             уже существующих STIX объектов по их типам, времени создания, идентификатору и т.д. Родительский объект {currentIdSTIXObject}.
             listRefsForObjectSTIX = {listRefsForObjectSTIX}
@@ -388,9 +365,18 @@ export default function CreateDialogContentNewSTIXObject(props){
 здесь должно быть поле для просмотра и редактирования найденных STIX объектов и вновь созданных объектов, при этом вся обработка данных объекта
 должна выполнятся здесь. Нужно предусмотреть кнопку 'добавить' для добавления вновь созданных объектов и объектов по которым выполнялось редактирование
 в listNewOrModifySTIXObject для последующей отправки отредактированных объектов в СУБД
-/
-                        </Box>
-                    </Paper>
+/ 
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Grid>
+                <Grid item container md={7}>
+                    {MyModule && <MyModule 
+                        isNotDisabled={isNotDisabled}
+                        parentIdSTIXObject={currentIdSTIXObject}
+                        projectPatterElement={projectPatterElement}
+                        handlerAddSTIXObject={handlerAddSTIXObject}
+                    />}
                 </Grid>
             </Grid>
         </DialogContent>

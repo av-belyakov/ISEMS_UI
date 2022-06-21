@@ -1,8 +1,8 @@
 import React, { useReducer } from "react";
-import { 
+import {
+    Box, 
     Button,
-    DialogActions,
-    DialogContent,
+    Paper,
     Grid,
     Typography, 
 } from "@material-ui/core";
@@ -123,11 +123,12 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
 
     const [ state, dispatch ] = useReducer(reducer, projectPatterElement);
 
-    console.log("func CreateCourseOfActionPatternNewSTIXObject campaignPatterElement: ", projectPatterElement);
+    let buttonIsDisabled = true;
 
-    if(!projectPatterElement.id){
-        projectPatterElement.id = `course-of-action--${uuidv4()}`;
-    }
+    console.log("func CreateCourseOfActionPatternNewSTIXObject projectPatterElement: ", projectPatterElement);
+
+
+    let id = `course-of-action--${uuidv4()}`;
 
     const handlerButtonIsDisabled = () => {
         /*if(!buttonIsDisabled){
@@ -140,26 +141,26 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
             //        setButtonSaveChangeTrigger((prevState) => !prevState);
         };
      
-    return (<React.Fragment>
-        <Grid container direction="row">
-            <Grid item container md={12} justifyContent="center">
-                <Typography variant="overline" display="block" gutterBottom>
-                    {`${helpers.getLinkImageSTIXObject("course-of-action").description} id:${campaignPatterElement.id}`}
-                </Typography> 
+    return (<Paper elevation={3} style={{ width: "100%" }}>
+        <Box m={2} pb={2}>
+            <Grid container direction="row">
+                <Grid item container md={8} justifyContent="flex-start">
+                    <Typography variant="overline" display="block" gutterBottom>
+                        {`${helpers.getLinkImageSTIXObject("course-of-action").description}`}
+                    </Typography> 
+                </Grid>
+                <Grid item container md={4} justifyContent="flex-end">
+                    <Button onClick={handlerAddSTIXObject} color="primary" disabled={buttonIsDisabled}>добавить</Button>
+                </Grid>
             </Grid>
-        </Grid>
-        <Grid container direction="row">
-            <Grid item container md={12} justifyContent="flex-end">
-                <Button onClick={handlerAddSTIXObject} color="primary">добавить</Button>
-            </Grid>
-        </Grid>
-        <CreateCourseOfActionPatternElements
-            isDisabled={false} 
-            campaignPatterElement={state}
-            handlerName={(e) => {}}
-            handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-        />
-    </React.Fragment>);
+            <CreateCourseOfActionPatternElements
+                isDisabled={false} 
+                projectPatterElement={state}
+                handlerName={(e) => {}}
+                handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+            />
+        </Box>
+    </Paper>);
 }
      
 CreateCourseOfActionPatternNewSTIXObject.propTypes = {
