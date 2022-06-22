@@ -259,25 +259,28 @@ export default function CreateDialogContentNewSTIXObject(props){
                                 <Typography variant="overline" display="block" gutterBottom>
                                     {`родительский объект ${currentIdSTIXObject}`}
                                 </Typography>
-                                    добавлены ссылки на следующие STIX объекты:
+                                {listNewOrModifySTIXObject.length > 0? 
+                                    <span className="text-muted pb-2">добавлены ссылки на следующие STIX объекты:</span>:
+                                    ""}
                                 {listNewOrModifySTIXObject.map((item, key) => {
                                     let objectElem = helpers.getLinkImageSTIXObject(item.type);
 
                                     return (<Grid container direction="row" key={`key_new_or_modify_${key}`}>
-                                        <Grid item container md={12} justifyContent="flex-start"><img 
-                                            key={`key_img_new_or_modify_${key}`} 
-                                            src={`/images/stix_object/${objectElem.link}`} 
-                                            width="30" 
-                                            height="30" />&nbsp;
-                                        <strong className="text-muted pt-1">{item.id}</strong>&nbsp;
-                                        <IconButton className="mb-2" size="small" aria-label="delete" onClick={() => {
-                                            let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
-                                            listNewOrModifySTIXObjectTmp.splice(key, 1);
+                                        <Grid item container md={12} justifyContent="flex-start">
+                                            <img 
+                                                key={`key_img_new_or_modify_${key}`} 
+                                                src={`/images/stix_object/${objectElem.link}`} 
+                                                width="30" 
+                                                height="30" />&nbsp;
+                                            <span className="pt-1">{item.id}</span>&nbsp;
+                                            <IconButton className="mb-2" size="small" aria-label="delete" onClick={() => {
+                                                let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
+                                                listNewOrModifySTIXObjectTmp.splice(key, 1);
 
-                                            setListNewOrModifySTIXObject(listNewOrModifySTIXObjectTmp);
-                                        }}>
-                                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                                        </IconButton>
+                                                setListNewOrModifySTIXObject(listNewOrModifySTIXObjectTmp);
+                                            }}>
+                                                <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                                            </IconButton>
                                         </Grid>
                                     </Grid>);
                                 })}
@@ -338,8 +341,11 @@ export default function CreateDialogContentNewSTIXObject(props){
                         </Grid>
                         <Grid container direction="row" className="pt-3">
                             <Grid item container md={12} justifyContent="flex-start">
+                                Здесь выводим результаты поиска если он выполнялся. 
+                                Результаты выводим через import InfiniteScroll from \"react-infinite-scroll-component\";
+                                Пример в createListPreviouseStateSTIX.jsx
 
-                    1. Выбор свойства куда нужно добавить объект, если listRefsForObjectSTIX то вообще нельзя ничего делать, а 
+                                {/*1. Выбор свойства куда нужно добавить объект, если listRefsForObjectSTIX то вообще нельзя ничего делать, а 
                     если только object_refs то не показывать этот шаг.
                     2. Тип создаваемого объекта, при поиске не обязателен.
                     3. Строка поиска по id, name, domainame, ip и т.д. (поиск из кеша).
@@ -365,12 +371,12 @@ export default function CreateDialogContentNewSTIXObject(props){
 здесь должно быть поле для просмотра и редактирования найденных STIX объектов и вновь созданных объектов, при этом вся обработка данных объекта
 должна выполнятся здесь. Нужно предусмотреть кнопку 'добавить' для добавления вновь созданных объектов и объектов по которым выполнялось редактирование
 в listNewOrModifySTIXObject для последующей отправки отредактированных объектов в СУБД
-/ 
+ / */}
                             </Grid>
                         </Grid>
                     </Box>
                 </Grid>
-                <Grid item container md={7}>
+                <Grid item container md={7} style={{ display: "block" }}>
                     {MyModule && <MyModule 
                         isNotDisabled={isNotDisabled}
                         parentIdSTIXObject={currentIdSTIXObject}

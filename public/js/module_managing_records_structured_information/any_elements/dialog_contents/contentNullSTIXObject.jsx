@@ -11,7 +11,7 @@ export default function CreateNullSTIXObject(){
         <Grid container direction="row" className="pt-3">
             <Grid item container md={12} justifyContent="center">
                 <Typography variant="caption" display="block" gutterBottom style={{ color: red[400] }}>
-                    Подходящий для отрисовки STIX объект не найден
+                    подходящий для отрисовки STIX объект не найден
                 </Typography>
             </Grid>
         </Grid>

@@ -9,11 +9,12 @@ import {
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 
+import reducerCourseOfActionSTIXObjects from "../reducer_handlers/reducerCourseOfActionSTIXObjects.js";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateCourseOfActionPatternElements from "../type_elements_stix/courseOfActionPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
-const reducer = (state, action) => {
+/*const reducer = (state, action) => {
     switch(action.type){
     case "newAll":
         return action.data;
@@ -107,7 +108,7 @@ const reducer = (state, action) => {
             return {...state};
         }
     }
-};
+};*/
 
 export default function CreateDialogContentCourseOfActionSTIXObject(props){
     let { 
@@ -186,7 +187,7 @@ function CreateMajorContent(props){
         handlerButtonSaveChangeTrigger,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducer, {});
+    const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, {});
 
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){

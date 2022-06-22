@@ -10,103 +10,9 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
+import reducerCourseOfActionSTIXObjects from "../reducer_handlers/reducerCourseOfActionSTIXObjects.js";
 import CreateCourseOfActionPatternElements from "../type_elements_stix/courseOfActionPatternElements.jsx";
-
-const reducer = (state, action) => {
-    switch(action.type){
-    case "newAll":
-        return action.data;
-    case "cleanAll":
-        return {};
-    case "updateDescription":
-        if(state.description === action.data){
-            return {...state};
-        }
-
-        return {...state, description: action.data};
-    case "updateConfidence":
-        if(state.confidence === action.data.data){
-            return {...state};
-        }
-
-        return {...state, confidence: action.data.data};
-    case "updateDefanged":
-        return {...state, defanged: (action.data === "true")};
-    case "updateLabels":
-        return {...state, labels: action.data.listTokenValue};
-    case "updateExternalReferences":
-        if(!state.external_references){
-            state.external_references = [];
-        }
-
-        for(let key of state.external_references){
-            if(key.source_name === action.data.source_name){
-                return {...state};
-            }
-        }
-
-        state.external_references.push(action.data);
-
-        return {...state};
-    case "updateExternalReferencesHashesUpdate":
-        if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
-            state.external_references[action.data.orderNumber].hashes = {};
-        }
-
-        state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
-
-        return {...state};
-    case "updateExternalReferencesHashesDelete":
-        delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
-
-        return {...state};
-    case "updateGranularMarkings":
-        if(!state.granular_markings){
-            state.granular_markings = [];
-        }
-
-        for(let keyGM of state.granular_markings){
-            if(!keyGM.selectors){
-                return {...state};
-            }
-
-            for(let keyS of keyGM.selectors){
-                for(let key of action.data.selectors){
-                    if(key === keyS){
-                        return {...state};
-                    }
-                }
-            }
-        }
-
-        state.granular_markings.push(action.data);
-
-        return {...state};
-    case "updateExtensions":
-        if(!state.extensions){
-            state.extensions = {};
-        }
-
-        state.extensions[action.data.name] = action.data.description;
-
-        return {...state};
-    case "deleteElementAdditionalTechnicalInformation":
-        switch(action.data.itemType){
-        case "extensions":
-            delete state.extensions[action.data.item];
-
-            return {...state};
-        case "granular_markings":
-            state.granular_markings.splice(action.data.orderNumber, 1);
-
-            return {...state};
-        case "external_references":
-            state.external_references.splice(action.data.orderNumber, 1);
-
-            return {...state};
-        }
-    }
-};
+import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 export default function CreateCourseOfActionPatternNewSTIXObject(props){
     let { 
@@ -121,7 +27,7 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
      * кнопки "сохранить" и действие при ее нажатии 
      */
 
-    const [ state, dispatch ] = useReducer(reducer, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, projectPatterElement);
 
     let buttonIsDisabled = true;
 
@@ -129,6 +35,40 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
 
 
     let id = `course-of-action--${uuidv4()}`;
+    /**
+     * перед тем как отправить вновь созданный объект (именно вновь созданный, надо проверять) через handlerAddSTIXObject
+     * надо добовлять к объекту id
+     */
+     
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
+        if(obj.modalType === "external_references"){
+            switch(obj.actionType){
+            case "hashes_update":
+                dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
+    
+                break;
+            case "hashes_delete":
+                dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
+    
+                break;
+            default:
+                dispatch({ type: "updateExternalReferences", data: obj.data });
+                handlerButtonIsDisabled();
+            }
+        }
+        
+        if(obj.modalType === "granular_markings") {
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerButtonIsDisabled();
+        }
+        
+        if(obj.modalType === "extensions") {
+            dispatch({ type: "updateExtensions", data: obj.data });
+            handlerButtonIsDisabled();
+        }
+    };
 
     const handlerButtonIsDisabled = () => {
         /*if(!buttonIsDisabled){
@@ -140,7 +80,7 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
         handlerButtonSaveChangeTrigger = () => {
             //        setButtonSaveChangeTrigger((prevState) => !prevState);
         };
-     
+
     return (<Paper elevation={3} style={{ width: "100%" }}>
         <Box m={2} pb={2}>
             <Grid container direction="row">
@@ -156,8 +96,18 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
             <CreateCourseOfActionPatternElements
                 isDisabled={false} 
                 projectPatterElement={state}
-                handlerName={(e) => {}}
+                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+            />
+            <CreateElementAdditionalTechnicalInformationDO
+                objectId={id}
+                reportInfo={state}
+                isNotDisabled={isNotDisabled}
+                handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
+                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
             />
         </Box>
     </Paper>);
