@@ -84,7 +84,7 @@ export default function CreateCampaingPatternElements(props){
                     disabled={isDisabled}
                     fullWidth
                     onChange={handlerDescription}
-                    defaultValue={campaignPatterElement.description}
+                    value={(campaignPatterElement.description)? campaignPatterElement.description: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>
@@ -154,7 +154,7 @@ export default function CreateCampaingPatternElements(props){
                     disabled={isDisabled}
                     fullWidth
                     onChange={handlerObjective}
-                    defaultValue={campaignPatterElement.objective}
+                    value={(campaignPatterElement.objective)? campaignPatterElement.objective: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>

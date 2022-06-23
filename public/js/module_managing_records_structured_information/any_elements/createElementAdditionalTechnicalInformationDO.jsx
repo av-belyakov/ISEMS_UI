@@ -132,9 +132,12 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         <Grid container direction="row" className="mt-3 pl-4">
             <Grid item md={6}><span className="text-muted">версия спецификации STIX:</span></Grid>
             <Grid item md={6} className="text-end">
-                {((typeof reportInfo.spec_version === "undefined") || (reportInfo.spec_version.length === 0))? 
-                    <span className="text-dark">версия не определена</span>: 
-                    <i>{reportInfo.spec_version}</i>}
+                {(reportInfo.id && reportInfo.id !== "")?
+                    ((typeof reportInfo.spec_version === "undefined") || (reportInfo.spec_version.length === 0))? 
+                        <span className="text-dark">версия не определена</span>: 
+                        <i>{reportInfo.spec_version}</i>:
+                    "2.1"
+                }
             </Grid>
         </Grid>
             
@@ -145,7 +148,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             </Grid> : ""}
 
         <Grid container direction="row" className="pl-4">
-            <Grid item md={10}><span className="text-muted">уверенность создателя в правильности своих данных от 0 до 100:</span>&sup1;</Grid>
+            <Grid item md={10}><span className="text-muted">уверенность создателя в правильности своих данных от 0 до 100</span>&sup1;<span className="text-muted">:</span></Grid>
             <Grid item md={2} className="text-end">
                 <Form.Group>
                     <Form.Control 
@@ -153,7 +156,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         as="select" 
                         size="sm" 
                         onChange={handlerElConf} 
-                        value={reportInfo.confidence} 
+                        value={(reportInfo.confidence)? reportInfo.confidence: 0} 
                         id="dropdown_list_confidence">
                         {listConfidence()}
                     </Form.Control>

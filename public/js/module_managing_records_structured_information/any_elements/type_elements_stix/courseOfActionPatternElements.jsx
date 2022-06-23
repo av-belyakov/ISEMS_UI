@@ -73,7 +73,7 @@ export default function CreateCourseOfActionPatternElements(props){
                     disabled={isDisabled}
                     fullWidth
                     onChange={handlerDescription}
-                    defaultValue={projectPatterElement.description}
+                    value={(projectPatterElement.description)? projectPatterElement.description: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>

@@ -240,8 +240,24 @@ export default function CreateDialogContentNewSTIXObject(props){
 
         };
 
-    let handlerAddSTIXObject = () => {
+    let handlerAddSTIXObject = (elem) => {
+        let elemIsExist = false;
+        let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
 
+        for(let item of listNewOrModifySTIXObjectTmp){
+            if(item.id === elem.id){
+                elemIsExist = true;
+        
+                return;
+            }
+        }
+
+        if(elemIsExist){
+            return; 
+        }
+
+        listNewOrModifySTIXObjectTmp.push(elem);
+        setListNewOrModifySTIXObject(listNewOrModifySTIXObjectTmp);
     };
 
     let MyModule = somethingModule(typeObjectSTIX);
@@ -266,7 +282,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                                     let objectElem = helpers.getLinkImageSTIXObject(item.type);
 
                                     return (<Grid container direction="row" key={`key_new_or_modify_${key}`}>
-                                        <Grid item container md={12} justifyContent="flex-start">
+                                        <Grid item container md={12} justifyContent="center">
                                             <img 
                                                 key={`key_img_new_or_modify_${key}`} 
                                                 src={`/images/stix_object/${objectElem.link}`} 

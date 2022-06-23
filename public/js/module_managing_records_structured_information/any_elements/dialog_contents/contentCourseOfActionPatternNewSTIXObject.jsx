@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import {
     Box, 
     Button,
@@ -21,24 +21,36 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
         projectPatterElement,
         handlerAddSTIXObject,
     } = props;
-    /**
-     * наверное тут надо принимать общий обработчик для всех типов STIX объектов а саму обработку и 
-     * добавление данных проводить в contentCreateNewSTIXObject, тогда будет проще обработать доступность
-     * кнопки "сохранить" и действие при ее нажатии 
-     */
+
+    return <CreateMajorElements
+        isNotDisabled={isNotDisabled}
+        currentObjectId={`course-of-action--${uuidv4()}`}
+        parentIdSTIXObject={parentIdSTIXObject}
+        projectPatterElement={projectPatterElement}
+        handlerAddSTIXObject={handlerAddSTIXObject}
+    />;
+}
+     
+CreateCourseOfActionPatternNewSTIXObject.propTypes = {
+    isNotDisabled: PropTypes.bool.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    projectPatterElement: PropTypes.object.isRequired,
+    handlerAddSTIXObject: PropTypes.func.isRequired,
+};
+
+function CreateMajorElements(props){
+    let { 
+        isNotDisabled,
+        currentObjectId,
+        parentIdSTIXObject,
+        projectPatterElement,
+        handlerAddSTIXObject,
+    } = props;
 
     const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, projectPatterElement);
-
-    let buttonIsDisabled = true;
+    const [ buttonIsDisabled, setButtonIsDisabled ] = useState(true);
 
     console.log("func CreateCourseOfActionPatternNewSTIXObject projectPatterElement: ", projectPatterElement);
-
-
-    let id = `course-of-action--${uuidv4()}`;
-    /**
-     * перед тем как отправить вновь созданный объект (именно вновь созданный, надо проверять) через handlerAddSTIXObject
-     * надо добовлять к объекту id
-     */
      
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -70,12 +82,18 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
         }
     };
 
-    const handlerButtonIsDisabled = () => {
-        /*if(!buttonIsDisabled){
-            return;
-        }
+    const handlerButtonIsDisabled = (name) => {
+            if(name === "" || (!state.name || state.name === "")){
+                setButtonIsDisabled(true);
 
-        setButtonIsDisabled();*/
+                return;
+            }
+        
+            if(!buttonIsDisabled){
+                return;
+            }
+
+            setButtonIsDisabled(false);
         },
         handlerButtonSaveChangeTrigger = () => {
             //        setButtonSaveChangeTrigger((prevState) => !prevState);
@@ -90,17 +108,37 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
                     </Typography> 
                 </Grid>
                 <Grid item container md={4} justifyContent="flex-end">
-                    <Button onClick={handlerAddSTIXObject} color="primary" disabled={buttonIsDisabled}>добавить</Button>
+                    <Button 
+                        onClick={() => {
+                            let stateTmp = Object.assign(state);
+                            stateTmp.id = currentObjectId;
+                            stateTmp.type = "course-of-action";
+                            stateTmp.spec_version = "2.1";
+                            stateTmp.lang = "RU";
+
+                            setButtonIsDisabled(true);
+                            dispatch({ type: "cleanAll", data: {} });
+
+                            handlerAddSTIXObject(stateTmp);
+                        }}
+                        disabled={buttonIsDisabled} 
+                        color="primary">
+                            добавить
+                    </Button>
                 </Grid>
+            </Grid>
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
+                <Grid item container md={8}>{currentObjectId}</Grid>
             </Grid>
             <CreateCourseOfActionPatternElements
                 isDisabled={false} 
                 projectPatterElement={state}
-                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
             />
             <CreateElementAdditionalTechnicalInformationDO
-                objectId={id}
+                objectId={currentObjectId}
                 reportInfo={state}
                 isNotDisabled={isNotDisabled}
                 handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
@@ -112,9 +150,10 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
         </Box>
     </Paper>);
 }
-     
-CreateCourseOfActionPatternNewSTIXObject.propTypes = {
+
+CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
+    currentObjectId: PropTypes.string.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
