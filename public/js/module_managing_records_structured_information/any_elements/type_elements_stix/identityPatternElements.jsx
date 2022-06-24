@@ -77,7 +77,7 @@ export default function CreateIdentityPatternElements(props){
                     disabled={isDisabled}
                     fullWidth
                     onChange={handlerDescription}
-                    defaultValue={campaignPatterElement.description}
+                    value={(campaignPatterElement.description)? campaignPatterElement.description: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>
@@ -126,7 +126,7 @@ export default function CreateIdentityPatternElements(props){
                     disabled={isDisabled}
                     fullWidth
                     onChange={handlerContactInformation}
-                    defaultValue={campaignPatterElement.contact_information}
+                    value={(campaignPatterElement.contact_information)? campaignPatterElement.contact_information: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>

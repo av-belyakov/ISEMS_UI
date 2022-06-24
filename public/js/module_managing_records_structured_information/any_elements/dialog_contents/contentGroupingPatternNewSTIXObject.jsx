@@ -10,11 +10,11 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerCourseOfActionSTIXObjects from "../reducer_handlers/reducerCourseOfActionSTIXObjects.js";
-import CreateCourseOfActionPatternElements from "../type_elements_stix/courseOfActionPatternElements.jsx";
+import reducerGroupingSTIXObject from "../reducer_handlers/reducerGroupingSTIXObject.js";
+import CreateGroupingPatternElements from "../type_elements_stix/groupingPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
-export default function CreateCourseOfActionPatternNewSTIXObject(props){
+export default function CreateGroupingPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         parentIdSTIXObject,
@@ -24,14 +24,14 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
-        currentObjectId={`course-of-action--${uuidv4()}`}
+        currentObjectId={`grouping--${uuidv4()}`}
         parentIdSTIXObject={parentIdSTIXObject}
         projectPatterElement={projectPatterElement}
         handlerAddSTIXObject={handlerAddSTIXObject}
     />;
 }
      
-CreateCourseOfActionPatternNewSTIXObject.propTypes = {
+CreateGroupingPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
@@ -47,10 +47,8 @@ function CreateMajorElements(props){
         handlerAddSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, projectPatterElement);
     const [ buttonIsDisabled, setButtonIsDisabled ] = useState(true);
-
-    console.log("func CreateCourseOfActionPatternNewSTIXObject projectPatterElement: ", projectPatterElement);
      
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -104,7 +102,7 @@ function CreateMajorElements(props){
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("course-of-action").description}`}
+                        {`${helpers.getLinkImageSTIXObject("grouping").description}`}
                     </Typography> 
                 </Grid>
                 <Grid item container md={4} justifyContent="flex-end">
@@ -112,7 +110,7 @@ function CreateMajorElements(props){
                         onClick={() => {
                             let stateTmp = Object.assign(state);
                             stateTmp.id = currentObjectId;
-                            stateTmp.type = "course-of-action";
+                            stateTmp.type = "grouping";
                             stateTmp.spec_version = "2.1";
                             stateTmp.lang = "RU";
 
@@ -131,10 +129,21 @@ function CreateMajorElements(props){
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
                 <Grid item container md={8}>{currentObjectId}</Grid>
             </Grid>
-            <CreateCourseOfActionPatternElements
-                isDisabled={false} 
-                projectPatterElement={state}
+            <CreateGroupingPatternElements 
+                isDisabled={false}
+                campaignPatterElement={state}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
+                handlerContext={(e) => { 
+                    /*dispatch({ type: "updateContex", data: e.target.value });
+
+                    if(checkRequiredValue(e.target.value, state.object_refs)){
+                        handlerButtonIsDisabled(false);
+                    } else {
+                        handlerButtonIsDisabled(true);
+                    }*/
+                    dispatch({ type: "updateContex", data: e.target.value });
+                    handlerButtonIsDisabled();
+                }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
             />
             <CreateElementAdditionalTechnicalInformationDO

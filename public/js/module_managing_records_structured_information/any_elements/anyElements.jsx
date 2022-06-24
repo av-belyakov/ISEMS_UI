@@ -549,8 +549,10 @@ export function CreateListSecondaryMotivations(props){
         return value;
     };
 
-    return (dictionaryLists["attack-motivation-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
-        <InputLabel id="secondary-motivations-mutiple-chip-id">тип инфраструктуры</InputLabel>
+    return (dictionaryLists["attack-motivation-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>        
+        <InputLabel id="secondary-motivations-mutiple-chip-id">
+            вторичный список причин, мотиваций или целей определяющий данный набор вторжения
+        </InputLabel>
         <Select
             labelId="secondary-motivations-mutiple-chip-label"
             id="secondary-motivations-mutiple-chip-id"

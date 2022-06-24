@@ -10,11 +10,11 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerCourseOfActionSTIXObjects from "../reducer_handlers/reducerCourseOfActionSTIXObjects.js";
-import CreateCourseOfActionPatternElements from "../type_elements_stix/courseOfActionPatternElements.jsx";
+import reducerIntrusionSetSTIXObject from "../reducer_handlers/reducerIntrusionSetSTIXObject.js";
+import CreateIntrusionSetPatternElements from "../type_elements_stix/intrusionSetPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
-export default function CreateCourseOfActionPatternNewSTIXObject(props){
+export default function CreateIntrusionSetPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         parentIdSTIXObject,
@@ -24,14 +24,14 @@ export default function CreateCourseOfActionPatternNewSTIXObject(props){
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
-        currentObjectId={`course-of-action--${uuidv4()}`}
+        currentObjectId={`intrusion-set--${uuidv4()}`}
         parentIdSTIXObject={parentIdSTIXObject}
         projectPatterElement={projectPatterElement}
         handlerAddSTIXObject={handlerAddSTIXObject}
     />;
 }
      
-CreateCourseOfActionPatternNewSTIXObject.propTypes = {
+CreateIntrusionSetPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
@@ -47,10 +47,8 @@ function CreateMajorElements(props){
         handlerAddSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerIntrusionSetSTIXObject, projectPatterElement);
     const [ buttonIsDisabled, setButtonIsDisabled ] = useState(true);
-
-    console.log("func CreateCourseOfActionPatternNewSTIXObject projectPatterElement: ", projectPatterElement);
      
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -104,7 +102,7 @@ function CreateMajorElements(props){
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("course-of-action").description}`}
+                        {`${helpers.getLinkImageSTIXObject("intrusion-set").description}`}
                     </Typography> 
                 </Grid>
                 <Grid item container md={4} justifyContent="flex-end">
@@ -112,7 +110,7 @@ function CreateMajorElements(props){
                         onClick={() => {
                             let stateTmp = Object.assign(state);
                             stateTmp.id = currentObjectId;
-                            stateTmp.type = "course-of-action";
+                            stateTmp.type = "intrusion-set";
                             stateTmp.spec_version = "2.1";
                             stateTmp.lang = "RU";
 
@@ -131,11 +129,18 @@ function CreateMajorElements(props){
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
                 <Grid item container md={8}>{currentObjectId}</Grid>
             </Grid>
-            <CreateCourseOfActionPatternElements
-                isDisabled={false} 
-                projectPatterElement={state}
+            <CreateIntrusionSetPatternElements 
+                isDisabled={false}
+                campaignPatterElement={state}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerPrimaryMotivation={(e) => { dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerResourceLevelAttack={(e) => { dispatch({ type: "updateResourceLevelAttack", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerSecondaryMotivations={(e) => { dispatch({ type: "updateSecondaryMotivations", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerGoalsTokenValuesChange={(e) => { dispatch({ type: "updateGoalsTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
+                handlerChangeDateTimeLastSeen={(e) => { dispatch({ type: "updateDateTimeLastSeen", data: e }); handlerButtonIsDisabled(); }}
+                handlerChangeDateTimeFirstSeen={(e) => { dispatch({ type: "updateDateTimeFirstSeen", data: e }); handlerButtonIsDisabled(); }}
+                handlerAliasesTokenValuesChange={(e) => { dispatch({ type: "updateAliasesTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
             />
             <CreateElementAdditionalTechnicalInformationDO
                 objectId={currentObjectId}

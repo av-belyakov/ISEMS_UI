@@ -8,7 +8,6 @@ import {
     DialogContent,
     IconButton,
     Grid,
-    Paper,
     Radio,
     RadioGroup,
     TextField,
@@ -20,7 +19,6 @@ import { teal, grey, red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
-import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
@@ -29,40 +27,10 @@ import ContentNullSTIXObject from "../dialog_contents/contentNullSTIXObject.jsx"
 const CreateDialogContentAttackPatternNewSTIXObject = lazy(() => import("./contentAttackPatternNewSTIXObject.jsx"));
 const CreateCourseOfActionPatternNewSTIXObject = lazy(() => import("./contentCourseOfActionPatternNewSTIXObject.jsx"));
 const CreateCampaignPatternNewSTIXObject = lazy(() => import("./contentCampaignPatternNewSTIXObject.jsx"));
-
-//const CreateAttackPatternElements = lazy(() => import(/* webpackChunkName 'CreateAttackPatternElements' */ "../type_elements_stix/attackPatternElements.jsx"));
-//const CreateCourseOfActionPatternElements = lazy(() => import(/* webpackChunkName 'CreateCourseOfActionPatternElements' */ "../type_elements_stix/courseOfActionPatternElements.jsx"));
-//const CreateCampaingPatternElements = lazy(() => import(/* webpackChunkName 'CreateCampaingPatternElements' */ "../type_elements_stix/campaingPatternElements.jsx"));
-//const CreateGroupingPatternElements = lazy(() => import(/* webpackChunkName 'CreateGroupingPatternElements' */ "../type_elements_stix/groupingPatternElements.jsx"));
-//const CreateIdentityPatternElements = lazy(() => import(/* webpackChunkName 'CreateIdentityPatternElements' */ "../type_elements_stix/identityPatternElements.jsx"));
-//const CreateInfrastructurePatternElements = lazy(() => import(/* webpackChunkName 'CreateInfrastructurePatternElements' */ "../type_elements_stix/infrastructurePatternElements.jsx"));
-//const CreateIntrusionSetPatternElements = lazy(() => import(/* webpackChunkName 'CreateIntrusionSetPatternElements' */ "../type_elements_stix/intrusionSetPatternElements.jsx"));
-//const CreateLocationPatternElements = lazy(() => import(/* webpackChunkName 'CreateLocationPatternElements' */ "../type_elements_stix/locationPatternElements.jsx"));
-//const CreateMalwarePatternElements = lazy(() => import(/* webpackChunkName 'CreateMalwareElements' */ "../type_elements_stix/malwarePatternElements.jsx"));
-//const CreateNotePatternElements = lazy(() => import(/* webpackChunkName 'CreateNotePatternElements' */ "../type_elements_stix/notePatternElements.jsx"));
-//const CreateObservedDataPatternElements = lazy(() => import(/* webpackChunkName 'CreateObservedDataPatternElements' */ "../type_elements_stix/observedDataPatternElements.jsx"));
-//const CreateOpinionPatternElements = lazy(() => import(/* webpackChunkName 'CreateOpinionPatternElements' */ "../type_elements_stix/opinionPatternElements.jsx"));
-//const CreateThreatActorsPatternElements = lazy(() => import(/* webpackChunkName 'CreateThreatActorsPatternElements' */ "../type_elements_stix/threatActorPatternElements.jsx"));
-//const CreateToolPatternElements = lazy(() => import(/* webpackChunkName 'CreateToolPatternElements' */ "../type_elements_stix/toolPatternElements.jsx"));
-//const CreateVulnerabilityPatternElements = lazy(() => import(/* webpackChunkName 'CreateVulnerabilityPatternElements' */ "../type_elements_stix/vulnerabilityPatternElements.jsx"));
-//const CreateArtifactPatternElements = lazy(() => import(/* webpackChunkName 'CreateArtifactPatternElements' */ "../type_elements_stix/artifactPatternElements.jsx"));
-//const CreateAutonomousSystemPatternElements = lazy(() => import(/* webpackChunkName 'CreateAutonomousSystemPatternElements' */ "../type_elements_stix/autonomousSystemPatternElements.jsx"));
-//const CreateDirectoryPatternElements = lazy(() => import(/* webpackChunkName 'CreateDirectoryPatternElements' */ "../type_elements_stix/directoryPatternElements.jsx"));
-//const CreateDomainNamePatternElements = lazy(() => import(/* webpackChunkName 'CreateDomainNamePatternElements' */ "../type_elements_stix/domainNamePatternElements.jsx"));
-//const CreateEmailAddressPatternElements = lazy(() => import(/* webpackChunkName 'CreateEmailAddressPatternElements' */ "../type_elements_stix/emailAddressPatternElements.jsx"));
-//const CreateFilePatternElements = lazy(() => import(/* webpackChunkName 'CreateFilePatternElements' */ "../type_elements_stix/filePatternElements.jsx"));
-//const CreateIpv4AddrPatternElements = lazy(() => import(/* webpackChunkName 'CreateIpv4AddrPatternElements' */ "../type_elements_stix/ipv4AddrPatternElements.jsx"));
-//const CreateIpv6AddrPatternElements = lazy(() => import(/* webpackChunkName 'CreateIpv6AddrPatternElements' */ "../type_elements_stix/ipv6AddrPatternElements.jsx"));
-//const CreateMacAddrPatternElements = lazy(() => import(/* webpackChunkName 'CreateMacAddrPatternElements' */ "../type_elements_stix/macAddrPatternElements.jsx"));
-//const CreateMutexPatternElements = lazy(() => import(/* webpackChunkName 'CreateMutexPatternElements' */ "../type_elements_stix/mutexPatternElements.jsx"));
-//const CreateNetworkTrafficPatternElements = lazy(() => import(/* webpackChunkName 'CreateNetworkTrafficPatternElements' */ "../type_elements_stix/networkTrafficPatternElements.jsx"));
-//const CreateProcessPatternElements = lazy(() => import(/* webpackChunkName 'CreateProcessPatternElements' */ "../type_elements_stix/processPatternElements.jsx"));
-//const CreateSoftwarePatternElements = lazy(() => import(/* webpackChunkName 'CreateSoftwarePatternElements' */ "../type_elements_stix/softwarePatternElements.jsx"));
-//const CreateUrlPatternElements = lazy(() => import(/* webpackChunkName 'CreateUrlPatternElements' */ "../type_elements_stix/urlPatternElements.jsx"));
-//const CreateUserAccountPatternElements = lazy(() => import(/* webpackChunkName 'CreateUserAccountPatternElements' */ "../type_elements_stix/userAccountPatternElements.jsx"));
-//const CreateWindowsRegistryKeyPatternElements = lazy(() => import(/* webpackChunkName 'CreateWindowsRegistryKeyPatternElements' */ "../type_elements_stix/windowsRegistryKeyPatternElements.jsx"));
-//const CreateX509CertificatePatternElements = lazy(() => import(/* webpackChunkName 'CreateX509CertificatePatternElements' */ "../type_elements_stix/x509CertificatePatternElements.jsx"));
-//const CreateMalwareAnalysisPatternElements = lazy(() => import(/* webpackChunkName 'CreateMalwareAnalysisPatternElements' */ "../type_elements_stix/malwareAnalysisPatternElements.jsx"));
+const CreateGroupingPatternNewSTIXObject = lazy(() => import("./contentGroupingPatternNewSTIXObject.jsx"));
+const CreateIdentityPatternNewSTIXObject = lazy(() => import("./contentIdentityPatternNewSTIXObject.jsx"));
+const CreateInfrastructurePatternNewSTIXObject = lazy(() => import("./contentInfrastructurePatternNewSTIXObject.jsx"));
+const CreateIntrusionSetPatternNewSTIXObject = lazy(() => import("./contentIntrusionSetPatternNewSTIXObject.jsx"));
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -262,7 +230,7 @@ export default function CreateDialogContentNewSTIXObject(props){
 
     let MyModule = somethingModule(typeObjectSTIX);
 
-    console.log("func 'CreateDialogContentNewSTIXObject' MyModule: ", MyModule);
+    console.log("func 'CreateDialogContentNewSTIXObject' MyModule: ", MyModule, " typeObjectSTIX ", typeObjectSTIX);
     //<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
 
     return (<React.Fragment>
@@ -282,7 +250,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                                     let objectElem = helpers.getLinkImageSTIXObject(item.type);
 
                                     return (<Grid container direction="row" key={`key_new_or_modify_${key}`}>
-                                        <Grid item container md={12} justifyContent="center">
+                                        <Grid item container md={12} justifyContent="flex-start">
                                             <img 
                                                 key={`key_img_new_or_modify_${key}`} 
                                                 src={`/images/stix_object/${objectElem.link}`} 
@@ -447,11 +415,11 @@ function somethingModule(nameSTIX){
         "course-of-action": CreateCourseOfActionPatternNewSTIXObject, 
         //"domain-name": CreateDomainNamePatternElements,
         //"email-addr": CreateEmailAddressPatternElements,
-        //"grouping": CreateGroupingPatternElements,
-        //"identity": CreateIdentityPatternElements,
+        "grouping": CreateGroupingPatternNewSTIXObject,
+        "identity": CreateIdentityPatternNewSTIXObject,
         ////"incident": CreateIncidentSTIXObject,
-        //"infrastructure": CreateInfrastructurePatternElements,
-        //"intrusion-set": CreateIntrusionSetPatternElements,
+        "infrastructure": CreateInfrastructurePatternNewSTIXObject,
+        "intrusion-set": CreateIntrusionSetPatternNewSTIXObject,
         //"ipv4-addr": CreateIpv4AddrPatternElements,
         //"ipv6-addr": CreateIpv6AddrPatternElements,
         //"location": CreateLocationPatternElements,
@@ -475,49 +443,3 @@ function somethingModule(nameSTIX){
 
     return nameList[nameSTIX];
 }
-
-/*function somethingModule(nameSTIX){
-    const nameList = {
-        "artifact": CreateArtifactPatternElements, 
-        "directory": CreateDirectoryPatternElements, 
-        "file": CreateFilePatternElements, 
-        "mutex": CreateMutexPatternElements,
-        "process": CreateProcessPatternElements, 
-        "software": CreateSoftwarePatternElements,
-        "url":CreateUrlPatternElements,
-        "windows-registry-key": CreateWindowsRegistryKeyPatternElements,
-        "x509-certificate": CreateX509CertificatePatternElements,
-        "attack-pattern": CreateAttackPatternElements,
-        "autonomous-system": CreateAutonomousSystemPatternElements, 
-        "campaign": CreateCampaingPatternElements,
-        "course-of-action": CreateCourseOfActionPatternElements, 
-        "domain-name": CreateDomainNamePatternElements,
-        "email-addr": CreateEmailAddressPatternElements,
-        "grouping": CreateGroupingPatternElements,
-        "identity": CreateIdentityPatternElements,
-        //"incident": CreateIncidentSTIXObject,
-        "infrastructure": CreateInfrastructurePatternElements,
-        "intrusion-set": CreateIntrusionSetPatternElements,
-        "ipv4-addr": CreateIpv4AddrPatternElements,
-        "ipv6-addr": CreateIpv6AddrPatternElements,
-        "location": CreateLocationPatternElements,
-        "mac-addr": CreateMacAddrPatternElements,
-        "malware": CreateMalwarePatternElements,//"malware-analysis": "", напрямую относится к "malware"
-        "network-traffic": CreateNetworkTrafficPatternElements,
-        "note": CreateNotePatternElements,
-        "observed-data": CreateObservedDataPatternElements,//"indicator": "",зависит от "observed-data"
-        "opinion": CreateOpinionPatternElements,
-        "threat-actor": CreateThreatActorsPatternElements,
-        "tool": CreateToolPatternElements,
-        "user-account": CreateUserAccountPatternElements,
-        "vulnerability": CreateVulnerabilityPatternElements,
-        //"indicator": ContentAuxiliarySTIXObject,
-        "malware-analysis": CreateMalwareAnalysisPatternElements,
-    };
-
-    if(!nameList[nameSTIX]){
-        return ContentNullSTIXObject;
-    }
-
-    return nameList[nameSTIX];
-}*/

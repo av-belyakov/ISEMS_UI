@@ -134,7 +134,7 @@ export default function CreateIntrusionSetPatternElements(props){
                     disabled={isDisabled}
                     fullWidth
                     onChange={handlerDescription}
-                    defaultValue={campaignPatterElement.description}
+                    value={(campaignPatterElement.description)? campaignPatterElement.description: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>
