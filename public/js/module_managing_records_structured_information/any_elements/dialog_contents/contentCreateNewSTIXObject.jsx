@@ -31,6 +31,10 @@ const CreateGroupingPatternNewSTIXObject = lazy(() => import("./contentGroupingP
 const CreateIdentityPatternNewSTIXObject = lazy(() => import("./contentIdentityPatternNewSTIXObject.jsx"));
 const CreateInfrastructurePatternNewSTIXObject = lazy(() => import("./contentInfrastructurePatternNewSTIXObject.jsx"));
 const CreateIntrusionSetPatternNewSTIXObject = lazy(() => import("./contentIntrusionSetPatternNewSTIXObject.jsx"));
+const CreateLocationPatternNewSTIXObject = lazy(() => import("./contentLocationPatternNewSTIXObject.jsx"));
+const CreateNotePatternNewSTIXObject = lazy(() => import("./contentNotePatternNewSTIXObject.jsx"));
+const CreateOpinionPatternNewSTIXObject = lazy(() => import("./contentOpinionPatternNewSTIXObject.jsx"));
+const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVulnerabilityPatternNewSTIXObject.jsx"));
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -422,17 +426,17 @@ function somethingModule(nameSTIX){
         "intrusion-set": CreateIntrusionSetPatternNewSTIXObject,
         //"ipv4-addr": CreateIpv4AddrPatternElements,
         //"ipv6-addr": CreateIpv6AddrPatternElements,
-        //"location": CreateLocationPatternElements,
+        "location": CreateLocationPatternNewSTIXObject,
         //"mac-addr": CreateMacAddrPatternElements,
         //"malware": CreateMalwarePatternElements,//"malware-analysis": "", напрямую относится к "malware"
         //"network-traffic": CreateNetworkTrafficPatternElements,
-        //"note": CreateNotePatternElements,
+        "note": CreateNotePatternNewSTIXObject,
         //"observed-data": CreateObservedDataPatternElements,//"indicator": "",зависит от "observed-data"
-        //"opinion": CreateOpinionPatternElements,
+        "opinion": CreateOpinionPatternNewSTIXObject,
         //"threat-actor": CreateThreatActorsPatternElements,
         //"tool": CreateToolPatternElements,
         //"user-account": CreateUserAccountPatternElements,
-        //"vulnerability": CreateVulnerabilityPatternElements,
+        "vulnerability": CreateVulnerabilityPatternNewSTIXObject,
         ////"indicator": ContentAuxiliarySTIXObject,
         //"malware-analysis": CreateMalwareAnalysisPatternElements,
     };

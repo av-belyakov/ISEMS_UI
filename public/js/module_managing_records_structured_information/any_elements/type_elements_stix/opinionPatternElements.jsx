@@ -62,7 +62,7 @@ export default function CreateOpinionPatternElements(props){
                     disabled={isDisabled}
                     fullWidth
                     onChange={handlerExplanation}
-                    defaultValue={campaignPatterElement.explanation}
+                    value={(campaignPatterElement.explanation)? campaignPatterElement.explanation: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>
@@ -82,7 +82,7 @@ export default function CreateOpinionPatternElements(props){
                     fullWidth
                     helperText="обязательное для заполнения поле"
                     onChange={handlerOpinion}
-                    defaultValue={campaignPatterElement.opinion}
+                    value={(campaignPatterElement.opinion)? campaignPatterElement.opinion: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>

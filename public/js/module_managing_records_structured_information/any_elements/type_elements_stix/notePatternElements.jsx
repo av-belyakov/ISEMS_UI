@@ -60,7 +60,7 @@ export default function CreateNotePatternElements(props){
                     fullWidth
                     disabled={isDisabled}
                     onChange={handlerAbstract}
-                    defaultValue={campaignPatterElement.abstract}
+                    value={(campaignPatterElement.abstract)? campaignPatterElement.abstract: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>
@@ -78,7 +78,7 @@ export default function CreateNotePatternElements(props){
                     disabled={isDisabled}
                     helperText="обязательное для заполнения поле"
                     onChange={handlerContent}
-                    defaultValue={campaignPatterElement.content}
+                    value={(campaignPatterElement.content)? campaignPatterElement.content: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>
