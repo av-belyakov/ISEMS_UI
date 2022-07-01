@@ -1,7 +1,6 @@
-import React, { useState, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import {
     Box, 
-    Button,
     Paper,
     Grid,
     Typography, 
@@ -17,38 +16,63 @@ import CreateElementAdditionalTechnicalInformationDO from "../createElementAddit
 export default function CreateLocationPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
+        buttonAddClick,
         parentIdSTIXObject,
+        buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
+        handlerChangeButtonAdd,
     } = props;
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
+        buttonAddClick={buttonAddClick}
         currentObjectId={`location--${uuidv4()}`}
         parentIdSTIXObject={parentIdSTIXObject}
+        buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
         handlerAddSTIXObject={handlerAddSTIXObject}
+        handlerChangeButtonAdd={handlerChangeButtonAdd}
     />;
 }
      
 CreateLocationPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
+    buttonAddClick: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
+    handlerChangeButtonAdd: PropTypes.func.isRequired,
 };
 
 function CreateMajorElements(props){
     let { 
         isNotDisabled,
+        buttonAddClick,
         currentObjectId,
         parentIdSTIXObject,
+        buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
+        handlerChangeButtonAdd,
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerLocationSTIXObjects, projectPatterElement);
-    const [ buttonIsDisabled, setButtonIsDisabled ] = useState(true);
+
+    useEffect(() => {
+        if(buttonAddClick){
+            let stateTmp = Object.assign(state);
+            stateTmp.id = currentObjectId;
+            stateTmp.type = "location";
+            stateTmp.spec_version = "2.1";
+            stateTmp.lang = "RU";
+
+            dispatch({ type: "cleanAll", data: {} });
+
+            handlerAddSTIXObject(stateTmp);
+        }
+    }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
      
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -81,21 +105,17 @@ function CreateMajorElements(props){
     };
 
     const handlerButtonIsDisabled = (name) => {
-            if(name === "" || (!state.name || state.name === "")){
-                setButtonIsDisabled(true);
-
-                return;
-            }
-        
-            if(!buttonIsDisabled){
-                return;
-            }
-
-            setButtonIsDisabled(false);
-        },
-        handlerButtonSaveChangeTrigger = () => {
-            //        setButtonSaveChangeTrigger((prevState) => !prevState);
-        };
+        if(name === "" || (!state.name || state.name === "")){
+            handlerChangeButtonAdd(true);
+            return;
+        }
+            
+        if(!buttonAddIsDisabled){
+            return;
+        }
+    
+        handlerChangeButtonAdd(false);
+    };
 
     return (<Paper elevation={3} style={{ width: "100%" }}>
         <Box m={2} pb={2}>
@@ -104,25 +124,6 @@ function CreateMajorElements(props){
                     <Typography variant="overline" display="block" gutterBottom>
                         {`${helpers.getLinkImageSTIXObject("location").description}`}
                     </Typography> 
-                </Grid>
-                <Grid item container md={4} justifyContent="flex-end">
-                    <Button 
-                        onClick={() => {
-                            let stateTmp = Object.assign(state);
-                            stateTmp.id = currentObjectId;
-                            stateTmp.type = "location";
-                            stateTmp.spec_version = "2.1";
-                            stateTmp.lang = "RU";
-
-                            setButtonIsDisabled(true);
-                            dispatch({ type: "cleanAll", data: {} });
-
-                            handlerAddSTIXObject(stateTmp);
-                        }}
-                        disabled={buttonIsDisabled} 
-                        color="primary">
-                            добавить
-                    </Button>
                 </Grid>
             </Grid>
             <Grid container direction="row" spacing={3}>
@@ -160,8 +161,11 @@ function CreateMajorElements(props){
 
 CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
+    buttonAddClick: PropTypes.bool.isRequired,
     currentObjectId: PropTypes.string.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
+    handlerChangeButtonAdd: PropTypes.func.isRequired,
 };

@@ -1,7 +1,6 @@
-import React, { useState, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import {
     Box, 
-    Button,
     Paper,
     Grid,
     Typography, 
@@ -17,51 +16,75 @@ import CreateElementAdditionalTechnicalInformationDO from "../createElementAddit
 export default function CreateOpinionPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
+        buttonAddClick,
         parentIdSTIXObject,
+        buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
+        handlerChangeButtonAdd,
     } = props;
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
+        buttonAddClick={buttonAddClick}
         currentObjectId={`opinion--${uuidv4()}`}
         parentIdSTIXObject={parentIdSTIXObject}
+        buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
         handlerAddSTIXObject={handlerAddSTIXObject}
+        handlerChangeButtonAdd={handlerChangeButtonAdd}
     />;
 }
      
 CreateOpinionPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
+    buttonAddClick: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
+    handlerChangeButtonAdd: PropTypes.func.isRequired,
 };
 
 function CreateMajorElements(props){
     let { 
         isNotDisabled,
+        buttonAddClick,
         currentObjectId,
         parentIdSTIXObject,
+        buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
+        handlerChangeButtonAdd,
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerOpinionSTIXObjects, projectPatterElement);
-    const [ buttonIsDisabled, setButtonIsDisabled ] = useState(true);
+
+    useEffect(() => {
+        if(buttonAddClick){
+            let stateTmp = Object.assign(state);
+            stateTmp.id = currentObjectId;
+            stateTmp.type = "opinion";
+            stateTmp.spec_version = "2.1";
+            stateTmp.lang = "RU";
+
+            dispatch({ type: "cleanAll", data: {} });
+
+            handlerAddSTIXObject(stateTmp);
+        }
+    }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
     
     const handlerButtonIsDisabled = (opinion) => {
         if(opinion === "" || (!state.opinion || state.opinion === "")){
-            setButtonIsDisabled(true);
-
+            handlerChangeButtonAdd(true);
             return;
         }
-    
-        if(!buttonIsDisabled){
+        
+        if(!buttonAddIsDisabled){
             return;
         }
 
-        setButtonIsDisabled(false);
+        handlerChangeButtonAdd(false);
     };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
@@ -102,24 +125,6 @@ function CreateMajorElements(props){
                         {`${helpers.getLinkImageSTIXObject("opinion").description}`}
                     </Typography> 
                 </Grid>
-                <Grid item container md={4} justifyContent="flex-end">
-                    <Button 
-                        onClick={() => {
-                            let stateTmp = Object.assign(state);
-                            stateTmp.id = currentObjectId;
-                            stateTmp.type = "opinion";
-                            stateTmp.spec_version = "2.1";
-                            stateTmp.lang = "RU";
-
-                            dispatch({ type: "cleanAll", data: {} });
-
-                            handlerAddSTIXObject(stateTmp);
-                        }}
-                        disabled={buttonIsDisabled} 
-                        color="primary">
-                            добавить
-                    </Button>
-                </Grid>
             </Grid>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
@@ -157,8 +162,11 @@ function CreateMajorElements(props){
 
 CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
+    buttonAddClick: PropTypes.bool.isRequired,
     currentObjectId: PropTypes.string.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
+    handlerChangeButtonAdd: PropTypes.func.isRequired,
 };

@@ -15,7 +15,7 @@ import {
     MenuItem,
     Typography,
 } from "@material-ui/core";
-import { teal, grey, red } from "@material-ui/core/colors";
+import { blue, teal, green, grey, red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
@@ -23,6 +23,7 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 import ContentNullSTIXObject from "../dialog_contents/contentNullSTIXObject.jsx";
+import { useEffect } from "react";
 
 const CreateDialogContentAttackPatternNewSTIXObject = lazy(() => import("./contentAttackPatternNewSTIXObject.jsx"));
 const CreateCourseOfActionPatternNewSTIXObject = lazy(() => import("./contentCourseOfActionPatternNewSTIXObject.jsx"));
@@ -153,8 +154,18 @@ export default function CreateDialogContentNewSTIXObject(props){
     let [ parentObject, setParentObject ] = React.useState(parentSTIXObject);
     let [ projectPatterElement, setProjectPatterElement ] = React.useReducer(reducer, {});
     let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = React.useState([]);
+    let [ buttonAddClick, setButtonAddClick ] = React.useState(false);
+    let [ buttonAddIsDisabled, setButtonAddIsDisabled ] = React.useState(true);
+    let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = React.useState(true);
 
-    let buttonSaveIsDisabled = (listRefsForObjectSTIX.length === 0);
+    useEffect(() => {
+        if(listNewOrModifySTIXObject.length > 0){
+            setButtonSaveIsDisabled(false);
+        } else {
+            setButtonSaveIsDisabled(true);
+        }
+    }, [ listNewOrModifySTIXObject ]);
+
     let listObjectTypeTmp = new Set();
     for(let value of listRefsForObjectSTIX){
         if(listRefPropertyObject[value]){
@@ -164,6 +175,7 @@ export default function CreateDialogContentNewSTIXObject(props){
 
     console.log("_________________ listObjectTypeTmp: ", listObjectTypeTmp);
     console.log("***************** listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
+    console.log("buttonSaveIsDisabled = ", buttonSaveIsDisabled);
 
     let listLinkImageSTIXObjectTmp = Object.keys(helpers.getListLinkImageSTIXObject());
     let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) =>  listObjectTypeTmp.has(item));
@@ -229,7 +241,12 @@ export default function CreateDialogContentNewSTIXObject(props){
         }
 
         listNewOrModifySTIXObjectTmp.push(elem);
+        setButtonAddClick(false);
         setListNewOrModifySTIXObject(listNewOrModifySTIXObjectTmp);
+    };
+    
+    let handlerChangeButtonAdd = (status) => {
+        setButtonAddIsDisabled(status);
     };
 
     let MyModule = somethingModule(typeObjectSTIX);
@@ -367,23 +384,35 @@ export default function CreateDialogContentNewSTIXObject(props){
                 <Grid item container md={7} style={{ display: "block" }}>
                     {MyModule && <MyModule 
                         isNotDisabled={isNotDisabled}
+                        buttonAddClick={buttonAddClick}
                         parentIdSTIXObject={currentIdSTIXObject}
+                        buttonAddIsDisabled={buttonAddIsDisabled}
                         projectPatterElement={projectPatterElement}
                         handlerAddSTIXObject={handlerAddSTIXObject}
+                        handlerChangeButtonAdd={handlerChangeButtonAdd}
                     />}
                 </Grid>
             </Grid>
         </DialogContent>
 
         <DialogActions>
-            <Button onClick={handlerDialogClose} color="primary">закрыть</Button>
+            <Button onClick={handlerDialogClose} color="inherit">закрыть</Button>
+            <Button 
+                disabled={buttonAddIsDisabled}
+                onClick={() => { 
+                    setButtonAddClick(true); 
+                    setButtonAddIsDisabled(true);
+                }}
+                style={{ color: blue[400] }}>
+                добавить объект
+            </Button>
             <Button 
                 disabled={buttonSaveIsDisabled}
                 onClick={() => {
                     handlerDialog({});
                 }}
-                color="primary">
-                подтвердить
+                style={{ color: green[400] }}>
+                сохранить изменения
             </Button>
         </DialogActions>
     </React.Fragment>);
