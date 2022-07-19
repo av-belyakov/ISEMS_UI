@@ -31,7 +31,6 @@ import PropTypes from "prop-types";
 import { helpers } from "../../common_helpers/helpers.js";
 import dictionaryLists from "../../common_helpers/dictionaryLists.js";
 import listExtendedObject from "../../common_helpers/listExtendedObject";
-import { HotTub } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {

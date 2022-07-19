@@ -26,7 +26,7 @@ export default function ShowCommonPropertiesDomainObjectSTIX(props) {
 
     let getExternalReferences = () => {
         // *** для теста START ***
-        let lister = [
+        /*let lister = [
             {
                 source_name: "external references 1",
                 description: "common description external references 1 to read people",
@@ -47,7 +47,7 @@ export default function ShowCommonPropertiesDomainObjectSTIX(props) {
                 external_id: "ex-ref--cbscvsvcvdvucvduvduvcduvbduv",
             },
         ];
-        reportInfo.external_references = lister;
+        reportInfo.external_references = lister;*/
         // *** для теста END ***
 
         if((typeof reportInfo.external_references === "undefined") || (reportInfo.external_references === null) || (reportInfo.external_references.length === 0)){

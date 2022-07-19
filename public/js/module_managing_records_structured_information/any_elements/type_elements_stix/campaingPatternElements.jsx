@@ -31,7 +31,7 @@ export default function CreateCampaingPatternElements(props){
         campaignPatterElement.created = currentTime;
     }
     if(!campaignPatterElement.modified){
-        campaignPatterElement.modified= currentTime;
+        campaignPatterElement.modified = currentTime;
     }
 
     let firstSeen = (campaignPatterElement.first_seen === minDefaultData)? defaultData: campaignPatterElement.first_seen;
