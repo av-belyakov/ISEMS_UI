@@ -21,7 +21,6 @@ export default function CreateObservedDataPatternElements(props){
     let { 
         isDisabled,
         campaignPatterElement,
-        handlerName,
         handlerFirstObserved,
         handlerLastObserved,
         handlerNumberObserved,
@@ -30,8 +29,11 @@ export default function CreateObservedDataPatternElements(props){
     //
     //
     //"indicator": "",зависит от "observed-data"
+    // к сожалению это не так, как выяснилось observed-data может содержать только объекты типа  Cyber-observable Objects
     //
     //
+
+    console.log("func 'CreateObservedDataPatternElements' campaignPatterElement = ", campaignPatterElement);
 
     let currentTime = helpers.getToISODatetime();
     
@@ -45,22 +47,9 @@ export default function CreateObservedDataPatternElements(props){
     let firstObserved = (campaignPatterElement.first_observed === minDefaultData)? defaultData: campaignPatterElement.first_observed;
     let lastObserved = (campaignPatterElement.last_observed === minDefaultData)? defaultData: campaignPatterElement.last_observed;
 
+    //object_refs
+
     return (<React.Fragment>
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >
-                {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
-                    campaignPatterElement.name:
-                    <TextField
-                        fullWidth
-                        disabled={isDisabled}
-                        id="name-element"
-                        InputLabelProps={{ shrink: true }}
-                        onChange={handlerName}
-                        value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
-                    />}
-            </Grid>
-        </Grid>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Дата и время</span>&nbsp;&nbsp;&nbsp;&nbsp;</Grid>
             <Grid item container md={8}></Grid>
@@ -123,25 +112,59 @@ export default function CreateObservedDataPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={12} justifyContent="center">
+            {
+                //Количество фиксации наблюдаемого кибер объекта SCO, представленный в свойстве ObjectRef (NumberObserved)
+            }
+            <Grid item container md={4} justifyContent="flex-start">
+                <span className="text-muted">Количество фиксации наблюдаемого кибер объекта:</span>
+            </Grid>
+            <Grid item container md={8} justifyContent="flex-start">
                 <TextField
-                    id="precision-number"
-                    label="Количество фиксации наблюдаемого кибер объекта SCO, представленный в свойстве ObjectRef (NumberObserved)"
+                    id="number-observed"
                     type="number"
                     disabled={isDisabled}
                     InputLabelProps={{ shrink: true }}
-                    value={(campaignPatterElement.precision)? campaignPatterElement.precision: 0}
+                    value={(campaignPatterElement.number_observed)? campaignPatterElement.number_observed: 1}
                     onChange={handlerNumberObserved}
                 />
             </Grid>
         </Grid>
+
+        {campaignPatterElement.object_refs && (() => {
+            return (campaignPatterElement.object_refs.length === 0)? 
+                <Typography variant="caption">
+                    <span  style={{ color: red[800] }}>
+                        * необходимо добавить хотя бы один идентификатор любого кибер-наблюдаемого STIX объекта
+                    </span>
+                </Typography>:
+                campaignPatterElement.object_refs.map((item, key) => {
+                    let type = item.split("--");
+                    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+        
+                    if(typeof objectElem === "undefined" ){
+                        return "";
+                    }
+
+                    return (<Grid container direction="row" key={`key_object_ref_${key}`}>
+                        <Grid item container md={12} justifyContent="flex-start">
+                            <Button onClick={() => {}} disabled>
+                                <img 
+                                    key={`key_object_ref_type_${key}`} 
+                                    src={`/images/stix_object/${objectElem.link}`} 
+                                    width="35" 
+                                    height="35" />
+                                    &nbsp;{item}&nbsp;
+                            </Button>
+                        </Grid>
+                    </Grid>);
+                });
+        })()}
     </React.Fragment>);
 }
 
 CreateObservedDataPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
-    handlerName: PropTypes.func.isRequired,
     handlerFirstObserved: PropTypes.func.isRequired,
     handlerLastObserved: PropTypes.func.isRequired,
     handlerNumberObserved: PropTypes.func.isRequired,

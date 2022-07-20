@@ -13,7 +13,7 @@ import reducerObservedDataSTIXObjects from "../reducer_handlers/reducerObservedD
 import CreateObservedDataPatternElements from "../type_elements_stix/observedDataPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
-export default function CreateObservedDataNewSTIXObject(props){
+export default function CreateObservedDataPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
@@ -29,7 +29,7 @@ export default function CreateObservedDataNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`opinion--${uuidv4()}`}
+        currentObjectId={`observed-data--${uuidv4()}`}
         parentIdSTIXObject={parentIdSTIXObject}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -38,7 +38,7 @@ export default function CreateObservedDataNewSTIXObject(props){
     />;
 }
      
-CreateObservedDataNewSTIXObject.propTypes = {
+CreateObservedDataPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
@@ -61,12 +61,20 @@ function CreateMajorElements(props){
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerObservedDataSTIXObjects, projectPatterElement);
+    const handlerButtonIsDisabled = () => {
+        if(!state.object_refs || state.object_refs.length === 0){
+            handlerChangeButtonAdd(true);
+            return;
+        }
+
+        handlerChangeButtonAdd(false);
+    };
 
     useEffect(() => {
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "opinion";
+            stateTmp.type = "observed-data";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -75,19 +83,6 @@ function CreateMajorElements(props){
             handlerAddSTIXObject(stateTmp);
         }
     }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
-    
-    const handlerButtonIsDisabled = (name) => {
-        if(name === "" || (!state.name || state.name === "")){
-            handlerChangeButtonAdd(true);
-            return;
-        }
-        
-        if(!buttonAddIsDisabled){
-            return;
-        }
-
-        handlerChangeButtonAdd(false);
-    };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -137,7 +132,6 @@ function CreateMajorElements(props){
             <CreateObservedDataPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
-                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
                 handlerFirstObserved={(e) => { dispatch({ type: "updateFirstObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerLastObserved={(e) => { dispatch({ type: "updateLastObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerNumberObserved={(e) => { dispatch({ type: "updateNumberObserved", data: e.target.value }); handlerButtonIsDisabled(); }}

@@ -4,14 +4,12 @@ export default function reducerObservedDataSTIXObjects(state, action){
         return action.data;
     case "cleanAll":
         return {};
-    case "updateName":
-        return {...state, name: action.data};            
     case "updateFirstObserved":
         return {...state, first_observed: new Date(action.data).toISOString()};
     case "updateLastObserved":
         return {...state, last_observed: new Date(action.data).toISOString()};
     case "updateNumberObserved":
-        return {...state, number_observed: action.data};
+        return {...state, number_observed: +action.data};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

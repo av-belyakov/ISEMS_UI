@@ -21,31 +21,20 @@ export default function CreateDialogContentObservedDataSTIXObject(props){
         parentIdSTIXObject,
         currentAdditionalIdSTIXObject,
         handlerDialogClose,
-
-        /*isNotDisabled,
-        buttonAddClick,
-        parentIdSTIXObject,
-        buttonAddIsDisabled,
-        projectPatterElement,
-        handlerAddSTIXObject,
-        handlerChangeButtonAdd,*/
     } = props;
 
     //"indicator": "",зависит от "observed-data"
 
     let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
     let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
-
-    const handlerButtonIsDisabled = () => {
-            if(!buttonIsDisabled){
-                return;
-            }
-
-            setButtonIsDisabled();
+    
+    const handlerChangeButtonAdd = (valueButton) => {
+            setButtonIsDisabled(valueButton);
         },
         handlerButtonSaveChangeTrigger = () => {
             setButtonSaveChangeTrigger((prevState) => !prevState);
         };
+    
 
     return (<React.Fragment>
         <DialogContent>
@@ -57,7 +46,7 @@ export default function CreateDialogContentObservedDataSTIXObject(props){
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
                     isNotDisabled={isNotDisabled}
                     handlerDialogClose={handlerDialogClose}
-                    handlerButtonIsDisabled={handlerButtonIsDisabled}
+                    handlerChangeButtonAdd={handlerChangeButtonAdd}
                     handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
                 />
 
@@ -87,14 +76,6 @@ CreateDialogContentObservedDataSTIXObject.propTypes = {
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handlerDialogClose: PropTypes.func.isRequired,
-
-    /*isNotDisabled: PropTypes.bool.isRequired,
-    buttonAddClick: PropTypes.bool.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
-    buttonAddIsDisabled: PropTypes.bool.isRequired,
-    projectPatterElement: PropTypes.object.isRequired,
-    handlerAddSTIXObject: PropTypes.func.isRequired,
-    handlerChangeButtonAdd: PropTypes.func.isRequired,*/
 };
 
 function CreateMajorContent(props){
@@ -105,12 +86,19 @@ function CreateMajorContent(props){
         buttonSaveChangeTrigger,
         isNotDisabled,
         handlerDialogClose,
-        handlerButtonIsDisabled,
+        handlerChangeButtonAdd,
         handlerButtonSaveChangeTrigger,
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerObservedDataSTIXObjects, {});
+    const handlerButtonIsDisabled = () => {
+        if(!state.object_refs || state.object_refs.length === 0){
+            handlerChangeButtonAdd(true);
+            return;
+        }
 
+        handlerChangeButtonAdd(false);
+    };
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -192,7 +180,6 @@ function CreateMajorContent(props){
                 <CreateObservedDataPatternElements 
                     isDisabled={false}
                     campaignPatterElement={state}
-                    handlerName={(e) => {}}
                     handlerFirstObserved={(e) => { dispatch({ type: "updateFirstObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerLastObserved={(e) => { dispatch({ type: "updateLastObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerNumberObserved={(e) => { dispatch({ type: "updateNumberObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
@@ -229,7 +216,7 @@ CreateMajorContent.propTypes = {
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
     handlerDialogClose: PropTypes.func.isRequired,
-    handlerButtonIsDisabled: PropTypes.func.isRequired,
+    handlerChangeButtonAdd: PropTypes.func.isRequired,
     handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
 };
 
