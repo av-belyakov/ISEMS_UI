@@ -1,5 +1,3 @@
-"use strict";
-
 import React, { lazy } from "react";
 import { 
     Box,
@@ -36,36 +34,28 @@ const CreateLocationPatternNewSTIXObject = lazy(() => import("./contentLocationP
 const CreateNotePatternNewSTIXObject = lazy(() => import("./contentNotePatternNewSTIXObject.jsx"));
 const CreateOpinionPatternNewSTIXObject = lazy(() => import("./contentOpinionPatternNewSTIXObject.jsx"));
 const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVulnerabilityPatternNewSTIXObject.jsx"));
+const CreateObservedDataPatternNewSTIXObject = lazy(() => import("./contentObservedDataPatternNewSTIXObject.jsx"));
 
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: "fixed",
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    appBreadcrumbs: {
-        position: "fixed",
-        top: "60px",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        paddingLeft: theme.spacing(4),
-    },
-    buttonSave: {
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    title: {
-        marginLeft: theme.spacing(2),
-        flex: 1,
-    },
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-}));
+const sco = [ 
+    "artifact",				
+    "autonomous-system",
+    "directory",				
+    "domain-name",		
+    "email-addr",	
+    "email-message",	
+    "file",					
+    "ipv4-addr",
+    "ipv6-addr",
+    "mac-addr",
+    "mutex",				
+    "network-traffic",
+    "process",			
+    "software",				
+    "url",				
+    "user-account",
+    "windows-registry-key",			
+    "x509-certificate",		
+];
 
 const listRefPropertyObject = {
     "object_refs": [ 
@@ -110,7 +100,7 @@ const listRefPropertyObject = {
         "vulnerability",
     ],
     "operating_system_refs": [ "software" ],
-    "sample_refs": [ "file", "artifact" ],
+    "sample_refs": [ "artifact", "file" ],
     "host_vm_ref": [ "software" ],
     "operating_system_ref": [ "software" ],
     "installed_software_refs": [ "software" ],
@@ -128,6 +118,14 @@ const listRefPropertyObject = {
     "image_ref": [ "file" ],
     "parent_ref": [ "process" ],
     "child_refs": [ "process" ],
+};
+
+const typesRelationshipsBetweenObjects = {
+    "domain-name": [ "ipv4-addr", "ipv6-addr", "domain-name" ],
+    "file": sco,
+    "observed-data": sco,
+    "malware": [ "artifact", "file", "software" ],
+    "malware-analysis": sco,
 };
 
 let reducer = () => {
@@ -173,16 +171,35 @@ export default function CreateDialogContentNewSTIXObject(props){
         }
     }
 
-    console.log("_________________ listObjectTypeTmp: ", listObjectTypeTmp);
-    console.log("***************** listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
-    console.log("buttonSaveIsDisabled = ", buttonSaveIsDisabled);
+    if(typeof typesRelationshipsBetweenObjects[parentSTIXObject.type] !== "undefined"){
+        for(let value of listObjectTypeTmp){
+            if(typesRelationshipsBetweenObjects[parentSTIXObject.type].find((item) => item === value)){
+                continue;
+            }
+
+            listObjectTypeTmp.delete(value);
+        }
+    }
+
+    console.log("_________________ listObjectTypeTmp: ", listObjectTypeTmp, " typesRelationshipsBetweenObjects[parentSTIXObject.type]: ", typesRelationshipsBetweenObjects[parentSTIXObject.type], " parentSTIXObject.type:", parentSTIXObject.type);
+    console.log("******** 0.1 ********* (((( listRefsForObjectSTIX )))): ", listRefsForObjectSTIX);
+    console.log("******** 0.2 ********* ))) listObjectTypeTmp (((: ", listObjectTypeTmp);
+    console.log("******** 1 ********* listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
     let listLinkImageSTIXObjectTmp = Object.keys(helpers.getListLinkImageSTIXObject());
-    let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) =>  listObjectTypeTmp.has(item));
-    if(listRefsForObjectSTIX.find((item) => item === "object_refs")){
-        listLinkImageSTIXObject = listLinkImageSTIXObjectTmp;
-    }
-    
+    let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) => listObjectTypeTmp.has(item));
+
+    //здесь опять перезапиште на все sco и sdo
+    //if(listRefsForObjectSTIX.find((item) => item === "object_refs")){
+    //    listLinkImageSTIXObject = listLinkImageSTIXObjectTmp;
+    //}
+
+    //console.log("******** 2 *********  listLinkImageSTIXObjectTmp: ",  listLinkImageSTIXObjectTmp);
+    //console.log("******** 3 *********  listLinkImageSTIXObject: ",  listLinkImageSTIXObject);
+    //console.log("******** 4 *********  typeObjectSTIX: ",  typeObjectSTIX);
+    //console.log("******** 5 ********* parentSTIXObject: ", parentSTIXObject);
+    //console.log("buttonSaveIsDisabled = ", buttonSaveIsDisabled);
+
     React.useEffect(() => {
         for(let item of listRefsForObjectSTIX){
             if(listRefPropertyObject[item] && listRefPropertyObject[item].find((v) => v === typeObjectSTIX)){
@@ -193,9 +210,9 @@ export default function CreateDialogContentNewSTIXObject(props){
         }
     }, [ typeObjectSTIX ]);
 
-    console.log("func 'CreateDialogContentNewSTIXObject' currentRefObjectSTIX = ", currentRefObjectSTIX);
-    console.log(helpers.getListLinkImageSTIXObject());
-    console.log("------ listRefsForObjectSTIX = ", listRefsForObjectSTIX);
+    //console.log("func 'CreateDialogContentNewSTIXObject' currentRefObjectSTIX = ", currentRefObjectSTIX);
+    //console.log(helpers.getListLinkImageSTIXObject());
+    //console.log("------ listRefsForObjectSTIX = ", listRefsForObjectSTIX);
     //console.log("helpers.getListOnceProperties() = ", helpers.getListOnceProperties());
     //console.log("helpers.getListManyProperties() = ", helpers.getListManyProperties());
 
@@ -225,6 +242,9 @@ export default function CreateDialogContentNewSTIXObject(props){
         };
 
     let handlerAddSTIXObject = (elem) => {
+
+        console.log("@@@@@@@ func 'handlerAddSTIXObject', elem: ", elem, " @@@@@@");
+
         let elemIsExist = false;
         let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
 
@@ -409,7 +429,9 @@ export default function CreateDialogContentNewSTIXObject(props){
             <Button 
                 disabled={buttonSaveIsDisabled}
                 onClick={() => {
-                    handlerDialog({});
+                    //                    console.log("================ projectPatterElement: ", projectPatterElement, " ===============");
+
+                    handlerDialog(listRefsForObjectSTIX, listNewOrModifySTIXObject);
                 }}
                 style={{ color: green[400] }}>
                 сохранить изменения
@@ -460,7 +482,7 @@ function somethingModule(nameSTIX){
         //"malware": CreateMalwarePatternElements,//"malware-analysis": "", напрямую относится к "malware"
         //"network-traffic": CreateNetworkTrafficPatternElements,
         "note": CreateNotePatternNewSTIXObject,
-        //"observed-data": CreateObservedDataPatternElements,//"indicator": "",зависит от "observed-data"
+        "observed-data": CreateObservedDataPatternNewSTIXObject,
         "opinion": CreateOpinionPatternNewSTIXObject,
         //"threat-actor": CreateThreatActorsPatternElements,
         //"tool": CreateToolPatternElements,

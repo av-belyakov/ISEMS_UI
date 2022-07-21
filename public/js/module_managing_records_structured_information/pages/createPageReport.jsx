@@ -87,8 +87,9 @@ export default function CreatePageReport(props) {
             setObjectId("");
             setShowModalWindowCreateNewSTIXObject(false);
         },
-        handlerDialogSaveNewSTIXObject = () => {
-            console.log("func 'handlerDialogSaveNewSTIXObject', START");
+        handlerDialogSaveNewSTIXObject = (fieldName, listNewOrModifySTIXObject) => {
+            console.log(" ******************** func 'handlerDialogSaveNewSTIXObject', fieldName: ", fieldName, " parentSTIXObject: ", parentSTIXObject, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject, " ********************* ");
+
             /**
              * после нажатия кнопки Сохранить модального окна в котором создается любой STIX объект, кроме Отчета, происходит
              * добавление ссылки на вновь созданный STIX объект в поле object_ref Отчета. При этом нужно сделать следующее:
@@ -99,6 +100,8 @@ export default function CreatePageReport(props) {
              * 4. При нажатии кнопки Сохранить Отчета отправить серверу информацию как о самом Отчете, так и об STIX объекте который
              *   теперь связан с Отчетом
              */
+
+            setShowModalWindowCreateNewSTIXObject(false);
         },
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs = (parentId, deleteId) => {
             console.log("func 'handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs', START... DATA: ", parentId, deleteId);

@@ -62,8 +62,7 @@ function CreateMajorElements(props){
 
     const [ state, dispatch ] = useReducer(reducerObservedDataSTIXObjects, projectPatterElement);
     const handlerButtonIsDisabled = () => {
-        if(!state.object_refs || state.object_refs.length === 0){
-            handlerChangeButtonAdd(true);
+        if(!buttonAddIsDisabled){
             return;
         }
 
