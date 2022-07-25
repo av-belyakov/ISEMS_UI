@@ -25,7 +25,9 @@ export default function CreatePageReport(props) {
     let [ buttonDelModalWindowConfirmDeleteLinkFromObjRefs, setButtonDelModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState(false);
     let [ objectId, setObjectId ] = React.useState("");
     let [ parentSTIXObject, setParentSTIXObject ] = React.useState({});
+    let [ fieldNameForChange, setFieldNameForChange ] = React.useState([]);
     let [ listRefsForObjectSTIX, setListRefsForObjectSTIX ] = React.useState([]);
+    let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = React.useState([]);
     let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = React.useState("");
     let [ objectsIdModalWindowConfirmDeleteLinkFromObjRefs, setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs ] = React.useState([]);
     let [ showModalWindowSTIXObject, setShowModalWindowSTIXObject ] = React.useState(false);
@@ -88,7 +90,11 @@ export default function CreatePageReport(props) {
             setShowModalWindowCreateNewSTIXObject(false);
         },
         handlerDialogSaveNewSTIXObject = (fieldName, listNewOrModifySTIXObject) => {
-            console.log(" ******************** func 'handlerDialogSaveNewSTIXObject', fieldName: ", fieldName, " parentSTIXObject: ", parentSTIXObject, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject, " ********************* ");
+            console.log(" ******** 1 *********** func 'handlerDialogSaveNewSTIXObject', fieldName: ", fieldName, " parentSTIXObject: ", parentSTIXObject, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject, " ********************* ");
+            console.log(" ******** 2 ********** func 'handlerDialogSaveNewSTIXObject', receivedData:", receivedData);
+
+            setFieldNameForChange(fieldName);
+            setListNewOrModifySTIXObject(listNewOrModifySTIXObject);
 
             /**
              * после нажатия кнопки Сохранить модального окна в котором создается любой STIX объект, кроме Отчета, происходит
@@ -151,7 +157,10 @@ export default function CreatePageReport(props) {
             groupList={receivedData.groupList}
             showReportId={objectId}
             userPermissions={receivedData.userPermissions}
+            parentSTIXObject={parentSTIXObject}
             confirmDeleteLink={buttonDelModalWindowConfirmDeleteLinkFromObjRefs}
+            fieldNameForChange={fieldNameForChange}
+            listNewOrModifySTIXObject={listNewOrModifySTIXObject}
             handlerButtonSave={handlerButtonSaveModalWindowReportSTIX} 
             handlerDialogConfirm={handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}

@@ -6,7 +6,6 @@ import {
     Tooltip,
     Typography,
     IconButton,
-    //    Grid,
     List,
     ListItem,
     ListItemText,
@@ -94,6 +93,13 @@ const loreducer = (state, action) => {
         for(let i = 0; i < stateTmp.length; i++){
             for(let item of data){
                 if(stateTmp[i].currentId !== item.id){
+
+                    /**
+ * вот здесь косяк, если currentId не найден, а он и не будет найден в случае если мы добавляем ссылку на новый объект
+ * то мы просто пропускаем итерацию. Надо как то создавать дополнительные объекты
+ *  { currentId: item, childId: [] }
+ */
+
                     continue;
                 }
 
@@ -123,6 +129,10 @@ const loreducer = (state, action) => {
 
     switch(action.type){
     case "updateList":
+
+        console.log("func 'loreducer', action.type: ", action.type, " action.data.parent.id: ", action.data.parent.id, " action.data.current:", action.data.current);
+        console.log("func 'loreducer', state.list: ", state.list);
+
         state.list[action.data.parent.id] = action.data.parent;
 
         for(let item of action.data.current){
@@ -131,6 +141,10 @@ const loreducer = (state, action) => {
 
         return {...state};
     case "updateListId":
+
+        console.log("________________|||||||| func 'loreducer', action.type: ", action.type, " action.data: ", action.data);
+        console.log("________________|||||||| func 'loreducer', state.listId: ", state.listId, " action.data.listObject: ", action.data.listObject, " updateState(action.data.listObject, state.listId): ", updateState(action.data.listObject, state.listId));
+
         return {...state, listId: updateState(action.data.listObject, state.listId)};
     case "deleteIdFromListId":
         return {...state, listId: deleteIdFromListId(state.listId, action.data.currentParentId, action.data.currentDeleteId, action.data.deleteIdDepthAndKey, 0)};
@@ -231,7 +245,11 @@ export default function CreateListObjectRefsReport(props){
         deleteIdFromSTIXObject();
         setListActivatedObjectNumbers([]);
         handlerDialogConfirm();
-    }, [confirmDeleteLink]);
+    }, [confirmDeleteLink]),
+    useEffect(() => {
+        setListObjReducer({ type: "updateListId", data: { listObject: [ stateReport ]}});
+        setListObjReducer({ type: "updateList", data: { current: [ stateReport ], parent: stateReport }});
+    }, [ stateReport ]);
 
     let deleteIdFromSTIXObject = () => {
         let parrentObject = lodash.cloneDeep(listObjReducer.list[currentParentId]);
@@ -351,7 +369,7 @@ export default function CreateListObjectRefsReport(props){
             let open = (typeof listActivatedObjectNumbers[depth] !== "undefined")? (listActivatedObjectNumbers[depth] === key): false;
             let listProperties = getListPropertiesExtendedObject(type[0]);
 
-            //console.log("parentId = ", item.currentId, " _________ listProperties _________:", listProperties);
+            //console.log("func 'getListId', parentId = ", item.currentId, " _________ listProperties _________:", listProperties);
 
             return (<React.Fragment key={`rf_${key}`}>
                 <ListItem 
