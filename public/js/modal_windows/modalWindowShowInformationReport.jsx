@@ -455,6 +455,16 @@ function CreateReportInformation(props){
         }
     }, [ buttonSaveChangeTrigger, state, handlerPressButtonSave ]),
     useEffect(() => {
+        console.log("func 'CreateReportInformation', useEffect, 1111111111111 update 'state' ", state, ", parentSTIXObject:", parentSTIXObject);
+
+        //здесь обновляется только объект Report
+
+        /**
+ * 
+ * надо найти способ обновлять другие объекты
+ * 
+ */
+
         if(parentSTIXObject.type !== "report"){
             return;
         }
@@ -465,6 +475,8 @@ function CreateReportInformation(props){
                 objectRefs.push(stixObject.id);
             }
         }
+
+        console.log("func 'CreateReportInformation', useEffect, 222222222222 update 'state' (objectRefs)", objectRefs);
 
         dispatch({ type: "updateObjectRefs", data: objectRefs });
     }, [ parentSTIXObject, fieldNameForChange, listNewOrModifySTIXObject ]);
@@ -587,9 +599,9 @@ function CreateReportInformation(props){
             confirmDeleteLink={confirmDeleteLink}
             handlerDialogConfirm={handlerDialogConfirm}
             handlerDeleteObjectRef={(parentId, deleteId) => handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId)} 
-            handlerAddRefObjectSTIX={handlerShowModalWindowCreateNewSTIXObject}
             handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+            handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
         />}
         <Row className="mt-3">
             <Col md={12}>
