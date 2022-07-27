@@ -241,6 +241,7 @@ export default function CreateDialogContentNewSTIXObject(props){
 
         };
 
+        
     let handlerAddSTIXObject = (elem) => {
 
         console.log("@@@@@@@ func 'handlerAddSTIXObject', elem: ", elem, " @@@@@@");
