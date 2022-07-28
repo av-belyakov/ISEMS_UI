@@ -241,10 +241,10 @@ export default function CreateDialogContentNewSTIXObject(props){
 
         };
 
-        
+
     let handlerAddSTIXObject = (elem) => {
 
-        console.log("@@@@@@@ func 'handlerAddSTIXObject', elem: ", elem, " @@@@@@");
+        console.log("@@@@@@@ func 'handlerAddSTIXObject', elem: ", elem, ", listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " @@@@@@");
 
         let elemIsExist = false;
         let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();

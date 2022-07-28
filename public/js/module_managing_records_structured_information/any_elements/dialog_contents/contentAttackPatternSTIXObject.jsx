@@ -17,6 +17,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
         socketIo,
         isNotDisabled,
         parentIdSTIXObject,
+        listNewOrModifySTIXObject,
         currentAdditionalIdSTIXObject,
         handlerDialogClose,
     } = props;
@@ -42,6 +43,7 @@ export default function CreateDialogContentAttackPatternSTIXObject(props){
                     socketIo={socketIo}
                     parentIdSTIXObject={parentIdSTIXObject}
                     currentIdSTIXObject={currentAdditionalIdSTIXObject}
+                    listNewOrModifySTIXObject={listNewOrModifySTIXObject}
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
                     isNotDisabled={isNotDisabled}
                     handlerDialogClose={handlerDialogClose}
@@ -73,6 +75,7 @@ CreateDialogContentAttackPatternSTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
+    listNewOrModifySTIXObject: PropTypes.array.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handlerDialogClose: PropTypes.func.isRequired,
 };
@@ -82,6 +85,7 @@ function CreateMajorContent(props){
         socketIo,
         parentIdSTIXObject,
         currentIdSTIXObject,
+        listNewOrModifySTIXObject,
         buttonSaveChangeTrigger,
         isNotDisabled,
         handlerDialogClose,
@@ -89,7 +93,14 @@ function CreateMajorContent(props){
         handlerButtonSaveChangeTrigger,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerAttackPatternSTIXObjects, {});
+    let beginDataObject = {};
+    for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
+        if(listNewOrModifySTIXObject[i].id === currentIdSTIXObject){
+            beginDataObject = listNewOrModifySTIXObject[i];
+        }
+    }
+
+    const [ state, dispatch ] = useReducer(reducerAttackPatternSTIXObjects, beginDataObject);
 
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
@@ -207,6 +218,7 @@ CreateMajorContent.propTypes = {
     socketIo: PropTypes.object.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
+    listNewOrModifySTIXObject: PropTypes.array.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
     handlerDialogClose: PropTypes.func.isRequired,

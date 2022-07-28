@@ -55,6 +55,7 @@ export default function ModalWindowAnySTIXObject(props){
         isNotDisabled, 
         showModalWindow,
         parentIdSTIXObject,
+        listNewOrModifySTIXObject,
         currentAdditionalIdSTIXObject,
         handlerDialogClose,
     } = props;
@@ -96,11 +97,12 @@ export default function ModalWindowAnySTIXObject(props){
         </DialogTitle>
 
         <ErrorBoundary>
-            <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22}}>Загрузка...</div>}>
+            <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22 }}>Загрузка...</div>}>
                 {MyModule && <MyModule 
                     socketIo={socketIo}
                     isNotDisabled={isNotDisabled}
                     parentIdSTIXObject={parentIdSTIXObject}
+                    listNewOrModifySTIXObject={listNewOrModifySTIXObject}
                     currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
                     handlerDialogClose={handlerDialogClose}
                 />}
@@ -114,6 +116,7 @@ ModalWindowAnySTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired, 
     showModalWindow: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
+    listNewOrModifySTIXObject: PropTypes.array.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handlerDialogClose: PropTypes.func.isRequired,
 };

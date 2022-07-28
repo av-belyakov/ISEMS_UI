@@ -75,6 +75,7 @@ const addElemToChildId = (listData /** item[value] */, stateTmp /** stateTmp[i] 
 };
 
 const loreducer = (state, action) => {
+    let changeListIdResult = {};
     let deleteIdFromListId = (stateList, currentParentId, currentDeleteId, deleteIdDepthAndKey, currentDepth) => {
         if(deleteIdDepthAndKey.length < 1){
             return stateList;
@@ -106,8 +107,8 @@ const loreducer = (state, action) => {
             return stateTmp;
         }
 
-        console.log("---------------------- func 'updateState', data:", data);
-        console.log("---------------------- func 'updateState', BEFORE 1111 NUM: ", num);
+        //        console.log("---------------------- func 'updateState', data:", data);
+        //        console.log("---------------------- func 'updateState', BEFORE 1111 NUM: ", num);
 
         for(let item = 0; item < data.length; item++){
             let nameItem = data[item].id.split("--")[0];
@@ -127,17 +128,13 @@ const loreducer = (state, action) => {
             data.splice(data[item], 1);
         }
 
-        /**
- * не добавляется новые ссылки на объекты типа gruping, который находится в report
- */
-
         for(let i = 0; i < stateTmp.length; i++){
             for(let item of data){
                 if(stateTmp[i].currentId !== item.id){
                     continue;
                 }
 
-                console.log("func 'updateState', item.id: 1111111", item.id);
+                //                console.log("func 'updateState', item.id: 1111111", item.id);
                 
                 let name = stateTmp[i].currentId.split("--")[0];
                 let listProperties =  getListPropertiesExtendedObject(name);
@@ -155,7 +152,7 @@ const loreducer = (state, action) => {
                         continue;
                     }
 
-                    console.log("func 'updateState', item[value]:", item[value], " addElemToChildId(item[value], stateTmp[i]):", addElemToChildId(item[value], stateTmp[i]), " stateTmp[i]:", stateTmp[i]);
+                    //                    console.log("func 'updateState', item[value]:", item[value], " addElemToChildId(item[value], stateTmp[i]):", addElemToChildId(item[value], stateTmp[i]), " stateTmp[i]:", stateTmp[i]);
 
                     //if(num === 0){
                     //    console.log("&&&&&&&& YYYY &&&&&&&& ============ 7777777 num === 0:", num);
@@ -170,11 +167,40 @@ const loreducer = (state, action) => {
             }
         }
 
-        console.log("func 'updateState', AFTER num=", num," stateTmp: ", stateTmp);
+        //console.log("func 'updateState', AFTER num=", num," stateTmp: ", stateTmp);
         //arr.splice(delnum, delcount)
 
         return stateTmp;
     };
+
+    let changeListId = (parentObj, listModify, stateTmp) => {
+        for(let elem of listModify){
+            for(let i = 0; i < stateTmp.length; i++){
+                if(stateTmp[i].currentId === parentObj.id){
+                    if(typeof stateTmp[i].childId.find((item) => item === elem.id) === "undefined"){
+                        stateTmp[i].childId.push({ currentId: elem.id, childId: [] });
+
+                        break;
+                    }
+                }
+
+                if(stateTmp[i].childId.length > 0){
+                    stateTmp[i].childId = changeListId(parentObj, listModify, stateTmp[i]);
+                }
+            }
+        }
+    };
+
+    /**
+ * Формирование списка listObjectRefsReport при добавлении новых объектов вроде сделал корректно.
+ * 
+ * Надо проверять те вновь добавленные объекты которые содержат ссылки (например object_refs), на другие объекты
+ * и которые при создании должны ОБЯЗАТЕЛЬНО, по спецификации, иметь заполненные эти поля. Если вновь созданный 
+ * объект не имеет заполненного подобного поля, то помечать его в списке listObjectRefsReport каким либо значком,
+ * например ! в треугольнике красного цвета, как некорректный для добавления объект. Если в данный объект не будет
+ * добавлена ни одна ссылка, то такой объект исключить из списка вновь созданных объектов которые отправляются в 
+ * MRSICT вместе с объектом Report при сохранении объекта Report
+ */
 
     switch(action.type){
     case "updateList":
@@ -187,6 +213,20 @@ const loreducer = (state, action) => {
         return {...state};
     case "updateListId":
         return {...state, listId: updateState(action.data.listObject, state.listId, 0)};
+    case "changeListId":
+        //data: { parentSTIXObject: parentSTIXObject, listModifySTIXObject: listNewOrModifySTIXObject }});
+        //{ currentId: elem, childId: [] }
+        console.log(" func 'loreducer', cation.type: ", action.type, " data.parentSTIXObject: ", action.data.parentSTIXObject, " data.listModifySTIXObject: ", action.data.listModifySTIXObject);
+
+        changeListIdResult = changeListId(action.data.parentSTIXObject, action.data.listModifySTIXObject, state.listId);
+
+        console.log("((((((", changeListIdResult,"))))))))");
+
+        if(typeof changeListIdResult === "undefined"){
+            return {...state};
+        }
+
+        return {...state, listId: changeListIdResult};
     case "deleteIdFromListId":
         return {...state, listId: deleteIdFromListId(state.listId, action.data.currentParentId, action.data.currentDeleteId, action.data.deleteIdDepthAndKey, 0)};
     case "getObject":
@@ -205,7 +245,9 @@ export default function CreateListObjectRefsReport(props){
         socketIo,
         stateReport,
         majorParentId,
+        parentSTIXObject,
         confirmDeleteLink,
+        listNewOrModifySTIXObject,
         handlerDialogConfirm,
         handlerDeleteObjectRef,
         handlerReportUpdateObjectRefs,
@@ -292,7 +334,10 @@ export default function CreateListObjectRefsReport(props){
 
         setListObjReducer({ type: "updateListId", data: { listObject: [ stateReport ]}});
         setListObjReducer({ type: "updateList", data: { current: [ stateReport ], parent: stateReport }});
-    }, [ stateReport ]);
+    }, [ stateReport ]),
+    useEffect(() => {
+        setListObjReducer({ type: "changeListId", data: { parentSTIXObject: parentSTIXObject, listModifySTIXObject: listNewOrModifySTIXObject }});
+    }, [ parentSTIXObject, listNewOrModifySTIXObject ]);
 
     let deleteIdFromSTIXObject = () => {
         let parrentObject = lodash.cloneDeep(listObjReducer.list[currentParentId]);
@@ -359,7 +404,10 @@ export default function CreateListObjectRefsReport(props){
 
             return listTmp;
         },
-        handleClick = (num, currentId, depth) => {         
+        handleClick = (num, currentId, depth) => {       
+            
+            console.log("func 'handleClick' ......................");
+
             let tmp = listActivatedObjectNumbers.slice();
             if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] === num){        
                 tmp.splice(depth, 10);
@@ -518,7 +566,9 @@ CreateListObjectRefsReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
     stateReport: PropTypes.object.isRequired,
     majorParentId: PropTypes.string.isRequired,
+    parentSTIXObject: PropTypes.object.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
+    listNewOrModifySTIXObject: PropTypes.array.isRequired,
     handlerDialogConfirm: PropTypes.func.isRequired,
     handlerDeleteObjectRef: PropTypes.func.isRequired,
     handlerReportUpdateObjectRefs: PropTypes.func.isRequired, 

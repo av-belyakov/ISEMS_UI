@@ -463,6 +463,19 @@ function CreateReportInformation(props){
  * 
  * надо найти способ обновлять другие объекты
  * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  */
 
         if(parentSTIXObject.type !== "report"){
@@ -596,7 +609,9 @@ function CreateReportInformation(props){
             socketIo={socketIo}
             stateReport={state}
             majorParentId={showReportId}
+            parentSTIXObject={parentSTIXObject}
             confirmDeleteLink={confirmDeleteLink}
+            listNewOrModifySTIXObject={listNewOrModifySTIXObject}
             handlerDialogConfirm={handlerDialogConfirm}
             handlerDeleteObjectRef={(parentId, deleteId) => handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId)} 
             handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}

@@ -173,6 +173,7 @@ export default function CreatePageReport(props) {
             isNotDisabled={receivedData.userPermissions.editing_information.status} 
             showModalWindow={showModalWindowSTIXObject}
             parentIdSTIXObject={objectId}
+            listNewOrModifySTIXObject={listNewOrModifySTIXObject}
             currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
             handlerDialogClose={handlerDialogCloseModalWindowSTIXObject}
         />}
