@@ -14,7 +14,8 @@ import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
-import { green, red } from "@material-ui/core/colors";
+import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined";
+import { green, red, orange } from "@material-ui/core/colors";
 import lodash from "lodash";
 import PropTypes from "prop-types";
 
@@ -174,6 +175,9 @@ const loreducer = (state, action) => {
     };
 
     let changeListId = (parentObj, listModify, stateTmp) => {
+
+        //console.log("func _________ 'changeListId' ===========, stateTmp: ", stateTmp);
+
         for(let elem of listModify){
             for(let i = 0; i < stateTmp.length; i++){
                 if(stateTmp[i].currentId === parentObj.id){
@@ -184,14 +188,18 @@ const loreducer = (state, action) => {
                     }
                 }
 
+                //console.log("FUNC 'changeListId', @@@!!!$$$%%%^^^ stateTmp[i]:", stateTmp[i]);
+
                 if(stateTmp[i].childId.length > 0){
                     stateTmp[i].childId = changeListId(parentObj, listModify, stateTmp[i]);
                 }
             }
         }
+
+        return stateTmp;
     };
 
-    /**
+    /** 
  * Формирование списка listObjectRefsReport при добавлении новых объектов вроде сделал корректно.
  * 
  * Надо проверять те вновь добавленные объекты которые содержат ссылки (например object_refs), на другие объекты
@@ -330,12 +338,15 @@ export default function CreateListObjectRefsReport(props){
     }, [ confirmDeleteLink ]),
     useEffect(() => {
 
-        console.log("##@@@@!!!!! func 'useEffect', add new report, stateReport:", stateReport);
+        console.log("##@@@@!!!!! 11111111111111111 func 'useEffect', add new report, stateReport:", stateReport);
 
         setListObjReducer({ type: "updateListId", data: { listObject: [ stateReport ]}});
         setListObjReducer({ type: "updateList", data: { current: [ stateReport ], parent: stateReport }});
     }, [ stateReport ]),
     useEffect(() => {
+
+        console.log("##@@@@!!!!! 22222222222222222 func 'useEffect', add new report, parentSTIXObject:", parentSTIXObject, ", listNewOrModifySTIXObject:", listNewOrModifySTIXObject);
+
         setListObjReducer({ type: "changeListId", data: { parentSTIXObject: parentSTIXObject, listModifySTIXObject: listNewOrModifySTIXObject }});
     }, [ parentSTIXObject, listNewOrModifySTIXObject ]);
 
@@ -448,11 +459,22 @@ export default function CreateListObjectRefsReport(props){
 
     let getListId = (list, parentId, depth) => {
         return list.map((item, key) => {
+            let isAddAlarmProblems = false;
             let type = item.currentId.split("--");
             let objectElem = helpers.getLinkImageSTIXObject(type[0]);
 
             if(typeof objectElem === "undefined"){
                 return "";
+            }
+
+            if(type[0] === "grouping" || type[0] === "note" || type[0] === "opinion"){
+                console.log("11111 STIX object id:", item.currentId, " listObjReducer ", listObjReducer.list, " listObjReducer.list[item.currentId]: ", listObjReducer.list[item.currentId]);
+                if(typeof listObjReducer.list[item.currentId] !== "undefined"){
+                    if(listObjReducer.list[item.currentId].object_refs.length === 0){
+                        isAddAlarmProblems = true;
+                        console.log("22222 STIX object id:", item.currentId, " listObjReducer.list[item.currentId] ", listObjReducer.list[item.currentId].object_refs);
+                    }
+                }
             }
 
             let elemIsExist = listExtendedObject.find((item) => item.name === type[0]);
@@ -505,6 +527,7 @@ export default function CreateListObjectRefsReport(props){
                     <IconButton size="small" aria-label="delete" onClick={handlerDeleteObjRef.bind(null, parentId, item.currentId, depth, key)}>
                         <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                     </IconButton>
+                    {isAddAlarmProblems? <ReportProblemOutlinedIcon style={{ color: orange[400] }} />: ""}
                 </ListItem>
                 {item.childId.length > 0 && ((typeof listActivatedObjectNumbers[depth] !== "undefined") && (listActivatedObjectNumbers[depth] === key))?
                     <Collapse in={open} timeout="auto" unmountOnExit>
