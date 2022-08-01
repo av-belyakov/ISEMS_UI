@@ -211,7 +211,7 @@ export default function ModalWindowShowInformationReport(props) {
     const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = useState(false);
 
     console.log("func 'ModalWindowShowInformationReact', MOUNT (((( WINDOW SHOW INFO REPORT ))))");
-    console.log("showReportId = ", showReportId);
+    console.log("showReportId = ", showReportId, " parentSTIXObject = ", parentSTIXObject);
 
     let handlerButtonSaveIsNotDisabled = () => {
             if(buttonSaveIsDisabled){
@@ -489,7 +489,7 @@ function CreateReportInformation(props){
             }
         }
 
-        console.log("func 'CreateReportInformation', useEffect, 222222222222 update 'state' (objectRefs)", objectRefs);
+        console.log("func 'CreateReportInformation', useEffect, 222222222222 update 'state' (objectRefs)", objectRefs, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
         dispatch({ type: "updateObjectRefs", data: objectRefs });
     }, [ parentSTIXObject, fieldNameForChange, listNewOrModifySTIXObject ]);

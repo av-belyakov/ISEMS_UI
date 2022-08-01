@@ -81,7 +81,13 @@ export default function CreatePageReport(props) {
             console.log("++++++++++ func 'handlerShowModalWindowCreateNewSTIXObject' ++++++++++++ elemId: ", elemId, " listRefsForObjectSTIX: ", listRefsForObjectSTIX, " parentSTIXObject:", parentSTIXObject);
             
             setObjectId(elemId);
-            setParentSTIXObject(parentSTIXObject);
+
+            if(typeof parentSTIXObject === "undefined"){
+                setParentSTIXObject({});
+            } else {
+                setParentSTIXObject(parentSTIXObject);
+            }
+
             setListRefsForObjectSTIX(listRefsForObjectSTIX);
             setShowModalWindowCreateNewSTIXObject(true);
         },

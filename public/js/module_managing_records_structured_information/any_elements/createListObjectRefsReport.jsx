@@ -181,6 +181,9 @@ const loreducer = (state, action) => {
         for(let elem of listModify){
             for(let i = 0; i < stateTmp.length; i++){
                 if(stateTmp[i].currentId === parentObj.id){
+
+                    console.log("------++++++ func 'changeListId', stateTmp[i].childId: ", stateTmp[i].childId);
+
                     if(typeof stateTmp[i].childId.find((item) => item === elem.id) === "undefined"){
                         stateTmp[i].childId.push({ currentId: elem.id, childId: [] });
 
@@ -268,9 +271,9 @@ export default function CreateListObjectRefsReport(props){
     });
 
     console.log("func 'CreateListObjectRefsReport' ---------------");
-    console.log("majorParentId: ", majorParentId, " stateReport: ", stateReport);
+    console.log("majorParentId: ", majorParentId, " stateReport: ", stateReport, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject, " parentSTIXObject: ", parentSTIXObject);
 
-    const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: {}, listId: objListBegin});
+    const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { /*list: {}*/ list: listNewOrModifySTIXObject, listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
     const [ currentDeleteId, setCurrentDeleteId ] = useState("");
     const [ deleteIdDepthAndKey, setDeleteIdDepthAndKey ] = useState([]);
@@ -288,6 +291,8 @@ export default function CreateListObjectRefsReport(props){
     };
     useEffect(() => {
         console.log("%%$$%^&&&&&&& useEffect, SEND message 'isems-mrsi response ui: send search request, get STIX object for list id' -->");   
+
+        //setListObjReducer({ type: "updateList", data: { current: listNewOrModifySTIXObject, parent: stateReport }});
 
         socketIo.on("isems-mrsi response ui: send search request, get STIX object for list id", listener);
         socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
@@ -417,7 +422,7 @@ export default function CreateListObjectRefsReport(props){
         },
         handleClick = (num, currentId, depth) => {       
             
-            console.log("func 'handleClick' ......................");
+            console.log("func 'handleClick' ...................... num:", num, " currentId: ", currentId, " depth: ", depth);
 
             let tmp = listActivatedObjectNumbers.slice();
             if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] === num){        
@@ -429,16 +434,26 @@ export default function CreateListObjectRefsReport(props){
                 tmp.push(num);
             }
 
+            console.log("func 'handleClick' ...................... tmp:", tmp);
+
             setListActivatedObjectNumbers(tmp);
         
             if(currentId !== ""){
                 let searchListObjectId = findObjectId(listObjReducer.listId, currentId);
+
+                console.log("func 'handleClick' ...................... findObjectId(listObjReducer.listId, currentId):", searchListObjectId);
+
                 let listSearchId = [];
                 for(let value of searchListObjectId){
                     listSearchId.push(value);
                 }
 
-                if(searchListObjectId.length === 0){
+                console.log("func 'handleClick' ...................... searchListObjectId:", searchListObjectId, " listSearchId: ", listSearchId);
+
+                if(searchListObjectId.size === 0){
+
+                    console.log("func 'handleClick' ...................... RETURN, currentId:", currentId);
+
                     return;
                 }
 
@@ -468,11 +483,9 @@ export default function CreateListObjectRefsReport(props){
             }
 
             if(type[0] === "grouping" || type[0] === "note" || type[0] === "opinion"){
-                console.log("11111 STIX object id:", item.currentId, " listObjReducer ", listObjReducer.list, " listObjReducer.list[item.currentId]: ", listObjReducer.list[item.currentId]);
-                if(typeof listObjReducer.list[item.currentId] !== "undefined"){
-                    if(listObjReducer.list[item.currentId].object_refs.length === 0){
+                for(let v of listNewOrModifySTIXObject){
+                    if((v.id === item.currentId) && ((typeof v.object_refs === "undefined") || (v.object_refs.length === 0))){
                         isAddAlarmProblems = true;
-                        console.log("22222 STIX object id:", item.currentId, " listObjReducer.list[item.currentId] ", listObjReducer.list[item.currentId].object_refs);
                     }
                 }
             }
@@ -483,6 +496,9 @@ export default function CreateListObjectRefsReport(props){
             let listProperties = getListPropertiesExtendedObject(type[0]);
 
             //console.log("func 'getListId', parentId = ", item.currentId, " _________ listProperties _________:", listProperties);
+
+            let titleWarning = "Не заполнено ключевое поле, являющееся обязательным для данного объекта. Вероятнее всего отсутствуют ссылки на другой STIX объект, например в поле object_refs.";
+            titleWarning += " При сохранении Отчета даны объект не будет добавлен в базу данных. Для того чтобы исправить это необходимо добавить в текущий объект ссылку на какой либо другой объект STIX.";
 
             return (<React.Fragment key={`rf_${key}`}>
                 <ListItem 
@@ -517,7 +533,10 @@ export default function CreateListObjectRefsReport(props){
 
                             if(item.currentId.split("--")[0] !== "report"){
                                 parentSTIXObject = listObjReducer.list[item.currentId];
+                                //parentSTIXObject = listNewOrModifySTIXObject[item.currentId];
                             }
+
+                            console.log("888888888888111111 parentSTIXObject: ", parentSTIXObject, "listNewOrModifySTIXObject[item.currentId] (parentSTIXObject): ", listNewOrModifySTIXObject[item.currentId]);
 
                             handlerShowModalWindowCreateNewSTIXObject(item.currentId, listProperties, parentSTIXObject);
                         }}>
@@ -527,7 +546,10 @@ export default function CreateListObjectRefsReport(props){
                     <IconButton size="small" aria-label="delete" onClick={handlerDeleteObjRef.bind(null, parentId, item.currentId, depth, key)}>
                         <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
                     </IconButton>
-                    {isAddAlarmProblems? <ReportProblemOutlinedIcon style={{ color: orange[400] }} />: ""}
+                    {isAddAlarmProblems? 
+                        <Tooltip title={titleWarning} key={`key_tooltip_warning_object_ref_${key}`}>
+                            <ReportProblemOutlinedIcon style={{ color: orange[400] }} />
+                        </Tooltip>: ""}
                 </ListItem>
                 {item.childId.length > 0 && ((typeof listActivatedObjectNumbers[depth] !== "undefined") && (listActivatedObjectNumbers[depth] === key))?
                     <Collapse in={open} timeout="auto" unmountOnExit>
@@ -549,16 +571,17 @@ export default function CreateListObjectRefsReport(props){
         <Row>
             <Col md={12} className="text-end">
                 <Button
-                    //size="small"
                     startIcon={<AddCircleOutlineIcon style={{ color: green[400] }} />}
                     onClick={() => {
-                        let parentSTIXObject = stateReport;
+                        //let parentSTIXObject = stateReport;
 
-                        if(majorParentId.split("--")[0] !== "report"){
-                            parentSTIXObject = listObjReducer.list[majorParentId];
-                        }
+                        //if(majorParentId.split("--")[0] !== "report"){
+                        //    parentSTIXObject = listObjReducer.list[majorParentId];
+                        // }
 
-                        handlerShowModalWindowCreateNewSTIXObject(majorParentId, ["object_refs"], parentSTIXObject);
+                        console.log("8888888888882222222 listObjReducer.list[majorParentId] (parentSTIXObject): ", listObjReducer.list[majorParentId]);
+
+                        handlerShowModalWindowCreateNewSTIXObject(majorParentId, ["object_refs"], stateReport /*parentSTIXObject*/);
                     }}>
                     <span style={{ paddingTop: "3px" }}>прикрепить доп. объект</span>
                 </Button>
