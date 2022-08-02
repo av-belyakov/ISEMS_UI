@@ -403,8 +403,6 @@ function CreateReportInformation(props){
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
-    console.log("func 'CreateReportInformation', START...");
-
     const [state, dispatch] = useReducer(reducer, {});
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
@@ -440,9 +438,6 @@ function CreateReportInformation(props){
     }, []);
     useEffect(() => {
         if(showReportId !== ""){
-
-            console.log("SEND REQUEST: isems-mrsi ui request: send search request, get report for id");
-
             //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
             socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
             socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: showReportId });
@@ -450,34 +445,10 @@ function CreateReportInformation(props){
     }, [ socketIo, showReportId ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-            console.log("func 'CreateReportInformation' ----> SEND REPORT:", state);
             handlerPressButtonSave(state);
         }
     }, [ buttonSaveChangeTrigger, state, handlerPressButtonSave ]),
     useEffect(() => {
-        console.log("func 'CreateReportInformation', useEffect, 1111111111111 update 'state' ", state, ", parentSTIXObject:", parentSTIXObject);
-
-        //здесь обновляется только объект Report
-
-        /**
- * 
- * надо найти способ обновлять другие объекты
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- */
-
         if(parentSTIXObject.type !== "report"){
             return;
         }
@@ -488,8 +459,6 @@ function CreateReportInformation(props){
                 objectRefs.push(stixObject.id);
             }
         }
-
-        console.log("func 'CreateReportInformation', useEffect, 222222222222 update 'state' (objectRefs)", objectRefs, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
         dispatch({ type: "updateObjectRefs", data: objectRefs });
     }, [ parentSTIXObject, fieldNameForChange, listNewOrModifySTIXObject ]);

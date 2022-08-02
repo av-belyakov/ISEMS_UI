@@ -181,24 +181,10 @@ export default function CreateDialogContentNewSTIXObject(props){
         }
     }
 
-    console.log("_________________ listObjectTypeTmp: ", listObjectTypeTmp, " typesRelationshipsBetweenObjects[parentSTIXObject.type]: ", typesRelationshipsBetweenObjects[parentSTIXObject.type], " parentSTIXObject.type:", parentSTIXObject.type);
-    console.log("******** 0.1 ********* (((( listRefsForObjectSTIX )))): ", listRefsForObjectSTIX);
-    console.log("******** 0.2 ********* ))) listObjectTypeTmp (((: ", listObjectTypeTmp);
-    console.log("******** 1 ********* listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
+    console.log("******** func 'CreateDialogContentNewSTIXObject' ********* listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
     let listLinkImageSTIXObjectTmp = Object.keys(helpers.getListLinkImageSTIXObject());
     let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) => listObjectTypeTmp.has(item));
-
-    //здесь опять перезапиште на все sco и sdo
-    //if(listRefsForObjectSTIX.find((item) => item === "object_refs")){
-    //    listLinkImageSTIXObject = listLinkImageSTIXObjectTmp;
-    //}
-
-    //console.log("******** 2 *********  listLinkImageSTIXObjectTmp: ",  listLinkImageSTIXObjectTmp);
-    //console.log("******** 3 *********  listLinkImageSTIXObject: ",  listLinkImageSTIXObject);
-    //console.log("******** 4 *********  typeObjectSTIX: ",  typeObjectSTIX);
-    //console.log("******** 5 ********* parentSTIXObject: ", parentSTIXObject);
-    //console.log("buttonSaveIsDisabled = ", buttonSaveIsDisabled);
 
     React.useEffect(() => {
         for(let item of listRefsForObjectSTIX){
@@ -271,9 +257,6 @@ export default function CreateDialogContentNewSTIXObject(props){
     };
 
     let MyModule = somethingModule(typeObjectSTIX);
-
-    console.log("func 'CreateDialogContentNewSTIXObject' MyModule: ", MyModule, " typeObjectSTIX ", typeObjectSTIX);
-    //<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
 
     return (<React.Fragment>
         <DialogContent>

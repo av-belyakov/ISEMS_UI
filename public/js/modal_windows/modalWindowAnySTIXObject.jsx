@@ -97,7 +97,7 @@ export default function ModalWindowAnySTIXObject(props){
         </DialogTitle>
 
         <ErrorBoundary>
-            <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22 }}>Загрузка...</div>}>
+            <Suspense fallback={<div style={{ textAlign: "center", marginBottom: 22}}>Загрузка...</div>}>
                 {MyModule && <MyModule 
                     socketIo={socketIo}
                     isNotDisabled={isNotDisabled}

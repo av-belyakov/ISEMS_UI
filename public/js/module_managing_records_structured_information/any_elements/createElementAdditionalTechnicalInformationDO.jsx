@@ -85,8 +85,6 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         setExpanded(isExpanded? panel: false);
     };
 
-    console.log("func CreateElementAdditionalTechnicalInformationDO, START");
-
     let handlerElConf = (data) => {
             handlerElementConfidence({ data: +data.target.value, objectId: objectId });
         }, 
