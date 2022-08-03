@@ -149,7 +149,6 @@ export default function CreateDialogContentNewSTIXObject(props){
     let [ typeObjectSTIX, setTypeObjectSTIX ] = React.useState("");
     let [ itemReactSearchAutocomplete, setItemReactSearchAutocomplete ] = React.useState([]);
     let [ currentRefObjectSTIX, setCurrentRefObjectSTIX ] = React.useState(listRefsForObjectSTIX.find((item) => item === "object_refs")? "object_refs": listRefsForObjectSTIX[0]);
-    let [ parentObject, setParentObject ] = React.useState(parentSTIXObject);
     let [ projectPatterElement, setProjectPatterElement ] = React.useReducer(reducer, {});
     let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = React.useState([]);
     let [ buttonAddClick, setButtonAddClick ] = React.useState(false);
@@ -413,7 +412,7 @@ export default function CreateDialogContentNewSTIXObject(props){
             <Button 
                 disabled={buttonSaveIsDisabled}
                 onClick={() => {
-                    //                    console.log("================ projectPatterElement: ", projectPatterElement, " ===============");
+                    console.log("~~~~~~ ================ projectPatterElement: ", projectPatterElement, " listRefsForObjectSTIX: ", listRefsForObjectSTIX, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject, " =============== ~~~~~~");
 
                     handlerDialog(listRefsForObjectSTIX, listNewOrModifySTIXObject);
                 }}

@@ -107,7 +107,7 @@ const loreducer = (state, action) => {
             data.splice(data[item], 1);
         }
 
-        console.log("IIIIIIIIIIIIIIIIIII func 'updateState', stateTmp:", stateTmp, " NUM = ", num);
+        //console.log("IIIIIIIIIIIIIIIIIII func 'updateState', stateTmp:", stateTmp, " NUM = ", num);
 
         for(let i = 0; i < stateTmp.length; i++){
             for(let item of data){
@@ -172,16 +172,19 @@ const loreducer = (state, action) => {
     switch(action.type){
     case "updateList":
 
-        console.log("^^^^^^^^ func 'changeListId' action.type:", action.type, " action.data.parent: ", action.data.parent, " action.data.current: ", action.data.current);
+        //console.log("^^^^^^^^ func 'changeListId' action.type:", action.type, " action.data.parent: ", action.data.parent, " action.data.current: ", action.data.current);
         newList = action.data.current.concat(action.data.parent);
 
-        console.log("^^^^^^__^__^_^_^__^_^ newLIst: ", newList);
+        //console.log("^^^^^^__^__^_^_^__^_^ newLIst: ", newList);
 
         //for(let i = 0; i < state.length; i++){
         for(let item of newList){
             let searchIndex = state.list.findIndex((elem) => elem.id === item.id);
 
             if(searchIndex === -1){
+
+                //console.log(")))____)))))____ item if === -1:", item.id);
+
                 state.list.push(item);
 
                 continue;
@@ -190,7 +193,7 @@ const loreducer = (state, action) => {
             state.list[searchIndex] = item;
         }
 
-        console.log("&&&&&_________&&&&&&&________ state.list: ", state.list);
+        //console.log("&&&&&_________&&&&&&&________ state.list: ", state.list);
 
         return {...state, list: state.list};
     case "updateListId":
@@ -241,7 +244,7 @@ export default function CreateListObjectRefsReport(props){
         return { currentId: item, childId: [] };
     });
 
-    console.log("func '--------- CreateListObjectRefsReport ------------' majorParentId: ", majorParentId, " stateReport: ", stateReport, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject, " parentSTIXObject: ", parentSTIXObject);
+    console.log("func '--------- CreateListObjectRefsReport ------------' majorParentId: ", majorParentId, " stateReport: ", stateReport, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
     const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { /*list: {}*/ list: listNewOrModifySTIXObject, listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
@@ -287,17 +290,17 @@ export default function CreateListObjectRefsReport(props){
     }, [ confirmDeleteLink ]),
     useEffect(() => {
 
-        console.log("++++ useEffect 11111111 setListObjReducer({ type: updateListId, parentSTIXObject = ", parentSTIXObject, ", listNewOrModifySTIXObject = ", listNewOrModifySTIXObject, " stateReport:", stateReport);
+        console.log("++++ useEffect 11111111 setListObjReducer({ type: updateListId,  listNewOrModifySTIXObject = ", listNewOrModifySTIXObject, " stateReport:", stateReport);
 
         setListObjReducer({ type: "updateListId", data: { listObject: [ stateReport ]}});
         setListObjReducer({ type: "updateList", data: { current: [ stateReport ], parent: stateReport }});
     }, [ stateReport ]),
     useEffect(() => {
         
-        console.log("++++ useEffect 2222222 setListObjReducer({ type: changeListId }), parentSTIXObject:", parentSTIXObject, " listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " listObjReducer.listId:", listObjReducer.listId);
+        console.log("++++ useEffect 2222222 setListObjReducer({ type: changeListId }),  listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " listObjReducer.listId:", listObjReducer.listId);
         
         //setListObjReducer({ type: "changeListId", data: { parentSTIXObject: parentSTIXObject, listModifySTIXObject: listNewOrModifySTIXObject }});
-    }, [ parentSTIXObject, listNewOrModifySTIXObject ]);
+    }, [ parentSTIXObject, stateReport, listNewOrModifySTIXObject ]);
 
     let deleteIdFromSTIXObject = () => {
         let parrentObject = lodash.cloneDeep(listObjReducer.list[currentParentId]);
@@ -457,7 +460,7 @@ export default function CreateListObjectRefsReport(props){
 
                             if(item.currentId.split("--")[0] !== "report"){
                                 parentSTIXObject = listObjReducer.list[item.currentId];
-                                //parentSTIXObject = listNewOrModifySTIXObject[item.currentId];
+                            //parentSTIXObject = listNewOrModifySTIXObject[item.currentId];
                             }
 
                             handlerShowModalWindowCreateNewSTIXObject(item.currentId, listProperties, parentSTIXObject);

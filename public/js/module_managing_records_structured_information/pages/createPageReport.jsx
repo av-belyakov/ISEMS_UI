@@ -66,13 +66,13 @@ export default function CreatePageReport(props) {
         },
         handlerShowModalWindowCreateNewSTIXObject = (elemId, listRefsForObjectSTIX, parentSTIXObject) => {            
 
-            console.log("func '=== HANDLERShowModalWindowCreateNewSTIXObject ===', elemId: ", elemId, ", listRefsForObjectSTIX: ", listRefsForObjectSTIX, ", parentSTIXObject: ", parentSTIXObject);
+            //console.log("func '=== HANDLERShowModalWindowCreateNewSTIXObject ===', elemId: ", elemId, ", listRefsForObjectSTIX: ", listRefsForObjectSTIX, ", parentSTIXObject: ", parentSTIXObject);
 
             setObjectId(elemId);
 
             if(typeof parentSTIXObject === "undefined"){
 
-                console.log("func '=== HANDLERShowModalWindowCreateNewSTIXObject ===', listNewOrModifySTIXObject:", listNewOrModifySTIXObject);
+                //console.log("func '=== HANDLERShowModalWindowCreateNewSTIXObject ===', listNewOrModifySTIXObject:", listNewOrModifySTIXObject);
 
                 for(let item of listNewOrModifySTIXObject){
                     if(elemId === item.id ){
@@ -82,7 +82,7 @@ export default function CreatePageReport(props) {
                     }
                 }
 
-                setParentSTIXObject({});
+                //setParentSTIXObject({});
             } else {
                 setParentSTIXObject(parentSTIXObject);
             }
@@ -113,6 +113,8 @@ export default function CreatePageReport(props) {
 
                 return prevState;
             });
+
+            console.log("func '===== HANDLERDialogSaveNewSTIXObject =====', listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
             setShowModalWindowCreateNewSTIXObject(false);
         },

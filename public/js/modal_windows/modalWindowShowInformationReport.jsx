@@ -449,16 +449,31 @@ function CreateReportInformation(props){
         }
     }, [ buttonSaveChangeTrigger, state, handlerPressButtonSave ]),
     useEffect(() => {
+
+        console.log("YYYYYYYYYYYYYYY 1111 parentSTIXObject:", parentSTIXObject, " fieldNameForChange:", fieldNameForChange, " listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " state element: ", state);
+
         if(parentSTIXObject.type !== "report"){
             return;
         }
 
+        /**
+         * 
+         * Вот здесь из-за 
+         *     if(parentSTIXObject.type !== "report"){
+         * не добавляется в объекты из listNewOrModifySTIXObject
+         * если parentSTIXObject.type не равен "report"
+         * Фактически данный код только для обнавления объекта "report" в свойстве state
+         * 
+         */
+
         let objectRefs = state.object_refs.slice();        
         for(let stixObject of listNewOrModifySTIXObject){
-            if(!objectRefs.find((item) => item === stixObject.id)){
+            if(!objectRefs.find((item) => item === stixObject.id) && stixObject.id.split("--")[0] !== "report"){
                 objectRefs.push(stixObject.id);
             }
         }
+
+        console.log("YYYYYYYYYYYYYYY 2222");
 
         dispatch({ type: "updateObjectRefs", data: objectRefs });
     }, [ parentSTIXObject, fieldNameForChange, listNewOrModifySTIXObject ]);
