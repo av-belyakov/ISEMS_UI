@@ -24,8 +24,6 @@ export default function CreateCourseOfActionPatternElements(props){
         projectPatterElement.modified= currentTime;
     }
 
-    console.log("func 'CreateCourseOfActionPatternElements', projectPatterElement:", projectPatterElement);
-
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>

@@ -414,7 +414,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                 onClick={() => {
                     console.log("~~~~~~ ================ projectPatterElement: ", projectPatterElement, " listRefsForObjectSTIX: ", listRefsForObjectSTIX, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject, " =============== ~~~~~~");
 
-                    handlerDialog(listRefsForObjectSTIX, listNewOrModifySTIXObject);
+                    handlerDialog(parentSTIXObject, listRefsForObjectSTIX, listNewOrModifySTIXObject);
                 }}
                 style={{ color: green[400] }}>
                 сохранить изменения

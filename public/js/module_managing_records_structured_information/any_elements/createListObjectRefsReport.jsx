@@ -35,8 +35,6 @@ const getListPropertiesExtendedObject = (objName) => {
 const addElemToChildId = (listData /** item[value] */, stateTmp /** stateTmp[i] */) => {
     let newArr = [];
 
-    //console.log("000000000 func 'addElemToChildId', stateTmp: ", stateTmp, " listData: ", listData);
-
     if(Array.isArray(listData)){
         for(let ce of listData){
             if(stateTmp.childId.find((e) => e.currentId === ce)){
@@ -52,8 +50,6 @@ const addElemToChildId = (listData /** item[value] */, stateTmp /** stateTmp[i] 
             }
         }
     }
-
-    //console.log("000000000 func 'addElemToChildId', AFTER newArr: ", newArr);
 
     return newArr;
 };
@@ -107,8 +103,6 @@ const loreducer = (state, action) => {
             data.splice(data[item], 1);
         }
 
-        //console.log("IIIIIIIIIIIIIIIIIII func 'updateState', stateTmp:", stateTmp, " NUM = ", num);
-
         for(let i = 0; i < stateTmp.length; i++){
             for(let item of data){
                 if(stateTmp[i].currentId !== item.id){
@@ -136,35 +130,78 @@ const loreducer = (state, action) => {
             }
         }
 
-        //console.log("AAAAAAAAAAAAAAAAAAAAAAS func 'updateState', stateTmp:", stateTmp, " NUM = ", num);
-
         return stateTmp;
     };
 
-    let changeListId = (parentObj, listModify, stateTmp) => {
-
-        console.log("func 'changeListId', parentObj:", parentObj, " listModify:", listModify, " stateTmp:", stateTmp);
-
-        for(let elem of listModify){
-            for(let i = 0; i < stateTmp.length; i++){
-                if(stateTmp[i].currentId === parentObj.id){
-                    if(typeof stateTmp[i].childId.find((item) => item === elem.id) === "undefined"){
-                        stateTmp[i].childId.push({ currentId: elem.id, childId: [] });
-
-                        break;
+    let forEachListId = (parentId, refsId, stateTmp) => {
+        for(let i = 0; i < stateTmp.length; i++){
+            if(stateTmp[i].currentId === parentId){
+                for(let refId of refsId){
+                    if(stateTmp[i].childId.find((item) => item.currentId === refId)){
+                        continue;
                     }
+
+                    stateTmp[i].childId.push({ currentId: refId, childId: [] });
                 }
 
-                if(stateTmp[i].childId.length > 0){
-                    let tmp = changeListId(parentObj, listModify, stateTmp[i]);
-
-                    console.log("func 'changeListId', WWWWWWWWWWW tmp:", tmp);
-                    stateTmp[i].childId.push(changeListId(parentObj, listModify, stateTmp[i]));
-                }
+                continue;
             }
+
+            if(stateTmp[i].childId.length === 0){
+                continue;
+            }
+
+            stateTmp[i].childId = forEachListId(parentId, refsId, stateTmp[i].childId);
         }
 
         return stateTmp;
+    };
+    let changeListId = (parentObj, listModify, stateTmp) => {
+        let type = parentObj.split("--")[0];
+        if(type === "report"){
+            for(let elem of listModify){
+                if(elem.id.split("--")[0] === "report"){
+                    continue;
+                }
+
+                if(!stateTmp.find((item) => item.currentId === elem.id)){
+                    stateTmp.push({ currentId: elem.id, childId: [] });
+                }
+            }
+            
+            return stateTmp;
+        }
+
+        let listTmp = [];
+        for(let obj of listModify){
+            if(obj.id !== parentObj){
+                continue;
+            }
+
+            let listProperties =  getListPropertiesExtendedObject(obj.type);
+
+            if(listProperties.length === 0){
+                continue;
+            }
+
+            for(let value of listProperties){
+                if(!obj[value]){
+                    continue;
+                }
+
+                if(Array.isArray(obj[value])){
+                    for(let l of obj[value]){
+                        listTmp.push(l);
+                    }
+                } else {
+                    listTmp.push(obj[value]);
+                }
+            }
+
+            break;
+        }
+        
+        return forEachListId(parentObj, listTmp, stateTmp);
     };
 
     let newList = [];
@@ -205,7 +242,7 @@ const loreducer = (state, action) => {
     case "changeListId":
         changeListIdResult = changeListId(action.data.parentSTIXObject, action.data.listModifySTIXObject, state.listId);
 
-        console.log("||||||||||||+++++++++++++| loreducer, action.type: CHANGE ListId, changeListIdResult = ", changeListIdResult);
+        console.log("||||||||||||+++++++++++++| loreducer, action.type: CHANGE ListId, action.data.parentSTIXObject: ", action.data.parentSTIXObject, ", action.data.listModifySTIXObject: ", action.data.listModifySTIXObject, " changeListIdResult = ", changeListIdResult);
 
         if(typeof changeListIdResult === "undefined"){
             return {...state};
@@ -244,7 +281,7 @@ export default function CreateListObjectRefsReport(props){
         return { currentId: item, childId: [] };
     });
 
-    console.log("func '--------- CreateListObjectRefsReport ------------' majorParentId: ", majorParentId, " stateReport: ", stateReport, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
+    console.log("func '(((( --------- CreateListObjectRefsReport ------------ ))))' majorParentId: ", majorParentId, " stateReport: ", stateReport, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
     const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { /*list: {}*/ list: listNewOrModifySTIXObject, listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
@@ -253,6 +290,9 @@ export default function CreateListObjectRefsReport(props){
     const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
 
     let listener = (data) => {
+
+        console.log("+++++++++++++++ data.information.additional_parameters.transmitted_data:", data.information.additional_parameters.transmitted_data, " listObjReducer:", listObjReducer, " +++++++++++++++++");
+
         setListObjReducer({ type: "updateListId", data: { listObject: data.information.additional_parameters.transmitted_data }});
         setListObjReducer({ type: "updateList", data: { current: data.information.additional_parameters.transmitted_data, parent: stateReport }});
     };
@@ -288,19 +328,28 @@ export default function CreateListObjectRefsReport(props){
         setListActivatedObjectNumbers([]);
         handlerDialogConfirm();
     }, [ confirmDeleteLink ]),
-    useEffect(() => {
+    /*useEffect(() => {
 
-        console.log("++++ useEffect 11111111 setListObjReducer({ type: updateListId,  listNewOrModifySTIXObject = ", listNewOrModifySTIXObject, " stateReport:", stateReport);
+        console.log("++++ useEffect 11111111 setListObjReducer({ type: updateListId,  listNewOrModifySTIXObject = ", listNewOrModifySTIXObject, " stateReport:", stateReport, " parentSTIXObject:", parentSTIXObject);
 
         setListObjReducer({ type: "updateListId", data: { listObject: [ stateReport ]}});
         setListObjReducer({ type: "updateList", data: { current: [ stateReport ], parent: stateReport }});
-    }, [ stateReport ]),
+
+        //setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
+    }, [ stateReport ]),*/
+    /*useEffect(() => {
+        
+        console.log("++++ useEffect 2222222 setListObjReducer({ type: changeListId }),  listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " listObjReducer.listId:", listObjReducer.listId, " majorParentId:", majorParentId);
+      
+        setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
+        //setListObjReducer({ type: "changeListId", data: { parentSTIXObject: parentSTIXObject, listModifySTIXObject: listNewOrModifySTIXObject }});
+    }, [ majorParentId, stateReport, listNewOrModifySTIXObject ]);*/
+
     useEffect(() => {
         
-        console.log("++++ useEffect 2222222 setListObjReducer({ type: changeListId }),  listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " listObjReducer.listId:", listObjReducer.listId);
-        
-        //setListObjReducer({ type: "changeListId", data: { parentSTIXObject: parentSTIXObject, listModifySTIXObject: listNewOrModifySTIXObject }});
-    }, [ parentSTIXObject, stateReport, listNewOrModifySTIXObject ]);
+        console.log("++++ useEffect 3333333333 setListObjReducer({ type: changeListId })"); 
+        setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
+    }, [ listNewOrModifySTIXObject.length ]);
 
     let deleteIdFromSTIXObject = () => {
         let parrentObject = lodash.cloneDeep(listObjReducer.list[currentParentId]);

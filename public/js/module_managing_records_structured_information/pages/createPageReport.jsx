@@ -94,29 +94,54 @@ export default function CreatePageReport(props) {
             setObjectId("");
             setShowModalWindowCreateNewSTIXObject(false);
         },
-        handlerDialogSaveNewSTIXObject = (fieldName, listSTIXObject) => {
-
-            console.log("func '===== HANDLERDialogSaveNewSTIXObject =====', fieldName: ", fieldName, ", listSTIXObject: ", listSTIXObject);
+        handlerDialogSaveNewSTIXObject = (parentSTIXObject, fieldName, listSTIXObject) => {            
+            console.log("func '===== HANDLERDialogSaveNewSTIXObject =====', parentSTIXObject: ", parentSTIXObject, " fieldName: ", fieldName, ", listSTIXObject: ", listSTIXObject);
 
             setFieldNameForChange(fieldName);
+            setShowModalWindowCreateNewSTIXObject(false);
+
+            if(listSTIXObject.length === 0){
+                return;
+            }
+
             setListNewOrModifySTIXObject((prevState) => {
-                for(let item of listSTIXObject){
-                    let index = prevState.findIndex((elem) => elem.id === item.id);
+                for(let object of listSTIXObject){
+                    let index = prevState.findIndex((elem) => elem.id === object.id);
                     if(index === -1){
-                        prevState.push(item);
+                        prevState.push(object);
 
                         continue;
                     }
 
-                    prevState[index] = item;
+                    prevState[index] = object;
+                }
+
+                for(let i = 0; i < prevState.length; i++){
+                    if(parentSTIXObject.id !== prevState[i].id){
+                        continue;
+                    }                    
+
+                    for(let fn of fieldName){
+                        if(typeof prevState[i][fn] === "undefined"){
+                            continue;
+                        }                    
+
+                        if(Array.isArray(prevState[i][fn])){
+                            for(let obj of listSTIXObject){
+                                if(!prevState[i][fn].find((value) => value === obj.id)){
+                                    prevState[i][fn].push(obj.id);
+                                }
+                            }
+                        } else {
+                            prevState[i][fn] = listSTIXObject[0];
+                        }
+                    }
                 }
 
                 return prevState;
             });
 
             console.log("func '===== HANDLERDialogSaveNewSTIXObject =====', listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
-
-            setShowModalWindowCreateNewSTIXObject(false);
         },
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs = (parentId, deleteId) => {
             setShowModalWindowConfirmDeleteLinkFromObjRefs(true);
