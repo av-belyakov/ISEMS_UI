@@ -89,3 +89,25 @@ CreateDialogContentArtifactSTIXObject.propTypes = {
     handlerDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
+
+/**
+//ArtifactCyberObservableObjectSTIX объект "Artifact", по терминалогии STIX, позволяет захватывать массив байтов (8 бит) в виде строки в кодировке base64
+//  или связывать его с полезной нагрузкой, подобной файлу. Обязательно должен быть заполнено одно из полей PayloadBin или URL
+// MimeType - по возможности это значение ДОЛЖНО быть одним из значений, определенных в реестре типов носителей IANA. В универсальном каталоге
+//  всех существующих типов файлов.
+// PayloadBin - бинарные данные в base64
+// URL - унифицированный указатель ресурса (URL)
+// Hashes - словарь хешей для URL или PayloadBin
+// EncryptionAlgorithm - тип алгоритма шифрования для бинарных данных
+// DecryptionKey - определяет ключ для дешифрования зашифрованных данных
+type ArtifactCyberObservableObjectSTIX struct {
+	CommonPropertiesObjectSTIX
+	OptionalCommonPropertiesCyberObservableObjectSTIX
+	MimeType            string         `json:"mime_type" bson:"mime_type"`
+	PayloadBin          string         `json:"payload_bin" bson:"payload_bin"`
+	URL                 string         `json:"url" bson:"url"`
+	Hashes              HashesTypeSTIX `json:"hashes" bson:"hashes"`
+	EncryptionAlgorithm EnumTypeSTIX   `json:"encryption_algorithm" bson:"encryption_algorithm"`
+	DecryptionKey       string         `json:"decryption_key" bson:"decryption_key"`
+}
+ */

@@ -89,3 +89,40 @@ CreateDialogContentThreatActorSTIXObject.propTypes = {
     handlerDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
+
+/**
+//ThreatActorDomainObjectsSTIX объект "Threat Actor", по терминалогии STIX, содержит информацию о физических лицах или их группах и организациях
+//  которые могут действовать со злым умыслом.
+// Name - имя используемое для идентификации "Threat Actor" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// Description - более подробное описание
+// ThreatActorTypes - заранее определенный (предложенный) перечень типов субъектов угрозы
+// Aliases - альтернативные имена используемые для этого субъекта угроз
+// FirstSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был впервые зафиксирован
+// LastSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был зафиксирован в последний раз
+// Roles - заранее определенный (предложенный) перечень возможных ролей субъекта угроз
+// Goals - высокоуровневые цели субъекта угроз.
+// Sophistication - один, из заранее определенного (предложенного) перечня навыков, специальных знания, специальной подготовки или опыта,
+//  которыми должен обладать субъект угрозы, чтобы осуществить атаку
+// ResourceLevel - один, из заранее определенного (предложенного) перечня организационных уровней, на котором обычно работает этот субъект угрозы,
+//  который, в свою очередь, определяет ресурсы, доступные этому субъекту угрозы для использования в атаке.
+// PrimaryMotivation - одна, из заранее определенного (предложенного) перечня причин, мотиваций или целей стоящих за этим субъектом угрозы
+// SecondaryMotivations - заранее определенный (предложенный) перечень возможных вторичных причин, мотиваций или целей стоящих за этим субъектом угрозы
+// PersonalMotivations - заранее определенный (предложенный) перечень возможных персональных причин, мотиваций или целей стоящих за этим субъектом угрозы
+type ThreatActorDomainObjectsSTIX struct {
+	CommonPropertiesObjectSTIX
+	CommonPropertiesDomainObjectSTIX
+	Name                 string              `json:"name" bson:"name" required:"true"`
+	Description          string              `json:"description" bson:"description"`
+	ThreatActorTypes     []OpenVocabTypeSTIX `json:"threat_actor_types" bson:"threat_actor_types"`
+	Aliases              []string            `json:"aliases" bson:"aliases"`
+	FirstSeen            time.Time           `json:"first_seen" bson:"first_seen"`
+	LastSeen             time.Time           `json:"last_seen" bson:"last_seen"`
+	Roles                []OpenVocabTypeSTIX `json:"roles" bson:"roles"`
+	Goals                []string            `json:"goals" bson:"goals"`
+	Sophistication       OpenVocabTypeSTIX   `json:"sophistication" bson:"sophistication"`
+	ResourceLevel        OpenVocabTypeSTIX   `json:"resource_level" bson:"resource_level"`
+	PrimaryMotivation    OpenVocabTypeSTIX   `json:"primary_motivation" bson:"primary_motivation"`
+	SecondaryMotivations []OpenVocabTypeSTIX `json:"secondary_motivations" bson:"secondary_motivations"`
+	PersonalMotivations  []OpenVocabTypeSTIX `json:"personal_motivations" bson:"personal_motivations"`
+}
+ */

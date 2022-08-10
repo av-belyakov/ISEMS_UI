@@ -89,3 +89,17 @@ CreateDialogContentAutonomousSystemSTIXObject.propTypes = {
     handlerDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
+
+/**
+//AutonomousSystemCyberObservableObjectSTIX объект "Autonomous System", по терминалогии STIX, содержит параметры Автономной системы
+// Number - содержит номер присвоенный Автономной системе (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// Name - название Автономной системы
+// RIR - содержит название регионального Интернет-реестра (Regional Internet Registry) которым было дано имя Автономной системы
+type AutonomousSystemCyberObservableObjectSTIX struct {
+	CommonPropertiesObjectSTIX
+	OptionalCommonPropertiesCyberObservableObjectSTIX
+	Number int    `json:"number" bson:"number" required:"true"`
+	Name   string `json:"name" bson:"name"`
+	RIR    string `json:"rir" bson:"rir"`
+}
+ */

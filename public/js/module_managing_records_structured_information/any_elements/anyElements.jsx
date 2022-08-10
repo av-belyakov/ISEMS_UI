@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react";
+import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import {
     Button,
@@ -25,7 +25,7 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { green, red } from "@material-ui/core/colors";
-import lodash from "lodash";
+//import lodash from "lodash";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
@@ -261,7 +261,7 @@ export function CreateListIdentityClass(props){
     let { 
         isDisabled,
         campaignPatterElement, 
-        handlerIdentityClass 
+        handlerIdentityClass, 
     } = props;
 
     const getContentText = (elem) => {
@@ -314,7 +314,7 @@ export function CreateListSectors(props){
     let { 
         isDisabled,
         campaignPatterElement, 
-        headerSectors 
+        headerSectors, 
     } = props;
 
     const classes = useStyles();
@@ -366,11 +366,67 @@ CreateListSectors.propTypes = {
     headerSectors: PropTypes.func.isRequired,
 };
 
+export function CreateListToolTypes(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerToolTypes, 
+    } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const getSummary = (value) => {
+        for(let i = 0; i < dictionaryLists["tool-type-ov"].content.length; i++){
+            if(value === dictionaryLists["tool-type-ov"].content[i].name){
+                return dictionaryLists["tool-type-ov"].content[i].summary;
+            }
+        }
+
+        return value;
+    };
+
+    return (dictionaryLists["tool-type-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
+        <InputLabel id="tool-type-mutiple-chip-lable">тип промышленного сектора</InputLabel>
+        <Select
+            labelId="tool-type-mutiple-chip"
+            id="tool-type-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.sectors? campaignPatterElement.sectors: []}
+            onChange={(e) => handlerToolTypes.call(null, e)}
+            input={<Input id="tool-type-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["tool-type-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`tool-type-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.sectors, theme)}
+                >
+                    {item.summary}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+}
+
+CreateListToolTypes.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired, 
+    handlerToolTypes: PropTypes.func.isRequired,
+};
+
 export function CreateListInfrastructureTypes(props){
     let { 
         isDisabled,
         campaignPatterElement, 
-        handlerInfrastructureTypes 
+        handlerInfrastructureTypes, 
     } = props;
 
     const classes = useStyles();

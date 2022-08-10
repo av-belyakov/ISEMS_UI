@@ -210,9 +210,6 @@ export default function ModalWindowShowInformationReport(props) {
     const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
     const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = useState(false);
 
-    console.log("func 'ModalWindowShowInformationReact', MOUNT (((( WINDOW SHOW INFO REPORT ))))");
-    console.log("showReportId = ", showReportId, " parentSTIXObject = ", parentSTIXObject);
-
     let handlerButtonSaveIsNotDisabled = () => {
             if(buttonSaveIsDisabled){
                 setButtonSaveIsDisabled(false);
@@ -449,54 +446,18 @@ function CreateReportInformation(props){
         }
     }, [ buttonSaveChangeTrigger, state, handlerPressButtonSave ]),
     useEffect(() => {
-
-        console.log("YYYYYYYYYYYYYYY 1111 parentSTIXObject:", parentSTIXObject, " fieldNameForChange:", fieldNameForChange, " listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " state element: ", state);
-
-        //for(let fieldName of fieldNameForChange){
-        //if(typeof ){
-
-        //}
-        //}
-
-        if(parentSTIXObject.type === "report"){
-            let objectRefs = state.object_refs.slice();        
-            for(let stixObject of listNewOrModifySTIXObject){
-                if(!objectRefs.find((item) => item === stixObject.id) && stixObject.id.split("--")[0] !== "report"){
-                    objectRefs.push(stixObject.id);
-                }
-            }
-
-            dispatch({ type: "updateObjectRefs", data: objectRefs });
-
+        if(parentSTIXObject.type !== "report"){
             return;
         }
 
-        console.log("GGGGGGGGGGGGG");
-
-        /*        if(parentSTIXObject.type !== "report"){
-            return;
-        }
-
-        /**
-         * 
-         * Вот здесь из-за 
-         *     if(parentSTIXObject.type !== "report"){
-         * не добавляется в объекты из listNewOrModifySTIXObject
-         * если parentSTIXObject.type не равен "report"
-         * Фактически данный код только для обновления объекта "report" в свойстве state
-         * 
-         */
-
-        /*        let objectRefs = state.object_refs.slice();        
+        let objectRefs = state.object_refs.slice();        
         for(let stixObject of listNewOrModifySTIXObject){
             if(!objectRefs.find((item) => item === stixObject.id) && stixObject.id.split("--")[0] !== "report"){
                 objectRefs.push(stixObject.id);
             }
-        }*/
+        }
 
-        console.log("YYYYYYYYYYYYYYY 2222");
-
-        //dispatch({ type: "updateObjectRefs", data: objectRefs });
+        dispatch({ type: "updateObjectRefs", data: objectRefs });
     }, [ parentSTIXObject, fieldNameForChange, listNewOrModifySTIXObject ]);
 
     const handlerPublished = () => {
@@ -614,7 +575,6 @@ function CreateReportInformation(props){
             socketIo={socketIo}
             stateReport={state}
             majorParentId={showReportId}
-            parentSTIXObject={parentSTIXObject}
             confirmDeleteLink={confirmDeleteLink}
             listNewOrModifySTIXObject={listNewOrModifySTIXObject}
             handlerDialogConfirm={handlerDialogConfirm}

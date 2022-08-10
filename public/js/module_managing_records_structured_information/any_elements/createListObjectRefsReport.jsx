@@ -32,7 +32,7 @@ const getListPropertiesExtendedObject = (objName) => {
     return [];
 };
 
-const addElemToChildId = (listData /** item[value] */, stateTmp /** stateTmp[i] */) => {
+const addElemToChildId = (listData, stateTmp) => {
     let newArr = [];
 
     if(Array.isArray(listData)){
@@ -208,20 +208,12 @@ const loreducer = (state, action) => {
 
     switch(action.type){
     case "updateList":
-
-        //console.log("^^^^^^^^ func 'changeListId' action.type:", action.type, " action.data.parent: ", action.data.parent, " action.data.current: ", action.data.current);
         newList = action.data.current.concat(action.data.parent);
 
-        //console.log("^^^^^^__^__^_^_^__^_^ newLIst: ", newList);
-
-        //for(let i = 0; i < state.length; i++){
         for(let item of newList){
             let searchIndex = state.list.findIndex((elem) => elem.id === item.id);
 
             if(searchIndex === -1){
-
-                //console.log(")))____)))))____ item if === -1:", item.id);
-
                 state.list.push(item);
 
                 continue;
@@ -230,19 +222,13 @@ const loreducer = (state, action) => {
             state.list[searchIndex] = item;
         }
 
-        //console.log("&&&&&_________&&&&&&&________ state.list: ", state.list);
-
         return {...state, list: state.list};
     case "updateListId":
         changeListIdResult = updateState(action.data.listObject, state.listId, 0);
 
-        console.log("||||||||||||| loreducer, action.type: UPDATE ListId, action.data.listObject:", action.data.listObject, " changeListIdResult = ", changeListIdResult);
-
         return {...state, listId: changeListIdResult};
     case "changeListId":
         changeListIdResult = changeListId(action.data.parentSTIXObject, action.data.listModifySTIXObject, state.listId);
-
-        console.log("||||||||||||+++++++++++++| loreducer, action.type: CHANGE ListId, action.data.parentSTIXObject: ", action.data.parentSTIXObject, ", action.data.listModifySTIXObject: ", action.data.listModifySTIXObject, " changeListIdResult = ", changeListIdResult);
 
         if(typeof changeListIdResult === "undefined"){
             return {...state};
@@ -267,7 +253,6 @@ export default function CreateListObjectRefsReport(props){
         socketIo,
         stateReport,
         majorParentId,
-        parentSTIXObject,
         confirmDeleteLink,
         listNewOrModifySTIXObject,
         handlerDialogConfirm,
@@ -281,8 +266,6 @@ export default function CreateListObjectRefsReport(props){
         return { currentId: item, childId: [] };
     });
 
-    console.log("func '(((( --------- CreateListObjectRefsReport ------------ ))))' majorParentId: ", majorParentId, " stateReport: ", stateReport, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
-
     const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { /*list: {}*/ list: listNewOrModifySTIXObject, listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
     const [ currentDeleteId, setCurrentDeleteId ] = useState("");
@@ -290,9 +273,6 @@ export default function CreateListObjectRefsReport(props){
     const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
 
     let listener = (data) => {
-
-        console.log("+++++++++++++++ data.information.additional_parameters.transmitted_data:", data.information.additional_parameters.transmitted_data, " listObjReducer:", listObjReducer, " +++++++++++++++++");
-
         setListObjReducer({ type: "updateListId", data: { listObject: data.information.additional_parameters.transmitted_data }});
         setListObjReducer({ type: "updateList", data: { current: data.information.additional_parameters.transmitted_data, parent: stateReport }});
     };
@@ -328,26 +308,7 @@ export default function CreateListObjectRefsReport(props){
         setListActivatedObjectNumbers([]);
         handlerDialogConfirm();
     }, [ confirmDeleteLink ]),
-    /*useEffect(() => {
-
-        console.log("++++ useEffect 11111111 setListObjReducer({ type: updateListId,  listNewOrModifySTIXObject = ", listNewOrModifySTIXObject, " stateReport:", stateReport, " parentSTIXObject:", parentSTIXObject);
-
-        setListObjReducer({ type: "updateListId", data: { listObject: [ stateReport ]}});
-        setListObjReducer({ type: "updateList", data: { current: [ stateReport ], parent: stateReport }});
-
-        //setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
-    }, [ stateReport ]),*/
-    /*useEffect(() => {
-        
-        console.log("++++ useEffect 2222222 setListObjReducer({ type: changeListId }),  listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " listObjReducer.listId:", listObjReducer.listId, " majorParentId:", majorParentId);
-      
-        setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
-        //setListObjReducer({ type: "changeListId", data: { parentSTIXObject: parentSTIXObject, listModifySTIXObject: listNewOrModifySTIXObject }});
-    }, [ majorParentId, stateReport, listNewOrModifySTIXObject ]);*/
-
     useEffect(() => {
-        
-        console.log("++++ useEffect 3333333333 setListObjReducer({ type: changeListId })"); 
         setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
     }, [ listNewOrModifySTIXObject.length ]);
 
@@ -509,7 +470,6 @@ export default function CreateListObjectRefsReport(props){
 
                             if(item.currentId.split("--")[0] !== "report"){
                                 parentSTIXObject = listObjReducer.list[item.currentId];
-                            //parentSTIXObject = listNewOrModifySTIXObject[item.currentId];
                             }
 
                             handlerShowModalWindowCreateNewSTIXObject(item.currentId, listProperties, parentSTIXObject);
@@ -578,7 +538,6 @@ CreateListObjectRefsReport.propTypes = {
     socketIo: PropTypes.object.isRequired,
     stateReport: PropTypes.object.isRequired,
     majorParentId: PropTypes.string.isRequired,
-    parentSTIXObject: PropTypes.object.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
     listNewOrModifySTIXObject: PropTypes.array.isRequired,
     handlerDialogConfirm: PropTypes.func.isRequired,

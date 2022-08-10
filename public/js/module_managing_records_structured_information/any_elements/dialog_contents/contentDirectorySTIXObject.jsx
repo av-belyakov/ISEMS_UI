@@ -89,3 +89,23 @@ CreateDialogContentDirectorySTIXObject.propTypes = {
     handlerDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
+
+/**
+//DirectoryCyberObservableObjectSTIX объект "Directory", по терминалогии STIX, содержит свойства, общие для каталога файловой системы
+// Path - указывает путь, как было первоначально замечено, к каталогу в файловой системе (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// PathEnc - указывает наблюдаемую кодировку для пути. Значение ДОЛЖНО быть указано, если путь хранится в кодировке, отличной от Unicode.
+// Ctime - время, в формате "2016-05-12T08:17:27.000Z", создания директории
+// Mtime - время, в формате "2016-05-12T08:17:27.000Z", модификации или записи в директорию
+// Atime - время, в формате "2016-05-12T08:17:27.000Z", последнего обращения к директории
+// ContainsRefs - содержит список файловых объектов или директорий содержащихся внутри директории
+type DirectoryCyberObservableObjectSTIX struct {
+	CommonPropertiesObjectSTIX
+	OptionalCommonPropertiesCyberObservableObjectSTIX
+	Path         string               `json:"path" bson:"path" required:"true"`
+	PathEnc      string               `json:"path_enc" bson:"path_enc"`
+	Ctime        time.Time            `json:"ctime" bson:"ctime"`
+	Mtime        time.Time            `json:"mtime" bson:"mtime"`
+	Atime        time.Time            `json:"atime" bson:"atime"`
+	ContainsRefs []IdentifierTypeSTIX `json:"contains_refs" bson:"contains_refs"`
+}
+ */
