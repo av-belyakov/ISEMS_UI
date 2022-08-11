@@ -9,8 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerToolSTIXObject from "../reducer_handlers/reducerToolSTIXObject.js";
-import CreateToolElements from "../type_elements_stix/toolElements.jsx";
+import reducerThreatActorsSTIXObject from "../reducer_handlers/reducerThreatActorsSTIXObject.js";
+import CreateThreatActorsPatternElements from "../type_elements_stix/threatActorPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 export default function CreateToolPatternNewSTIXObject(props){
@@ -27,7 +27,7 @@ export default function CreateToolPatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`tool--${uuidv4()}`}
+        currentObjectId={`threat-actor--${uuidv4()}`}
         parentIdSTIXObject={parentIdSTIXObject}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -58,13 +58,13 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerToolSTIXObject, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerThreatActorsSTIXObject, projectPatterElement);
 
     useEffect(() => {
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "tool";
+            stateTmp.type = "threat-actor";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -128,16 +128,16 @@ function CreateMajorElements(props){
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
                 <Grid item container md={8}>{currentObjectId}</Grid>
             </Grid>
-            <CreateToolElements 
+            <CreateThreatActorsPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                handlerToolTypes={(e) => { dispatch({ type: "updateToolTypes", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerToolVersion={(e) => { dispatch({ type: "updateToolVersion", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
-                handlerTokenValuesChange={(e) => { dispatch({ type: "updateAliasesTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
-                handlerAddKillChainPhases={(e) => { dispatch({ type: "updateKillChainPhases", data: e }); handlerButtonIsDisabled(); }}
+                //handlerToolTypes={(e) => { dispatch({ type: "updateToolTypes", data: e.target.value }); handlerButtonIsDisabled(); }}
+                //handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                //handlerToolVersion={(e) => { dispatch({ type: "updateToolVersion", data: e.target.value }); handlerButtonIsDisabled(); }}
+                //handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
+                //handlerTokenValuesChange={(e) => { dispatch({ type: "updateAliasesTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
+                //handlerAddKillChainPhases={(e) => { dispatch({ type: "updateKillChainPhases", data: e }); handlerButtonIsDisabled(); }}
             />
             <CreateElementAdditionalTechnicalInformationDO
                 objectId={currentObjectId}

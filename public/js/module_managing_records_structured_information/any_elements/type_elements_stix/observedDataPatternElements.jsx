@@ -6,7 +6,7 @@ import {
     Typography,
 } from "@material-ui/core";
 import { red } from "@material-ui/core/colors";
-import TokenInput from "react-customize-token-input";
+//import TokenInput from "react-customize-token-input";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import PropTypes from "prop-types";
@@ -16,7 +16,6 @@ import { helpers } from "../../../common_helpers/helpers";
 const minDefaultData = "0001-01-01T00:00:00Z",
     defaultData = "2001-01-01T00:00:01Z";
 
-
 export default function CreateObservedDataPatternElements(props){
     let { 
         isDisabled,
@@ -25,15 +24,6 @@ export default function CreateObservedDataPatternElements(props){
         handlerLastObserved,
         handlerNumberObserved,
     } = props;
-
-    //
-    //
-    //"indicator": "",зависит от "observed-data"
-    // к сожалению это не так, как выяснилось observed-data может содержать только объекты типа  Cyber-observable Objects
-    //
-    //
-
-    console.log("func 'CreateObservedDataPatternElements' campaignPatterElement = ", campaignPatterElement);
 
     let currentTime = helpers.getToISODatetime();
     
@@ -46,8 +36,6 @@ export default function CreateObservedDataPatternElements(props){
 
     let firstObserved = (campaignPatterElement.first_observed === minDefaultData)? defaultData: campaignPatterElement.first_observed;
     let lastObserved = (campaignPatterElement.last_observed === minDefaultData)? defaultData: campaignPatterElement.last_observed;
-
-    //object_refs
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>

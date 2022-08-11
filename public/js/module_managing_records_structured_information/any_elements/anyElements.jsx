@@ -387,12 +387,12 @@ export function CreateListToolTypes(props){
     };
 
     return (dictionaryLists["tool-type-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
-        <InputLabel id="tool-type-mutiple-chip-lable">тип промышленного сектора</InputLabel>
+        <InputLabel id="tool-type-mutiple-chip-lable">типы инструментов</InputLabel>
         <Select
             labelId="tool-type-mutiple-chip"
             id="tool-type-mutiple-chip-id"
             multiple
-            value={campaignPatterElement.sectors? campaignPatterElement.sectors: []}
+            value={campaignPatterElement.tool_types? campaignPatterElement.tool_types: []}
             onChange={(e) => handlerToolTypes.call(null, e)}
             input={<Input id="tool-type-multiple-chip-input" />}
             renderValue={(selected) => (
@@ -407,7 +407,7 @@ export function CreateListToolTypes(props){
                 <MenuItem 
                     key={`tool-type-item-${key}`} 
                     value={item.name} 
-                    style={getStyles(item.name, campaignPatterElement.sectors, theme)}
+                    style={getStyles(item.name, campaignPatterElement.tool_types, theme)}
                 >
                     {item.summary}
                 </MenuItem>

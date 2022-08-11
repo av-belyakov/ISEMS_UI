@@ -13,8 +13,7 @@ import {
     MenuItem,
     Typography,
 } from "@material-ui/core";
-import { blue, teal, green, grey, red } from "@material-ui/core/colors";
-import { makeStyles } from "@material-ui/core/styles";
+import { blue, green, red } from "@material-ui/core/colors";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import PropTypes from "prop-types";
@@ -32,6 +31,7 @@ const CreateInfrastructurePatternNewSTIXObject = lazy(() => import("./contentInf
 const CreateIntrusionSetPatternNewSTIXObject = lazy(() => import("./contentIntrusionSetPatternNewSTIXObject.jsx"));
 const CreateLocationPatternNewSTIXObject = lazy(() => import("./contentLocationPatternNewSTIXObject.jsx"));
 const CreateNotePatternNewSTIXObject = lazy(() => import("./contentNotePatternNewSTIXObject.jsx"));
+const CreateToolPatternNewSTIXObject = lazy(() => import("./contentToolPatternNewSTIXObject.jsx"));
 const CreateOpinionPatternNewSTIXObject = lazy(() => import("./contentOpinionPatternNewSTIXObject.jsx"));
 const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVulnerabilityPatternNewSTIXObject.jsx"));
 const CreateObservedDataPatternNewSTIXObject = lazy(() => import("./contentObservedDataPatternNewSTIXObject.jsx"));
@@ -468,7 +468,7 @@ function somethingModule(nameSTIX){
         "observed-data": CreateObservedDataPatternNewSTIXObject,
         "opinion": CreateOpinionPatternNewSTIXObject,
         //"threat-actor": CreateThreatActorsPatternElements,
-        //"tool": CreateToolPatternElements,
+        "tool": CreateToolPatternNewSTIXObject,
         //"user-account": CreateUserAccountPatternElements,
         "vulnerability": CreateVulnerabilityPatternNewSTIXObject,
         ////"indicator": ContentAuxiliarySTIXObject,

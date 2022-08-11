@@ -183,13 +183,13 @@ function CreateMajorContent(props){
                 <CreateToolElements 
                     isDisabled={false}
                     campaignPatterElement={state}
-                    //handlerName={(e) => {}}
-                    //handlerToolTypes={(e) => { dispatch({ type: "updateToolTypes", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    //handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    //handlerToolVersion={(e) => { dispatch({ type: "updateToolVersion", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    //handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
-                    //handlerTokenValuesChange={(e) => { dispatch({ type: "updateTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
-                    //handlerAddKillChainPhases={(e) => { dispatch({ type: "updateKillChainPhases", data: e }); handlerButtonIsDisabled(); }}
+                    handlerName={(e) => {}}
+                    handlerToolTypes={(e) => { dispatch({ type: "updateToolTypes", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerToolVersion={(e) => { dispatch({ type: "updateToolVersion", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
+                    handlerTokenValuesChange={(e) => { dispatch({ type: "updateAliasesTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
+                    handlerAddKillChainPhases={(e) => { dispatch({ type: "updateKillChainPhases", data: e }); handlerButtonIsDisabled(); }}
                 />
             </Grid> 
 

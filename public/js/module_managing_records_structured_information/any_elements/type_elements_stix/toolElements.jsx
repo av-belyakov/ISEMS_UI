@@ -1,11 +1,9 @@
 import React from "react";
 import {
-    Button,
     Grid,
     TextField,
-    Typography,
 } from "@material-ui/core";
-import { red } from "@material-ui/core/colors";
+//import { red } from "@material-ui/core/colors";
 import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
@@ -20,8 +18,8 @@ export default function CreateToolElements(props){
         handlerToolTypes,
         handlerDescription,
         handlerToolVersion, 
-        handlerTokenValuesChange,
         handlerDeleteKillChain,
+        handlerTokenValuesChange,
         handlerAddKillChainPhases,
     } = props;
 
@@ -131,13 +129,11 @@ export default function CreateToolElements(props){
                     //minRows={3}
                     //maxRows={8}
                     fullWidth
+                    size="small"
                     disabled={isDisabled}
                     onChange={handlerToolVersion}
                     value={(campaignPatterElement.tool_version)? campaignPatterElement.tool_version: ""}
-                    variant="outlined"/>
-                {
-                    //ToolVersion     string                  `json:"tool_version" bson:"tool_version"`
-                }
+                    variant="outlined" />
             </Grid>
         </Grid>
 
