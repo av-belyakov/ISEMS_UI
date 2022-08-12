@@ -1,17 +1,24 @@
 import React from "react";
 import {
-    Button,
     Grid,
     TextField,
-    Typography,
 } from "@material-ui/core";
-import { red } from "@material-ui/core/colors";
+//import { red } from "@material-ui/core/colors";
 import TokenInput from "react-customize-token-input";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
+import { 
+    CreateListThreatActorType, 
+    CreateListThreatActorRole, 
+    CreateListThreatActorSophistication, 
+    CreateListThreatActorResourceLevel, 
+    CreateListThreatActorPrimaryMotivation,
+    CreateThreatActorSecondaryMotivations,
+    CreateThreatActorPersonalMotivations,
+} from "../anyElements.jsx";
 
 const minDefaultData = "0001-01-01T00:00:00Z",
     defaultData = "2001-01-01T00:00:01Z";
@@ -49,6 +56,22 @@ export default function CreateThreatActorsPatternElements(props){
     
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
+            <Grid item container md={8} >
+                {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
+                    campaignPatterElement.name:
+                    <TextField
+                        fullWidth
+                        disabled={isDisabled}
+                        id="name-element"
+                        InputLabelProps={{ shrink: true }}
+                        onChange={handlerName}
+                        value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
+                    />}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Дата и время</span>&nbsp;&nbsp;&nbsp;&nbsp;</Grid>
             <Grid item container md={8}></Grid>
         </Grid>      
@@ -66,7 +89,44 @@ export default function CreateThreatActorsPatternElements(props){
                 {helpers.convertDateFromString(campaignPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
-    
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание:</span></Grid>
+            <Grid item container md={8}>
+                <TextField
+                    id="outlined-description-static"
+                    multiline
+                    minRows={3}
+                    maxRows={8}
+                    fullWidth
+                    disabled={isDisabled}
+                    onChange={handlerDescription}
+                    value={(campaignPatterElement.description)? campaignPatterElement.description: ""}
+                    variant="outlined"/>
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <CreateListThreatActorType 
+                    isDisabled={isDisabled}
+                    campaignPatterElement={campaignPatterElement}
+                    headerThreatActorType={handlerThreatActorTypes}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Альтернативные имена используемые для этого субъекта угроз:</span></Grid>
+            <Grid item md={8}>
+                <TokenInput
+                    style={{ height: "80px", width: "auto" }}
+                    readOnly={isDisabled}
+                    tokenValues={(!campaignPatterElement.aliases) ? []: campaignPatterElement.aliases}
+                    onTokenValuesChange={handlerAliases} />
+            </Grid>
+        </Grid>
+
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
                 <span className="text-muted">Начало временного окна, когда данный субъект угроз был впервые зафиксирован:</span>
@@ -109,26 +169,76 @@ export default function CreateThreatActorsPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание:</span></Grid>
-            <Grid item container md={8}>
-                <TextField
-                    id="outlined-description-static"
-                    multiline
-                    minRows={3}
-                    maxRows={8}
-                    fullWidth
-                    disabled={isDisabled}
-                    onChange={handlerDescription}
-                    value={(campaignPatterElement.description)? campaignPatterElement.description: ""}
-                    variant="outlined"/>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <CreateListThreatActorRole 
+                    isDisabled={isDisabled}
+                    campaignPatterElement={campaignPatterElement}
+                    headerThreatActorRole={handlerRoles}
+                />
             </Grid>
         </Grid>
 
-        {/**
-                    надо дальше доделать остальные элементы
-                     */}
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Высокоуровневые цели субъекта угроз:</span></Grid>
+            <Grid item md={8}>
+                <TokenInput
+                    style={{ height: "80px", width: "auto" }}
+                    readOnly={isDisabled}
+                    tokenValues={(!campaignPatterElement.goals) ? []: campaignPatterElement.goals}
+                    onTokenValuesChange={handlerGoals} />
+            </Grid>
+        </Grid>
 
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <CreateListThreatActorSophistication 
+                    isDisabled={isDisabled}
+                    campaignPatterElement={campaignPatterElement}
+                    handlerSophistication={handlerSophistication}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <CreateListThreatActorResourceLevel 
+                    isDisabled={isDisabled}
+                    campaignPatterElement={campaignPatterElement}
+                    handlerResourceLevel={handlerResourceLevel}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <CreateListThreatActorPrimaryMotivation 
+                    isDisabled={isDisabled}
+                    campaignPatterElement={campaignPatterElement}
+                    handlerPrimaryMotivation={handlerPrimaryMotivation}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <CreateThreatActorSecondaryMotivations 
+                    isDisabled={isDisabled}
+                    campaignPatterElement={campaignPatterElement}
+                    handlerSecondaryMotivation={handlerSecondaryMotivations}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <CreateThreatActorPersonalMotivations 
+                    isDisabled={isDisabled}
+                    campaignPatterElement={campaignPatterElement}
+                    handlerPersonalMotivations={handlerPersonalMotivations}
+                />
+            </Grid>
+        </Grid>
 
     </React.Fragment>);
 }

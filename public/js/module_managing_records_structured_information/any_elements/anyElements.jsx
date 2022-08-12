@@ -257,6 +257,165 @@ CreateListObjectRefsReportGetListId.propTypes = {
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
 };
 
+export function CreateListThreatActorSophistication(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerSophistication, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["threat-actor-sophistication-ov"].content.length; i++){
+            if(elem === dictionaryLists["threat-actor-sophistication-ov"].content[i].name){
+                return dictionaryLists["threat-actor-sophistication-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.sophistication);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["threat-actor-sophistication-ov"] && <React.Fragment>
+        <TextField
+            id={"select-threat-actor-sophistication-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"перечень навыков, специальных знаний, специальной подготовки или опыта, которыми должен обладать субъект угрозы, чтобы осуществить атаку"}
+            value={campaignPatterElement.sophistication? campaignPatterElement.sophistication: "" }
+            onChange={(e) => {
+                handlerSophistication.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="threat-actor-sophistication-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["threat-actor-sophistication-ov"].content.map((item, key) => {
+                return (<MenuItem key={`threat-actor-sophistication-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListThreatActorSophistication.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerSophistication: PropTypes.func.isRequired,
+};
+
+export function CreateListThreatActorResourceLevel(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerResourceLevel, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["attack-resource-level-ov"].content.length; i++){
+            if(elem === dictionaryLists["attack-resource-level-ov"].content[i].name){
+                return dictionaryLists["attack-resource-level-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.resource_level);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["attack-resource-level-ov"] && <React.Fragment>
+        <TextField
+            id={"select-attack-resource-level-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"уровень ресурсов атаки"}
+            value={campaignPatterElement.resource_level? campaignPatterElement.resource_level: "" }
+            onChange={(e) => {
+                handlerResourceLevel.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="attack-resource-level-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["attack-resource-level-ov"].content.map((item, key) => {
+                return (<MenuItem key={`attack-resource-level-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListThreatActorResourceLevel.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerResourceLevel: PropTypes.func.isRequired,
+};
+
+export function CreateListThreatActorPrimaryMotivation(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerPrimaryMotivation, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["attack-motivation-ov"].content.length; i++){
+            if(elem === dictionaryLists["attack-motivation-ov"].content[i].name){
+                return dictionaryLists["attack-motivation-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.primary_motivation);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["attack-motivation-ov"] && <React.Fragment>
+        <TextField
+            id={"select-primary-attack-motivation-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"перечень причин, мотиваций или целей стоящих за этим субъектом угрозы"}
+            value={campaignPatterElement.primary_motivation? campaignPatterElement.primary_motivation: "" }
+            onChange={(e) => {
+                handlerPrimaryMotivation.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="primary-attack-motivation-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["attack-motivation-ov"].content.map((item, key) => {
+                return (<MenuItem key={`primary-attack-motivation-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListThreatActorPrimaryMotivation.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerPrimaryMotivation: PropTypes.func.isRequired,
+};
+
 export function CreateListIdentityClass(props){
     let { 
         isDisabled,
@@ -366,6 +525,118 @@ CreateListSectors.propTypes = {
     headerSectors: PropTypes.func.isRequired,
 };
 
+export function CreateThreatActorSecondaryMotivations(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerSecondaryMotivation, 
+    } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const getSummary = (value) => {
+        for(let i = 0; i < dictionaryLists["attack-motivation-ov"].content.length; i++){
+            if(value === dictionaryLists["attack-motivation-ov"].content[i].name){
+                return dictionaryLists["attack-motivation-ov"].content[i].summary;
+            }
+        }
+
+        return value;
+    };
+
+    return (dictionaryLists["attack-motivation-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
+        <InputLabel id="secondary-attack-motivation-lable">перечень возможных вторичных причин, мотиваций или целей стоящих за этим субъектом угрозы</InputLabel>
+        <Select
+            labelId="secondary-attack-motivation-chip"
+            id="secondary-attack-motivation-chip-id"
+            multiple
+            value={campaignPatterElement.secondary_motivations? campaignPatterElement.secondary_motivations: []}
+            onChange={(e) => handlerSecondaryMotivation.call(null, e)}
+            input={<Input id="secondary-attack-motivation-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["attack-motivation-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`secondary-attack-motivation-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.secondary_motivations, theme)}
+                >
+                    {item.summary}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+}
+
+CreateThreatActorSecondaryMotivations.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired, 
+    handlerSecondaryMotivation: PropTypes.func.isRequired,
+};
+
+export function CreateThreatActorPersonalMotivations(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerPersonalMotivations, 
+    } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const getSummary = (value) => {
+        for(let i = 0; i < dictionaryLists["attack-motivation-ov"].content.length; i++){
+            if(value === dictionaryLists["attack-motivation-ov"].content[i].name){
+                return dictionaryLists["attack-motivation-ov"].content[i].summary;
+            }
+        }
+
+        return value;
+    };
+
+    return (dictionaryLists["attack-motivation-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
+        <InputLabel id="personal-attack-motivation-lable">перечень возможных персональных причин, мотиваций или целей стоящих за этим субъектом угрозы</InputLabel>
+        <Select
+            labelId="personal-attack-motivation-chip"
+            id="personal-attack-motivation-chip-id"
+            multiple
+            value={campaignPatterElement.personal_motivations? campaignPatterElement.personal_motivations: []}
+            onChange={(e) => handlerPersonalMotivations.call(null, e)}
+            input={<Input id="personal-attack-motivation-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["attack-motivation-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`personal-attack-motivation-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.personal_motivations, theme)}
+                >
+                    {item.summary}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+}
+
+CreateThreatActorPersonalMotivations.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired, 
+    handlerPersonalMotivations: PropTypes.func.isRequired,
+};
+
 export function CreateListToolTypes(props){
     let { 
         isDisabled,
@@ -420,6 +691,118 @@ CreateListToolTypes.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired, 
     handlerToolTypes: PropTypes.func.isRequired,
+};
+
+export function CreateListThreatActorType(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        headerThreatActorType, 
+    } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const getSummary = (value) => {
+        for(let i = 0; i < dictionaryLists["threat-actor-type-ov"].content.length; i++){
+            if(value === dictionaryLists["threat-actor-type-ov"].content[i].name){
+                return dictionaryLists["threat-actor-type-ov"].content[i].summary;
+            }
+        }
+
+        return value;
+    };
+
+    return (dictionaryLists["threat-actor-type-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
+        <InputLabel id="threat-actor-type-mutiple-chip-lable">тип субъектов угроз</InputLabel>
+        <Select
+            labelId="threat-actor-type-mutiple-chip"
+            id="threat-actor-type-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.threat_actor_types? campaignPatterElement.threat_actor_types: []}
+            onChange={(e) => headerThreatActorType.call(null, e)}
+            input={<Input id="threat-actor-type-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["threat-actor-type-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`threat-actor-type-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.threat_actor_types, theme)}
+                >
+                    {item.summary}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+}
+
+CreateListThreatActorType.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired, 
+    headerThreatActorType: PropTypes.func.isRequired,
+};
+
+export function CreateListThreatActorRole(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        headerThreatActorRole, 
+    } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const getSummary = (value) => {
+        for(let i = 0; i < dictionaryLists["threat-actor-role-ov"].content.length; i++){
+            if(value === dictionaryLists["threat-actor-role-ov"].content[i].name){
+                return dictionaryLists["threat-actor-role-ov"].content[i].summary;
+            }
+        }
+
+        return value;
+    };
+
+    return (dictionaryLists["threat-actor-role-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
+        <InputLabel id="threat-actor-role-mutiple-chip-lable">роль субъектов угроз</InputLabel>
+        <Select
+            labelId="threat-actor-role-mutiple-chip"
+            id="threat-actor-role-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.roles? campaignPatterElement.roles: []}
+            onChange={(e) => headerThreatActorRole.call(null, e)}
+            input={<Input id="threat-actor-role-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["threat-actor-role-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`threat-actor-role-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.roles, theme)}
+                >
+                    {item.summary}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+}
+
+CreateListThreatActorRole.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired, 
+    headerThreatActorRole: PropTypes.func.isRequired,
 };
 
 export function CreateListInfrastructureTypes(props){
