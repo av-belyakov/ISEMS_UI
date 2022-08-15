@@ -102,9 +102,12 @@ function CreateMajorContent(props){
 
     const [ state, dispatch ] = useReducer(reducerThreatActorsSTIXObject, beginDataObject);
 
-    console.log("func 'CreateMajorContent', state:", state);
+    //    console.log("func 'CreateMajorContent', state:", state);
 
     const listener = (data) => {
+
+        //        console.log("func 'CreateDialogContentThreatActorSTIXObject' listener data:", data);
+
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
         }
@@ -142,6 +145,9 @@ function CreateMajorContent(props){
         }
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
+
+        console.log("----====== INSERT -> state:", state);
+
         if(buttonSaveChangeTrigger){
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
@@ -186,15 +192,15 @@ function CreateMajorContent(props){
                     isDisabled={false}
                     campaignPatterElement={state}
                     handlerName={(e) => {}}
-                    handlerRoles={(e) => { dispatch({ type: "updateRoles", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerRoles={(e) => { console.log("_-=-==-=-== handler roles e.target.value:", e.target.value); dispatch({ type: "updateRoles", data: e.target.value }); handlerButtonIsDisabled(); }}
                     // Roles - заранее определенный (предложенный) перечень возможных ролей субъекта угроз
-                    handlerGoals={(e) => { dispatch({ type: "updateGoals", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerGoals={(e) => { dispatch({ type: "updateGoals", data: e }); handlerButtonIsDisabled(); }}
                     // Goals - высокоуровневые цели субъекта угроз.
-                    handlerAliases={(e) => { dispatch({ type: "updateAliases", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerAliases={(e) => { dispatch({ type: "updateAliases", data: e }); handlerButtonIsDisabled(); }}
                     // Aliases - альтернативные имена используемые для этого субъекта угроз
-                    handlerLastSeen={(e) => { dispatch({ type: "updateLastSeen", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerLastSeen={(e) => { dispatch({ type: "updateLastSeen", data: e }); handlerButtonIsDisabled(); }}
                     // LastSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был зафиксирован в последний раз
-                    handlerFirstSeen={(e) => { dispatch({ type: "updateFirstSeen", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerFirstSeen={(e) => { dispatch({ type: "updateFirstSeen", data: e }); handlerButtonIsDisabled(); }}
                     // FirstSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был впервые зафиксирован
                     handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerResourceLevel={(e) => { dispatch({ type: "updateResourceLevel", data: e.target.value }); handlerButtonIsDisabled(); }}
@@ -205,7 +211,7 @@ function CreateMajorContent(props){
                     //  которыми должен обладать субъект угрозы, чтобы осуществить атаку
                     handlerThreatActorTypes={(e) => { dispatch({ type: "updateThreatActorTypes", data: e.target.value }); handlerButtonIsDisabled(); }} 
                     // ThreatActorTypes - заранее определенный (предложенный) перечень типов субъектов угрозы                    
-                    handlerPrimaryMotivation={(e) => { dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerPrimaryMotivation={(e) => { console.log("_-=-==-=-== handler Primary Motivation e.target.value:", e.target.value); dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}
                     // PrimaryMotivation - одна, из заранее определенного (предложенного) перечня причин, мотиваций или целей стоящих за этим субъектом угроз
                     handlerPersonalMotivations={(e) => { dispatch({ type: "updatePersonalMotivations", data: e.target.value }); handlerButtonIsDisabled(); }}
                     // PersonalMotivations - заранее определенный (предложенный) перечень возможных персональных причин, мотиваций или целей стоящих за этим субъектом угрозы

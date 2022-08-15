@@ -173,8 +173,6 @@ export default function CreateListPreviousStateSTIX(props){
             
         },
         listenerCountListDifferentObjects = (data) => {
-            console.log("func 'listenerCountListDifferentObjects'");
-
             if((data.information === null) || (typeof data.information === "undefined")){
                 return;
             }

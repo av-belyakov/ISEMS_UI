@@ -43,6 +43,9 @@ export default function reducerThreatActorSTIXObjects(state, action){
     case "updateSecondaryMotivations":
         return {...state, secondary_motivations: action.data};
     case "updatePersonalMotivations":
+
+        console.log("func 'reducerToolSTIXObjects', action.type:", action.type, " action.data:", action.data);
+
         return {...state, personal_motivations: action.data};
     case "updateConfidence":
         if(state.confidence === action.data.data){

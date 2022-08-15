@@ -10,10 +10,10 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
 import reducerThreatActorsSTIXObject from "../reducer_handlers/reducerThreatActorsSTIXObject.js";
-import CreateThreatActorsPatternElements from "../type_elements_stix/threatActorPatternElements.jsx";
+import CreateThreatActorElements from "../type_elements_stix/threatActorPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
-export default function CreateToolPatternNewSTIXObject(props){
+export default function CreateThreatActorPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
@@ -36,7 +36,7 @@ export default function CreateToolPatternNewSTIXObject(props){
     />;
 }
      
-CreateToolPatternNewSTIXObject.propTypes = {
+CreateThreatActorPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
@@ -73,7 +73,7 @@ function CreateMajorElements(props){
             handlerAddSTIXObject(stateTmp);
         }
     }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
-    
+
     const handlerButtonIsDisabled = (name) => {
         if(name === "" || (!state.name || state.name === "")){
             handlerChangeButtonAdd(true);
@@ -128,17 +128,38 @@ function CreateMajorElements(props){
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
                 <Grid item container md={8}>{currentObjectId}</Grid>
             </Grid>
-            <CreateThreatActorsPatternElements 
+
+            <CreateThreatActorElements 
                 isDisabled={false}
                 campaignPatterElement={state}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                //handlerToolTypes={(e) => { dispatch({ type: "updateToolTypes", data: e.target.value }); handlerButtonIsDisabled(); }}
-                //handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-                //handlerToolVersion={(e) => { dispatch({ type: "updateToolVersion", data: e.target.value }); handlerButtonIsDisabled(); }}
-                //handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChain", data: e }); handlerButtonIsDisabled(); }}
-                //handlerTokenValuesChange={(e) => { dispatch({ type: "updateAliasesTokenValuesChange", data: e }); handlerButtonIsDisabled(); }}
-                //handlerAddKillChainPhases={(e) => { dispatch({ type: "updateKillChainPhases", data: e }); handlerButtonIsDisabled(); }}
+                handlerRoles={(e) => { dispatch({ type: "updateRoles", data: e.target.value }); handlerButtonIsDisabled(); }}
+                // Roles - заранее определенный (предложенный) перечень возможных ролей субъекта угроз
+                handlerGoals={(e) => { dispatch({ type: "updateGoals", data: e }); handlerButtonIsDisabled(); }}
+                // Goals - высокоуровневые цели субъекта угроз.
+                handlerAliases={(e) => { dispatch({ type: "updateAliases", data: e }); handlerButtonIsDisabled(); }}
+                // Aliases - альтернативные имена используемые для этого субъекта угроз
+                handlerLastSeen={(e) => { dispatch({ type: "updateLastSeen", data: e }); handlerButtonIsDisabled(); }}
+                // LastSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был зафиксирован в последний раз
+                handlerFirstSeen={(e) => { dispatch({ type: "updateFirstSeen", data: e }); handlerButtonIsDisabled(); }}
+                // FirstSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был впервые зафиксирован
+                handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerResourceLevel={(e) => { dispatch({ type: "updateResourceLevel", data: e.target.value }); handlerButtonIsDisabled(); }}
+                // ResourceLevel - один, из заранее определенного (предложенного) перечня организационных уровней, на котором обычно работает этот субъект угрозы,
+                //  который, в свою очередь, определяет ресурсы, доступные этому субъекту угрозы для использования в атаке.
+                handlerSophistication={(e) => { dispatch({ type: "updateSophistication", data: e.target.value }); handlerButtonIsDisabled(); }}
+                // Sophistication - один, из заранее определенного (предложенного) перечня навыков, специальных знания, специальной подготовки или опыта,
+                //  которыми должен обладать субъект угрозы, чтобы осуществить атаку
+                handlerThreatActorTypes={(e) => { dispatch({ type: "updateThreatActorTypes", data: e.target.value }); handlerButtonIsDisabled(); }} 
+                // ThreatActorTypes - заранее определенный (предложенный) перечень типов субъектов угрозы                    
+                handlerPrimaryMotivation={(e) => { dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}
+                // PrimaryMotivation - одна, из заранее определенного (предложенного) перечня причин, мотиваций или целей стоящих за этим субъектом угроз
+                handlerPersonalMotivations={(e) => { dispatch({ type: "updatePersonalMotivations", data: e.target.value }); handlerButtonIsDisabled(); }}
+                // PersonalMotivations - заранее определенный (предложенный) перечень возможных персональных причин, мотиваций или целей стоящих за этим субъектом угрозы
+                handlerSecondaryMotivations={(e) => { dispatch({ type: "updateSecondaryMotivations", data: e.target.value }); handlerButtonIsDisabled(); }}
+                // SecondaryMotivations - заранее определенный (предложенный) перечень возможных вторичных причин, мотиваций или целей стоящих за этим субъектом угрозы
             />
+
             <CreateElementAdditionalTechnicalInformationDO
                 objectId={currentObjectId}
                 reportInfo={state}

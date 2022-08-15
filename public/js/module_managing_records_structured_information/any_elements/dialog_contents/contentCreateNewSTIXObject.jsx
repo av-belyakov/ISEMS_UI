@@ -32,6 +32,7 @@ const CreateIntrusionSetPatternNewSTIXObject = lazy(() => import("./contentIntru
 const CreateLocationPatternNewSTIXObject = lazy(() => import("./contentLocationPatternNewSTIXObject.jsx"));
 const CreateNotePatternNewSTIXObject = lazy(() => import("./contentNotePatternNewSTIXObject.jsx"));
 const CreateToolPatternNewSTIXObject = lazy(() => import("./contentToolPatternNewSTIXObject.jsx"));
+const CreateThreatActorPatternNewSTIXObject = lazy(() => import("./contentThreatActorPatternSTIXObject.jsx"));
 const CreateOpinionPatternNewSTIXObject = lazy(() => import("./contentOpinionPatternNewSTIXObject.jsx"));
 const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVulnerabilityPatternNewSTIXObject.jsx"));
 const CreateObservedDataPatternNewSTIXObject = lazy(() => import("./contentObservedDataPatternNewSTIXObject.jsx"));
@@ -467,7 +468,7 @@ function somethingModule(nameSTIX){
         "note": CreateNotePatternNewSTIXObject,
         "observed-data": CreateObservedDataPatternNewSTIXObject,
         "opinion": CreateOpinionPatternNewSTIXObject,
-        //"threat-actor": CreateThreatActorsPatternElements,
+        "threat-actor": CreateThreatActorPatternNewSTIXObject,
         "tool": CreateToolPatternNewSTIXObject,
         //"user-account": CreateUserAccountPatternElements,
         "vulnerability": CreateVulnerabilityPatternNewSTIXObject,

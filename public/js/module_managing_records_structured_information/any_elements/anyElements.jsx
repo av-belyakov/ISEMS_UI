@@ -769,6 +769,8 @@ export function CreateListThreatActorRole(props){
         return value;
     };
 
+    console.log("func CreateListThreatActorRole, campaignPatterElement:", campaignPatterElement.roles);
+
     return (dictionaryLists["threat-actor-role-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
         <InputLabel id="threat-actor-role-mutiple-chip-lable">роль субъектов угроз</InputLabel>
         <Select
