@@ -438,6 +438,16 @@ function somethingModule(nameSTIX){
     
     console.log("func 'somethingModule', START... nameSTIX: ", nameSTIX);
     
+    /**
+ * 
+ * Это не относится к ISEMS-UI но все же косвенно его касается
+ * 
+ * Надо сделать апдейт докера ISEMS-MRSICT так как в обработчике объекта threat-actor ISEMS-MRSICT
+ * была ошибка при обработке таких свойств объекта как ThreatActorPrimaryMotivation и ThreatActorSecondaryMotivations
+ * которые при изменении значений вносят изменение в свойство ThreatActorRoles
+ * 
+ */
+
     const nameList = {
         //"artifact": CreateArtifactPatternElements, 
         //"directory": CreateDirectoryPatternElements, 

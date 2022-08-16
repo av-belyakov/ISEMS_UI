@@ -153,7 +153,7 @@ function CreateMajorContent(props){
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
-    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+    }, [ buttonSaveChangeTrigger/*, handlerButtonSaveChangeTrigger*/ ]);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -211,9 +211,9 @@ function CreateMajorContent(props){
                     //  которыми должен обладать субъект угрозы, чтобы осуществить атаку
                     handlerThreatActorTypes={(e) => { dispatch({ type: "updateThreatActorTypes", data: e.target.value }); handlerButtonIsDisabled(); }} 
                     // ThreatActorTypes - заранее определенный (предложенный) перечень типов субъектов угрозы                    
-                    handlerPrimaryMotivation={(e) => { console.log("_-=-==-=-== handler Primary Motivation e.target.value:", e.target.value); dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerPrimaryMotivation={(e) => {dispatch({ type: "updatePrimaryMotivation", data: e.target.value }); handlerButtonIsDisabled(); }}
                     // PrimaryMotivation - одна, из заранее определенного (предложенного) перечня причин, мотиваций или целей стоящих за этим субъектом угроз
-                    handlerPersonalMotivations={(e) => { dispatch({ type: "updatePersonalMotivations", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerPersonalMotivations={(e) => { console.log("_-=-==-=-== handler personal motivations e.target.value:", e.target.value); dispatch({ type: "updatePersonalMotivations", data: e.target.value }); handlerButtonIsDisabled(); }}
                     // PersonalMotivations - заранее определенный (предложенный) перечень возможных персональных причин, мотиваций или целей стоящих за этим субъектом угрозы
                     handlerSecondaryMotivations={(e) => { dispatch({ type: "updateSecondaryMotivations", data: e.target.value }); handlerButtonIsDisabled(); }}
                     // SecondaryMotivations - заранее определенный (предложенный) перечень возможных вторичных причин, мотиваций или целей стоящих за этим субъектом угрозы
