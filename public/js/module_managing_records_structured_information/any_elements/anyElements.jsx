@@ -302,6 +302,218 @@ CreateListThreatActorSophistication.propTypes = {
     handlerSophistication: PropTypes.func.isRequired,
 };
 
+export function CreateListCapabilities(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerCapabilities, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["malware-capabilities-ov"].content.length; i++){
+            if(elem === dictionaryLists["malware-capabilities-ov"].content[i].name){
+                return dictionaryLists["malware-capabilities-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.capabilities);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["malware-capabilities-ov"] && <React.Fragment>
+        <TextField
+            id={"select-malware-capabilities-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"перечень возможных идентификаторов используемых для обнаружения вредоносного програмного обеспечения или семейства программ"}
+            value={campaignPatterElement.capabilities? campaignPatterElement.capabilities: "" }
+            onChange={(e) => {
+                handlerCapabilities.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="malware-capabilities-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["malware-capabilities-ov"].content.map((item, key) => {
+                return (<MenuItem key={`malware-capabilities-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListCapabilities.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerCapabilities: PropTypes.func.isRequired,
+};
+
+export function CreateListMalwareType(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerMalware, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["malware-type-ov"].content.length; i++){
+            if(elem === dictionaryLists["malware-type-ov"].content[i].name){
+                return dictionaryLists["malware-type-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.malware_types);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["malware-type-ov"] && <React.Fragment>
+        <TextField
+            id={"select-malware-type-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"перечень вредоносного програмного обеспечения"}
+            value={campaignPatterElement.malware_types? campaignPatterElement.malware_types: "" }
+            onChange={(e) => {
+                handlerMalware.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="malware-type-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["malware-type-ov"].content.map((item, key) => {
+                return (<MenuItem key={`malware-type-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListMalwareType.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerMalware: PropTypes.func.isRequired,
+};
+
+export function CreateListImplementationLanguages(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerImplementationLanguages, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["implementation-language-ov"].content.length; i++){
+            if(elem === dictionaryLists["implementation-language-ov"].content[i].name){
+                return dictionaryLists["implementation-language-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.implementation_languages);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["implementation-language-ov"] && <React.Fragment>
+        <TextField
+            id={"select-implementation-language-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"перечень языков программирования, используемых для реализации вредоносного програмного обеспечения или семейства вредоносных программ"}
+            value={campaignPatterElement.implementation_languages? campaignPatterElement.implementation_languages: "" }
+            onChange={(e) => {
+                handlerImplementationLanguages.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="implementation-language-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["implementation-language-ov"].content.map((item, key) => {
+                return (<MenuItem key={`implementation-language-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListImplementationLanguages.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerImplementationLanguages: PropTypes.func.isRequired,
+};
+
+export function CreateListArchitectureExecutionEnvs(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerArchitectureExecutionEnvs, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["processor-architecture-ov"].content.length; i++){
+            if(elem === dictionaryLists["processor-architecture-ov"].content[i].name){
+                return dictionaryLists["processor-architecture-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.architecture_execution_envs);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["processor-architecture-ov"] && <React.Fragment>
+        <TextField
+            id={"select-processor-architecture-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"перечень архитектур в которых может быть выполнено вредоносное програмное обеспечение или семейство программ"}
+            value={campaignPatterElement.architecture_execution_envs? campaignPatterElement.architecture_execution_envs: "" }
+            onChange={(e) => {
+                handlerArchitectureExecutionEnvs.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="processor-architecture-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["processor-architecture-ov"].content.map((item, key) => {
+                return (<MenuItem key={`processor-architecture-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListArchitectureExecutionEnvs.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerArchitectureExecutionEnvs: PropTypes.func.isRequired,
+};
+
 export function CreateListThreatActorResourceLevel(props){
     let { 
         isDisabled,

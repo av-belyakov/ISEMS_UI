@@ -32,6 +32,7 @@ const CreateIntrusionSetPatternNewSTIXObject = lazy(() => import("./contentIntru
 const CreateLocationPatternNewSTIXObject = lazy(() => import("./contentLocationPatternNewSTIXObject.jsx"));
 const CreateNotePatternNewSTIXObject = lazy(() => import("./contentNotePatternNewSTIXObject.jsx"));
 const CreateToolPatternNewSTIXObject = lazy(() => import("./contentToolPatternNewSTIXObject.jsx"));
+const CreateMalwarePatternNewSTIXObject = lazy(() => import("./contentMalwarePatternSTIXObject.jsx"));
 const CreateThreatActorPatternNewSTIXObject = lazy(() => import("./contentThreatActorPatternSTIXObject.jsx"));
 const CreateOpinionPatternNewSTIXObject = lazy(() => import("./contentOpinionPatternNewSTIXObject.jsx"));
 const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVulnerabilityPatternNewSTIXObject.jsx"));
@@ -473,7 +474,7 @@ function somethingModule(nameSTIX){
         //"ipv6-addr": CreateIpv6AddrPatternElements,
         "location": CreateLocationPatternNewSTIXObject,
         //"mac-addr": CreateMacAddrPatternElements,
-        //"malware": CreateMalwarePatternElements,//"malware-analysis": "", напрямую относится к "malware"
+        "malware": CreateMalwarePatternNewSTIXObject,//"malware-analysis": "", напрямую относится к "malware"
         //"network-traffic": CreateNetworkTrafficPatternElements,
         "note": CreateNotePatternNewSTIXObject,
         "observed-data": CreateObservedDataPatternNewSTIXObject,
