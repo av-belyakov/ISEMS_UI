@@ -9,7 +9,7 @@ import {
     Grid,
 } from "@material-ui/core";
 import { Badge } from "react-bootstrap";
-import { orange, green } from "@material-ui/core/colors";
+import { blue, orange, green, red } from "@material-ui/core/colors";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PropTypes from "prop-types";
 
@@ -27,16 +27,24 @@ const sortDateFunc = (a, b) => {
 };
 
 const showInformationInCycle = (data, num) => {
-    if(!(_.isInteger(data)) && (_.isEmpty(data))){
-        return <span style={{ color: green[600] }}>нет значения</span>;
+    if(_.isBoolean(data)){
+        if(data){
+            return <span style={{ color: blue[600] }}>ДА</span>;
+        }
+
+        return <span style={{ color: red[600] }}>НЕТ</span>;
     }
 
-    if((_.isString(data)) || (_.isBoolean(data))){
-        if((_.isString(data)) && (data.length === 0)){
+    if(_.isString(data)){
+        if(data.length === 0){
             return <span style={{ color: green[600] }}>нет значения</span>;
         }
 
         return data;
+    }
+    
+    if(!(_.isInteger(data)) && (_.isEmpty(data))){
+        return <span style={{ color: green[600] }}>нет значения</span>;
     }
 
     if(Array.isArray(data)){

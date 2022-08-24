@@ -332,7 +332,7 @@ export function CreateListCapabilities(props){
             select
             disabled={isDisabled}
             fullWidth
-            label={"перечень возможных идентификаторов используемых для обнаружения вредоносного програмного обеспечения или семейства программ"}
+            label={"перечень общих возможностей, которые могут быть продемонстрированы экземпляром или семейством вредоносных программ"}
             value={campaignPatterElement.capabilities? campaignPatterElement.capabilities: "" }
             onChange={(e) => {
                 handlerCapabilities.call(null, e);
@@ -362,44 +362,49 @@ export function CreateListMalwareType(props){
         handlerMalware, 
     } = props;
 
-    const getContentText = (elem) => {
-        if(elem === "" || !elem){
-            return "";
-        }
+    const classes = useStyles();
+    const theme = useTheme();
 
+    const getSummary = (value) => {
         for(let i = 0; i < dictionaryLists["malware-type-ov"].content.length; i++){
-            if(elem === dictionaryLists["malware-type-ov"].content[i].name){
-                return dictionaryLists["malware-type-ov"].content[i].text;
+            if(value === dictionaryLists["malware-type-ov"].content[i].name){
+                return dictionaryLists["malware-type-ov"].content[i].summary;
             }
         }
 
-        return "";
+        return value;
     };
 
-    let text = getContentText(campaignPatterElement.malware_types);
-    let [ textMenuItem, setTextMenuItem ] = useState(text);
-
-    return (dictionaryLists["malware-type-ov"] && <React.Fragment>
-        <TextField
-            id={"select-malware-type-class"}
-            select
-            disabled={isDisabled}
-            fullWidth
-            label={"перечень вредоносного програмного обеспечения"}
-            value={campaignPatterElement.malware_types? campaignPatterElement.malware_types: "" }
-            onChange={(e) => {
-                handlerMalware.call(null, e);
-                setTextMenuItem(getContentText(e.target.value));
-            }} >
-            <MenuItem key="malware-type-item-value-empty" value="">пустое значение</MenuItem>
-            {dictionaryLists["malware-type-ov"].content.map((item, key) => {
-                return (<MenuItem key={`malware-type-item-${key}`} value={item.name}>
+    return (dictionaryLists["malware-type-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>        
+        <InputLabel id="malware-type-mutiple-chip-id">
+            перечень вредоносного програмного обеспечения
+        </InputLabel>
+        <Select
+            labelId="malware-type-mutiple-chip-label"
+            id="malware-type-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.malware_types? campaignPatterElement.malware_types: []}
+            onChange={(e) => handlerMalware.call(null, e)}
+            input={<Input id="malware-type-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["malware-type-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`malware-type-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.malware_types, theme)}
+                >
                     {item.summary}
-                </MenuItem>);
-            })}
-        </TextField>
-        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
-    </React.Fragment>);
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
 }
 
 CreateListMalwareType.propTypes = {
