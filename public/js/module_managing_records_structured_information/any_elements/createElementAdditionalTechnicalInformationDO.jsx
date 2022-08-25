@@ -1,5 +1,3 @@
-"use strict";
-
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import { 
@@ -184,10 +182,10 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                         as="select" 
                         size="sm" 
                         onChange={handlerElDef} 
-                        defaultValue={reportInfo.defanged} 
+                        value={reportInfo.defanged} 
                         id="dropdown_list_defanged" >
-                        <option key={"key_defanged_true"} value={true} >да</option>
-                        <option key={"key_defanged_false"} value={false} >нет</option>
+                        <option key={"key_defanged_true"} value={true}>да</option>
+                        <option key={"key_defanged_false"} value={false}>нет</option>
                     </Form.Control>
                 </Form.Group>
             </Grid>

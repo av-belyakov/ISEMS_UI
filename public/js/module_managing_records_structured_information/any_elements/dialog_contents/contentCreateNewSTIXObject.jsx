@@ -182,10 +182,13 @@ export default function CreateDialogContentNewSTIXObject(props){
         }
     }
 
-    console.log("******** func 'CreateDialogContentNewSTIXObject' ********* listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
+    //console.log("******** func 'CreateDialogContentNewSTIXObject' ********* listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
     let listLinkImageSTIXObjectTmp = Object.keys(helpers.getListLinkImageSTIXObject());
     let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) => listObjectTypeTmp.has(item));
+    listLinkImageSTIXObject.sort();
+
+    //console.log("******** func 'CreateDialogContentNewSTIXObject' ********* listLinkImageSTIXObject = ", listLinkImageSTIXObject);
 
     React.useEffect(() => {
         for(let item of listRefsForObjectSTIX){

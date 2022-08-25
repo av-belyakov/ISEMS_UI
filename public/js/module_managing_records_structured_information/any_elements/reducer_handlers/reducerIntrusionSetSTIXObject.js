@@ -55,7 +55,7 @@ export default function reducerIntrusionSetSTIXObject(state, action){
 
         return {...state, confidence: action.data.data};
     case "updateDefanged":
-        return {...state, defanged: (action.data === "true")};
+        return {...state, defanged: (action.data.data === "true")};
     case "updateLabels":
         return {...state, labels: action.data.listTokenValue};
     case "updateExternalReferences":

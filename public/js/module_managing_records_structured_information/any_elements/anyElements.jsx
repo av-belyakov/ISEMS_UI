@@ -309,44 +309,49 @@ export function CreateListCapabilities(props){
         handlerCapabilities, 
     } = props;
 
-    const getContentText = (elem) => {
-        if(elem === "" || !elem){
-            return "";
-        }
+    const classes = useStyles();
+    const theme = useTheme();
 
+    const getSummary = (value) => {
         for(let i = 0; i < dictionaryLists["malware-capabilities-ov"].content.length; i++){
-            if(elem === dictionaryLists["malware-capabilities-ov"].content[i].name){
-                return dictionaryLists["malware-capabilities-ov"].content[i].text;
+            if(value === dictionaryLists["malware-capabilities-ov"].content[i].name){
+                return dictionaryLists["malware-capabilities-ov"].content[i].summary;
             }
         }
 
-        return "";
+        return value;
     };
 
-    let text = getContentText(campaignPatterElement.capabilities);
-    let [ textMenuItem, setTextMenuItem ] = useState(text);
-
-    return (dictionaryLists["malware-capabilities-ov"] && <React.Fragment>
-        <TextField
-            id={"select-malware-capabilities-class"}
-            select
-            disabled={isDisabled}
-            fullWidth
-            label={"перечень общих возможностей, которые могут быть продемонстрированы экземпляром или семейством вредоносных программ"}
-            value={campaignPatterElement.capabilities? campaignPatterElement.capabilities: "" }
-            onChange={(e) => {
-                handlerCapabilities.call(null, e);
-                setTextMenuItem(getContentText(e.target.value));
-            }} >
-            <MenuItem key="malware-capabilities-item-value-empty" value="">пустое значение</MenuItem>
-            {dictionaryLists["malware-capabilities-ov"].content.map((item, key) => {
-                return (<MenuItem key={`malware-capabilities-item-${key}`} value={item.name}>
+    return (dictionaryLists["malware-capabilities-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>        
+        <InputLabel id="malware-capabilities-mutiple-chip-id">
+            перечень общих возможностей, которые могут быть продемонстрированы экземпляром или семейством вредоносных программ
+        </InputLabel>
+        <Select
+            labelId="malware-capabilities-mutiple-chip-label"
+            id="malware-capabilities-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.capabilities? campaignPatterElement.capabilities: []}
+            onChange={(e) => handlerCapabilities.call(null, e)}
+            input={<Input id="malware-capabilities-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["malware-capabilities-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`malware-capabilities-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.capabilities, theme)}
+                >
                     {item.summary}
-                </MenuItem>);
-            })}
-        </TextField>
-        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
-    </React.Fragment>);
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
 }
 
 CreateListCapabilities.propTypes = {
@@ -420,44 +425,49 @@ export function CreateListImplementationLanguages(props){
         handlerImplementationLanguages, 
     } = props;
 
-    const getContentText = (elem) => {
-        if(elem === "" || !elem){
-            return "";
-        }
+    const classes = useStyles();
+    const theme = useTheme();
 
+    const getSummary = (value) => {
         for(let i = 0; i < dictionaryLists["implementation-language-ov"].content.length; i++){
-            if(elem === dictionaryLists["implementation-language-ov"].content[i].name){
-                return dictionaryLists["implementation-language-ov"].content[i].text;
+            if(value === dictionaryLists["implementation-language-ov"].content[i].name){
+                return dictionaryLists["implementation-language-ov"].content[i].summary;
             }
         }
 
-        return "";
+        return value;
     };
 
-    let text = getContentText(campaignPatterElement.implementation_languages);
-    let [ textMenuItem, setTextMenuItem ] = useState(text);
-
-    return (dictionaryLists["implementation-language-ov"] && <React.Fragment>
-        <TextField
-            id={"select-implementation-language-class"}
-            select
-            disabled={isDisabled}
-            fullWidth
-            label={"перечень языков программирования, используемых для реализации вредоносного програмного обеспечения или семейства вредоносных программ"}
-            value={campaignPatterElement.implementation_languages? campaignPatterElement.implementation_languages: "" }
-            onChange={(e) => {
-                handlerImplementationLanguages.call(null, e);
-                setTextMenuItem(getContentText(e.target.value));
-            }} >
-            <MenuItem key="implementation-language-item-value-empty" value="">пустое значение</MenuItem>
-            {dictionaryLists["implementation-language-ov"].content.map((item, key) => {
-                return (<MenuItem key={`implementation-language-item-${key}`} value={item.name}>
+    return (dictionaryLists["implementation-language-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>        
+        <InputLabel id="implementation-language-mutiple-chip-id">
+            перечень языков программирования, используемых для реализации вредоносного програмного обеспечения или семейства вредоносных программ
+        </InputLabel>
+        <Select
+            labelId="implementation-language-mutiple-chip-label"
+            id="implementation-language-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.implementation_languages? campaignPatterElement.implementation_languages: []}
+            onChange={(e) => handlerImplementationLanguages.call(null, e)}
+            input={<Input id="implementation-language-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["implementation-language-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`implementation-language-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.implementation_languages, theme)}
+                >
                     {item.summary}
-                </MenuItem>);
-            })}
-        </TextField>
-        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
-    </React.Fragment>);
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
 }
 
 CreateListImplementationLanguages.propTypes = {
@@ -473,44 +483,49 @@ export function CreateListArchitectureExecutionEnvs(props){
         handlerArchitectureExecutionEnvs, 
     } = props;
 
-    const getContentText = (elem) => {
-        if(elem === "" || !elem){
-            return "";
-        }
+    const classes = useStyles();
+    const theme = useTheme();
 
+    const getSummary = (value) => {
         for(let i = 0; i < dictionaryLists["processor-architecture-ov"].content.length; i++){
-            if(elem === dictionaryLists["processor-architecture-ov"].content[i].name){
-                return dictionaryLists["processor-architecture-ov"].content[i].text;
+            if(value === dictionaryLists["processor-architecture-ov"].content[i].name){
+                return dictionaryLists["processor-architecture-ov"].content[i].summary;
             }
         }
 
-        return "";
+        return value;
     };
 
-    let text = getContentText(campaignPatterElement.architecture_execution_envs);
-    let [ textMenuItem, setTextMenuItem ] = useState(text);
-
-    return (dictionaryLists["processor-architecture-ov"] && <React.Fragment>
-        <TextField
-            id={"select-processor-architecture-class"}
-            select
-            disabled={isDisabled}
-            fullWidth
-            label={"перечень архитектур в которых может быть выполнено вредоносное програмное обеспечение или семейство программ"}
-            value={campaignPatterElement.architecture_execution_envs? campaignPatterElement.architecture_execution_envs: "" }
-            onChange={(e) => {
-                handlerArchitectureExecutionEnvs.call(null, e);
-                setTextMenuItem(getContentText(e.target.value));
-            }} >
-            <MenuItem key="processor-architecture-item-value-empty" value="">пустое значение</MenuItem>
-            {dictionaryLists["processor-architecture-ov"].content.map((item, key) => {
-                return (<MenuItem key={`processor-architecture-item-${key}`} value={item.name}>
+    return (dictionaryLists["processor-architecture-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>        
+        <InputLabel id="processor-architecture-mutiple-chip-id">
+            список содержащий распространенные архитектуры процессоров
+        </InputLabel>
+        <Select
+            labelId="processor-architecture-mutiple-chip-label"
+            id="processor-architecture-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.architecture_execution_envs? campaignPatterElement.architecture_execution_envs: []}
+            onChange={(e) => handlerArchitectureExecutionEnvs.call(null, e)}
+            input={<Input id="processor-architecture-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["processor-architecture-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`processor-architecture-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.architecture_execution_envs, theme)}
+                >
                     {item.summary}
-                </MenuItem>);
-            })}
-        </TextField>
-        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
-    </React.Fragment>);
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
 }
 
 CreateListArchitectureExecutionEnvs.propTypes = {
@@ -623,6 +638,113 @@ CreateListIdentityClass.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerIdentityClass: PropTypes.func.isRequired,
+};
+
+
+export function CreateListHashes(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerHashes, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["hash-algorithm-ov"].content.length; i++){
+            if(elem === dictionaryLists["hash-algorithm-ov"].content[i].name){
+                return dictionaryLists["hash-algorithm-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.hashes);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["hash-algorithm-ov"] && <React.Fragment>
+        <TextField
+            id={"hash-algorithm-identity-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"словарь хешей для URL или PayloadBin"}
+            value={campaignPatterElement.hashes? campaignPatterElement.hashes: "" }
+            onChange={(e) => {
+                handlerHashes.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="hash-algorithm-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["hash-algorithm-ov"].content.map((item, key) => {
+                return (<MenuItem key={`hash-algorithm-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListHashes.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerHashes: PropTypes.func.isRequired,
+};
+
+export function CreateListEncryptionAlgorithm(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerEncryptionAlgorithm, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["encryption-algorithm-enum"].content.length; i++){
+            if(elem === dictionaryLists["encryption-algorithm-enum"].content[i].name){
+                return dictionaryLists["encryption-algorithm-enum"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.encryption_algorithm);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["encryption-algorithm-enum"] && <React.Fragment>
+        <TextField
+            id={"hencryption-algorithm-identity-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"тип алгоритма шифрования для бинарных данных"}
+            value={campaignPatterElement.encryption_algorithm? campaignPatterElement.encryption_algorithm: "" }
+            onChange={(e) => {
+                handlerEncryptionAlgorithm.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="encryption-algorithm-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["encryption-algorithm-enum"].content.map((item, key) => {
+                return (<MenuItem key={`encryption-algorithm-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListEncryptionAlgorithm.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerEncryptionAlgorithm: PropTypes.func.isRequired,
 };
 
 export function CreateListSectors(props){

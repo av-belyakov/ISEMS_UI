@@ -276,7 +276,7 @@ export default function CreateListObjectRefsReport(props){
         setListObjReducer({ type: "updateListId", data: { listObject: data.information.additional_parameters.transmitted_data }});
         setListObjReducer({ type: "updateList", data: { current: data.information.additional_parameters.transmitted_data, parent: stateReport }});
     };
-    
+
     useEffect(() => {
         socketIo.on("isems-mrsi response ui: send search request, get STIX object for list id", listener);
         socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
@@ -310,6 +310,9 @@ export default function CreateListObjectRefsReport(props){
         handlerDialogConfirm();
     }, [ confirmDeleteLink ]),
     useEffect(() => {
+
+        console.log("func 'CreateListObjectRefsReport', useEffect = changeListId, listNewOrModifySTIXObject.length:", listNewOrModifySTIXObject.length, " listNewOrModifySTIXObject.length = ", listNewOrModifySTIXObject);
+
         setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
     }, [ listNewOrModifySTIXObject.length ]);
 
