@@ -10,23 +10,66 @@ export default function reducerArtifactPatternSTIXObjects(state, action){
         }
     
         return {...state, name: action.data};    
-    case "updateDescription":
-        if(state.description === action.data){
-            return {...state};
+    case "updateURL":
+
+        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
+
+        return {...state, url: action.data};
+        //    case "updateHashes":
+        //        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
+        //        return {...state, hashes: action.data};        
+    case "updateMimeType":
+
+        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
+
+        return {...state, mime_type: action.data};
+    case "updatePayloadBin":
+
+        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
+
+        return {...state, payload_bin: action.data};
+    case "updateAddHashes":
+
+        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
+
+        if(!state.hashes){
+            state.hashes = {};
         }
-    
-        return {...state, description: action.data};
-        
+
+        for(let key in action.data){
+            state.hashes[key] = action.data[key];
+        }
+
+        return {...state};  
+    case "updateDeleteHashes":
+
+        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
+
+        //        state.hashes.splice(action.data, 1);
+        delete state.hashes[action.data];
+
+        return {...state};
+    case "updateDecryptionKey":
+
+        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
+
+        return {...state, decryption_key: action.data};
+    case "updateEncryptionAlgorithm":
+
+        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
+ 
+        return {...state, encryption_algorithm: action.data};
         /*
 
-                    handlerURL={(e) => { dispatch({ type: "updateURL", data: e }); handlerButtonIsDisabled(); }} //string         `json:"url" bson:"url"`
-                    handlerName={(e) => {}}
-                    handlerHashes={(e) => { dispatch({ type: "updateHashes", data: e }); handlerButtonIsDisabled(); }} //HashesTypeSTIX `json:"hashes" bson:"hashes"`
-                    handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e }); handlerButtonIsDisabled(); }} //string         `json:"mime_type" bson:"mime_type"`
-                    handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e }); handlerButtonIsDisabled(); }} //string         `json:"payload_bin" bson:"payload_bin"`
+                   handlerURL={(e) => { dispatch({ type: "updateURL", data: e.target.value }); handlerButtonIsDisabled(); }} //string         `json:"url" bson:"url"`
+                    handlerName={(e) => {}}                    
+                    handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e.target.value }); handlerButtonIsDisabled(); }} //string         `json:"mime_type" bson:"mime_type"`
+                    handlerAddHashes={(e) => { dispatch({ type: "updateAddHashes", data: e.target.value }); handlerButtonIsDisabled(); }} //HashesTypeSTIX `json:"hashes" bson:"hashes"`
+                    handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e.target.value }); handlerButtonIsDisabled(); }} //string         `json:"payload_bin" bson:"payload_bin"`
+                    handlerDeleteHashe={(e) => { dispatch({ type: "updateDeleteHashes", data: e.target.value }); handlerButtonIsDisabled(); }} //HashesTypeSTIX `json:"hashes" bson:"hashes"`
                     handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e }); handlerButtonIsDisabled(); }} //string `json:"decryption_key" bson:"decryption_key"`
-                    handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e }); handlerButtonIsDisabled(); }} //EnumTypeSTIX   `json:"encryption_algorithm" bson:"encryption_algorithm"`
+                    handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e.target.value }); handlerButtonIsDisabled(); }} //string `json:"decryption_key" bson:"decryption_key"`
+                    handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerButtonIsDisabled(); }} //EnumTypeSTIX   `json:"encryption_algorithm" bson:"encryption_algorithm"`                
 
 
     case "updateTokenValuesChange":

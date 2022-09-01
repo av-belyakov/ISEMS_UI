@@ -37,6 +37,7 @@ const CreateThreatActorPatternNewSTIXObject = lazy(() => import("./contentThreat
 const CreateOpinionPatternNewSTIXObject = lazy(() => import("./contentOpinionPatternNewSTIXObject.jsx"));
 const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVulnerabilityPatternNewSTIXObject.jsx"));
 const CreateObservedDataPatternNewSTIXObject = lazy(() => import("./contentObservedDataPatternNewSTIXObject.jsx"));
+const CreateArtifactPatternNewSTIXObject = lazy(() => import("./contentArtifactPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -153,6 +154,7 @@ export default function CreateDialogContentNewSTIXObject(props){
     let [ currentRefObjectSTIX, setCurrentRefObjectSTIX ] = React.useState(listRefsForObjectSTIX.find((item) => item === "object_refs")? "object_refs": listRefsForObjectSTIX[0]);
     let [ projectPatterElement, setProjectPatterElement ] = React.useReducer(reducer, {});
     let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = React.useState([]);
+    let [ modifySTIXObject, setModifySTIXObject ] = React.useState({});
     let [ buttonAddClick, setButtonAddClick ] = React.useState(false);
     let [ buttonAddIsDisabled, setButtonAddIsDisabled ] = React.useState(true);
     let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = React.useState(true);
@@ -280,12 +282,29 @@ export default function CreateDialogContentNewSTIXObject(props){
 
                                     return (<Grid container direction="row" key={`key_new_or_modify_${key}`}>
                                         <Grid item container md={12} justifyContent="flex-start">
-                                            <img 
-                                                key={`key_img_new_or_modify_${key}`} 
-                                                src={`/images/stix_object/${objectElem.link}`} 
-                                                width="30" 
-                                                height="30" />&nbsp;
-                                            <span className="pt-1">{item.id}</span>&nbsp;
+                                            <Button 
+                                                className="mb-2" 
+                                                size="small" 
+                                                aria-label="show-element" 
+                                                onClick={() => {
+                                                    console.log("____ func Show Element ____ item.id:", item.id);
+                                                    
+                                                    for(let k of listNewOrModifySTIXObject){
+                                                        if(k.id === item.id){
+                                                            setModifySTIXObject(k);
+
+                                                            break;
+                                                        }
+                                                    }                                                    
+                                                }}>
+                                                <img 
+                                                    key={`key_img_new_or_modify_${key}`} 
+                                                    src={`/images/stix_object/${objectElem.link}`} 
+                                                    width="30" 
+                                                    height="30" />&nbsp;
+                                                <span className="pt-1">{item.id}</span>
+                                            </Button>
+                                            &nbsp;
                                             <IconButton className="mb-2" size="small" aria-label="delete" onClick={() => {
                                                 let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
                                                 listNewOrModifySTIXObjectTmp.splice(key, 1);
@@ -405,7 +424,20 @@ export default function CreateDialogContentNewSTIXObject(props){
 
         <DialogActions>
             <Button onClick={handlerDialogClose} color="inherit">закрыть</Button>
-            <Button 
+            {modifySTIXObject.id? <Button 
+                disabled={buttonAddIsDisabled}
+                onClick={() => { 
+
+                    /**
+                     * 
+                     * Надо сделать возможность редактирования уже добавленного в listNewOrModifySTIXObject объекта
+                     * 
+                     */
+
+                }}
+                style={{ color: blue[400] }}>
+                корректировать объект
+            </Button>: <Button 
                 disabled={buttonAddIsDisabled}
                 onClick={() => { 
                     setButtonAddClick(true); 
@@ -413,14 +445,19 @@ export default function CreateDialogContentNewSTIXObject(props){
                 }}
                 style={{ color: blue[400] }}>
                 добавить объект
-            </Button>
+            </Button>}
+            {/*<Button 
+                disabled={buttonAddIsDisabled}
+                onClick={() => { 
+                    setButtonAddClick(true); 
+                    setButtonAddIsDisabled(true);
+                }}
+                style={{ color: blue[400] }}>
+                добавить объект
+            </Button>*/}
             <Button 
                 disabled={buttonSaveIsDisabled}
-                onClick={() => {
-                    console.log("~~~~~~ ================ projectPatterElement: ", projectPatterElement, " listRefsForObjectSTIX: ", listRefsForObjectSTIX, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject, " =============== ~~~~~~");
-
-                    handlerDialog(parentSTIXObject, listRefsForObjectSTIX, listNewOrModifySTIXObject);
-                }}
+                onClick={() => { handlerDialog(parentSTIXObject, listRefsForObjectSTIX, listNewOrModifySTIXObject); }}
                 style={{ color: green[400] }}>
                 сохранить изменения
             </Button>
@@ -453,7 +490,7 @@ function somethingModule(nameSTIX){
  */
 
     const nameList = {
-        //"artifact": CreateArtifactPatternElements, 
+        "artifact": CreateArtifactPatternNewSTIXObject, 
         //"directory": CreateDirectoryPatternElements, 
         //"file": CreateFilePatternElements, 
         //"mutex": CreateMutexPatternElements,

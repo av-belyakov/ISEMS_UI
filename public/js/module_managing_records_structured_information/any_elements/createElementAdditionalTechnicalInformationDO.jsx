@@ -17,7 +17,6 @@ import {
     FormControl,
     MenuItem,
 } from "@material-ui/core";
-import IconCloseOutlined from "@material-ui/icons/CloseOutlined";
 import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -878,7 +877,8 @@ function GetExtensions(props){
                     objectId: objectId,
                     orderNumber: -1 }); 
             }}>
-                <IconCloseOutlined style={{ color: red[400] }} />
+
+                <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />         
             </IconButton>
         </li>);
     }

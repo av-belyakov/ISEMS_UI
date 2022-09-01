@@ -694,6 +694,130 @@ CreateListHashes.propTypes = {
     handlerHashes: PropTypes.func.isRequired,
 };
 
+export function CreateHashes(props){
+    let { 
+        isDisabled, 
+        handlerAddHashe, 
+    } = props;
+
+    let [ valueHashAlgorithm, setValueHashAlgorithm ] = useState("");
+    let [ valueHash, setValueHash ] = useState("");
+    let [ isDisabledButton, setIsDisabledButton ] = useState(true);
+
+    const handlerHashAlgorithm = (e) => {
+            if(e.target.value !== "" && valueHash !== ""){
+                setIsDisabledButton(false);
+            } else {
+                setIsDisabledButton(true);
+            }
+
+            setValueHashAlgorithm(e.target.value); 
+        },
+        handlerHash = (e) => {
+            if(e.target.value !== "" && valueHashAlgorithm !== ""){
+                setIsDisabledButton(false);
+            } else {
+                setIsDisabledButton(true);
+            }
+        
+            setValueHash(e.target.value);
+        };
+
+    return (<Grid container direction="row" spacing={1}>
+        <Grid item container md={5}>
+            {dictionaryLists["hash-algorithm-ov"] && <TextField
+                id={"hash-algorithm-identity-class"}
+                select
+                disabled={isDisabled}
+                fullWidth
+                label={"словарь хешей для URL или PayloadBin"}
+                value={valueHashAlgorithm}
+                onChange={handlerHashAlgorithm} >
+                <MenuItem key="hash-algorithm-item-value-empty" value="">пустое значение</MenuItem>
+                {dictionaryLists["hash-algorithm-ov"].content.map((item, key) => {
+                    return (<MenuItem key={`hash-algorithm-item-${key}`} value={item.name}>
+                        {item.summary}
+                    </MenuItem>);
+                })}
+            </TextField>}
+        </Grid>
+        <Grid item container md={5}>
+            <TextField
+                id="input_new_name_phases"
+                fullWidth
+                disabled={isDisabled}
+                label="хеш-значение"
+                value={valueHash}
+                onChange={handlerHash} />
+        </Grid>
+        <Grid item container md={2} justifyContent="center" className="mt-2">
+            <Button 
+                onClick={() => {
+                    if(valueHashAlgorithm === "" || valueHash === ""){
+                        return;
+                    }
+                
+                    handlerAddHashe.call(null, { [valueHashAlgorithm]: valueHash });
+
+                    setValueHash("");
+                    setValueHashAlgorithm("");
+                    setIsDisabledButton(true);
+                }} disabled={isDisabledButton}>
+                добавить цепочку
+            </Button>
+        </Grid>
+    </Grid>);
+}
+
+CreateHashes.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    handlerAddHashe: PropTypes.func.isRequired,
+};
+
+export function CreateHashesList(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerDeleteHashe,
+    } = props;
+
+    if(!campaignPatterElement.hashes){
+        return "";
+    }
+
+    let listHashes = [];
+    for(let k in campaignPatterElement.hashes){
+        listHashes.push({ [k]: campaignPatterElement.hashes[k] });
+    }
+
+    return (<Grid container direction="row" className="mt-3">
+        <Grid item container md={12} justifyContent="flex-start">
+            <ol>
+                {listHashes.map((item, num) => {
+                    let key, value;
+                    for(let k in item){
+                        key = k;
+                        value = item[k];
+                    }
+
+                    return (<li key={`key_item_hashe_${num}`}>
+                        <span className="text-muted">алгоритм:</span> {key}, <span className="text-muted">хеш:</span> {value}&nbsp;
+                        <IconButton aria-label="delete-hashe" onClick={handlerDeleteHashe.bind(null, key)}>
+                            {isDisabled? "": <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />}
+                        </IconButton>
+                    </li>);
+                })}
+            </ol>
+        </Grid>
+    </Grid>);
+}
+
+CreateHashesList.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerDeleteHashe: PropTypes.func.isRequired,
+};
+
 export function CreateListEncryptionAlgorithm(props){
     let { 
         isDisabled,

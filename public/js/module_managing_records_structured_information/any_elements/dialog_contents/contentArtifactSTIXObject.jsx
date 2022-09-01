@@ -8,7 +8,6 @@ import {
 import PropTypes from "prop-types";
 
 import reducerArtifactPatternSTIXObjects from "../reducer_handlers/reducerArtifactSTIXObject.js";
-import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateArtifactPatternElements from "../type_elements_stix/artifactPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
@@ -51,12 +50,12 @@ export default function CreateDialogContentArtifactSTIXObject(props){
                     handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
                 />
 
-                <Grid item container md={4} style={{ display: "block" }}>
-                    <CreateListPreviousStateSTIX 
-                        socketIo={socketIo} 
-                        searchObjectId={currentAdditionalIdSTIXObject} 
-                    />
-                </Grid>
+                {/** 
+                 * 
+                 * В MRSIC предусмотрен учет предыдущих состояний ТОЛЬКО для DOMAIN STIX Object
+                 * 
+                 */}
+
             </Grid>            
         </DialogContent>
         <DialogActions>
@@ -141,6 +140,9 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
+
+            console.log("func 'contentArtifactSTIXObject', send state ---> ", state);
+
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
@@ -177,20 +179,21 @@ function CreateMajorContent(props){
         }
     };
 
-    return (
-        <Grid item container md={8}>
+    return (<React.Fragment>
+        <Grid item container md={1}></Grid>
+        <Grid item container md={10}>
             <Grid container direction="row" className="pt-3">
                 <CreateArtifactPatternElements 
                     isDisabled={false}
                     campaignPatterElement={state}
-                    handlerURL={(e) => { dispatch({ type: "updateURL", data: e }); handlerButtonIsDisabled(); }} //string         `json:"url" bson:"url"`
-                    handlerName={(e) => {}}
-                    handlerHashes={(e) => { dispatch({ type: "updateHashes", data: e }); handlerButtonIsDisabled(); }} //HashesTypeSTIX `json:"hashes" bson:"hashes"`
-                    handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e }); handlerButtonIsDisabled(); }} //string         `json:"mime_type" bson:"mime_type"`
-                    handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e }); handlerButtonIsDisabled(); }} //string         `json:"payload_bin" bson:"payload_bin"`
-                    handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e }); handlerButtonIsDisabled(); }} //string `json:"decryption_key" bson:"decryption_key"`
-                    handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e }); handlerButtonIsDisabled(); }} //EnumTypeSTIX   `json:"encryption_algorithm" bson:"encryption_algorithm"`
+                    handlerURL={(e) => { dispatch({ type: "updateURL", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerName={(e) => {}}                    
+                    handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerAddHashes={(e) => { dispatch({ type: "updateAddHashes", data: e }); handlerButtonIsDisabled(); }}
+                    handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerDeleteHashe={(e) => { dispatch({ type: "updateDeleteHashes", data: e }); handlerButtonIsDisabled(); }}
+                    handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerButtonIsDisabled(); }}
                 />
             </Grid> 
 
@@ -202,7 +205,7 @@ function CreateMajorContent(props){
                     </h3>
                 </Grid>
             </Grid>
-
+            
             <CreateElementAdditionalTechnicalInformationDO
                 objectId={currentIdSTIXObject}
                 reportInfo={state}
@@ -214,7 +217,8 @@ function CreateMajorContent(props){
                 handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
             />
         </Grid>
-    );
+        <Grid item container md={1}></Grid>
+    </React.Fragment>);
 }
 
 CreateMajorContent.propTypes = {

@@ -7,7 +7,8 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 import { 
-    CreateListHashes,
+    CreateHashes,
+    CreateHashesList,
     CreateListEncryptionAlgorithm,
 } from "../anyElements.jsx";
 
@@ -17,10 +18,10 @@ export default function CreateArtifactPatternElements(props){
         campaignPatterElement,
         handlerURL,
         handlerName,
-        handlerHashes,
         handlerMimeType,
+        handlerAddHashes,
         handlerPayloadBin,
-        handlerDescription,
+        handlerDeleteHashe,
         handlerDecryptionKey,
         handlerEncryptionAlgorithm,
     } = props;
@@ -38,7 +39,7 @@ export default function CreateArtifactPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end" className="mt-2"><span className="text-muted">Наименование:</span></Grid>
             <Grid item container md={8} >
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
                     campaignPatterElement.name:
@@ -72,24 +73,8 @@ export default function CreateArtifactPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание:</span></Grid>
-            <Grid item container md={8}>
-                <TextField
-                    id="outlined-description-static"
-                    multiline
-                    minRows={3}
-                    maxRows={8}
-                    fullWidth
-                    disabled={isDisabled}
-                    onChange={handlerDescription}
-                    value={(campaignPatterElement.description)? campaignPatterElement.description: ""}
-                    variant="outlined"/>
-            </Grid>
-        </Grid>
-
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Тип файлов IANA:</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end" className="mt-2"><span className="text-muted">Тип файлов IANA:</span></Grid>
             <Grid item container md={8} >
                 <TextField
                     fullWidth
@@ -103,7 +88,7 @@ export default function CreateArtifactPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Бинарные данные в base64:</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end" className="mt-2"><span className="text-muted">Бинарные данные в base64:</span></Grid>
             <Grid item container md={8} >
                 <TextField
                     fullWidth
@@ -117,7 +102,7 @@ export default function CreateArtifactPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Унифицированный указатель ресурса (URL):</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end" className="mt-2"><span className="text-muted">Унифицированный указатель ресурса (URL):</span></Grid>
             <Grid item container md={8} >
                 <TextField
                     fullWidth
@@ -130,18 +115,8 @@ export default function CreateArtifactPatternElements(props){
             </Grid>
         </Grid>
 
-        <CreateListHashes 
-            isDisabled={isDisabled}
-            campaignPatterElement={campaignPatterElement}
-            handlerHashes={handlerHashes} />
-
-        <CreateListEncryptionAlgorithm 
-            isDisabled={isDisabled}
-            campaignPatterElement={campaignPatterElement}
-            handlerEncryptionAlgorithm={handlerEncryptionAlgorithm} />
-
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Ключ для дешифрования зашифрованных данных:</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end" className="mt-2"><span className="text-muted">Ключ для дешифрования зашифрованных данных:</span></Grid>
             <Grid item container md={8} >
                 <TextField
                     fullWidth
@@ -153,18 +128,35 @@ export default function CreateArtifactPatternElements(props){
                 />
             </Grid>
         </Grid>
+
+        <CreateListEncryptionAlgorithm 
+            isDisabled={isDisabled}
+            campaignPatterElement={campaignPatterElement}
+            handlerEncryptionAlgorithm={handlerEncryptionAlgorithm} 
+        />
+
+        <CreateHashes
+            isDisabled={isDisabled}
+            handlerAddHashe={handlerAddHashes} 
+        />
+
+        <CreateHashesList
+            isDisabled={isDisabled}
+            campaignPatterElement={campaignPatterElement} 
+            handlerDeleteHashe={handlerDeleteHashe} 
+        />
     </React.Fragment>);
 }
 
 CreateArtifactPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
-    campaignPatterElement: PropTypes.object.isRequired,    
+    campaignPatterElement: PropTypes.object.isRequired,
     handlerURL: PropTypes.func.isRequired,
     handlerName: PropTypes.func.isRequired,
-    handlerHashes: PropTypes.func.isRequired,
     handlerMimeType: PropTypes.func.isRequired,
+    handlerAddHashes: PropTypes.func.isRequired,
     handlerPayloadBin: PropTypes.func.isRequired,
-    handlerDescription: PropTypes.func.isRequired,
+    handlerDeleteHashe: PropTypes.func.isRequired,
     handlerDecryptionKey: PropTypes.func.isRequired,
     handlerEncryptionAlgorithm: PropTypes.func.isRequired,
 };
