@@ -131,11 +131,20 @@ const typesRelationshipsBetweenObjects = {
     "malware-analysis": sco,
 };
 
-let reducer = () => {
+let reducer = (state, action) => {
     /**
      * здесь должна быть обработка объекта после его поиска по id
      * через useEffect
      */
+
+    console.log("func 'reducer' action.type = ", action.type, " action.data = ", action.data, " !!!!!!!!!");
+
+    switch(action.type){
+    case "newAll":
+        return action.data;
+    case "cleanAll":
+        return {};
+    }
 };
 
 export default function CreateDialogContentNewSTIXObject(props){
@@ -152,7 +161,7 @@ export default function CreateDialogContentNewSTIXObject(props){
     let [ typeObjectSTIX, setTypeObjectSTIX ] = React.useState("");
     let [ itemReactSearchAutocomplete, setItemReactSearchAutocomplete ] = React.useState([]);
     let [ currentRefObjectSTIX, setCurrentRefObjectSTIX ] = React.useState(listRefsForObjectSTIX.find((item) => item === "object_refs")? "object_refs": listRefsForObjectSTIX[0]);
-    let [ projectPatterElement, setProjectPatterElement ] = React.useReducer(reducer, {});
+    let [ projectPatterElement, dispatchProjectPatterElement ] = React.useReducer(reducer, {});
     let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = React.useState([]);
     let [ modifySTIXObject, setModifySTIXObject ] = React.useState({});
     let [ buttonAddClick, setButtonAddClick ] = React.useState(false);
@@ -264,6 +273,8 @@ export default function CreateDialogContentNewSTIXObject(props){
 
     let MyModule = somethingModule(typeObjectSTIX);
 
+    console.log("func 'CreateDialogContentNewSTIXObject' projectPatterElement:", projectPatterElement);
+
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" className="pt-3" spacing={3}>
@@ -287,15 +298,23 @@ export default function CreateDialogContentNewSTIXObject(props){
                                                 size="small" 
                                                 aria-label="show-element" 
                                                 onClick={() => {
-                                                    console.log("____ func Show Element ____ item.id:", item.id);
+                                                    console.log("1. ____ func Show Element ____ item.id:", item.id, " listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " projectPatterElement:", projectPatterElement);
                                                     
                                                     for(let k of listNewOrModifySTIXObject){
+
+                                                        console.log("2. ____ func Show Element ____ k (listNewOrModifySTIXObject) = ", k, " item.id = ", item.id);
+
                                                         if(k.id === item.id){
-                                                            setModifySTIXObject(k);
+                                                            console.log("3. ____ func Show Element ____ k.id === item.id, k = '", k, "' _____");
+
+                                                            //setModifySTIXObject(k);
+                                                            dispatchProjectPatterElement({ type: "newAll", data: k });
 
                                                             break;
                                                         }
-                                                    }                                                    
+                                                    } 
+                                                    
+                                                    console.log("добавлены ссылки на следующие STIX объекты ProjectPatterElement:", projectPatterElement);
                                                 }}>
                                                 <img 
                                                     key={`key_img_new_or_modify_${key}`} 
@@ -412,6 +431,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                     {MyModule && <MyModule 
                         isNotDisabled={isNotDisabled}
                         buttonAddClick={buttonAddClick}
+                        modifySTIXObject={modifySTIXObject}
                         parentIdSTIXObject={currentIdSTIXObject}
                         buttonAddIsDisabled={buttonAddIsDisabled}
                         projectPatterElement={projectPatterElement}
@@ -424,20 +444,7 @@ export default function CreateDialogContentNewSTIXObject(props){
 
         <DialogActions>
             <Button onClick={handlerDialogClose} color="inherit">закрыть</Button>
-            {modifySTIXObject.id? <Button 
-                disabled={buttonAddIsDisabled}
-                onClick={() => { 
-
-                    /**
-                     * 
-                     * Надо сделать возможность редактирования уже добавленного в listNewOrModifySTIXObject объекта
-                     * 
-                     */
-
-                }}
-                style={{ color: blue[400] }}>
-                корректировать объект
-            </Button>: <Button 
+            {typeof projectPatterElement.id === "undefined"? <Button 
                 disabled={buttonAddIsDisabled}
                 onClick={() => { 
                     setButtonAddClick(true); 
@@ -445,16 +452,8 @@ export default function CreateDialogContentNewSTIXObject(props){
                 }}
                 style={{ color: blue[400] }}>
                 добавить объект
-            </Button>}
-            {/*<Button 
-                disabled={buttonAddIsDisabled}
-                onClick={() => { 
-                    setButtonAddClick(true); 
-                    setButtonAddIsDisabled(true);
-                }}
-                style={{ color: blue[400] }}>
-                добавить объект
-            </Button>*/}
+            </Button>: 
+                ""}
             <Button 
                 disabled={buttonSaveIsDisabled}
                 onClick={() => { handlerDialog(parentSTIXObject, listRefsForObjectSTIX, listNewOrModifySTIXObject); }}

@@ -10,33 +10,24 @@ import { helpers } from "../../../common_helpers/helpers";
 export default function CreateCourseOfActionPatternElements(props){
     let { 
         isDisabled,
-        projectPatterElement, 
+        campaignPatterElement, 
         handlerName,
         handlerDescription 
     } = props;
 
-    let currentTime = helpers.getToISODatetime();
-    
-    if(!projectPatterElement.created){
-        projectPatterElement.created = currentTime;
-    }
-    if(!projectPatterElement.modified){
-        projectPatterElement.modified= currentTime;
-    }
-
     return (<React.Fragment>
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >
-                {(projectPatterElement.id && projectPatterElement.id !== "")? 
-                    projectPatterElement.name:
+        <Grid container direction="row" spacing={3}>            
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
+            <Grid item container md={8}>
+                {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
+                    <span className="mt-2">{campaignPatterElement.name}</span>:
                     <TextField
                         fullWidth
                         disabled={isDisabled}
                         id="name-element"
                         InputLabelProps={{ shrink: true }}
                         onChange={handlerName}
-                        value={(projectPatterElement.name)? projectPatterElement.name: ""}
+                        value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
                     />}
             </Grid>
         </Grid>
@@ -49,14 +40,14 @@ export default function CreateCourseOfActionPatternElements(props){
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания:</span></Grid>
             <Grid item container md={8}>
-                {helpers.convertDateFromString(projectPatterElement.created, { monthDescription: "long", dayDescription: "numeric" })}
+                {helpers.convertDateFromString(campaignPatterElement.created, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления:</span></Grid>
             <Grid item container md={8}>
-                {helpers.convertDateFromString(projectPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
+                {helpers.convertDateFromString(campaignPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
@@ -71,7 +62,7 @@ export default function CreateCourseOfActionPatternElements(props){
                     disabled={isDisabled}
                     fullWidth
                     onChange={handlerDescription}
-                    value={(projectPatterElement.description)? projectPatterElement.description: ""}
+                    value={(campaignPatterElement.description)? campaignPatterElement.description: ""}
                     variant="outlined"/>
             </Grid>
         </Grid>
@@ -80,7 +71,7 @@ export default function CreateCourseOfActionPatternElements(props){
 
 CreateCourseOfActionPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
-    projectPatterElement: PropTypes.object.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
     handlerName: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired,
 };

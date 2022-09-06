@@ -13,6 +13,8 @@ import reducerCampaignSTIXObjects from "../reducer_handlers/reducerCampaignSTIXO
 import CreateCampaingPatternElements from "../type_elements_stix/campaingPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+let currentTime = helpers.getToISODatetime();
+
 export default function CreateCampaignPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
@@ -24,6 +26,8 @@ export default function CreateCampaignPatternNewSTIXObject(props){
         handlerChangeButtonAdd,
     } = props;
     
+    console.log("func 'CreateCampaignPatternNewSTIXObject', projectPatterElement:", projectPatterElement);
+
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
@@ -58,8 +62,27 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerCampaignSTIXObjects, projectPatterElement);
-    
+    const [ state, dispatch ] = useReducer(reducerCampaignSTIXObjects, {});
+    if(state && !state.created){
+        dispatch({ type: "updateCreatedTime", data: currentTime });
+    }
+
+    if(state && !state.modified){
+        dispatch({ type: "updateModifiedTime", data: currentTime });
+    }
+
+    if(state && !state.first_seen){
+        dispatch({ type: "updateFirstSeenTime", data: currentTime });
+    }
+
+    if(state && !state.last_seen){
+        dispatch({ type: "updateLastSeenTime", data: currentTime });
+    }
+
+    useEffect(() => {
+        dispatch({ type: "newAll", data: projectPatterElement });
+    }, [ projectPatterElement ]);
+
     useEffect(() => {
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
@@ -129,7 +152,7 @@ function CreateMajorElements(props){
             </Grid>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{currentObjectId}</Grid>
+                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
             <CreateCampaingPatternElements 
                 isDisabled={false}

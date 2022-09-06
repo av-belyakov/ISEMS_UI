@@ -13,6 +13,8 @@ import reducerArtifactPatternSTIXObjects from "../reducer_handlers/reducerArtifa
 import CreateArtifactPatternElements from "../type_elements_stix/artifactPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+let currentTime = helpers.getToISODatetime();
+
 export default function CreateDialogContentArtifactPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
@@ -58,7 +60,18 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerArtifactPatternSTIXObjects, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerArtifactPatternSTIXObjects, {});
+    if(state && !state.created){
+        dispatch({ type: "updateCreatedTime", data: currentTime });
+    }
+
+    if(state && !state.modified){
+        dispatch({ type: "updateModifiedTime", data: currentTime });
+    }
+
+    useEffect(() => {
+        dispatch({ type: "newAll", data: projectPatterElement });
+    }, [ projectPatterElement ]);
 
     useEffect(() => {
         if(buttonAddClick){
@@ -129,7 +142,7 @@ function CreateMajorElements(props){
 
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{currentObjectId}</Grid>
+                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
 
             <CreateArtifactPatternElements 

@@ -4,6 +4,12 @@ export default function reducerArtifactPatternSTIXObjects(state, action){
         return action.data;
     case "cleanAll":
         return {};
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
+    case "addId":
+        return {...state, id: action.data};
     case "updateName":
         if(state.name === action.data){
             return {...state};
@@ -11,27 +17,12 @@ export default function reducerArtifactPatternSTIXObjects(state, action){
     
         return {...state, name: action.data};    
     case "updateURL":
-
-        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
-
         return {...state, url: action.data};
-        //    case "updateHashes":
-        //        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
-        //        return {...state, hashes: action.data};        
     case "updateMimeType":
-
-        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
-
         return {...state, mime_type: action.data};
     case "updatePayloadBin":
-
-        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
-
         return {...state, payload_bin: action.data};
     case "updateAddHashes":
-
-        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
-
         if(!state.hashes){
             state.hashes = {};
         }
@@ -42,48 +33,13 @@ export default function reducerArtifactPatternSTIXObjects(state, action){
 
         return {...state};  
     case "updateDeleteHashes":
-
-        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
-
-        //        state.hashes.splice(action.data, 1);
         delete state.hashes[action.data];
 
         return {...state};
     case "updateDecryptionKey":
-
-        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
-
         return {...state, decryption_key: action.data};
     case "updateEncryptionAlgorithm":
-
-        console.log("func 'reducerArtifactPatternSTIXObjects', action.type:", action.type, " action.data:", action.data);
- 
         return {...state, encryption_algorithm: action.data};
-        /*
-
-                   handlerURL={(e) => { dispatch({ type: "updateURL", data: e.target.value }); handlerButtonIsDisabled(); }} //string         `json:"url" bson:"url"`
-                    handlerName={(e) => {}}                    
-                    handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e.target.value }); handlerButtonIsDisabled(); }} //string         `json:"mime_type" bson:"mime_type"`
-                    handlerAddHashes={(e) => { dispatch({ type: "updateAddHashes", data: e.target.value }); handlerButtonIsDisabled(); }} //HashesTypeSTIX `json:"hashes" bson:"hashes"`
-                    handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e.target.value }); handlerButtonIsDisabled(); }} //string         `json:"payload_bin" bson:"payload_bin"`
-                    handlerDeleteHashe={(e) => { dispatch({ type: "updateDeleteHashes", data: e.target.value }); handlerButtonIsDisabled(); }} //HashesTypeSTIX `json:"hashes" bson:"hashes"`
-                    handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e.target.value }); handlerButtonIsDisabled(); }} //string `json:"decryption_key" bson:"decryption_key"`
-                    handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerButtonIsDisabled(); }} //EnumTypeSTIX   `json:"encryption_algorithm" bson:"encryption_algorithm"`                
-
-
-    case "updateTokenValuesChange":
-        return {...state, aliases: action.data};
-    case "updateKillChainPhases":
-        if(!state.kill_chain_phases){
-            state.kill_chain_phases = [];
-        }
-            
-        state.kill_chain_phases.push(action.data);
-    
-        return {...state};    
-    */
-
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

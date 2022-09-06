@@ -25,24 +25,40 @@ export default function CreateCampaingPatternElements(props){
         handlerChangeDateTimeLastSeen,
     } = props;
 
-    let currentTime = helpers.getToISODatetime();
-    
-    if(!campaignPatterElement.created){
-        campaignPatterElement.created = currentTime;
-    }
-    if(!campaignPatterElement.modified){
-        campaignPatterElement.modified = currentTime;
+    let firstSeen = minDefaultData;
+    //let lastSeen = minDefaultData
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+    let ft = Date.parse(campaignPatterElement.first_seen);
+
+    console.log("func 'CreateCampaingPatternElements', currentTimeZoneOffsetInHours = ", currentTimeZoneOffsetInHours);
+
+    if(currentTimeZoneOffsetInHours > 0){
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
+            firstSeen = new Date(ft + ms);//.toISOString();
+
+            console.log(">>>>>> firstSeen:", firstSeen, " ft(", ft, ") - ", ms, " (ms)");
+        }
+
+    } else {
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
+            firstSeen = new Date(ft - (ms * -1));//.toISOString();
+
+            console.log("<<<<<< firstSeen:", firstSeen, " ft(", ft, ") - ", ms, " (ms)");
+        }
     }
 
-    let firstSeen = (campaignPatterElement.first_seen === minDefaultData)? defaultData: campaignPatterElement.first_seen;
+    //    let firstSeen = (campaignPatterElement.first_seen === minDefaultData)? defaultData: campaignPatterElement.first_seen;
     let lastSeen = (campaignPatterElement.last_seen === minDefaultData)? defaultData: campaignPatterElement.last_seen;
+
+    console.log("func 'CreateCampaingPatternElements', campaignPatterElement.first_seen:", campaignPatterElement.first_seen, " firstSeen: ", firstSeen, " ft:", ft);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
+            <Grid item container md={8}>
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
-                    campaignPatterElement.name:
+                    <span className="mt-2">{campaignPatterElement.name}</span>:
                     <TextField
                         fullWidth
                         disabled={isDisabled}
@@ -102,7 +118,7 @@ export default function CreateCampaingPatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted">Первое обнаружение:</span>
+                <span className="text-muted mt-2">Первое обнаружение:</span>
             </Grid>
             <Grid item container md={8}>
                 {isDisabled?
@@ -123,7 +139,7 @@ export default function CreateCampaingPatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted">Последнее обнаружение:</span>
+                <span className="text-muted mt-2">Последнее обнаружение:</span>
             </Grid>
             <Grid item container md={8}>
                 {isDisabled?

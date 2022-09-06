@@ -1,25 +1,50 @@
 export default function reducerCampaignSTIXObjects(state, action){
     let lastSeen = "";
     let firstSeen = "";
-    let currentTimeZoneOffsetInHours = "";
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
 
     switch(action.type){
     case "newAll":
-        lastSeen = Date.parse(action.data.last_seen);
-        firstSeen = Date.parse(action.data.first_seen);
-        currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
 
-        if(currentTimeZoneOffsetInHours < 0){
-            action.data.last_seen = new Date(lastSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-            action.data.first_seen = new Date(firstSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-        } else {
-            action.data.last_seen = new Date(lastSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-            action.data.first_seen = new Date(firstSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+        console.log("func 'reducerCampaignSTIXObjects', BEFORE action.type:", action.type, " action.data:", action.data, " action.data.first_seen:", action.data.first_seen);
+
+        if(action.data.first_seen && action.data.last_seen){
+            lastSeen = Date.parse(action.data.last_seen);
+            firstSeen = Date.parse(action.data.first_seen);
+    
+            console.log("func 'reducerCampaignSTIXObjects', AFTER parse firstSeen:", firstSeen, " new Date().toISOString(): ", new Date(firstSeen).toISOString());
+
+            action.data.last_seen = new Date(Date.parse(action.data.last_seen)).toISOString();
+            action.data.first_seen = new Date(Date.parse(action.data.first_seen)).toISOString();
+
+            /*
+            currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
+
+            if(currentTimeZoneOffsetInHours < 0){
+                action.data.last_seen = new Date(lastSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+                action.data.first_seen = new Date(firstSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
+            } else {
+                action.data.last_seen = new Date(lastSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+                action.data.first_seen = new Date(firstSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
+            }
+            */    
         }
+
+        console.log("func 'reducerCampaignSTIXObjects', AFTER action.type:", action.type, " action.data:", action.data, " action.data.first_seen:", action.data.first_seen);
 
         return action.data;
     case "cleanAll":
         return {};
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
+    case "updateFirstSeenTime":
+        return {...state, first_seen: action.data};
+    case "updateLastSeenTime":
+        return {...state, last_seen: action.data};
+    case "addId":
+        return {...state, id: action.data};
     case "updateName":
         if(state.name === action.data){
             return {...state};
@@ -37,6 +62,10 @@ export default function reducerCampaignSTIXObjects(state, action){
     case "updateTokenValuesChange":
         return {...state, aliases: action.data};
     case "updateDateTimeFirstSeen":
+
+        console.log("func 'reducerCampaignSTIXObjects', AFTER action.type:", action.type, " action.data:", action.data, " new Date(action.data).toISOString():", new Date(action.data).toISOString(), " state.first_seen:", state.first_seen);
+        console.log("currentTimeZoneOffsetInHours = ", currentTimeZoneOffsetInHours);
+
         return {...state, first_seen: new Date(action.data).toISOString()};
     case "updateDateTimeLastSeen":
         return {...state, last_seen: new Date(action.data).toISOString()};

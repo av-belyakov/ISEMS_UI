@@ -13,6 +13,8 @@ import reducerCourseOfActionSTIXObjects from "../reducer_handlers/reducerCourseO
 import CreateCourseOfActionPatternElements from "../type_elements_stix/courseOfActionPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+let currentTime = helpers.getToISODatetime();
+
 export default function CreateCourseOfActionPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
@@ -58,8 +60,19 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, projectPatterElement);
-     
+    const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, {});
+    if(!state.created){
+        dispatch({ type: "updateCreatedTime", data: currentTime });
+    }
+
+    if(!state.modified){
+        dispatch({ type: "updateModifiedTime", data: currentTime });
+    }
+
+    useEffect(() => {
+        dispatch({ type: "newAll", data: projectPatterElement });
+    }, [ projectPatterElement ]);
+
     useEffect(() => {
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
@@ -128,11 +141,11 @@ function CreateMajorElements(props){
             </Grid>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{currentObjectId}</Grid>
+                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
             <CreateCourseOfActionPatternElements
                 isDisabled={false} 
-                projectPatterElement={state}
+                campaignPatterElement={state}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
             />

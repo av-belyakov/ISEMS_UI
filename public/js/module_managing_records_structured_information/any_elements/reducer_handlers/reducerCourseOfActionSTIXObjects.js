@@ -4,6 +4,10 @@ export default function reducerCourseOfActionSTIXObjects(state, action){
         return action.data;
     case "cleanAll":
         return {};
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
     case "addId":
         return {...state, id: action.data};
     case "updateName":
