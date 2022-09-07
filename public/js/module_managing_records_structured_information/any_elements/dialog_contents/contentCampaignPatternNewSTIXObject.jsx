@@ -25,8 +25,6 @@ export default function CreateCampaignPatternNewSTIXObject(props){
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
     } = props;
-    
-    console.log("func 'CreateCampaignPatternNewSTIXObject', projectPatterElement:", projectPatterElement);
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}

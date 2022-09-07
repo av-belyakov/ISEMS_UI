@@ -148,20 +148,10 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-            let data = state;
-            let lastSeen = Date.parse(state.last_seen);
-            let firstSeen = Date.parse(state.first_seen);
-            let currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
-    
-            if(currentTimeZoneOffsetInHours < 0){
-                data.last_seen = new Date(lastSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-                data.first_seen = new Date(firstSeen - ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-            } else {
-                data.last_seen = new Date(lastSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-                data.first_seen = new Date(firstSeen + (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-            }
+            state.first_seen = new Date(state.first_seen).toISOString();
+            state.last_seen = new Date(state.last_seen).toISOString();
 
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ data ] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }

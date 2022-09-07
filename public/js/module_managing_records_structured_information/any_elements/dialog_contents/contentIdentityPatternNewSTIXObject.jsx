@@ -58,7 +58,10 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerIdentitySTIXObject, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerIdentitySTIXObject, {});
+    useEffect(() => {
+        dispatch({ type: "newAll", data: projectPatterElement });
+    }, [ projectPatterElement ]);
 
     useEffect(() => {
         if(buttonAddClick){

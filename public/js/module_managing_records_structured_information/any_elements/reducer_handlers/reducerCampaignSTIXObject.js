@@ -8,32 +8,10 @@ export default function reducerCampaignSTIXObjects(state, action){
 
     switch(action.type){
     case "newAll":
-
-        //console.log("func 'reducerCampaignSTIXObjects', BEFORE action.type:", action.type, " action.data:", action.data, " action.data.first_seen:", action.data.first_seen);
-
         if(action.data.first_seen && action.data.last_seen){
-            //lastSeen = Date.parse(action.data.last_seen);
-            //firstSeen = Date.parse(action.data.first_seen);
-    
-            //console.log("func 'reducerCampaignSTIXObjects', AFTER parse firstSeen:", firstSeen, " new Date().toISOString(): ", new Date(firstSeen).toISOString());
-
             action.data.last_seen = new Date(Date.parse(action.data.last_seen)).toISOString();
             action.data.first_seen = new Date(Date.parse(action.data.first_seen)).toISOString();
-
-            /*
-            currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
-
-            if(currentTimeZoneOffsetInHours < 0){
-                action.data.last_seen = new Date(lastSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-                action.data.first_seen = new Date(firstSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
-            } else {
-                action.data.last_seen = new Date(lastSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-                action.data.first_seen = new Date(firstSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-            }
-            */    
         }
-
-        console.log("func 'reducerCampaignSTIXObjects', AFTER action.type:", action.type, " action.data:", action.data, " action.data.first_seen:", action.data.first_seen);
 
         return action.data;
     case "cleanAll":

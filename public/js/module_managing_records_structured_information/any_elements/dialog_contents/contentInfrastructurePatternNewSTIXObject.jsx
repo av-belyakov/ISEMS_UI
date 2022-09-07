@@ -13,6 +13,8 @@ import reducerInfrastructureSTIXObject from "../reducer_handlers/reducerInfrastr
 import CreateInfrastructurePatternElements from "../type_elements_stix/infrastructurePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+let currentTime = helpers.getToISODatetime();
+
 export default function CreateInfrastructurePatternNewSTIXObject(props){
     let { 
         isNotDisabled,
@@ -58,7 +60,27 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerInfrastructureSTIXObject, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerInfrastructureSTIXObject, {});
+    if(state && !state.created){
+        dispatch({ type: "updateCreatedTime", data: currentTime });
+    }
+
+    if(state && !state.modified){
+        dispatch({ type: "updateModifiedTime", data: currentTime });
+    }
+
+    if(state && !state.first_seen){
+        dispatch({ type: "updateFirstSeenTime", data: currentTime });
+    }
+
+    if(state && !state.last_seen){
+        dispatch({ type: "updateLastSeenTime", data: currentTime });
+    }
+
+    useEffect(() => {
+        dispatch({ type: "newAll", data: projectPatterElement });
+    }, [ projectPatterElement ]);
+
     useEffect(() => {
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
