@@ -81,25 +81,7 @@ const showInformationInCycle = (data, num) => {
             return (<div style={{ marginLeft: 6, paddingBottom: -2 }} key={`key_div_${newKey}_${num}`}>
                 <span className="text-muted">{newKey}</span>: {newValue}
             </div>);
-        }/* else {
-                let tmp = [];
-                for(let k in data){
-                    console.log("==========");
-                    console.log(k);
-                    console.log(data[k]);
-                    console.log("==========");
-
-                    if((_.isString(data[k])) || (_.isBoolean(data[k]))){
-                        tmp.push(<div key={`key_${k}_${num}`}>{(listValueName[k])? listValueName[k]: k}: {data[k]}</div>);
-                        //                tmp.push(<div key={`key_${k}_${num}`}>{(listValueName[k])? listValueName[k]: k}: {data[k]}</div>);
-        
-                        continue;
-                    }
-
-                    let comma = (tmp.length === 0)? " ": ", ";
-                    tmp.push(comma + showInformationInCicle(data[k], num++));
-                }
-            }*/
+        }
     }
 
     return data;

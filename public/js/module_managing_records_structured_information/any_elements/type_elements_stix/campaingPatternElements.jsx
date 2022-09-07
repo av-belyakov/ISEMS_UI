@@ -10,8 +10,7 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 
-const minDefaultData = "0001-01-01T00:00:00Z",
-    defaultData = "2001-01-01T00:00:01Z";
+const minDefaultData = "0001-01-01T00:00:00Z";
 
 export default function CreateCampaingPatternElements(props){
     let { 
@@ -26,32 +25,29 @@ export default function CreateCampaingPatternElements(props){
     } = props;
 
     let firstSeen = minDefaultData;
-    //let lastSeen = minDefaultData
+    let lastSeen = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
     let ft = Date.parse(campaignPatterElement.first_seen);
-
-    console.log("func 'CreateCampaingPatternElements', currentTimeZoneOffsetInHours = ", currentTimeZoneOffsetInHours);
+    let lt = Date.parse(campaignPatterElement.last_seen);
 
     if(currentTimeZoneOffsetInHours > 0){
         if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
-            firstSeen = new Date(ft + ms);//.toISOString();
-
-            console.log(">>>>>> firstSeen:", firstSeen, " ft(", ft, ") - ", ms, " (ms)");
+            firstSeen = new Date(ft + ms);
         }
 
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== lastSeen){
+            lastSeen = new Date(lt + ms);
+        }
     } else {
         if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
-            firstSeen = new Date(ft - (ms * -1));//.toISOString();
+            firstSeen = new Date(ft - (ms * -1));
+        }
 
-            console.log("<<<<<< firstSeen:", firstSeen, " ft(", ft, ") - ", ms, " (ms)");
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== lastSeen){
+            lastSeen = new Date(lt - (ms * -1));
         }
     }
-
-    //    let firstSeen = (campaignPatterElement.first_seen === minDefaultData)? defaultData: campaignPatterElement.first_seen;
-    let lastSeen = (campaignPatterElement.last_seen === minDefaultData)? defaultData: campaignPatterElement.last_seen;
-
-    console.log("func 'CreateCampaingPatternElements', campaignPatterElement.first_seen:", campaignPatterElement.first_seen, " firstSeen: ", firstSeen, " ft:", ft);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>

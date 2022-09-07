@@ -2,17 +2,20 @@ export default function reducerCampaignSTIXObjects(state, action){
     let lastSeen = "";
     let firstSeen = "";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+
+    let tmp = "";
 
     switch(action.type){
     case "newAll":
 
-        console.log("func 'reducerCampaignSTIXObjects', BEFORE action.type:", action.type, " action.data:", action.data, " action.data.first_seen:", action.data.first_seen);
+        //console.log("func 'reducerCampaignSTIXObjects', BEFORE action.type:", action.type, " action.data:", action.data, " action.data.first_seen:", action.data.first_seen);
 
         if(action.data.first_seen && action.data.last_seen){
-            lastSeen = Date.parse(action.data.last_seen);
-            firstSeen = Date.parse(action.data.first_seen);
+            //lastSeen = Date.parse(action.data.last_seen);
+            //firstSeen = Date.parse(action.data.first_seen);
     
-            console.log("func 'reducerCampaignSTIXObjects', AFTER parse firstSeen:", firstSeen, " new Date().toISOString(): ", new Date(firstSeen).toISOString());
+            //console.log("func 'reducerCampaignSTIXObjects', AFTER parse firstSeen:", firstSeen, " new Date().toISOString(): ", new Date(firstSeen).toISOString());
 
             action.data.last_seen = new Date(Date.parse(action.data.last_seen)).toISOString();
             action.data.first_seen = new Date(Date.parse(action.data.first_seen)).toISOString();
@@ -62,13 +65,25 @@ export default function reducerCampaignSTIXObjects(state, action){
     case "updateTokenValuesChange":
         return {...state, aliases: action.data};
     case "updateDateTimeFirstSeen":
+        tmp = Date.parse(action.data);
 
-        console.log("func 'reducerCampaignSTIXObjects', AFTER action.type:", action.type, " action.data:", action.data, " new Date(action.data).toISOString():", new Date(action.data).toISOString(), " state.first_seen:", state.first_seen);
-        console.log("currentTimeZoneOffsetInHours = ", currentTimeZoneOffsetInHours);
+        if(currentTimeZoneOffsetInHours < 0){
+            firstSeen = new Date(tmp + (ms * -1));
+        } else {
+            firstSeen = new Date(tmp - (ms * -1));
+        }
 
-        return {...state, first_seen: new Date(action.data).toISOString()};
+        return {...state, first_seen: firstSeen};
     case "updateDateTimeLastSeen":
-        return {...state, last_seen: new Date(action.data).toISOString()};
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            lastSeen = new Date(tmp + (ms * -1));
+        } else {
+            lastSeen = new Date(tmp - (ms * -1));
+        }
+
+        return {...state, last_seen: lastSeen};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

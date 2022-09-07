@@ -143,17 +143,24 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){            
-            let lastSeen = Date.parse(state.last_seen);
-            let firstSeen = Date.parse(state.first_seen);
-            let currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
-        
-            if(currentTimeZoneOffsetInHours < 0){
+            //let lastSeen = Date.parse(state.last_seen);
+            //let firstSeen = Date.parse(state.first_seen);
+            //let currentTimeZoneOffsetInHours = new Date(lastSeen).getTimezoneOffset() / 60;
+
+            console.log("func 'useEffect', BEFORE, state.first_seen:", state.first_seen, ", new Date(state.first_seen).toISOString():", new Date(state.first_seen).toISOString());
+
+            state.first_seen = new Date(state.first_seen).toISOString();
+            state.last_seen = new Date(state.last_seen).toISOString();
+
+            /*if(currentTimeZoneOffsetInHours < 0){
                 state.last_seen = new Date(lastSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
                 state.first_seen = new Date(firstSeen + ((currentTimeZoneOffsetInHours * -1) * 3600000)).toISOString();
             } else {
                 state.last_seen = new Date(lastSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
                 state.first_seen = new Date(firstSeen - (currentTimeZoneOffsetInHours * 3600000)).toISOString();
-            }
+            }*/
+
+            //            console.log("func 'useEffect', AFTER, state.first_seen:", state.first_seen, ", new Date(state.first_seen).toISOString():", new Date(state.first_seen).toISOString());
 
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();

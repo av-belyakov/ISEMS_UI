@@ -26,7 +26,14 @@ const sortDateFunc = (a, b) => {
     if(timeA < timeB) return 1;
 };
 
-const showInformationInCycle = (data, num) => {
+const showInformationInCycle = (data, num, named) => {
+    let listFieldDate = [ 
+        "FirstSeen",
+        "LastSeen", 
+        "Modified",
+        "Created",
+    ];    
+
     if(_.isBoolean(data)){
         if(data){
             return <span style={{ color: blue[600] }}>ДА</span>;
@@ -38,6 +45,10 @@ const showInformationInCycle = (data, num) => {
     if(_.isString(data)){
         if(data.length === 0){
             return <span style={{ color: green[600] }}>нет значения</span>;
+        }
+
+        if(listFieldDate.find((item) => item === named)){
+            return helpers.convertDateFromString(new Date(data).toISOString(), { monthDescription: "long", dayDescription: "numeric" });
         }
 
         return data;
@@ -325,7 +336,7 @@ function CreateFrame(props){
 
                             return (<Grid item xs zeroMinWidth key={`key_value_name_${n}_${item.modified_time}`}>
                                 <Typography variant="caption" color="inherit" display="block">
-                                    <span className="text-muted">{helpers.getHumanNameSTIXElement(tmpPath[num])}</span>: {showInformationInCycle(value, 1)}
+                                    <span className="text-muted">{helpers.getHumanNameSTIXElement(tmpPath[num])}</span>: {showInformationInCycle(value, 1, tmpPath[num])}
                                 </Typography>
                             </Grid>);
                         })}
