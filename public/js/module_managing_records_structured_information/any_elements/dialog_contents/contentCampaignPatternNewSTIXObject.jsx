@@ -19,33 +19,36 @@ export default function CreateCampaignPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
         currentObjectId={`campaign--${uuidv4()}`}
-        parentIdSTIXObject={parentIdSTIXObject}
+        buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
         handlerAddSTIXObject={handlerAddSTIXObject}
         handlerChangeButtonAdd={handlerChangeButtonAdd}
+        handlerChangeNewSTIXObject={handlerChangeNewSTIXObject}
     />;
 }
     
 CreateCampaignPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };
 
 function CreateMajorElements(props){
@@ -53,11 +56,12 @@ function CreateMajorElements(props){
         isNotDisabled,
         buttonAddClick,
         currentObjectId,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerCampaignSTIXObjects, {});
@@ -78,7 +82,9 @@ function CreateMajorElements(props){
     }
 
     useEffect(() => {
-        dispatch({ type: "newAll", data: projectPatterElement });
+        if(projectPatterElement.type === "campaign"){
+            dispatch({ type: "newAll", data: projectPatterElement });
+        }
     }, [ projectPatterElement ]);
 
     useEffect(() => {
@@ -94,6 +100,12 @@ function CreateMajorElements(props){
             handlerAddSTIXObject(stateTmp);
         }
     }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
+
+    useEffect(() => {
+        if(buttonChangeClick){
+            handlerChangeNewSTIXObject(state);
+        }
+    }, [ buttonChangeClick ]);
     
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -139,6 +151,13 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd(false);
     };
 
+    /**
+     * 
+     * почему то когда просматриваешь уже добавленный элемент campaign да и другой тоже
+     * id элемента выводится новое а не то которое уже присвоенно элементу!!!
+     * 
+     */
+
     return (<Paper elevation={3} style={{ width: "100%" }}>
         <Box m={2} pb={2}>
             <Grid container direction="row">
@@ -180,10 +199,11 @@ CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     currentObjectId: PropTypes.string.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };
      

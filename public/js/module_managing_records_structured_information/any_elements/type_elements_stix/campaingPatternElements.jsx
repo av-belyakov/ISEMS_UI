@@ -30,7 +30,7 @@ export default function CreateCampaingPatternElements(props){
     let ms = currentTimeZoneOffsetInHours * 3600000;
     let ft = Date.parse(campaignPatterElement.first_seen);
     let lt = Date.parse(campaignPatterElement.last_seen);
-
+    
     if(currentTimeZoneOffsetInHours > 0){
         if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
             firstSeen = new Date(ft + ms);

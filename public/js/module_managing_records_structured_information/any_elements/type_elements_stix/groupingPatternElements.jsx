@@ -20,9 +20,6 @@ export default function CreateGroupingPatternElements(props){
         handlerDescription,
     } = props;
 
-    console.log("func 'CreateInfrastructurePatternElements', campaignPatterElement: ", campaignPatterElement);
-    console.log("_______________________________________");
-
     let currentTime = helpers.getToISODatetime();
     
     if(!campaignPatterElement.created){
@@ -34,10 +31,10 @@ export default function CreateGroupingPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
+            <Grid item container md={8}>
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
-                    campaignPatterElement.name:
+                    <span className="mt-2">{campaignPatterElement.name}</span>:
                     <TextField
                         fullWidth
                         disabled={isDisabled}

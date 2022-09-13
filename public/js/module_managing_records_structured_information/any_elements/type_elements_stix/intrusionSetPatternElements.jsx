@@ -15,8 +15,7 @@ import {
     CreateListSecondaryMotivations,
 } from "../anyElements.jsx";
 
-const minDefaultData = "0001-01-01T00:00:00Z",
-    defaultData = "2001-01-01T00:00:01Z";
+const minDefaultData = "0001-01-01T00:00:00Z";
 
 export default function CreateIntrusionSetPatternElements(props){
     let { 
@@ -33,6 +32,7 @@ export default function CreateIntrusionSetPatternElements(props){
         handlerAliasesTokenValuesChange,
     } = props;
 
+    /*
     let currentTime = helpers.getToISODatetime();
     
     if(!campaignPatterElement.created){
@@ -44,13 +44,39 @@ export default function CreateIntrusionSetPatternElements(props){
 
     let firstSeen = (!campaignPatterElement.first_seen || (campaignPatterElement.first_seen === minDefaultData))? defaultData: campaignPatterElement.first_seen;
     let lastSeen = (!campaignPatterElement.last_seen || (campaignPatterElement.last_seen === minDefaultData))? defaultData: campaignPatterElement.last_seen;
+*/
+
+    let firstSeen = minDefaultData;
+    let lastSeen = minDefaultData;
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+    let ft = Date.parse(campaignPatterElement.first_seen);
+    let lt = Date.parse(campaignPatterElement.last_seen);
+
+    if(currentTimeZoneOffsetInHours > 0){
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
+            firstSeen = new Date(ft + ms);
+        }
+
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== lastSeen){
+            lastSeen = new Date(lt + ms);
+        }
+    } else {
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
+            firstSeen = new Date(ft - (ms * -1));
+        }
+
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== lastSeen){
+            lastSeen = new Date(lt - (ms * -1));
+        }
+    }
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
             <Grid item container md={8} >
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
-                    campaignPatterElement.name:
+                    <span className="mt-2">{campaignPatterElement.name}</span>:
                     <TextField
                         fullWidth
                         disabled={isDisabled}
@@ -83,7 +109,7 @@ export default function CreateIntrusionSetPatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted">Первое обнаружение:</span>
+                <span className="text-muted mt-2">Первое обнаружение:</span>
             </Grid>
             <Grid item container md={8}>
                 {isDisabled?
@@ -104,7 +130,7 @@ export default function CreateIntrusionSetPatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted">Последнее обнаружение:</span>
+                <span className="text-muted mt-2">Последнее обнаружение:</span>
             </Grid>
             <Grid item container md={8}>
                 {isDisabled?

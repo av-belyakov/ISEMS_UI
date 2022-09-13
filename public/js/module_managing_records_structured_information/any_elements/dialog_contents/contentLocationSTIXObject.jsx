@@ -126,9 +126,6 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
-
-            console.log("++++++++++++ func 'listener', reseived data: ", obj);
-
             dispatch({ type: "newAll", data: obj });
         }
     };
@@ -151,7 +148,7 @@ function CreateMajorContent(props){
         }
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
-        if(buttonSaveChangeTrigger){
+        if(buttonSaveChangeTrigger){            
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();

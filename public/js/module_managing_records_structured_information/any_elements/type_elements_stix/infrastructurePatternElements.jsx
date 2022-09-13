@@ -32,15 +32,6 @@ export default function CreateInfrastructurePatternElements(props){
     let lastSeen = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
-    //let ft = Date.parse(campaignPatterElement.first_seen);
-    //let lt = Date.parse(campaignPatterElement.last_seen);
-
-    console.log("func 'CreateInfrastructurePatternElements', campaignPatterElement: ", campaignPatterElement);
-    /**
-     * 
-     * Какая то проблема с campaignPatterElement, почему то undefined
-     * 
-     */
 
     if(currentTimeZoneOffsetInHours > 0){
         if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
@@ -60,24 +51,12 @@ export default function CreateInfrastructurePatternElements(props){
         }
     }
 
-    /*let firstSeen = (!campaignPatterElement.first_seen || (campaignPatterElement.first_seen === minDefaultData))? defaultData: campaignPatterElement.first_seen;
-    let lastSeen = (!campaignPatterElement.last_seen || (campaignPatterElement.last_seen === minDefaultData))? defaultData: campaignPatterElement.last_seen;
-
-    let currentTime = helpers.getToISODatetime();
-    
-    if(!campaignPatterElement.created){
-        campaignPatterElement.created = currentTime;
-    }
-    if(!campaignPatterElement.modified){
-        campaignPatterElement.modified = currentTime;
-    }*/
-
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
+            <Grid item container md={8}>
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
-                    campaignPatterElement.name:
+                    <span className="mt-2">{campaignPatterElement.name}</span>:
                     <TextField
                         fullWidth
                         disabled={isDisabled}

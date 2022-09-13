@@ -13,11 +13,17 @@ export default function reducerInfrastructureSTIXObject(state, action){
             action.data.first_seen = new Date(Date.parse(action.data.first_seen)).toISOString();
         }
 
-        console.log("func 'reducerInfrastructureSTIXObject', action.type:", action.type, ", action.data:", action.data);
-
         return action.data;
     case "cleanAll":
         return {};
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
+    case "updateFirstSeenTime":
+        return {...state, first_seen: action.data};
+    case "updateLastSeenTime":
+        return {...state, last_seen: action.data};
     case "updateName":
         if(state.name === action.data){
             return {...state};
@@ -63,12 +69,6 @@ export default function reducerInfrastructureSTIXObject(state, action){
         }
     
         return {...state, last_seen: lastSeen};
-        /*
-    case "updateDateTimeFirstSeen":
-        return {...state, first_seen: new Date(action.data).toISOString()};
-    case "updateDateTimeLastSeen":
-        return {...state, last_seen: new Date(action.data).toISOString()};
-        */
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

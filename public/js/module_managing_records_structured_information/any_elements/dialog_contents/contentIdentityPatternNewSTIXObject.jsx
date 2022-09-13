@@ -17,33 +17,36 @@ export default function CreateIdentityPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
         currentObjectId={`identity--${uuidv4()}`}
-        parentIdSTIXObject={parentIdSTIXObject}
+        buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
         handlerAddSTIXObject={handlerAddSTIXObject}
         handlerChangeButtonAdd={handlerChangeButtonAdd}
+        handlerChangeNewSTIXObject={handlerChangeNewSTIXObject}
     />;
 }
      
 CreateIdentityPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };
 
 function CreateMajorElements(props){
@@ -51,16 +54,19 @@ function CreateMajorElements(props){
         isNotDisabled,
         buttonAddClick,
         currentObjectId,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerIdentitySTIXObject, {});
     useEffect(() => {
-        dispatch({ type: "newAll", data: projectPatterElement });
+        if(projectPatterElement.type === "identity"){
+            dispatch({ type: "newAll", data: projectPatterElement });
+        }
     }, [ projectPatterElement ]);
 
     useEffect(() => {
@@ -76,7 +82,15 @@ function CreateMajorElements(props){
             handlerAddSTIXObject(stateTmp);
         }
     }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
-     
+    
+    
+    useEffect(() => {
+        if(buttonChangeClick){
+            handlerChangeNewSTIXObject(state);
+        }
+    }, [ buttonChangeClick ]);
+
+
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
@@ -161,9 +175,10 @@ CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     currentObjectId: PropTypes.string.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };

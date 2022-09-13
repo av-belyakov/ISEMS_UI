@@ -166,6 +166,7 @@ export default function CreateDialogContentNewSTIXObject(props){
     let [ modifySTIXObject, setModifySTIXObject ] = React.useState({});
     let [ buttonAddClick, setButtonAddClick ] = React.useState(false);
     let [ buttonAddIsDisabled, setButtonAddIsDisabled ] = React.useState(true);
+    let [ buttonChangeClick, setButtonChangeClick ] = React.useState(false);
     let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = React.useState(true);
 
     useEffect(() => {
@@ -271,6 +272,22 @@ export default function CreateDialogContentNewSTIXObject(props){
         setButtonAddIsDisabled(status);
     };
 
+    let handlerChangeNewSTIXObject = (state) => {
+        console.log("!!!! ____ func 'handlerChangeNewSTIXObject', state = ", state);
+
+        for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
+            if(listNewOrModifySTIXObject[i].id === state.id){
+                listNewOrModifySTIXObject[i] = state;
+
+                break;
+            }
+        }
+
+        console.log("!!!! ____ func 'handlerChangeNewSTIXObject', AFTER listNewOrModifySTIXObject = ", listNewOrModifySTIXObject);
+
+        setButtonChangeClick(false);
+    };
+
     let MyModule = somethingModule(typeObjectSTIX);
 
     console.log("func 'CreateDialogContentNewSTIXObject' projectPatterElement:", projectPatterElement);
@@ -309,6 +326,7 @@ export default function CreateDialogContentNewSTIXObject(props){
 
                                                             //setModifySTIXObject(k);
                                                             dispatchProjectPatterElement({ type: "newAll", data: k });
+                                                            setTypeObjectSTIX(k.type);
 
                                                             break;
                                                         }
@@ -345,7 +363,27 @@ export default function CreateDialogContentNewSTIXObject(props){
                                     fullWidth
                                     label={"тип искомого или создаваемого объекта (не обязательный параметр)"}
                                     value={typeObjectSTIX}
-                                    onChange={(obj) => setTypeObjectSTIX(obj.target.value)}>
+                                    onChange={(obj) => {
+                                        setTypeObjectSTIX(obj.target.value);
+
+                                        /**
+                                         * 
+                                         * сохранить данные из projectPatterElement в listNewOrModifySTIXObject
+                                         *                                          
+                                        console.log("onChange тип искомого или создаваемого объекта projectPatterElement:", projectPatterElement);
+
+                                        for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
+                                            if(listNewOrModifySTIXObject[i].id === projectPatterElement.id){
+                                                listNewOrModifySTIXObject[i] = projectPatterElement;
+
+                                                break;
+                                            }
+                                        }
+
+                                         */
+
+                                        dispatchProjectPatterElement({ type: "cleanAll" });
+                                    }}>
                                     <MenuItem key={"key-type-none"} value="">тип не определен</MenuItem>
                                     {listLinkImageSTIXObject.map((item) => <MenuItem key={`key-${item}`} value={item}>{helpers.getLinkImageSTIXObject(item).description}</MenuItem>)}
                                 </TextField>
@@ -431,12 +469,13 @@ export default function CreateDialogContentNewSTIXObject(props){
                     {MyModule && <MyModule 
                         isNotDisabled={isNotDisabled}
                         buttonAddClick={buttonAddClick}
-                        modifySTIXObject={modifySTIXObject}
+                        buttonChangeClick={buttonChangeClick}
                         parentIdSTIXObject={currentIdSTIXObject}
                         buttonAddIsDisabled={buttonAddIsDisabled}
                         projectPatterElement={projectPatterElement}
                         handlerAddSTIXObject={handlerAddSTIXObject}
                         handlerChangeButtonAdd={handlerChangeButtonAdd}
+                        handlerChangeNewSTIXObject={handlerChangeNewSTIXObject}
                     />}
                 </Grid>
             </Grid>
@@ -447,18 +486,29 @@ export default function CreateDialogContentNewSTIXObject(props){
             {typeof projectPatterElement.id === "undefined"? <Button 
                 disabled={buttonAddIsDisabled}
                 onClick={() => { 
-                    setButtonAddClick(true); 
+                    setButtonAddClick(true);
+                    //setTypeObjectSTIX(""); 
                     setButtonAddIsDisabled(true);
                 }}
                 style={{ color: blue[400] }}>
                 добавить объект
-            </Button>: 
-                ""}
+            </Button>:
+                <Button 
+                    //disabled={buttonAddIsDisabled}
+                    onClick={() => { 
+                        setButtonChangeClick(true);
+
+                        //setButtonAddClick(true);
+                        //setButtonAddIsDisabled(true);
+                    }}
+                    style={{ color: blue[400] }}>
+                сохранить изменения
+                </Button>}
             <Button 
                 disabled={buttonSaveIsDisabled}
                 onClick={() => { handlerDialog(parentSTIXObject, listRefsForObjectSTIX, listNewOrModifySTIXObject); }}
                 style={{ color: green[400] }}>
-                сохранить изменения
+                добавить ссылки
             </Button>
         </DialogActions>
     </React.Fragment>);

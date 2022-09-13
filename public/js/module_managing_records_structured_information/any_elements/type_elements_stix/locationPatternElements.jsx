@@ -41,17 +41,18 @@ export default function CreateLocationPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            {/*<Grid item container md={8} >{campaignPatterElement.name}</Grid>*/}
-            <Grid item container md={8} justifyContent="flex-start">
-                <TextField
-                    fullWidth
-                    disabled={isDisabled}
-                    id="name-element"
-                    InputLabelProps={{ shrink: true }}
-                    onChange={handlerName}
-                    value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
-                />
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
+            <Grid item container md={8}>
+                {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
+                    <span className="mt-2">{campaignPatterElement.name}</span>:
+                    <TextField
+                        fullWidth
+                        disabled={isDisabled}
+                        id="name-element"
+                        InputLabelProps={{ shrink: true }}
+                        onChange={handlerName}
+                        value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
+                    />}
             </Grid>
         </Grid>
 
@@ -143,14 +144,15 @@ export default function CreateLocationPatternElements(props){
                     }}
                 />
             </Grid>
-            <Grid item container md={3} justifyContent="center">
+            <Grid item container md={3} justifyContent="flex-start">
                 <TextField
                     id="precision-number"
                     label="Точность (Precision)"
                     type="number"
                     disabled={isDisabled}
                     InputLabelProps={{ shrink: true }}
-                    value={(campaignPatterElement.precision)? campaignPatterElement.precision: 0}
+                    //value={(campaignPatterElement.precision)? campaignPatterElement.precision: 0}
+                    value={(campaignPatterElement.precision)? campaignPatterElement.precision: ""}
                     onChange={handlerPrecision}
                 />
             </Grid>
@@ -201,7 +203,7 @@ export default function CreateLocationPatternElements(props){
                     onChange={handlerAdministrativeArea}
                 />
             </Grid>
-            <Grid item container md={3} justifyContent="center">
+            <Grid item container md={3} justifyContent="flex-start">
                 <TextField
                     id="city-element"
                     label="Город"

@@ -4,6 +4,10 @@ export default function reducerLocationSTIXObjects(state, action){
         return action.data;
     case "cleanAll":
         return {};
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
     case "updateName":
         return {...state, name: action.data};            
     case "updateDescription":

@@ -13,37 +13,42 @@ import reducerLocationSTIXObjects from "../reducer_handlers/reducerLocationSTIXO
 import CreateLocationPatternElements from "../type_elements_stix/locationPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+let currentTime = helpers.getToISODatetime();
+
 export default function CreateLocationPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
         currentObjectId={`location--${uuidv4()}`}
-        parentIdSTIXObject={parentIdSTIXObject}
+        buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
         handlerAddSTIXObject={handlerAddSTIXObject}
         handlerChangeButtonAdd={handlerChangeButtonAdd}
+        handlerChangeNewSTIXObject={handlerChangeNewSTIXObject}
     />;
 }
      
 CreateLocationPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };
 
 function CreateMajorElements(props){
@@ -51,14 +56,28 @@ function CreateMajorElements(props){
         isNotDisabled,
         buttonAddClick,
         currentObjectId,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerLocationSTIXObjects, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerLocationSTIXObjects, {});
+    if(state && !state.created){
+        dispatch({ type: "updateCreatedTime", data: currentTime });
+    }
+
+    if(state && !state.modified){
+        dispatch({ type: "updateModifiedTime", data: currentTime });
+    }
+
+    useEffect(() => {
+        if(projectPatterElement.type === "location"){
+            dispatch({ type: "newAll", data: projectPatterElement });
+        }
+    }, [ projectPatterElement ]);
 
     useEffect(() => {
         if(buttonAddClick){
@@ -74,6 +93,12 @@ function CreateMajorElements(props){
         }
     }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
      
+    useEffect(() => {
+        if(buttonChangeClick){
+            handlerChangeNewSTIXObject(state);
+        }
+    }, [ buttonChangeClick ]);
+
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
@@ -163,9 +188,10 @@ CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     currentObjectId: PropTypes.string.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };
