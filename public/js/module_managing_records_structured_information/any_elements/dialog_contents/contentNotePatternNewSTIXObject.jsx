@@ -13,37 +13,42 @@ import reducerNoteSTIXObjects from "../reducer_handlers/reducerNoteSTIXObject.js
 import CreateNotePatternElements from "../type_elements_stix/notePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+let currentTime = helpers.getToISODatetime();
+
 export default function CreateNotePatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
         currentObjectId={`note--${uuidv4()}`}
-        parentIdSTIXObject={parentIdSTIXObject}
+        buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
         handlerAddSTIXObject={handlerAddSTIXObject}
         handlerChangeButtonAdd={handlerChangeButtonAdd}
+        handlerChangeNewSTIXObject={handlerChangeNewSTIXObject}
     />;
 }
      
 CreateNotePatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };
 
 function CreateMajorElements(props){
@@ -51,14 +56,28 @@ function CreateMajorElements(props){
         isNotDisabled,
         buttonAddClick,
         currentObjectId,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerNoteSTIXObjects, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerNoteSTIXObjects, {});
+    if(state && !state.created){
+        dispatch({ type: "updateCreatedTime", data: currentTime });
+    }
+
+    if(state && !state.modified){
+        dispatch({ type: "updateModifiedTime", data: currentTime });
+    }
+
+    useEffect(() => {
+        if(projectPatterElement.type === "note"){
+            dispatch({ type: "newAll", data: projectPatterElement });
+        }
+    }, [ projectPatterElement ]);
 
     useEffect(() => {
         if(buttonAddClick){
@@ -73,7 +92,13 @@ function CreateMajorElements(props){
             handlerAddSTIXObject(stateTmp);
         }
     }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
-    
+
+    useEffect(() => {
+        if(buttonChangeClick){
+            handlerChangeNewSTIXObject(state);
+        }
+    }, [ buttonChangeClick ]);
+
     const handlerButtonIsDisabled = (content) => {
         if(content === "" || (!state.content || state.content === "")){
             handlerChangeButtonAdd(true);
@@ -126,7 +151,7 @@ function CreateMajorElements(props){
             </Grid>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{currentObjectId}</Grid>
+                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
             <CreateNotePatternElements 
                 isDisabled={false}
@@ -153,9 +178,10 @@ CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     currentObjectId: PropTypes.string.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };

@@ -4,6 +4,10 @@ export default function reducerOpinionSTIXObjects(state, action){
         return action.data;
     case "cleanAll":
         return {};
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
     case "updateAuthors":
         return {...state, authors: action.data};
     case "updateOpinion":

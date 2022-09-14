@@ -1,13 +1,49 @@
 export default function reducerObservedDataSTIXObjects(state, action){
+    let lastObserved = "";
+    let firstObserved = "";
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+
+    let tmp = "";
+
     switch(action.type){
     case "newAll":
+        if(action.data.first_observed && action.data.last_observed){
+            action.data.last_observed = new Date(Date.parse(action.data.last_observed)).toISOString();
+            action.data.first_observed = new Date(Date.parse(action.data.first_observed)).toISOString();
+        }
+
         return action.data;
     case "cleanAll":
         return {};
-    case "updateFirstObserved":
-        return {...state, first_observed: new Date(action.data).toISOString()};
-    case "updateLastObserved":
-        return {...state, last_observed: new Date(action.data).toISOString()};
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
+    case "updateFirstObservedTime":
+        return {...state, first_observed: action.data};
+    case "updateLastObservedTime":
+        return {...state, last_observed: action.data};
+    case "updateDateTimeFirstObserved":
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            firstObserved = new Date(tmp + (ms * -1));
+        } else {
+            firstObserved = new Date(tmp - (ms * -1));
+        }
+
+        return {...state, first_observed: firstObserved};
+    case "updateDateTimeLastObserved":
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            lastObserved = new Date(tmp + (ms * -1));
+        } else {
+            lastObserved = new Date(tmp - (ms * -1));
+        }
+
+        return {...state, last_observed: lastObserved};
     case "updateNumberObserved":
         return {...state, number_observed: +action.data};
     case "updateConfidence":

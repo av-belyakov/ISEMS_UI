@@ -161,7 +161,7 @@ function CreateMajorElements(props){
             </Grid>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{currentObjectId}</Grid>
+                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
             <CreateInfrastructurePatternElements 
                 isDisabled={false}

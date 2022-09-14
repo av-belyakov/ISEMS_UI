@@ -1,9 +1,20 @@
 export default function reducerNoteSTIXObjects(state, action){
+    /*let lastSeen = "";
+    let firstSeen = "";
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+
+    let tmp = "";*/
+
     switch(action.type){
     case "newAll":
         return action.data;
     case "cleanAll":
         return {};
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
     case "updateAuthors":
         return {...state, authors: action.data};
     case "updateContent":

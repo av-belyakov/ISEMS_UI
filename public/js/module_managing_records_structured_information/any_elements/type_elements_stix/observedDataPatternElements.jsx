@@ -13,8 +13,7 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 
-const minDefaultData = "0001-01-01T00:00:00Z",
-    defaultData = "2001-01-01T00:00:01Z";
+const minDefaultData = "0001-01-01T00:00:00Z";
 
 export default function CreateObservedDataPatternElements(props){
     let { 
@@ -25,17 +24,30 @@ export default function CreateObservedDataPatternElements(props){
         handlerNumberObserved,
     } = props;
 
-    let currentTime = helpers.getToISODatetime();
+    let firstObserved = minDefaultData;
+    let lastObserved = minDefaultData;
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+    let ft = Date.parse(campaignPatterElement.first_observed);
+    let lt = Date.parse(campaignPatterElement.last_observed);
     
-    if(!campaignPatterElement.created){
-        campaignPatterElement.created = currentTime;
-    }
-    if(!campaignPatterElement.modified){
-        campaignPatterElement.modified = currentTime;
-    }
+    if(currentTimeZoneOffsetInHours > 0){
+        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed !== firstObserved){
+            firstObserved = new Date(ft + ms);
+        }
 
-    let firstObserved = (campaignPatterElement.first_observed === minDefaultData)? defaultData: campaignPatterElement.first_observed;
-    let lastObserved = (campaignPatterElement.last_observed === minDefaultData)? defaultData: campaignPatterElement.last_observed;
+        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed !== lastObserved){
+            lastObserved = new Date(lt + ms);
+        }
+    } else {
+        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed !== firstObserved){
+            firstObserved = new Date(ft - (ms * -1));
+        }
+
+        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed !== lastObserved){
+            lastObserved = new Date(lt - (ms * -1));
+        }
+    }
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>

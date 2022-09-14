@@ -143,23 +143,13 @@ function CreateMajorElements(props){
             </Grid>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{currentObjectId}</Grid>
+                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
             <CreateGroupingPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                handlerContext={(e) => { 
-                    /*dispatch({ type: "updateContex", data: e.target.value });
-
-                    if(checkRequiredValue(e.target.value, state.object_refs)){
-                        handlerButtonIsDisabled(false);
-                    } else {
-                        handlerButtonIsDisabled(true);
-                    }*/
-                    dispatch({ type: "updateContex", data: e.target.value });
-                    handlerButtonIsDisabled();
-                }}
+                handlerContext={(e) => { dispatch({ type: "updateContex", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
             />
             <CreateElementAdditionalTechnicalInformationDO

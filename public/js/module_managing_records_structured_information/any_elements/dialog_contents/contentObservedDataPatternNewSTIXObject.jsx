@@ -13,39 +13,42 @@ import reducerObservedDataSTIXObjects from "../reducer_handlers/reducerObservedD
 import CreateObservedDataPatternElements from "../type_elements_stix/observedDataPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+let currentTime = helpers.getToISODatetime();
+
 export default function CreateObservedDataPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
-
-    //"indicator": "",зависит от "observed-data"
 
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
         currentObjectId={`observed-data--${uuidv4()}`}
-        parentIdSTIXObject={parentIdSTIXObject}
+        buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
         handlerAddSTIXObject={handlerAddSTIXObject}
         handlerChangeButtonAdd={handlerChangeButtonAdd}
+        handlerChangeNewSTIXObject={handlerChangeNewSTIXObject}
     />;
 }
      
 CreateObservedDataPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };
 
 function CreateMajorElements(props){
@@ -53,14 +56,37 @@ function CreateMajorElements(props){
         isNotDisabled,
         buttonAddClick,
         currentObjectId,
-        parentIdSTIXObject,
+        buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
         handlerAddSTIXObject,
         handlerChangeButtonAdd,
+        handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerObservedDataSTIXObjects, projectPatterElement);
+    const [ state, dispatch ] = useReducer(reducerObservedDataSTIXObjects, {});
+    if(state && !state.created){
+        dispatch({ type: "updateCreatedTime", data: currentTime });
+    }
+
+    if(state && !state.modified){
+        dispatch({ type: "updateModifiedTime", data: currentTime });
+    }
+
+    if(state && !state.first_observed){
+        dispatch({ type: "updateFirstObservedTime", data: currentTime });
+    }
+
+    if(state && !state.last_observed){
+        dispatch({ type: "updateLastObservedTime", data: currentTime });
+    }
+
+    useEffect(() => {
+        if(projectPatterElement.type === "observed-data"){
+            dispatch({ type: "newAll", data: projectPatterElement });
+        }
+    }, [ projectPatterElement ]);
+
     const handlerButtonIsDisabled = () => {
         if(!buttonAddIsDisabled){
             return;
@@ -82,6 +108,12 @@ function CreateMajorElements(props){
             handlerAddSTIXObject(stateTmp);
         }
     }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
+
+    useEffect(() => {
+        if(buttonChangeClick){
+            handlerChangeNewSTIXObject(state);
+        }
+    }, [ buttonChangeClick ]);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -125,14 +157,14 @@ function CreateMajorElements(props){
 
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{currentObjectId}</Grid>
+                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
             
             <CreateObservedDataPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
-                handlerFirstObserved={(e) => { dispatch({ type: "updateFirstObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerLastObserved={(e) => { dispatch({ type: "updateLastObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerFirstObserved={(e) => { dispatch({ type: "updateDateTimeFirstObserved", data: e }); handlerButtonIsDisabled(); }}
+                handlerLastObserved={(e) => { dispatch({ type: "updateDateTimeLastObserved", data: e }); handlerButtonIsDisabled(); }}
                 handlerNumberObserved={(e) => { dispatch({ type: "updateNumberObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
             />
             
@@ -154,9 +186,10 @@ CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     currentObjectId: PropTypes.string.isRequired,
-    parentIdSTIXObject: PropTypes.string.isRequired,
+    buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
     handlerAddSTIXObject: PropTypes.func.isRequired,
     handlerChangeButtonAdd: PropTypes.func.isRequired,
+    handlerChangeNewSTIXObject: PropTypes.func.isRequired,
 };

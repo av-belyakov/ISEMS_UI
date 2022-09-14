@@ -151,13 +151,6 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd(false);
     };
 
-    /**
-     * 
-     * почему то когда просматриваешь уже добавленный элемент campaign да и другой тоже
-     * id элемента выводится новое а не то которое уже присвоенно элементу!!!
-     * 
-     */
-
     return (<Paper elevation={3} style={{ width: "100%" }}>
         <Box m={2} pb={2}>
             <Grid container direction="row">
