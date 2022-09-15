@@ -103,7 +103,6 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, beginDataObject);
-
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -183,7 +182,7 @@ function CreateMajorContent(props){
         <Grid container direction="row" className="pt-3">
             <CreateCourseOfActionPatternElements
                 isDisabled={false} 
-                projectPatterElement={state}
+                campaignPatterElement={state}
                 handlerName={(e) => {}}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
             />

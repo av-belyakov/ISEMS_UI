@@ -1,9 +1,29 @@
 export default function reducerThreatActorSTIXObjects(state, action){
+    let lastSeen = "";
+    let firstSeen = "";
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+
+    let tmp = "";
+
     switch(action.type){
     case "newAll":
+        if(action.data.first_seen && action.data.last_seen){
+            action.data.last_seen = new Date(Date.parse(action.data.last_seen)).toISOString();
+            action.data.first_seen = new Date(Date.parse(action.data.first_seen)).toISOString();
+        }
+
         return action.data;
     case "cleanAll":
         return {};
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
+    case "updateFirstSeenTime":
+        return {...state, first_seen: action.data};
+    case "updateLastSeenTime":
+        return {...state, last_seen: action.data};
     case "updateName":
         if(state.name === action.data){
             return {...state};
@@ -20,10 +40,26 @@ export default function reducerThreatActorSTIXObjects(state, action){
         return {...state, threat_actor_types: action.data};        
     case "updateAliases":
         return {...state, aliases: action.data};
-    case "updateFirstSeen":
-        return {...state, first_seen: new Date(action.data).toISOString()};
-    case "updateLastSeen":
-        return {...state, last_seen: new Date(action.data).toISOString()};
+    case "updateDateTimeFirstSeen":
+        tmp = Date.parse(action.data);
+    
+        if(currentTimeZoneOffsetInHours < 0){
+            firstSeen = new Date(tmp + (ms * -1));
+        } else {
+            firstSeen = new Date(tmp - (ms * -1));
+        }
+    
+        return {...state, first_seen: firstSeen};
+    case "updateDateTimeLastSeen":
+        tmp = Date.parse(action.data);
+    
+        if(currentTimeZoneOffsetInHours < 0){
+            lastSeen = new Date(tmp + (ms * -1));
+        } else {
+            lastSeen = new Date(tmp - (ms * -1));
+        }
+    
+        return {...state, last_seen: lastSeen};
     case "updateRoles":
         return {...state, roles: action.data};
     case "updateGoals":

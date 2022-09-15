@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 
 import reducerToolSTIXObjects from "../reducer_handlers/reducerToolSTIXObject.js";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
-import CreateToolElements from "../type_elements_stix/toolElements.jsx";
+import CreateToolElements from "../type_elements_stix/toolPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 export default function CreateDialogContentToolSTIXObject(props){

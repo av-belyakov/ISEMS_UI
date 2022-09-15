@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateKillChainPhases, CreateKillChainPhasesList, CreateListToolTypes } from "../anyElements.jsx";
 
-export default function CreateToolElements(props){
+export default function CreateToolPatternElements(props){
     let { 
         isDisabled,
         campaignPatterElement, 
@@ -23,21 +23,12 @@ export default function CreateToolElements(props){
         handlerAddKillChainPhases,
     } = props;
 
-    let currentTime = helpers.getToISODatetime();
-    
-    if(!campaignPatterElement.created){
-        campaignPatterElement.created = currentTime;
-    }
-    if(!campaignPatterElement.modified){
-        campaignPatterElement.modified = currentTime;
-    }
-
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Наименование:</span></Grid>
-            <Grid item container md={8} >
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
+            <Grid item container md={8}>
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
-                    campaignPatterElement.name:
+                    <span className="mt-2">{campaignPatterElement.name}</span>:
                     <TextField
                         fullWidth
                         disabled={isDisabled}
@@ -140,7 +131,7 @@ export default function CreateToolElements(props){
     </React.Fragment>);
 }
 
-CreateToolElements.propTypes = {
+CreateToolPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerName: PropTypes.func.isRequired,
