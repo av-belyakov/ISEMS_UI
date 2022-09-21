@@ -141,6 +141,9 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
+
+            console.log("func 'CreateDialogContentToolSTIXObject', insert STIX object ---> state:", state);
+
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();

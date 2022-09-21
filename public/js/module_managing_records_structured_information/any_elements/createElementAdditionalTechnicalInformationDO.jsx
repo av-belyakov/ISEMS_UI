@@ -865,8 +865,8 @@ function GetExtensions(props){
     let [ buttonAddNewEIsDisabled, setButtonAddNewEIsDisabled ] = useState(true),
         [ valuesIsInvalideNameE, setValuesIsInvalideNameE ] = useState(true),
         [ valueE, setValueE ] = useState({ name: "", description: ""});
+    let listExtensions = [];
 
-    let  listExtensions = [];
     for(let k in reportInfo.extensions){
         listExtensions.push(<li key={`extensions_${k}`}>
             {k}: {reportInfo.extensions[k]}

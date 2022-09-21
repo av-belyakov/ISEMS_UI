@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 
 import reducerArtifactPatternSTIXObjects from "../reducer_handlers/reducerArtifactSTIXObject.js";
 import CreateArtifactPatternElements from "../type_elements_stix/artifactPatternElements.jsx";
-import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
+import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
 export default function CreateDialogContentArtifactSTIXObject(props){
     let { 
@@ -100,7 +100,6 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerArtifactPatternSTIXObjects, beginDataObject);
-
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -196,25 +195,14 @@ function CreateMajorContent(props){
                     handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerButtonIsDisabled(); }}
                 />
             </Grid> 
-
-            <Grid container direction="row" className="pt-3">
-                <Grid item container md={12} justifyContent="center">
-                    <h3>
-                        Здесь нужно разместить область с ссылками на объекты Report с которыми может быть связан данный объект. 
-                        При чем нужно ограничить переходы по этим ссылка для непривелегированных пользователей. Это надо доделать.
-                    </h3>
-                </Grid>
-            </Grid>
             
-            <CreateElementAdditionalTechnicalInformationDO
+            <CreateElementAdditionalTechnicalInformationCO 
                 objectId={currentIdSTIXObject}
                 reportInfo={state}
                 isNotDisabled={isNotDisabled}
-                handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
                 handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
                 handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
-                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
             />
         </Grid>
         <Grid item container md={1}></Grid>

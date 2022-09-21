@@ -1,25 +1,21 @@
-export default function reducerVulnerabilitySTIXObjects(state, action){
+export default function reducerAutonomousSystemPatternSTIXObjects(state, action){
     switch(action.type){
-    case "newAll":
+    case "newAll":        
         return action.data;
     case "cleanAll":
         return {};
-    case "updateCreatedTime":
-        return {...state, created: action.data};
-    case "updateModifiedTime":
-        return {...state, modified: action.data};
+    case "addId":
+        return {...state, id: action.data};
     case "updateName":
         if(state.name === action.data){
             return {...state};
         }
-        
-        return {...state, name: action.data};    
-    case "updateDescription":
-        if(state.description === action.data){
-            return {...state};
-        }
     
-        return {...state, description: action.data};
+        return {...state, name: action.data};
+    case "updateNumber":
+        return {...state, number: +action.data};
+    case "updateRIR":
+        return {...state, rir: action.data};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};
@@ -30,32 +26,6 @@ export default function reducerVulnerabilitySTIXObjects(state, action){
         return {...state, defanged: (action.data.data === "true")};
     case "updateLabels":
         return {...state, labels: action.data.listTokenValue};
-    case "updateExternalReferences":
-        if(!state.external_references){
-            state.external_references = [];
-        }
-    
-        for(let key of state.external_references){
-            if(key.source_name === action.data.source_name){
-                return {...state};
-            }
-        }
-    
-        state.external_references.push(action.data);
-    
-        return {...state};
-    case "updateExternalReferencesHashesUpdate":
-        if((state.external_references[action.data.orderNumber].hashes === null) || (typeof state.external_references[action.data.orderNumber].hashes === "undefined")){
-            state.external_references[action.data.orderNumber].hashes = {};
-        }
-    
-        state.external_references[action.data.orderNumber].hashes[action.data.newHash.hash] = action.data.newHash.type;
-    
-        return {...state};
-    case "updateExternalReferencesHashesDelete":
-        delete state.external_references[action.data.orderNumber].hashes[action.data.hashName];
-    
-        return {...state};
     case "updateGranularMarkings":
         if(!state.granular_markings){
             state.granular_markings = [];
@@ -83,7 +53,13 @@ export default function reducerVulnerabilitySTIXObjects(state, action){
             state.extensions = {};
         }
     
+        console.log("====== action.type: ", action.type, ", action.data:", action.data, " ======");
+
         state.extensions[action.data.name] = action.data.description;
+    
+        return {...state};
+    case "deleteKillChain":
+        state.kill_chain_phases.splice(action.data, 1);
     
         return {...state};
     case "deleteElementAdditionalTechnicalInformation":

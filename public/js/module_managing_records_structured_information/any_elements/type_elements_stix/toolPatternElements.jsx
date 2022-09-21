@@ -3,7 +3,6 @@ import {
     Grid,
     TextField,
 } from "@material-ui/core";
-//import { red } from "@material-ui/core/colors";
 import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 

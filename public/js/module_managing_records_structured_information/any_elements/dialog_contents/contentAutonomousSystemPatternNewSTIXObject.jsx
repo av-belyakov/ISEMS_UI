@@ -1,21 +1,21 @@
 import React, { useEffect, useReducer } from "react";
-import { 
-    Box,
-    Grid,
+import {
+    Box, 
     Paper,
-    Typography,
+    Grid,
+    Typography, 
 } from "@material-ui/core";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerArtifactPatternSTIXObjects from "../reducer_handlers/reducerArtifactSTIXObject.js";
-import CreateArtifactPatternElements from "../type_elements_stix/artifactPatternElements.jsx";
-import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
+import reducerAutonomousSystemSTIXObject from "../reducer_handlers/reducerAutonomousSystemSTIXObject.js";
+import CreateAutonomousSystemPatternElements from "../type_elements_stix/autonomousSystemPatternElements.jsx";
+import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
 let currentTime = helpers.getToISODatetime();
 
-export default function CreateDialogContentArtifactPatternNewSTIXObject(props){
+export default function CreateAutonomousSystemPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
@@ -30,7 +30,7 @@ export default function CreateDialogContentArtifactPatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`artifact--${uuidv4()}`}
+        currentObjectId={`tool--${uuidv4()}`}
         buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -40,7 +40,7 @@ export default function CreateDialogContentArtifactPatternNewSTIXObject(props){
     />;
 }
      
-CreateDialogContentArtifactPatternNewSTIXObject.propTypes = {
+CreateAutonomousSystemPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
@@ -64,21 +64,17 @@ function CreateMajorElements(props){
         handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerArtifactPatternSTIXObjects, {});
-    /*if(state && !state.created){
+    const [ state, dispatch ] = useReducer(reducerAutonomousSystemSTIXObject, {});
+    if(state && !state.created){
         dispatch({ type: "updateCreatedTime", data: currentTime });
     }
 
     if(state && !state.modified){
         dispatch({ type: "updateModifiedTime", data: currentTime });
-    }*/
+    }
 
     useEffect(() => {
-        dispatch({ type: "newAll", data: projectPatterElement });
-    }, [ projectPatterElement ]);
-
-    useEffect(() => {
-        if(projectPatterElement.type === "artifact"){
+        if(projectPatterElement.type === "autonomous-system"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
@@ -87,7 +83,7 @@ function CreateMajorElements(props){
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "artifact";
+            stateTmp.type = "autonomous-system";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -103,36 +99,6 @@ function CreateMajorElements(props){
         }
     }, [ buttonChangeClick ]);
 
-    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        if(obj.modalType === "external_references"){
-            switch(obj.actionType){
-            case "hashes_update":
-                dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
-    
-                break;
-            case "hashes_delete":
-                dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
-    
-                break;
-            default:
-                dispatch({ type: "updateExternalReferences", data: obj.data });
-                handlerButtonIsDisabled();
-            }
-        }
-        
-        if(obj.modalType === "granular_markings") {
-            dispatch({ type: "updateGranularMarkings", data: obj.data });
-            handlerButtonIsDisabled();
-        }
-        
-        if(obj.modalType === "extensions") {
-            dispatch({ type: "updateExtensions", data: obj.data });
-            handlerButtonIsDisabled();
-        }
-    };
-
     const handlerButtonIsDisabled = (name) => {
         if(name === "" || (!state.name || state.name === "")){
             handlerChangeButtonAdd(true);
@@ -146,41 +112,63 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd(false);
     };
 
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
+        if(obj.modalType === "external_references"){
+            switch(obj.actionType){
+            case "hashes_update":
+                dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
+    
+                break;
+            case "hashes_delete":
+                dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
+                handlerButtonIsDisabled();
+
+                break;
+            default:
+                dispatch({ type: "updateExternalReferences", data: obj.data });
+                handlerButtonIsDisabled();
+            }
+        }
+        
+        if(obj.modalType === "granular_markings") {
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+        }
+        
+        if(obj.modalType === "extensions") {
+            dispatch({ type: "updateExtensions", data: obj.data });
+        }
+    };
+
     return (<Paper elevation={3} style={{ width: "100%" }}>
         <Box m={2} pb={2}>
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("attack-pattern").description}`}
+                        {`${helpers.getLinkImageSTIXObject("note").description}`}
                     </Typography> 
                 </Grid>
             </Grid>
-
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
                 <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
-
-            <CreateArtifactPatternElements 
+            <CreateAutonomousSystemPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
-                handlerURL={(e) => { dispatch({ type: "updateURL", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerRIR={(e) => { dispatch({ type: "updateRIR", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerAddHashes={(e) => { dispatch({ type: "updateAddHashes", data: e }); handlerButtonIsDisabled(); }}
-                handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerDeleteHashe={(e) => { dispatch({ type: "updateDeleteHashes", data: e }); handlerButtonIsDisabled(); }}
-                handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerNumber={(e) => { dispatch({ type: "updateNumber", data: e.target.value }); handlerButtonIsDisabled(); }}
             />
-
-            <CreateElementAdditionalTechnicalInformationCO 
+            <CreateElementAdditionalTechnicalInformationDO
                 objectId={currentObjectId}
                 reportInfo={state}
                 isNotDisabled={isNotDisabled}
+                handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
                 handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
                 handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
-                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
+                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
             />
         </Box>
     </Paper>);

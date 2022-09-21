@@ -43,7 +43,7 @@ const listLink = {
     },
     "autonomous-system": {
         "link": "autonomous-system-square-dark-300-dpi.png",
-        "description": "Автономная система (Autonomous system DO STIX)",
+        "description": "Автономная система (Autonomous system CO STIX)",
     },
     "campaign": {
         "link": "campaign-square-dark-300-dpi.png",

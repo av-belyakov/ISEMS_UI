@@ -5,7 +5,6 @@ import {
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 
-import { helpers } from "../../../common_helpers/helpers";
 import { 
     CreateHashes,
     CreateHashesList,
@@ -40,25 +39,6 @@ export default function CreateArtifactPatternElements(props){
                         onChange={handlerName}
                         value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
                     />}
-            </Grid>
-        </Grid>
-
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Дата и время</span>&nbsp;&nbsp;&nbsp;&nbsp;</Grid>
-            <Grid item container md={8}></Grid>
-        </Grid>      
-    
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">создания:</span></Grid>
-            <Grid item container md={8}>
-                {helpers.convertDateFromString(campaignPatterElement.created, { monthDescription: "long", dayDescription: "numeric" })}
-            </Grid>
-        </Grid>
-    
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">последнего обновления:</span></Grid>
-            <Grid item container md={8}>
-                {helpers.convertDateFromString(campaignPatterElement.modified, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
