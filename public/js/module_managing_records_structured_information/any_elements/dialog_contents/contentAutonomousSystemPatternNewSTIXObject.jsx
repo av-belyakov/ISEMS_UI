@@ -11,9 +11,7 @@ import PropTypes from "prop-types";
 import { helpers } from "../../../common_helpers/helpers.js";
 import reducerAutonomousSystemSTIXObject from "../reducer_handlers/reducerAutonomousSystemSTIXObject.js";
 import CreateAutonomousSystemPatternElements from "../type_elements_stix/autonomousSystemPatternElements.jsx";
-import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
-
-let currentTime = helpers.getToISODatetime();
+import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
 export default function CreateAutonomousSystemPatternNewSTIXObject(props){
     let { 
@@ -65,13 +63,13 @@ function CreateMajorElements(props){
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerAutonomousSystemSTIXObject, {});
-    if(state && !state.created){
+    /*if(state && !state.created){
         dispatch({ type: "updateCreatedTime", data: currentTime });
     }
 
     if(state && !state.modified){
         dispatch({ type: "updateModifiedTime", data: currentTime });
-    }
+    }*/
 
     useEffect(() => {
         if(projectPatterElement.type === "autonomous-system"){
@@ -99,7 +97,14 @@ function CreateMajorElements(props){
         }
     }, [ buttonChangeClick ]);
 
-    const handlerButtonIsDisabled = (name) => {
+    /**
+     * Надо будет доделать проверку наличия значения в поле number.
+     * Кроме того нужно редактировать contentArtifactSTIXObject и contentArtifactPatternNewSTIXObject с учетом
+        CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
+     * 
+     */
+
+    /*const handlerButtonIsDisabled = (name) => {
         if(name === "" || (!state.name || state.name === "")){
             handlerChangeButtonAdd(true);
             return;
@@ -110,33 +115,39 @@ function CreateMajorElements(props){
         }
 
         handlerChangeButtonAdd(false);
+    };*/
+
+    const handlerCheckStateButtonIsDisabled = (number) => {
+        if(typeof number !== "undefined"){
+            if(number.length === 0){
+                handlerChangeButtonAdd(true);
+                //handlerButtonIsDisabled(true);
+            } else {
+                handlerChangeButtonAdd(false);
+                //handlerButtonIsDisabled(false);
+            }
+
+            return;
+        }
+
+        if(state && state.number !== ""){
+            handlerChangeButtonAdd(false);
+            //handlerButtonIsDisabled(false);
+        } else {
+            handlerChangeButtonAdd(true);
+            //handlerButtonIsDisabled(true);
+        }
     };
 
-    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        if(obj.modalType === "external_references"){
-            switch(obj.actionType){
-            case "hashes_update":
-                dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
-    
-                break;
-            case "hashes_delete":
-                dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
-
-                break;
-            default:
-                dispatch({ type: "updateExternalReferences", data: obj.data });
-                handlerButtonIsDisabled();
-            }
-        }
-        
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
         if(obj.modalType === "granular_markings") {
             dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
         }
-        
+    
         if(obj.modalType === "extensions") {
             dispatch({ type: "updateExtensions", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
         }
     };
 
@@ -149,26 +160,27 @@ function CreateMajorElements(props){
                     </Typography> 
                 </Grid>
             </Grid>
+
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
                 <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
+
             <CreateAutonomousSystemPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
-                handlerRIR={(e) => { dispatch({ type: "updateRIR", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                handlerNumber={(e) => { dispatch({ type: "updateNumber", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerRIR={(e) => { dispatch({ type: "updateRIR", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerNumber={(e) => { dispatch({ type: "updateNumber", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
             />
-            <CreateElementAdditionalTechnicalInformationDO
+
+            <CreateElementAdditionalTechnicalInformationCO 
                 objectId={currentObjectId}
                 reportInfo={state}
                 isNotDisabled={isNotDisabled}
-                handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
-                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
             />
         </Box>
     </Paper>);

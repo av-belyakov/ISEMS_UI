@@ -52,9 +52,7 @@ export default function reducerAutonomousSystemPatternSTIXObjects(state, action)
         if(!state.extensions){
             state.extensions = {};
         }
-    
-        console.log("====== action.type: ", action.type, ", action.data:", action.data, " ======");
-
+        
         state.extensions[action.data.name] = action.data.description;
     
         return {...state};

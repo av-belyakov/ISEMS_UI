@@ -14,7 +14,17 @@ export default function CreateAutonomousSystemPatternElements(props){
         handlerNumber,
     } = props;
 
-    let [ invalidNumber, setInvalidNumber ] = React.useState(false);
+    let [ invalidNumber, setInvalidNumber ] = React.useState((campaignPatterElement.number && campaignPatterElement.number.length)? false: true);//false);
+
+    console.log("func 'CreateAutonomousSystemPatternElements', campaignPatterElement = ", campaignPatterElement);
+
+    /*React.useEffect(() => {
+        if(campaignPatterElement.number && campaignPatterElement.number.length){
+            setInvalidNumber(false);
+        } else {
+            setInvalidNumber(true);
+        }
+    }, [campaignPatterElement]);*/
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>

@@ -38,6 +38,7 @@ const CreateOpinionPatternNewSTIXObject = lazy(() => import("./contentOpinionPat
 const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVulnerabilityPatternNewSTIXObject.jsx"));
 const CreateObservedDataPatternNewSTIXObject = lazy(() => import("./contentObservedDataPatternNewSTIXObject.jsx"));
 const CreateArtifactPatternNewSTIXObject = lazy(() => import("./contentArtifactPatternNewSTIXObject.jsx"));
+const CreateAutonomousSystemPatternNewSTIXObject = lazy(() => import("./contentAutonomousSystemPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -269,6 +270,9 @@ export default function CreateDialogContentNewSTIXObject(props){
     };
     
     let handlerChangeButtonAdd = (status) => {
+
+        console.log("func 'handlerChangeButtonAdd', status = ", status);
+
         setButtonAddIsDisabled(status);
     };
 
@@ -549,7 +553,7 @@ function somethingModule(nameSTIX){
         //"windows-registry-key": CreateWindowsRegistryKeyPatternElements,
         //"x509-certificate": CreateX509CertificatePatternElements,
         "attack-pattern": CreateDialogContentAttackPatternNewSTIXObject,
-        //"autonomous-system": CreateAutonomousSystemPatternElements, 
+        "autonomous-system": CreateAutonomousSystemPatternNewSTIXObject, 
         "campaign": CreateCampaignPatternNewSTIXObject,
         "course-of-action": CreateCourseOfActionPatternNewSTIXObject, 
         //"domain-name": CreateDomainNamePatternElements,
