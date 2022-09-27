@@ -310,9 +310,6 @@ export default function CreateListObjectRefsReport(props){
         handlerDialogConfirm();
     }, [ confirmDeleteLink ]),
     useEffect(() => {
-
-        console.log("func 'CreateListObjectRefsReport', useEffect = changeListId, listNewOrModifySTIXObject.length:", listNewOrModifySTIXObject.length, " listNewOrModifySTIXObject.length = ", listNewOrModifySTIXObject);
-
         setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
     }, [ listNewOrModifySTIXObject.length ]);
 
@@ -511,7 +508,7 @@ export default function CreateListObjectRefsReport(props){
                 <Button
                     startIcon={<AddCircleOutlineIcon style={{ color: green[400] }} />}
                     onClick={() => {
-                        handlerShowModalWindowCreateNewSTIXObject(majorParentId, ["object_refs"], stateReport /*parentSTIXObject*/);
+                        handlerShowModalWindowCreateNewSTIXObject(majorParentId, ["object_refs"], stateReport);
                     }}>
                     <span style={{ paddingTop: "3px" }}>прикрепить доп. объект</span>
                 </Button>

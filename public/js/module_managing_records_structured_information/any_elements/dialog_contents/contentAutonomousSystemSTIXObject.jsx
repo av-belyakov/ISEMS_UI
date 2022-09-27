@@ -111,24 +111,26 @@ function CreateMajorContent(props){
         }
     };
     useEffect(() => {
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
-
-        return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
-            dispatch({ type: "newAll", data: {} });
-        };
-    }, []);
-    useEffect(() => {
         if(currentIdSTIXObject !== ""){
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: parentIdSTIXObject,
             }});
         }
+
+        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+
+        return () => {
+            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
+            dispatch({ type: "newAll", data: {} });
+        };
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
+        let data = state;
+        data.number = +state.number;
+
         if(buttonSaveChangeTrigger){
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [data] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
@@ -136,13 +138,11 @@ function CreateMajorContent(props){
 
     const handlerCheckStateButtonIsDisabled = (number) => {
         if(typeof number !== "undefined"){
-            if(number.length === 0){
-                handlerButtonIsDisabled(true);
-            } else {
-                handlerButtonIsDisabled(false);
+            if(isNaN(number) || number.length === 0){
+                return handlerButtonIsDisabled(true);
             }
 
-            return;
+            return handlerButtonIsDisabled(false);
         }
 
         if(state && state.number !== ""){
@@ -164,28 +164,26 @@ function CreateMajorContent(props){
         }
     };
 
-    return (
-        <Grid item container md={12}>
-            <Grid container direction="row" className="pt-3">
-                <CreateAutonomousSystemPatternElements 
-                    isDisabled={false}
-                    campaignPatterElement={state}
-                    handlerRIR={(e) => { dispatch({ type: "updateRIR", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                    handlerName={(e) => {}}
-                    handlerNumber={(e) => { dispatch({ type: "updateNumber", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                />
-            </Grid> 
-
-            <CreateElementAdditionalTechnicalInformationCO 
-                objectId={currentIdSTIXObject}
-                reportInfo={state}
-                isNotDisabled={isNotDisabled}
-                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
+    return (<Grid item container md={12}>
+        <Grid container direction="row" className="pt-3">
+            <CreateAutonomousSystemPatternElements 
+                isDisabled={false}
+                campaignPatterElement={state}
+                handlerRIR={(e) => { dispatch({ type: "updateRIR", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerName={(e) => {}}
+                handlerNumber={(e) => { dispatch({ type: "updateNumber", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
             />
-        </Grid>
-    );
+        </Grid> 
+
+        <CreateElementAdditionalTechnicalInformationCO 
+            objectId={currentIdSTIXObject}
+            reportInfo={state}
+            isNotDisabled={isNotDisabled}
+            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
+        />
+    </Grid>);
 }
 
 CreateMajorContent.propTypes = {

@@ -28,7 +28,7 @@ export default function CreateAutonomousSystemPatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`tool--${uuidv4()}`}
+        currentObjectId={`autonomous-system--${uuidv4()}`}
         buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -63,20 +63,11 @@ function CreateMajorElements(props){
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerAutonomousSystemSTIXObject, {});
-    /*if(state && !state.created){
-        dispatch({ type: "updateCreatedTime", data: currentTime });
-    }
-
-    if(state && !state.modified){
-        dispatch({ type: "updateModifiedTime", data: currentTime });
-    }*/
-
     useEffect(() => {
         if(projectPatterElement.type === "autonomous-system"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
-
     useEffect(() => {
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
@@ -90,52 +81,25 @@ function CreateMajorElements(props){
             handlerAddSTIXObject(stateTmp);
         }
     }, [ buttonAddClick, state, currentObjectId, handlerAddSTIXObject ]);
-
     useEffect(() => {
         if(buttonChangeClick){
             handlerChangeNewSTIXObject(state);
         }
     }, [ buttonChangeClick ]);
 
-    /**
-     * Надо будет доделать проверку наличия значения в поле number.
-     * Кроме того нужно редактировать contentArtifactSTIXObject и contentArtifactPatternNewSTIXObject с учетом
-        CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
-     * 
-     */
-
-    /*const handlerButtonIsDisabled = (name) => {
-        if(name === "" || (!state.name || state.name === "")){
-            handlerChangeButtonAdd(true);
-            return;
-        }
-        
-        if(!buttonAddIsDisabled){
-            return;
-        }
-
-        handlerChangeButtonAdd(false);
-    };*/
-
-    const handlerCheckStateButtonIsDisabled = (number) => {
+    const handlerCheckStateButtonIsDisabled = (number) => {        
         if(typeof number !== "undefined"){
-            if(number.length === 0){
-                handlerChangeButtonAdd(true);
-                //handlerButtonIsDisabled(true);
-            } else {
-                handlerChangeButtonAdd(false);
-                //handlerButtonIsDisabled(false);
+            if(!isNaN(number) && (number.length !== 0)){
+                return handlerChangeButtonAdd(false);
             }
-
-            return;
+            
+            return handlerChangeButtonAdd(true);
         }
 
-        if(state && state.number !== ""){
+        if(state && (typeof state.number !== "undefined") && (state.number !== "") && !isNaN(state.number)){
             handlerChangeButtonAdd(false);
-            //handlerButtonIsDisabled(false);
         } else {
             handlerChangeButtonAdd(true);
-            //handlerButtonIsDisabled(true);
         }
     };
 
@@ -156,7 +120,7 @@ function CreateMajorElements(props){
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("note").description}`}
+                        {`${helpers.getLinkImageSTIXObject("autonomous-system").description}`}
                     </Typography> 
                 </Grid>
             </Grid>

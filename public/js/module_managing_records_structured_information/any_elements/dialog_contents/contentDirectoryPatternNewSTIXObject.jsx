@@ -1,19 +1,19 @@
 import React, { useEffect, useReducer } from "react";
-import { 
-    Box,
-    Grid,
+import {
+    Box, 
     Paper,
-    Typography,
+    Grid,
+    Typography, 
 } from "@material-ui/core";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerArtifactPatternSTIXObjects from "../reducer_handlers/reducerArtifactSTIXObject.js";
-import CreateArtifactPatternElements from "../type_elements_stix/artifactPatternElements.jsx";
+import reducerDirectoryPatternSTIXObjects from "../reducer_handlers/reducerDirectorySTIXObject.js";
+import CreateDirectoryPatternElements from "../type_elements_stix/directoryPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-export default function CreateDialogContentArtifactPatternNewSTIXObject(props){
+export default function CreateDirectoryPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
@@ -28,7 +28,7 @@ export default function CreateDialogContentArtifactPatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`artifact--${uuidv4()}`}
+        currentObjectId={`directory--${uuidv4()}`}
         buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -38,7 +38,7 @@ export default function CreateDialogContentArtifactPatternNewSTIXObject(props){
     />;
 }
      
-CreateDialogContentArtifactPatternNewSTIXObject.propTypes = {
+CreateDirectoryPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
@@ -62,13 +62,9 @@ function CreateMajorElements(props){
         handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerArtifactPatternSTIXObjects, {});
-
-    /*useEffect(() => {
-        dispatch({ type: "newAll", data: projectPatterElement });
-    }, [ projectPatterElement ]);*/
+    const [ state, dispatch ] = useReducer(reducerDirectoryPatternSTIXObjects, {});
     useEffect(() => {
-        if(projectPatterElement.type === "artifact"){
+        if(projectPatterElement.type === "directory"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
@@ -76,7 +72,7 @@ function CreateMajorElements(props){
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "artifact";
+            stateTmp.type = "directory";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -91,47 +87,32 @@ function CreateMajorElements(props){
         }
     }, [ buttonChangeClick ]);
 
-    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        if(obj.modalType === "external_references"){
-            switch(obj.actionType){
-            case "hashes_update":
-                dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
-    
-                break;
-            case "hashes_delete":
-                dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
-    
-                break;
-            default:
-                dispatch({ type: "updateExternalReferences", data: obj.data });
-                handlerButtonIsDisabled();
+    const handlerCheckStateButtonIsDisabled = (path) => {        
+        if(typeof path !== "undefined"){
+            if(path.length !== 0){
+                return handlerChangeButtonAdd(false);
             }
+            
+            return handlerChangeButtonAdd(true);
         }
-        
-        if(obj.modalType === "granular_markings") {
-            dispatch({ type: "updateGranularMarkings", data: obj.data });
-            handlerButtonIsDisabled();
-        }
-        
-        if(obj.modalType === "extensions") {
-            dispatch({ type: "updateExtensions", data: obj.data });
-            handlerButtonIsDisabled();
+
+        if(state && (typeof state.path !== "undefined") && (state.number !== "")){
+            handlerChangeButtonAdd(false);
+        } else {
+            handlerChangeButtonAdd(true);
         }
     };
 
-    const handlerButtonIsDisabled = (name) => {
-        if(name === "" || (!state.name || state.name === "")){
-            handlerChangeButtonAdd(true);
-            return;
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
+        if(obj.modalType === "granular_markings") {
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
         }
-        
-        if(!buttonAddIsDisabled){
-            return;
+    
+        if(obj.modalType === "extensions") {
+            dispatch({ type: "updateExtensions", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
         }
-
-        handlerChangeButtonAdd(false);
     };
 
     return (<Paper elevation={3} style={{ width: "100%" }}>
@@ -139,7 +120,7 @@ function CreateMajorElements(props){
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("artifact").description}`}
+                        {`${helpers.getLinkImageSTIXObject("directory").description}`}
                     </Typography> 
                 </Grid>
             </Grid>
@@ -149,25 +130,18 @@ function CreateMajorElements(props){
                 <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
 
-            <CreateArtifactPatternElements 
+            <CreateDirectoryPatternElements
                 isDisabled={false}
                 campaignPatterElement={state}
-                handlerURL={(e) => { dispatch({ type: "updateURL", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerAddHashes={(e) => { dispatch({ type: "updateAddHashes", data: e }); handlerButtonIsDisabled(); }}
-                handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerDeleteHashe={(e) => { dispatch({ type: "updateDeleteHashes", data: e }); handlerButtonIsDisabled(); }}
-                handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerPath={(e) => { dispatch({ type: "updatePath", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 
                 objectId={currentObjectId}
                 reportInfo={state}
                 isNotDisabled={isNotDisabled}
-                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
             />
         </Box>

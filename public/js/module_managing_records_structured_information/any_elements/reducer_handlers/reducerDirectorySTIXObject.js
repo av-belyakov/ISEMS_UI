@@ -1,4 +1,4 @@
-export default function reducerAutonomousSystemPatternSTIXObjects(state, action){
+export default function reducerDirectoryPatternSTIXObjects(state, action){
     switch(action.type){
     case "newAll":        
         return action.data;
@@ -6,16 +6,8 @@ export default function reducerAutonomousSystemPatternSTIXObjects(state, action)
         return {};
     case "addId":
         return {...state, id: action.data};
-    case "updateName":
-        if(state.name === action.data){
-            return {...state};
-        }
-    
-        return {...state, name: action.data};
-    case "updateNumber":
-        return {...state, number: action.data};
-    case "updateRIR":
-        return {...state, rir: action.data};
+    case "updatePath":
+        return {...state, path: action.data};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

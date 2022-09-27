@@ -39,6 +39,7 @@ const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVuln
 const CreateObservedDataPatternNewSTIXObject = lazy(() => import("./contentObservedDataPatternNewSTIXObject.jsx"));
 const CreateArtifactPatternNewSTIXObject = lazy(() => import("./contentArtifactPatternNewSTIXObject.jsx"));
 const CreateAutonomousSystemPatternNewSTIXObject = lazy(() => import("./contentAutonomousSystemPatternNewSTIXObject.jsx"));
+const CreateDirectoryPatternNewSTIXObject = lazy(() => import("./contentDirectoryPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -271,7 +272,7 @@ export default function CreateDialogContentNewSTIXObject(props){
     
     let handlerChangeButtonAdd = (status) => {
 
-        console.log("func 'handlerChangeButtonAdd', status = ", status);
+        console.log("@@@@@@@@@@@@@@@@ func 'handlerChangeButtonAdd', status = ", status);
 
         setButtonAddIsDisabled(status);
     };
@@ -495,7 +496,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                     setButtonAddIsDisabled(true);
                 }}
                 style={{ color: blue[400] }}>
-                добавить объект
+                    добавить объект
             </Button>:
                 <Button 
                     //disabled={buttonAddIsDisabled}
@@ -506,13 +507,13 @@ export default function CreateDialogContentNewSTIXObject(props){
                         //setButtonAddIsDisabled(true);
                     }}
                     style={{ color: blue[400] }}>
-                сохранить изменения
+                    сохранить изменения
                 </Button>}
             <Button 
                 disabled={buttonSaveIsDisabled}
                 onClick={() => { handlerDialog(parentSTIXObject, listRefsForObjectSTIX, listNewOrModifySTIXObject); }}
                 style={{ color: green[400] }}>
-                добавить ссылки
+                    добавить ссылки
             </Button>
         </DialogActions>
     </React.Fragment>);
@@ -544,7 +545,7 @@ function somethingModule(nameSTIX){
 
     const nameList = {
         "artifact": CreateArtifactPatternNewSTIXObject, 
-        //"directory": CreateDirectoryPatternElements, 
+        "directory": CreateDirectoryPatternNewSTIXObject, 
         //"file": CreateFilePatternElements, 
         //"mutex": CreateMutexPatternElements,
         //"process": CreateProcessPatternElements, 

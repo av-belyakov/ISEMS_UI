@@ -150,7 +150,7 @@ function CreateMajorElements(props){
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("opinion").description}`}
+                        {`${helpers.getLinkImageSTIXObject("observed-data").description}`}
                     </Typography> 
                 </Grid>
             </Grid>

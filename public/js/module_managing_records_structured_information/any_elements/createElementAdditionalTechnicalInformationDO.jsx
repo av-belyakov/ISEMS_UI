@@ -916,7 +916,7 @@ function GetExtensions(props){
                     id="extensions-description"
                     label="подробное описание"
                     multiline
-                    rows={2}
+                    minRows={2}
                     fullWidth
                     value={valueE.description}
                     onChange={(e) => {
@@ -952,9 +952,9 @@ function GetExtensions(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row">
+        {<Grid container direction="row">
             <Grid item md={12}><ul>{listExtensions}</ul></Grid>
-        </Grid>
+        </Grid>}
     </Grid>);
 }
 
