@@ -33,6 +33,9 @@ const listExtendedObject = [
     {name: "domain-name", listProperties: [ 
         "resolves_to_refs" 
     ]}, //resolves_to_refs (ipv4-addr, ipv6-addr, domain-name)
+    {name: "directory", listProperties: [ 
+        "contains_refs" 
+    ]}, //contains_refs (directory, file)
     {name: "file", listProperties: [ 
         "contains_refs" 
     ]}, //contains_refs (any STIX object)

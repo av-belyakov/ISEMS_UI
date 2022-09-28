@@ -266,7 +266,7 @@ export default function CreateListObjectRefsReport(props){
         return { currentId: item, childId: [] };
     });
 
-    const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { /*list: {}*/ list: listNewOrModifySTIXObject, listId: objListBegin});
+    const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: listNewOrModifySTIXObject, listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
     const [ currentDeleteId, setCurrentDeleteId ] = useState("");
     const [ deleteIdDepthAndKey, setDeleteIdDepthAndKey ] = useState([]);

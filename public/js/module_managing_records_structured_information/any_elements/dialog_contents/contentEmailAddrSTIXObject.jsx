@@ -89,3 +89,10 @@ CreateDialogContentEmailAddrSTIXObject.propTypes = {
     handlerDialogClose: PropTypes.func.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
 };
+
+/**
+//EmailAddressCyberObservableObjectSTIX объект "Email Address", по терминалогии STIX, содержит представление единственного email адреса
+// Value - email адрес (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// DisplayName - содержит единственное почтовое имя которое видит человек при просмотре письма
+// BelongsToRef - учетная запись пользователя, которой принадлежит адрес электронной почты, в качестве ссылки на объект учетной записи пользователя
+ */

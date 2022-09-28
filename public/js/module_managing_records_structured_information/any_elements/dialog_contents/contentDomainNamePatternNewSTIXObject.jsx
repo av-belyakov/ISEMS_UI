@@ -9,11 +9,11 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerDirectoryPatternSTIXObjects from "../reducer_handlers/reducerDirectorySTIXObject.js";
-import CreateDirectoryPatternElements from "../type_elements_stix/directoryPatternElements.jsx";
+import reducerDomainNamePatternSTIXObjects from "../reducer_handlers/reducerDomainNameSTIXObject.js";
+import CreateDomainNamePatternElements from "../type_elements_stix/domainNamePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-export default function CreateDirectoryPatternNewSTIXObject(props){
+export default function CreateDomainNamePatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
@@ -28,7 +28,7 @@ export default function CreateDirectoryPatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`directory--${uuidv4()}`}
+        currentObjectId={`domain-name--${uuidv4()}`}
         buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -38,7 +38,7 @@ export default function CreateDirectoryPatternNewSTIXObject(props){
     />;
 }
      
-CreateDirectoryPatternNewSTIXObject.propTypes = {
+CreateDomainNamePatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
@@ -62,9 +62,9 @@ function CreateMajorElements(props){
         handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerDirectoryPatternSTIXObjects, {});
+    const [ state, dispatch ] = useReducer(reducerDomainNamePatternSTIXObjects, {});
     useEffect(() => {
-        if(projectPatterElement.type === "directory"){
+        if(projectPatterElement.type === "domain-name"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
@@ -72,7 +72,7 @@ function CreateMajorElements(props){
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "directory";
+            stateTmp.type = "domain-name";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -87,16 +87,16 @@ function CreateMajorElements(props){
         }
     }, [ buttonChangeClick ]);
 
-    const handlerCheckStateButtonIsDisabled = (path) => {
-        if(typeof path !== "undefined"){
-            if(path.length !== 0){
+    const handlerCheckStateButtonIsDisabled = (value) => {
+        if(typeof value !== "undefined"){
+            if(helpers.checkInputValidation({ name: "domanName", value: value })){
                 return handlerChangeButtonAdd(false);
             }
             
             return handlerChangeButtonAdd(true);
         }
 
-        if(state && (typeof state.path !== "undefined") && (state.path !== "")){
+        if(state && (typeof state.value !== "undefined") && helpers.checkInputValidation({ name: "domanName", value: state.value })){
             handlerChangeButtonAdd(false);
         } else {
             handlerChangeButtonAdd(true);
@@ -115,12 +115,18 @@ function CreateMajorElements(props){
         }
     };
 
+    /**
+ * 
+ * Проверял, но на всякий случай надо еще раз проверить
+ * 
+ */
+
     return (<Paper elevation={3} style={{ width: "100%" }}>
         <Box m={2} pb={2}>
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("directory").description}`}
+                        {`${helpers.getLinkImageSTIXObject("domain-name").description}`}
                     </Typography> 
                 </Grid>
             </Grid>
@@ -130,10 +136,10 @@ function CreateMajorElements(props){
                 <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
 
-            <CreateDirectoryPatternElements
+            <CreateDomainNamePatternElements
                 isDisabled={false}
                 campaignPatterElement={state}
-                handlerPath={(e) => { dispatch({ type: "updatePath", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handlerValue={(e) => { dispatch({ type: "updateValue", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 

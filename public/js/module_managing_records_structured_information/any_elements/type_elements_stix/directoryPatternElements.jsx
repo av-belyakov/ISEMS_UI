@@ -1,17 +1,14 @@
 import React from "react";
 import {
+    Button,
     Grid,
     Link,
-    List,
-    ListItem,
-    ListItemText,
     TextField,
 } from "@material-ui/core";
 import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import { useState } from "react";
 
 export default function CreateDirectoryPatternElements(props){
     let { 
@@ -23,12 +20,6 @@ export default function CreateDirectoryPatternElements(props){
     console.log("func 'CreateDirectoryPatternElements', campaignPatterElement:", campaignPatterElement);
 
     let [ isInvalidPath, setIsInvalidPath ] = React.useState(((typeof campaignPatterElement.path === "undefined") || (campaignPatterElement.path === "")));
-
-    /**
-     * 
-     * Надо проверить!!!
-     * 
-     */
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -96,17 +87,31 @@ export default function CreateDirectoryPatternElements(props){
         {campaignPatterElement.contains_refs && campaignPatterElement.contains_refs.length > 0?
             <React.Fragment>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                    <Grid item container md={12} justifyContent="flex-start"><span className="text-muted">Список файловых объектов или директорий содержащихся внутри директории:</span></Grid>
+                    <Grid item container md={12} justifyContent="flex-start"><span className="text-muted">Список ссылок на файловые объекты или директории содержащиеся внутри данной директории:</span></Grid>
                 </Grid>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start">
-                        <div>
-                            {<List dense>
-                                {campaignPatterElement.contains_refs.map((elem, num) => {
-                                    return (<ListItem key={`item_file_num_${num}`}>{++num}. <ListItemText primary={elem} /></ListItem>);
-                                })}
-                            </List>}
-                        </div>
+                        {campaignPatterElement.contains_refs.map((item, key) => {
+                            let type = item.split("--");
+                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+        
+                            if(typeof objectElem === "undefined" ){
+                                return "";
+                            }
+
+                            return (<Grid container direction="row" key={`key_object_ref_${key}`}>
+                                <Grid item container md={12} justifyContent="flex-start">
+                                    <Button onClick={() => {}} disabled>
+                                        <img 
+                                            key={`key_object_ref_type_${key}`} 
+                                            src={`/images/stix_object/${objectElem.link}`} 
+                                            width="35" 
+                                            height="35" />
+                                        &nbsp;{item}&nbsp;
+                                    </Button>
+                                </Grid>
+                            </Grid>);
+                        })}
                     </Grid>
                 </Grid>
             </React.Fragment>:

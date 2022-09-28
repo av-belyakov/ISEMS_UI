@@ -40,6 +40,7 @@ const CreateObservedDataPatternNewSTIXObject = lazy(() => import("./contentObser
 const CreateArtifactPatternNewSTIXObject = lazy(() => import("./contentArtifactPatternNewSTIXObject.jsx"));
 const CreateAutonomousSystemPatternNewSTIXObject = lazy(() => import("./contentAutonomousSystemPatternNewSTIXObject.jsx"));
 const CreateDirectoryPatternNewSTIXObject = lazy(() => import("./contentDirectoryPatternNewSTIXObject.jsx"));
+const CreateDomainNamePatternNewSTIXObject = lazy(() => import("./contentDomainNamePatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -557,7 +558,7 @@ function somethingModule(nameSTIX){
         "autonomous-system": CreateAutonomousSystemPatternNewSTIXObject, 
         "campaign": CreateCampaignPatternNewSTIXObject,
         "course-of-action": CreateCourseOfActionPatternNewSTIXObject, 
-        //"domain-name": CreateDomainNamePatternElements,
+        "domain-name": CreateDomainNamePatternNewSTIXObject,
         //"email-addr": CreateEmailAddressPatternElements,
         "grouping": CreateGroupingPatternNewSTIXObject,
         "identity": CreateIdentityPatternNewSTIXObject,

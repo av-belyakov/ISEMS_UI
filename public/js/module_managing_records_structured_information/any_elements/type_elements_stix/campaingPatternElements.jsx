@@ -162,7 +162,7 @@ export default function CreateCampaingPatternElements(props){
                 <TextField
                     id="outlined-multiline-static"
                     multiline
-                    rows={2}
+                    minRows={2}
                     disabled={isDisabled}
                     fullWidth
                     onChange={handlerObjective}

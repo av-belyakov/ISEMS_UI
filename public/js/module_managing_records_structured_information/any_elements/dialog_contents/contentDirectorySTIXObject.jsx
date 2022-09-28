@@ -126,11 +126,8 @@ function CreateMajorContent(props){
         };
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
-        let data = state;
-        data.number = +state.number;
-
         if(buttonSaveChangeTrigger){
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [data] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [state] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
