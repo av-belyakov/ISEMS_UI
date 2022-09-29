@@ -345,7 +345,8 @@ let helpers = {
             "stringAlphaRu": new RegExp("^[а-яА-ЯёЁ\\s]{4,}$"),
             "stringAlphaNumEng": new RegExp("^[a-zA-Z0-9_-]{4,}$"),
             "stringPasswd": new RegExp("^[a-zA-Z0-9!@#$%^&*()?]{7,}$"),
-            "domanName": new RegExp("^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$")
+            "domanName": new RegExp("^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$"),
+            //"emailAddr": new RegExp("/^(([^<>()[\\]\\.,;:\\s@\"]+(\\.[^<>()[\\]\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$/</>")
         };
         let pattern = objSettings[elem.name];
 

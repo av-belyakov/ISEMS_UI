@@ -6,14 +6,15 @@ import {
     Typography, 
 } from "@material-ui/core";
 import { v4 as uuidv4 } from "uuid";
+import validator from "validatorjs";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerDomainNamePatternSTIXObjects from "../reducer_handlers/reducerDomainNameSTIXObject.js";
-import CreateDomainNamePatternElements from "../type_elements_stix/domainNamePatternElements.jsx";
+import reducerEmailAddrPatternSTIXObjects from "../reducer_handlers/reducerEmailAddrPatternSTIXObjects.js";
+import CreateEmailAddrPatternElements from "../type_elements_stix/emailAddressPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-export default function CreateDomainNamePatternNewSTIXObject(props){
+export default function CreateEmailAddrPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
@@ -28,7 +29,7 @@ export default function CreateDomainNamePatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`domain-name--${uuidv4()}`}
+        currentObjectId={`email-addr--${uuidv4()}`}
         buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -38,7 +39,7 @@ export default function CreateDomainNamePatternNewSTIXObject(props){
     />;
 }
      
-CreateDomainNamePatternNewSTIXObject.propTypes = {
+CreateEmailAddrPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
@@ -62,9 +63,9 @@ function CreateMajorElements(props){
         handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerDomainNamePatternSTIXObjects, {});
+    const [ state, dispatch ] = useReducer(reducerEmailAddrPatternSTIXObjects, {});
     useEffect(() => {
-        if(projectPatterElement.type === "domain-name"){
+        if(projectPatterElement.type === "email-addr"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
@@ -72,7 +73,7 @@ function CreateMajorElements(props){
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "domain-name";
+            stateTmp.type = "email-addr";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -89,14 +90,14 @@ function CreateMajorElements(props){
 
     const handlerCheckStateButtonIsDisabled = (value) => {
         if(typeof value !== "undefined"){
-            if(helpers.checkInputValidation({ name: "domanName", value: value })){
+            if(validator.isEmail(value)){
                 return handlerChangeButtonAdd(false);
             }
             
             return handlerChangeButtonAdd(true);
         }
 
-        if(state && (typeof state.value !== "undefined") && helpers.checkInputValidation({ name: "domanName", value: state.value })){
+        if(state && (typeof state.value !== "undefined") && validator.isEmail(state.value)){
             handlerChangeButtonAdd(false);
         } else {
             handlerChangeButtonAdd(true);
@@ -120,7 +121,7 @@ function CreateMajorElements(props){
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("domain-name").description}`}
+                        {`${helpers.getLinkImageSTIXObject("email-addr").description}`}
                     </Typography> 
                 </Grid>
             </Grid>
@@ -130,10 +131,11 @@ function CreateMajorElements(props){
                 <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
 
-            <CreateDomainNamePatternElements
+            <CreateEmailAddrPatternElements
                 isDisabled={false}
                 campaignPatterElement={state}
                 handlerValue={(e) => { dispatch({ type: "updateValue", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handlerDisplayName={(e) => { dispatch({ type: "updateDisplayName", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 

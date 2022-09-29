@@ -28,6 +28,7 @@ const ContentCampaignSTIXObject = lazy(() => import(/* webpackChunkName 'Content
 const ContentCourseOfActionSTIXObject = lazy(() => import(/* webpackChunkName 'ContentCourseOfActionSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentCourseOfActionSTIXObject.jsx"));
 const ContentDomainNameSTIXObject = lazy(() => import(/* webpackChunkName 'ContentDomainNameSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentDomainNameSTIXObject.jsx"));
 const ContentEmailAddrSTIXObject = lazy(() => import(/* webpackChunkName 'ContentEmailAddrSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentEmailAddrSTIXObject.jsx"));
+const ContentEmailMessageSTIXObject = lazy(() => import(/* webpackChunkName 'ContentEmailMessageSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentEmailMessageSTIXObject.jsx"));
 const ContentGroupingSTIXObject = lazy(() => import(/* webpackChunkName 'ContentGroupingSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentGroupingSTIXObject.jsx"));
 const ContentIdentitySTIXObject = lazy(() => import(/* webpackChunkName 'ContentIdentitySTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentIdentitySTIXObject.jsx"));
 const ContentIncidentSTIXObject = lazy(() => import(/* webpackChunkName 'ContentIncidentSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentIncidentSTIXObject.jsx"));
@@ -138,6 +139,7 @@ function somethingModule(nameSTIX){
         "course-of-action": ContentCourseOfActionSTIXObject, 
         "domain-name": ContentDomainNameSTIXObject,
         "email-addr": ContentEmailAddrSTIXObject,
+        "email-message": ContentEmailMessageSTIXObject,
         "grouping": ContentGroupingSTIXObject,
         "identity": ContentIdentitySTIXObject,
         "incident": ContentIncidentSTIXObject,

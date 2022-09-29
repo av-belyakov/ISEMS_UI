@@ -41,6 +41,7 @@ const CreateArtifactPatternNewSTIXObject = lazy(() => import("./contentArtifactP
 const CreateAutonomousSystemPatternNewSTIXObject = lazy(() => import("./contentAutonomousSystemPatternNewSTIXObject.jsx"));
 const CreateDirectoryPatternNewSTIXObject = lazy(() => import("./contentDirectoryPatternNewSTIXObject.jsx"));
 const CreateDomainNamePatternNewSTIXObject = lazy(() => import("./contentDomainNamePatternNewSTIXObject.jsx"));
+const CreateEmailAddrPatternNewSTIXObject = lazy(() => import("./contentEmailAddrPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -124,6 +125,13 @@ const listRefPropertyObject = {
     "image_ref": [ "file" ],
     "parent_ref": [ "process" ],
     "child_refs": [ "process" ],
+    "belongs_to_ref": [ "user-account" ],
+    "raw_email_ref": [ "artifact" ],
+    "bcc_refs": [ "email-address" ],
+    "cc_refs": [ "email-address" ],
+    "to_refs": [ "email-address" ],
+    "sender_ref": [ "email-address" ],
+    "from_ref": [ "email-address" ],
 };
 
 const typesRelationshipsBetweenObjects = {
@@ -500,7 +508,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                     добавить объект
             </Button>:
                 <Button 
-                    //disabled={buttonAddIsDisabled}
+                    disabled={buttonAddIsDisabled}
                     onClick={() => { 
                         setButtonChangeClick(true);
 
@@ -559,7 +567,7 @@ function somethingModule(nameSTIX){
         "campaign": CreateCampaignPatternNewSTIXObject,
         "course-of-action": CreateCourseOfActionPatternNewSTIXObject, 
         "domain-name": CreateDomainNamePatternNewSTIXObject,
-        //"email-addr": CreateEmailAddressPatternElements,
+        "email-addr": CreateEmailAddrPatternNewSTIXObject,
         "grouping": CreateGroupingPatternNewSTIXObject,
         "identity": CreateIdentityPatternNewSTIXObject,
         ////"incident": CreateIncidentSTIXObject,

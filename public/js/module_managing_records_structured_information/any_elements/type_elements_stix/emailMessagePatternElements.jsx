@@ -10,12 +10,15 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
 
-export default function CreateDomainNamePatternElements(props){
+export default function CreateEmailMessagePatternElements(props){
     let { 
         isDisabled,
         campaignPatterElement, 
         handlerValue,
+        handlerDisplayName,
     } = props;
+
+    console.log("func 'CreateEmailMessagePatternElements', campaignPatterElement:", campaignPatterElement);
 
     let [ isInvalidValue, setIsInvalidValue ] = React.useState(((typeof campaignPatterElement.value === "undefined") || (campaignPatterElement.value === "")));
 
@@ -83,8 +86,9 @@ export default function CreateDomainNamePatternElements(props){
     </React.Fragment>);
 }
 
-CreateDomainNamePatternElements.propTypes = {
+CreateEmailMessagePatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerValue: PropTypes.func.isRequired,
+    handlerDisplayName: PropTypes.func.isRequired,
 };

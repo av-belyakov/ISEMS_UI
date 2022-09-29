@@ -23,6 +23,17 @@ const listExtendedObject = [
     {name: "note", listProperties: [ 
         "object_refs" 
     ]}, //object_refs (any STIX object)
+    {name: "email-addr", listProperties: [ 
+        "belongs_to_ref" 
+    ]}, //belongs_to_ref (SCO user-account)
+    {name: "email-message", listProperties: [ 
+        "raw_email_ref",
+        "bcc_refs",
+        "cc_refs",
+        "to_refs",
+        "sender_ref",
+        "from_ref", 
+    ]}, //belongs_to_ref (SCO artifact and email-address)
     {name: "observed-data", listProperties: [ 
         "object_refs" 
     ]}, //object_refs (any SCO)
