@@ -159,7 +159,7 @@ function somethingModule(nameSTIX){
         "user-account": ContentUserAccountSTIXObject,
         "vulnerability": ContentVulnerabilitySTIXObject,
         "indicator": ContentAuxiliarySTIXObject,
-        "email-message": ContentAuxiliarySTIXObject,
+        //"email-message": ContentAuxiliarySTIXObject,
         "malware-analysis": ContentAuxiliarySTIXObject,
         "relationship": ContentAuxiliarySTIXObject,
         "sighting": ContentAuxiliarySTIXObject,

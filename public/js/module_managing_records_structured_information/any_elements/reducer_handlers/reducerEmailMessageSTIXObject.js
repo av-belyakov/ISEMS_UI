@@ -1,17 +1,55 @@
 export default function reducerEmailMessagePatternSTIXObjects(state, action){
+    let dateSend = "";
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+
+    let tmp = "";
+
     switch(action.type){
-    case "newAll":        
+    case "newAll":
+        if(action.data.date && action.data.date){
+            action.data.date = new Date(Date.parse(action.data.date)).toISOString();
+        }
+
         return action.data;
     case "cleanAll":
         return {};
     case "addId":
         return {...state, id: action.data};
-    
+
+        /*
     case "updateValue":
         return {...state, value: action.data};
     case "updateDisplayName":
         return {...state, display_name: action.data};
-    
+    */
+
+    case "updateIsMultipart":
+        return {...state, is_multipart: action.data};
+    case "updateDateSend":
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            dateSend = new Date(tmp + (ms * -1));
+        } else {
+            dateSend = new Date(tmp - (ms * -1));
+        }
+
+        return {...state, date: dateSend};
+    case "updateContentType":
+        return {...state, content_type: action.data};
+    case "updateMessageId":
+        return {...state, message_id: action.data};
+    case "updateSubject":
+        return {...state, subject: action.data};
+    case "updateReceivedLines":
+        if(!state.received_lines){
+            state.received_lines = [];
+        }
+                
+        state.received_lines.push(action.data);
+        
+        return {...state};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};
@@ -52,8 +90,8 @@ export default function reducerEmailMessagePatternSTIXObjects(state, action){
         state.extensions[action.data.name] = action.data.description;
     
         return {...state};
-    case "deleteKillChain":
-        state.kill_chain_phases.splice(action.data, 1);
+    case "deleteReceivedLines":
+        state.received_lines.splice(action.data, 1);
     
         return {...state};
     case "deleteElementAdditionalTechnicalInformation":

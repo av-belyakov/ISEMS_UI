@@ -1612,6 +1612,104 @@ CreateKillChainPhasesList.propTypes = {
     handlerDeleteItem: PropTypes.func.isRequired,
 };
 
+/**
+ * Формирование списка элементов поля заголовка 'Received'
+ * @param {*} props 
+ * @returns 
+ */
+export function CreateReceivedLines(props){
+    let { isDisabled, handlerAddReceivedLines } = props;
+
+    let [ valueReceivedLines, setValueReceivedLines ] = useState("");
+    let [ invalidReceivedLines, setInvalidReceivedLines ] = useState(true);
+    let [ isDisabledButtonNewReceivedLines, setIsDisabledButtonNewReceivedLines ] = useState(true);
+
+    const handlerReceivedLines = (obj) => {
+        setValueReceivedLines(obj.target.value);
+
+        if(obj.target.value.length === 0){
+            setInvalidReceivedLines(true);
+            setIsDisabledButtonNewReceivedLines(true);
+
+            return;
+        }
+
+        setInvalidReceivedLines(false);
+        setIsDisabledButtonNewReceivedLines(false);
+    };
+
+    return (<Grid container direction="row" spacing={1}>
+        <Grid item container md={9}>
+            <TextField
+                id="input_new_name_kill_chain"
+                fullWidth
+                disabled={isDisabled}
+                error={invalidReceivedLines}
+                label="наименование элемента"
+                value={valueReceivedLines}
+                onChange={handlerReceivedLines} />
+        </Grid>
+        <Grid item container md={3} justifyContent="flex-end">
+            <Button
+                className="mt-2" 
+                onClick={() => {
+                    if(invalidReceivedLines){
+                        return;
+                    }
+
+                    handlerAddReceivedLines(valueReceivedLines);
+
+                    setInvalidReceivedLines(true);
+                    setValueReceivedLines("");
+                    setIsDisabledButtonNewReceivedLines(true);
+                }} disabled={isDisabledButtonNewReceivedLines}>добавить элемент поля 'Received'</Button>
+        </Grid>
+    </Grid>);
+}
+
+CreateReceivedLines.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    handlerAddReceivedLines: PropTypes.func.isRequired,
+};
+
+/**
+ * Формирование списка элементов поля заголовка 'Received'
+ * @param {*} props 
+ * @returns 
+ */
+export function CreateReceivedLinesList(props){
+    let { 
+        isDisabled,
+        listReceivedLines, 
+        handlerDeleteItem 
+    } = props;
+
+    if(listReceivedLines.length === 0){
+        return "";
+    }
+
+    return (<Grid container direction="row" className="mt-3">
+        <Grid item container md={12} justifyContent="flex-start">
+            <ol>
+                {listReceivedLines.map((item, num) => {
+                    return (<li key={`key_item_received_lines_${num}`}>
+                        {item}&nbsp;
+                        <IconButton aria-label="delete-received_line" onClick={handlerDeleteItem.bind(null, num)}>
+                            {isDisabled? "": <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />}
+                        </IconButton>
+                    </li>);
+                })}
+            </ol>
+        </Grid>
+    </Grid>);
+}
+
+CreateReceivedLinesList.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    listReceivedLines: PropTypes.array.isRequired,
+    handlerDeleteItem: PropTypes.func.isRequired,
+};
+
 export function CreateListRegion(props){
     let { 
         isDisabled,
