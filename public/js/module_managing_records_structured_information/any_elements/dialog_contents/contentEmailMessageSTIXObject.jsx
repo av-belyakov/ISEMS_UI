@@ -135,20 +135,8 @@ function CreateMajorContent(props){
         }
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
-    const handlerCheckStateButtonIsDisabled = (value) => {
-        /*if(typeof value !== "undefined"){
-            if(!validator.isEmail(value)){
-                return handlerButtonIsDisabled(true);
-            }
-
-            return handlerButtonIsDisabled(false);
-        }
-
-        if(state && validator.isEmail(state.value)){
-            handlerButtonIsDisabled(false);
-        } else {
-            handlerButtonIsDisabled(true);
-        }*/
+    const handlerCheckStateButtonIsDisabled = () => {
+        handlerButtonIsDisabled(false);
     };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
@@ -168,17 +156,15 @@ function CreateMajorContent(props){
             <CreateEmailMessagePatternElements
                 isDisabled={false}
                 campaignPatterElement={state}
-                //handlerValue={(e) => { dispatch({ type: "updateValue", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                //handlerDisplayName={(e) => { dispatch({ type: "updateDisplayName", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerIsMultipart={(e) => { dispatch({ type: "updateIsMultipart", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDateSend={(e) => { dispatch({ type: "updateDateSend", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerContentType={(e) => { dispatch({ type: "updateContentType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerMessageId={(e) => { dispatch({ type: "updateMessageId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerBody={(e) => { dispatch({ type: "updateBody", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerSubject={(e) => { dispatch({ type: "updateSubject", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDateSend={(e) => { dispatch({ type: "updateDateSend", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerMessageId={(e) => { dispatch({ type: "updateMessageId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerContentType={(e) => { dispatch({ type: "updateContentType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerIsMultipart={(e) => { dispatch({ type: "updateIsMultipart", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerAddReceivedLines={(e) => { dispatch({ type: "updateReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDeleteReceivedLines={(e) => { dispatch({ type: "deleteReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />
-
         </Grid> 
 
         <CreateElementAdditionalTechnicalInformationCO 

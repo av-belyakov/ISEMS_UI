@@ -12,7 +12,7 @@ import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import { CreateReceivedLines, CreateReceivedLinesList } from "../anyElements.jsx";
+import { CreateReceivedLines, CreateReceivedLinesList, CreateBodyMultipartList } from "../anyElements.jsx";
 
 const minDefaultData = "0001-01-01T00:00:00Z";
 
@@ -20,11 +20,12 @@ export default function CreateEmailMessagePatternElements(props){
     let { 
         isDisabled,
         campaignPatterElement, 
-        handlerIsMultipart,
-        handlerDateSend,
-        handlerContentType,
-        handlerMessageId,
+        handlerBody,
         handlerSubject,
+        handlerDateSend,
+        handlerMessageId,
+        handlerContentType,
+        handlerIsMultipart,
         handlerAddReceivedLines,
         handlerDeleteReceivedLines,
     } = props;
@@ -48,9 +49,9 @@ export default function CreateEmailMessagePatternElements(props){
     }
 
     return (<React.Fragment>
-        <Grid container direction="row" className="pl-4 mt-1 mb-3">
-            <Grid item container md={10} justifyContent="flex-end"><span className="text-muted">Содержит ли email сообщение множественные MIME части:</span></Grid>
-            <Grid item container md={2} justifyContent="flex-start">
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Содержит ли email сообщение множественные MIME части:</span></Grid>
+            <Grid item container md={8} justifyContent="flex-start">
                 <Form.Group>
                     <Form.Control 
                         //disabled={!isNotDisabled}
@@ -97,12 +98,6 @@ export default function CreateEmailMessagePatternElements(props){
                     InputLabelProps={{ shrink: true }}
                     //error={isInvalidValue}
                     onChange={(e) => {
-                        /*if(e.target.value === "" || !helpers.checkInputValidation({ name: "domanName", value: e.target.value })){
-                                setIsInvalidValue(true);
-                            } else {
-                                setIsInvalidValue(false);
-                            }*/
-
                         handlerContentType(e);
                     }}
                     //helperText="обязательное для заполнения поле"
@@ -113,7 +108,7 @@ export default function CreateEmailMessagePatternElements(props){
 
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted mt-2">Содержимое поля <strong><i>From</i></strong> заголовка email сообщения:</span>
+                <span className="text-muted mt-3">Содержимое поля <strong><i>From</i></strong> заголовка email сообщения:</span>
             </Grid>
             <Grid item container md={8}>
                 {campaignPatterElement.from_ref && campaignPatterElement.from_ref.length !== 0?
@@ -136,7 +131,7 @@ export default function CreateEmailMessagePatternElements(props){
 
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted mt-2">Содержимое поля <strong><i>Sender</i></strong> заголовка email сообщения:</span>
+                <span className="text-muted mt-3">Содержимое поля <strong><i>Sender</i></strong> заголовка email сообщения:</span>
             </Grid>
             <Grid item container md={8}>
                 {campaignPatterElement.sender_ref && campaignPatterElement.sender_ref.length !== 0?
@@ -161,7 +156,7 @@ export default function CreateEmailMessagePatternElements(props){
             <React.Fragment>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start">
-                        <span className="text-muted">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>To</i></strong>):</span>
+                        <span className="text-muted">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>To</i></strong>)</span>
                     </Grid>
                 </Grid>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
@@ -196,7 +191,7 @@ export default function CreateEmailMessagePatternElements(props){
             <React.Fragment>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start">
-                        <span className="text-muted">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>CC</i></strong>):</span>
+                        <span className="text-muted">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>CC</i></strong>)</span>
                     </Grid>
                 </Grid>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
@@ -231,7 +226,7 @@ export default function CreateEmailMessagePatternElements(props){
             <React.Fragment>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start">
-                        <span className="text-muted">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>BCC</i></strong>):</span>
+                        <span className="text-muted">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>BCC</i></strong>)</span>
                     </Grid>
                 </Grid>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
@@ -325,28 +320,98 @@ export default function CreateEmailMessagePatternElements(props){
             handlerDeleteItem={handlerDeleteReceivedLines}
         />
 
+        <Grid container direction="row">
+            <Grid item container md={12} justifyContent="flex-start"><span className="text-muted mt-2 mb-2">Содержимое поля <strong><i>Body</i></strong> email сообщения</span></Grid>
+        </Grid>
+        <Grid container direction="row">
+            <Grid item container md={12}>
+                <TextField
+                    fullWidth
+                    disabled={isDisabled}
+                    id="body-element"
+                    multiline
+                    minRows={4}
+                    InputLabelProps={{ shrink: true }}
+                    //error={isInvalidValue}
+                    onChange={handlerBody}
+                    variant="outlined"
+                    //helperText="обязательное для заполнения поле"
+                    value={(campaignPatterElement.body)? campaignPatterElement.body: ""}
+                />
+            </Grid>
+        </Grid>
+
+
+
         {/**
 
          Нужно доделать следующие свойства
 
-        // AdditionalHeaderFields - содержит любые другие поля заголовка (за исключением date, received_lines, content_type, from_ref,
-        //  sender_ref, to_ref, cc_ref, bcc_refs и subject), найденные в сообщении электронной почты в виде словаря
-        // Body - содержит тело сообщения
+
         // BodyMultipart - содержит адает список MIME-части, которые составляют тело email. Это свойство НЕ ДОЛЖНО использоваться, если
         //  is_multipart имеет значение false
-        // RawEmailRef - содержит 'сырое' бинарное содержимое email сообщения
          */}
+
+        <CreateBodyMultipartList
+            isDisabled={isDisabled}
+            listBodyMultipart={(!campaignPatterElement.body_multipart)? []: campaignPatterElement.body_multipart}
+            handlerDeleteItem={(e) => { console.log("func 'handlerDelete' element:", e); }}
+        />
+
+        <Grid container direction="row" spacing={3} className="mt-2">
+            <Grid item container md={4} justifyContent="flex-end">
+                <span className="text-muted  mt-3">Ссылка на 'сырое' (бинарное) содержимое email сообщения:</span>
+            </Grid>
+            <Grid item container md={8}>
+                {campaignPatterElement.raw_email_ref && campaignPatterElement.raw_email_ref.length !== 0?
+                    <React.Fragment>
+                        <Grid container direction="row">
+                            <Grid item container md={12} justifyContent="flex-start">
+                                <Button onClick={() => {}} disabled>
+                                    <img 
+                                        src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.raw_email_ref.split("--")[0]).link}`} 
+                                        width="35" 
+                                        height="35" />
+                                    &nbsp;{campaignPatterElement.raw_email_ref}
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </React.Fragment>:
+                    ""}
+            </Grid>
+        </Grid>
+
+        {
+            //
+            //      поле additional_header_fields, пока не очень хорошо реализованно в ISEMS-MRSICT
+            // пока оставляю как есть, но в перспективе нужно внести нектороые изменения в соответствующий тип
+            // данного объекта в ISEMS-MRSICT
+            // 
+            (campaignPatterElement !== null && campaignPatterElement.additional_header_fields)?
+                Object.keys(campaignPatterElement.additional_header_fields).length === 0?
+                    "":
+                    <React.Fragment>
+                        <Grid container direction="row" className="mt-2">
+                            <Grid item md={12}><span className="text-muted">дополнительная информация, относящаяся к объекту</span></Grid>
+                        </Grid>
+                        <Grid container direction="row" className="mt-2">
+                            <Grid item md={12}><strong>{JSON.stringify(campaignPatterElement.additional_header_fields, null, 2)}</strong></Grid>
+                        </Grid>
+                    </React.Fragment>:
+                ""
+        }
     </React.Fragment>);
 }
 
 CreateEmailMessagePatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
-    handlerIsMultipart: PropTypes.func.isRequired,
-    handlerDateSend: PropTypes.func.isRequired,
-    handlerContentType: PropTypes.func.isRequired,
-    handlerMessageId: PropTypes.func.isRequired,
+    handlerBody: PropTypes.func.isRequired,
     handlerSubject: PropTypes.func.isRequired,
+    handlerDateSend: PropTypes.func.isRequired,
+    handlerMessageId: PropTypes.func.isRequired,
+    handlerContentType: PropTypes.func.isRequired,
+    handlerIsMultipart: PropTypes.func.isRequired,
     handlerAddReceivedLines: PropTypes.func.isRequired,
     handlerDeleteReceivedLines: PropTypes.func.isRequired,
 };

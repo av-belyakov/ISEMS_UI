@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import {
     Button,
+    Card,
+    CardHeader,
+    CardContent,
     Collapse,
     Chip,
     Select,
@@ -1609,6 +1612,105 @@ export function CreateKillChainPhasesList(props){
 CreateKillChainPhasesList.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     listKillChainPhases: PropTypes.array.isRequired,
+    handlerDeleteItem: PropTypes.func.isRequired,
+};
+
+
+
+/**
+ * Формирование списка элементов поля заголовка 'Received'
+ * @param {*} props 
+ * @returns 
+ */
+export function CreateBodyMultipartList(props){
+    let { 
+        isDisabled,
+        listBodyMultipart, 
+        handlerDeleteItem 
+    } = props;
+
+    if(listBodyMultipart.length === 0){
+        return "";
+    }
+
+    return (<Grid container direction="row" className="mt-3">
+        <Grid item container md={12} justifyContent="flex-start">
+            {listBodyMultipart.map((item, key) => {
+                <Card key={`key_body_multipart_${key}_fragment`}>
+                    <CardContent>
+                        {((typeof item.content_type === "undefined") || (item.content_type === null)) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_body_multipart_content_type_${key}`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <Typography variant="body2" component="p">
+                                        <span className="text-muted">Содержимое поля <strong><i>Content-Type</i></strong></span>: {item.content_type}
+                                    </Typography>
+                                </Grid>
+                            </Grid>}
+
+                        {((typeof item.content_disposition === "undefined") || (item.content_disposition === null)) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_body_multipart_content_disposition_${key}`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <Typography variant="body2" component="p">
+                                        <span className="text-muted">Содержимое поля <strong><i>Content-Disposition</i></strong></span>: {item.content_disposition}
+                                    </Typography>
+                                </Grid>
+                            </Grid>}
+
+                        {((typeof item.body === "undefined") || (item.body === null)) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_body_multipart_body_${key}`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <Typography variant="body2" component="p">
+                                        <span className="text-muted">Содержимое части MIME</span>: {item.body}
+                                    </Typography>
+                                </Grid>
+                            </Grid>}
+
+                        {((typeof item.body_raw_ref === "undefined") || (item.body_raw_ref === null)) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_body_multipart_body_raw_ref_${key}`}>
+                                <Grid item md={12} className="pl-4 pr-4">
+                                    <Typography variant="body2" component="p">
+                                        <span className="text-muted">Ссылка на нетекстовых частей MIME</span>: 
+                                        {<Button onClick={() => {}} disabled>
+                                            <img 
+                                                src={`/images/stix_object/${helpers.getLinkImageSTIXObject(item.body_raw_ref.split("--")).link}`} 
+                                                width="35" 
+                                                height="35" />
+                                    &nbsp;{item.body_raw_ref}
+                                        </Button>}
+                                    </Typography>
+                                </Grid>
+                            </Grid>}
+                    </CardContent>
+                </Card>;
+            })}
+        </Grid>
+    </Grid>);
+
+    {/*
+                                            {item.body_raw_ref}
+    return (<Grid container direction="row" className="mt-3">
+        <Grid item container md={12} justifyContent="flex-start">
+            <ol>
+                {listBodyMultipart.map((item, num) => {
+                    return (<li key={`key_item_body_multipart_${num}`}>
+                        {item}&nbsp;
+                        <IconButton aria-label="delete-body_multipart" onClick={handlerDeleteItem.bind(null, num)}>
+                            {isDisabled? "": <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />}
+                        </IconButton>
+                    </li>);
+                })}
+            </ol>
+        </Grid>
+    </Grid>);*/}
+}
+
+CreateBodyMultipartList.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    listBodyMultipart: PropTypes.array.isRequired,
     handlerDeleteItem: PropTypes.func.isRequired,
 };
 

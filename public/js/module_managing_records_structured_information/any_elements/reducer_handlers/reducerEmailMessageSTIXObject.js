@@ -23,9 +23,10 @@ export default function reducerEmailMessagePatternSTIXObjects(state, action){
     case "updateDisplayName":
         return {...state, display_name: action.data};
     */
-
-    case "updateIsMultipart":
-        return {...state, is_multipart: action.data};
+    case "updateBody":
+        return {...state, body: action.data};
+    case "updateSubject":
+        return {...state, subject: action.data};
     case "updateDateSend":
         tmp = Date.parse(action.data);
 
@@ -36,12 +37,12 @@ export default function reducerEmailMessagePatternSTIXObjects(state, action){
         }
 
         return {...state, date: dateSend};
-    case "updateContentType":
-        return {...state, content_type: action.data};
     case "updateMessageId":
         return {...state, message_id: action.data};
-    case "updateSubject":
-        return {...state, subject: action.data};
+    case "updateContentType":
+        return {...state, content_type: action.data};
+    case "updateIsMultipart":
+        return {...state, is_multipart: action.data};
     case "updateReceivedLines":
         if(!state.received_lines){
             state.received_lines = [];
