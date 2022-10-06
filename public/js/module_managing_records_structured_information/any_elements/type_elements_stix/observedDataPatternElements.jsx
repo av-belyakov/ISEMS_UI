@@ -130,6 +130,12 @@ export default function CreateObservedDataPatternElements(props){
             </Grid>
         </Grid>
 
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <span className="text-muted">Идентификаторы объектов:</span>
+            </Grid>
+        </Grid>
+
         {campaignPatterElement.object_refs && (() => {
             return (campaignPatterElement.object_refs.length === 0)? 
                 <Typography variant="caption">

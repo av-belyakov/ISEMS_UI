@@ -92,9 +92,9 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
     let getLabelsAdditionalTechnicalInformation = () => {
         let listTmpLabelsAdditionalTechnicalInformation = ((reportInfo.labels !== null) && (Array.isArray(reportInfo.labels)))? reportInfo.labels: [];
 
-        return (<Grid container direction="row" className="mt-2 pl-4">
-            <Grid item md={6}><span className="text-muted">набор терминов, используемых для описания данного объекта:</span></Grid>
-            <Grid item md={6} className="text-right">    
+        return (<Grid container direction="row" spacing={3} className="mt-2 pl-4">
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Набор терминов, используемых для описания данного объекта:</span></Grid>
+            <Grid item md={8} className="text-start">    
                 <TokenInput
                     style={{ height: "80px", width: "auto" }}
                     tokenValues={listTmpLabelsAdditionalTechnicalInformation}
@@ -121,12 +121,12 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
 
     return (<React.Fragment>
         <Grid container direction="row" className="mt-4">
-            <Grid item md={12}><span className="text-muted">Дополнительная техническая информация</span></Grid>
+            <Grid item md={12}><span className="text-muted"><strong>Дополнительная техническая информация</strong></span></Grid>
         </Grid>
 
-        <Grid container direction="row" className="mt-3 pl-4">
-            <Grid item md={6}><span className="text-muted">версия спецификации STIX:</span></Grid>
-            <Grid item md={6} className="text-end">
+        <Grid container direction="row" spacing={3} className="mt-3 pl-4">
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Версия спецификации STIX:</span></Grid>
+            <Grid item md={8} className="text-start">
                 {(reportInfo.id && reportInfo.id !== "")?
                     ((typeof reportInfo.spec_version === "undefined") || (reportInfo.spec_version.length === 0))? 
                         <span className="text-dark">версия не определена</span>: 
@@ -137,14 +137,16 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         </Grid>
             
         {((typeof reportInfo.lang !== "undefined") && (reportInfo.lang !== null) && (reportInfo.lang.length !== 0)) ? 
-            <Grid container direction="row" className="pl-4">
-                <Grid item md={6}><span className="text-muted">текстовый код языка:</span></Grid>
-                <Grid item md={6} className="text-end"><i>{reportInfo.lang.toUpperCase()}</i></Grid>
+            <Grid container direction="row" spacing={3} className="pl-4">
+                <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Текстовый код языка:</span></Grid>
+                <Grid item md={8} className="text-start"><i>{reportInfo.lang.toUpperCase()}</i></Grid>
             </Grid> : ""}
 
-        <Grid container direction="row" className="pl-4">
-            <Grid item md={10}><span className="text-muted">уверенность создателя в правильности своих данных от 0 до 100</span>&sup1;<span className="text-muted">:</span></Grid>
-            <Grid item md={2} className="text-end">
+        <Grid container direction="row" spacing={3} className="pl-4">
+            <Grid item md={4} className="text-end">
+                <span className="text-muted mt-n1">Уверенность создателя в правильности своих данных от 0 до 100</span>&sup1;<span className="text-muted">:</span>
+            </Grid>
+            <Grid container item md={8} justifyContent="flex-start">
                 <Form.Group>
                     <Form.Control 
                         disabled={!isNotDisabled}
@@ -160,9 +162,9 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         </Grid>
 
         {((typeof reportInfo.created_by_ref !== "undefined") && (reportInfo.created_by_ref !== null) && (reportInfo.created_by_ref.length !== 0)) ? 
-            <Grid container direction="row" className="mt-1 pl-4">
-                <Grid item md={6}><span className="text-muted">идентификатор источника:</span></Grid>
-                <Grid item md={6}>
+            <Grid container direction="row" spacing={3} className="mt-1 pl-4">
+                <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Идентификатор источника:</span></Grid>
+                <Grid item md={8} className="text-start">
                     <TextField size="small" defaultValue={reportInfo.created_by_ref} disabled fullWidth/>
                 </Grid>
             </Grid> : ""}
@@ -172,9 +174,9 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             getLabelsAdditionalTechnicalInformation()
         }
 
-        <Grid container direction="row" className="pl-4 mt-1 mb-3">
-            <Grid item md={10}><span className="text-muted">определены ли данные содержащиеся в объекте:</span></Grid>
-            <Grid item md={2} className="text-end">
+        <Grid container direction="row" spacing={3} className="pl-4 mt-1 mb-3">
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-1">Определены ли данные содержащиеся в объекте:</span></Grid>
+            <Grid item container md={8} justifyContent="flex-start">
                 <Form.Group>
                     <Form.Control 
                         disabled={!isNotDisabled}
@@ -211,7 +213,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel-add-technic-info"
                 id="panel-added-granular-labels">
-                <Typography className={classes.heading}>дополнительные {"\"гранулярные метки\""}</Typography>
+                <Typography className={classes.heading}>дополнительные {"\"гранулярные\""} метки</Typography>
             </AccordionSummary>
             <AccordionDetails>
                 <GetGranularMarkings

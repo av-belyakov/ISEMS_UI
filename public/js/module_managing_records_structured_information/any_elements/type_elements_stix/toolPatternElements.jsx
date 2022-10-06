@@ -97,7 +97,7 @@ export default function CreateToolPatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={12} justifyContent="flex-start">
-                <span className="text-muted">Набор элементов цепочки фактов, приведших к какому либо урону</span>
+                <span className="text-muted">Набор элементов цепочки фактов, приведших к какому либо урону:</span>
             </Grid>
         </Grid>
 
@@ -111,7 +111,7 @@ export default function CreateToolPatternElements(props){
             handlerDeleteItem={handlerDeleteKillChain} />
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Версия инструмента:</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-1">Версия инструмента:</span></Grid>
             <Grid item md={8}>
                 <TextField
                     id="outlined-tool-version"

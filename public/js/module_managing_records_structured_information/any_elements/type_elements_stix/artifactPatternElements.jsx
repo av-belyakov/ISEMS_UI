@@ -85,7 +85,7 @@ export default function CreateArtifactPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end" className="mt-2"><span className="text-muted">Ключ для дешифрования зашифрованных данных:</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end" className="mt-2 mb-2"><span className="text-muted">Ключ для дешифрования зашифрованных данных:</span></Grid>
             <Grid item container md={8} >
                 <TextField
                     fullWidth

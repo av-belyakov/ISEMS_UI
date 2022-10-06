@@ -59,12 +59,12 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
 
     return (<React.Fragment>
         <Grid container direction="row" className="mt-4">
-            <Grid item md={12}><span className="text-muted">Дополнительная техническая информация</span></Grid>
+            <Grid item md={12}><span className="text-muted"><strong>Дополнительная техническая информация</strong></span></Grid>
         </Grid>
 
-        <Grid container direction="row" className="mt-3 pl-4">
-            <Grid item md={6}><span className="text-muted">версия спецификации STIX:</span></Grid>
-            <Grid item md={6} className="text-end">
+        <Grid container direction="row" spacing={3} className="mt-3 pl-4">
+            <Grid item md={4} className="text-end"><span className="text-muted">Версия спецификации STIX:</span></Grid>
+            <Grid item md={8} className="text-start">
                 {(reportInfo.id && reportInfo.id !== "")?
                     ((typeof reportInfo.spec_version === "undefined") || (reportInfo.spec_version.length === 0))? 
                         <span className="text-dark">версия не определена</span>: 
@@ -74,9 +74,9 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" className="pl-4 mt-1 mb-3">
-            <Grid item md={10}><span className="text-muted">определены ли данные содержащиеся в объекте:</span></Grid>
-            <Grid item md={2} className="text-end">
+        <Grid container direction="row" spacing={3} className="pl-4 mt-1 mb-3">
+            <Grid item md={4} className="text-end mt-1"><span className="text-muted">Определены ли данные содержащиеся в объекте:</span></Grid>
+            <Grid item container md={8} justifyContent="flex-start">
                 <Form.Group>
                     <Form.Control 
                         disabled={!isNotDisabled}
@@ -93,7 +93,7 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
         </Grid>
 
         <Grid container direction="row" className="mt-2">
-            <Grid item md={12}><span className="text-muted">дополнительные {"\"гранулярные метки\""}</span></Grid>
+            <Grid item md={12}><span className="text-muted">Дополнительные {"\"гранулярные\""} метки:</span></Grid>
         </Grid>
         <GetGranularMarkings
             objectId={objectId}
@@ -109,7 +109,7 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
                     "":
                     <React.Fragment>
                         <Grid container direction="row" className="mt-2">
-                            <Grid item md={12}><span className="text-muted">дополнительная информация, относящаяся к объекту</span></Grid>
+                            <Grid item md={12}><span className="text-muted">Дополнительная информация, относящаяся к объекту:</span></Grid>
                         </Grid>
                         <Grid container direction="row" className="mt-2">
                             <Grid item md={12}><strong>{JSON.stringify(reportInfo.extensions, null, 2)}</strong></Grid>

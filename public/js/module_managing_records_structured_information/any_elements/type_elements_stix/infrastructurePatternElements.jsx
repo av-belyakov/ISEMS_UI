@@ -168,7 +168,7 @@ export default function CreateInfrastructurePatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={12} justifyContent="flex-start">
-                <span className="text-muted">Набор элементов цепочки фактов, приведших к какому либо урону</span>
+                <span className="text-muted">Набор элементов цепочки фактов, приведших к какому либо урону:</span>
             </Grid>
         </Grid>
 

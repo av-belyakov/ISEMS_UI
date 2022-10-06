@@ -91,9 +91,7 @@ export default function CreateOpinionPatternElements(props){
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={12} justifyContent="flex-start">
-                <span className="text-muted">
-                    Идентификаторы объектов связанных с данным Примечанием
-                </span>
+                <span className="text-muted">Идентификаторы объектов:</span>
             </Grid>
         </Grid>
 
