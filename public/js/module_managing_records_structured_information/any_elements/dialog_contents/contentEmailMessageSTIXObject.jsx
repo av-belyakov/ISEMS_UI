@@ -5,13 +5,30 @@ import {
     DialogContent,
     Grid,
 } from "@material-ui/core";
-import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
 import reducerEmailMessagePatternSTIXObjects from "../reducer_handlers/reducerEmailMessageSTIXObject.js";
 import CreateEmailMessagePatternElements from "../type_elements_stix/emailMessagePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
+
+function reducerShowRef(state, action){
+    switch(action.type){
+    case "addObject":
+        /*if(action.data.date && action.data.date){
+                action.data.date = new Date(Date.parse(action.data.date)).toISOString();
+            }*/
+ 
+        console.log("func 'reducerShowRef', action.type:", action.type, " action.data:", action.data);
+
+        return {...state, obj: action.data};
+    case "addId":
+
+        console.log("func 'reducerShowRef', action.type:", action.type, " action.data:", action.data);
+
+        return {...state, id: action.data};
+    }
+}
 
 export default function CreateDialogContentEmailMessageSTIXObject(props){
     let { 
@@ -83,6 +100,8 @@ function CreateMajorContent(props){
         handlerButtonSaveChangeTrigger,
     } = props;
 
+    console.log("func 'CreateDialogContentEmailMessageSTIXObject', CreateMajorContent, START...");
+
     let beginDataObject = {};
     for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
         if(listNewOrModifySTIXObject[i].id === currentIdSTIXObject){
@@ -91,6 +110,7 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerEmailMessagePatternSTIXObjects, beginDataObject);
+    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -108,7 +128,24 @@ function CreateMajorContent(props){
             return;
         }
 
-        for(let obj of data.information.additional_parameters.transmitted_data){            
+        for(let obj of data.information.additional_parameters.transmitted_data){
+
+            console.log("func 'listener', obj.id (", obj.id, ") === (", stateShowRef.id, ") stateShowRef.id");
+            console.log("__________________");
+            console.log(obj, " ||||||| ", stateShowRef, " ********* ", state);
+
+            /*if(obj.id === stateShowRef.id){
+                dispatchShowRef({ type: "addObject", data: obj });
+
+                continue;
+            }*/
+            
+            if(state.type !== obj.type){
+                dispatchShowRef({ type: "addObject", data: obj });
+
+                continue;
+            }
+             
             dispatch({ type: "newAll", data: obj });
         }
     };
@@ -151,10 +188,22 @@ function CreateMajorContent(props){
         }
     };
 
+    const handlerButtonShowLink = (refId) => {
+        dispatchShowRef({ type: "addId", data: refId });
+
+        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+            searchObjectId: refId,
+            parentObjectId: state.id,
+        }});
+
+        console.log("func 'handlerButtonShowLink', searchObjectId:", refId, " parentObjectId:", state.id);
+    };
+
     return (<Grid item container md={12}>
         <Grid container direction="row" className="pt-3">
             <CreateEmailMessagePatternElements
                 isDisabled={false}
+                showRefElement={stateShowRef}
                 campaignPatterElement={state}
                 handlerBody={(e) => { dispatch({ type: "updateBody", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerSubject={(e) => { dispatch({ type: "updateSubject", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
@@ -162,6 +211,7 @@ function CreateMajorContent(props){
                 handlerMessageId={(e) => { dispatch({ type: "updateMessageId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerContentType={(e) => { dispatch({ type: "updateContentType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerIsMultipart={(e) => { dispatch({ type: "updateIsMultipart", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerButtonShowLink={handlerButtonShowLink}
                 handlerAddReceivedLines={(e) => { dispatch({ type: "updateReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDeleteReceivedLines={(e) => { dispatch({ type: "deleteReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />
