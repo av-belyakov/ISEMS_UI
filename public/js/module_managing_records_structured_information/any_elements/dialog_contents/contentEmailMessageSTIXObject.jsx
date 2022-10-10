@@ -191,12 +191,14 @@ function CreateMajorContent(props){
     const handlerButtonShowLink = (refId) => {
         dispatchShowRef({ type: "addId", data: refId });
 
+        if(stateShowRef.id === refId){            
+            return;
+        }
+
         socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
             searchObjectId: refId,
             parentObjectId: state.id,
         }});
-
-        console.log("func 'handlerButtonShowLink', searchObjectId:", refId, " parentObjectId:", state.id);
     };
 
     return (<Grid item container md={12}>

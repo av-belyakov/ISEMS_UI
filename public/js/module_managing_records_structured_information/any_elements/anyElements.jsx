@@ -3,7 +3,7 @@ import { Col, Row } from "react-bootstrap";
 import {
     Button,
     Card,
-    CardHeader,
+    CardActions,
     CardContent,
     Collapse,
     Chip,
@@ -1631,18 +1631,40 @@ CreateKillChainPhasesList.propTypes = {
 export function CreateBodyMultipartList(props){
     let { 
         isDisabled,
-        listBodyMultipart, 
-        handlerDeleteItem 
+        showRefElement,
+        listBodyMultipart,
+        handlerButtonShowLink,
     } = props;
 
     const classes = useStyles();
+    let [ expanded, setExpanded ] = useState(false);
+    let [ refId, setRefId ] = useState("");
 
     console.log("func 'CreateBodyMultipartList', listBodyMultipart = ", listBodyMultipart);
 
     if(listBodyMultipart.length === 0){
         return "";
     }
-    
+
+    let handleExpandClick = (id) => {
+        if(id !== refId){
+            setExpanded(true); 
+            setRefId(id);
+        } else {
+            if(expanded){
+                setExpanded(false);
+            } else {
+                setExpanded(true); 
+            }    
+        }
+
+        handlerButtonShowLink(id);
+    };
+
+    let showBodyRawRef = (obj) => {
+        return JSON.stringify(obj);
+    };
+
     return (<React.Fragment>
         <Grid container direction="row" className="mt-3">
             <Grid item container md={12} justifyContent="flex-start">
@@ -1686,20 +1708,24 @@ export function CreateBodyMultipartList(props){
                                     </Grid>
                                 </Grid>}
 
-                            {((typeof item.body_raw_ref === "undefined") || (item.body_raw_ref === null) || (item.body_raw_ref === "")) ? 
+                            {((typeof item.body_raw_ref === "undefined") || (item.body_raw_ref === null) || (item.body_raw_ref === ""))? 
                                 "": 
                                 <Grid container direction="row" key={`key_body_multipart_body_raw_ref_${key}`}>
                                     <Grid item md={12} className="pl-4 pr-4">
                                         <Typography variant="body2" component="p">
                                             <span className="text-muted">Ссылка на нетекстовые части MIME:</span>
-                                            {<Button onClick={() => {}} disabled>
+                                            {<Button 
+                                                onClick={() => {
+                                                    handleExpandClick(item.body_raw_ref);
+                                                }}
+                                            >
                                                 {(typeof icon !== "undefined")?
                                                     <img 
                                                         src={`/images/stix_object/${icon.link}`} 
                                                         width="35"  
                                                         height="35" />: 
                                                     ""}
-                                                &nbsp;{item.body_raw_ref}
+                                                    &nbsp;{item.body_raw_ref}
                                             </Button>}
                                         </Typography>
                                     </Grid>
@@ -1712,10 +1738,59 @@ export function CreateBodyMultipartList(props){
     </React.Fragment>);
 }
 
+/**
+ * Надо сделать просмотр дополнительной информации по Ссылка на нетекстовые части MIME!!!!
+ * 
+                 <Grid container direction="row" key={`key_body_multipart_body_raw_ref_${key}`}>
+                                    <Grid item md={12} className="pl-4 pr-4">
+                                        <Card style={{ width: "100%" }} key={`key_body_raw_ref_${key}`}>
+                                            <CardActions>
+                                                <Button onClick={() => { 
+                                                    handleExpandClick(item);
+                                                }}>
+                                                    <img 
+                                                        src={`/images/stix_object/${icon.link}`} 
+                                                        width="35" 
+                                                        height="35" />
+                                                        &nbsp;{item}
+                                                </Button>
+                                            </CardActions>
+                                            <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                                                <CardContent>
+                                                    {(showRefElement.id !== "" && showRefElement.id === item)? showBodyRawRef(showRefElement.obj): ""}
+                                                </CardContent>
+                                            </Collapse>
+                                        </Card>
+                                    </Grid>
+                                </Grid>                   
+ * 
+ * 
+ * 
+return (<Card style={{ width: "100%" }} key={`key_ rf_bcc_ref_${key}`}>
+                                <CardActions>
+                                    <Button onClick={() => { 
+                                        handleExpandClick(item);
+                                    }}>
+                                        <img 
+                                            src={`/images/stix_object/${objectElem.link}`} 
+                                            width="35" 
+                                            height="35" />
+                                &nbsp;{item}
+                                    </Button>
+                                </CardActions>
+                                <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                                    <CardContent>
+                                        {(showRefElement.id !== "" && showRefElement.id === item)? showRefEmailAddr(showRefElement.obj): ""}
+                                    </CardContent>
+                                </Collapse>
+                            </Card>);
+ */
+
 CreateBodyMultipartList.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
+    showRefElement: PropTypes.object.isRequired,
     listBodyMultipart: PropTypes.array.isRequired,
-    handlerDeleteItem: PropTypes.func.isRequired,
+    handlerButtonShowLink: PropTypes.func.isRequired,
 };
 
 /**
