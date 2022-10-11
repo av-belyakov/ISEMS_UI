@@ -118,8 +118,8 @@ export default function CreateGroupingPatternElements(props){
                                 <img 
                                     key={`key_object_ref_type_${key}`} 
                                     src={`/images/stix_object/${objectElem.link}`} 
-                                    width="35" 
-                                    height="35" />
+                                    width="25" 
+                                    height="25" />
                                     &nbsp;{item}&nbsp;
                             </Button>
                         </Grid>

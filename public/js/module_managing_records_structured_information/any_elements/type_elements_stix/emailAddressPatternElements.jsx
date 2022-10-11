@@ -76,8 +76,8 @@ export default function CreateEmailAddressPatternElements(props){
                                 <Button onClick={() => {}} disabled>
                                     <img 
                                         src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.belongs_to_ref.split("--")[0]).link}`} 
-                                        width="35" 
-                                        height="35" />
+                                        width="25" 
+                                        height="25" />
                                     &nbsp;{campaignPatterElement.belongs_to_ref}
                                 </Button>
                             </Grid>

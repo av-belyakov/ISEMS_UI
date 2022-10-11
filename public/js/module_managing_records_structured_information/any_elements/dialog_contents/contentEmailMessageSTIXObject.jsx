@@ -189,9 +189,15 @@ function CreateMajorContent(props){
     };
 
     const handlerButtonShowLink = (refId) => {
+
+        console.log("--- func 'handlerButtonShowLink' ---, refId:", refId, " stateShowRef.id:", stateShowRef.id);
+
         dispatchShowRef({ type: "addId", data: refId });
 
-        if(stateShowRef.id === refId){            
+        if(stateShowRef.id === refId){       
+            
+            console.log("--- func 'handlerButtonShowLink' ---, STOP...");
+            
             return;
         }
 

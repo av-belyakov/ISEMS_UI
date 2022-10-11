@@ -232,15 +232,6 @@ function CreateMajorContent(props){
             />
         </Grid> 
         
-        <Grid container direction="row" className="pt-3">
-            <Grid item container md={12} justifyContent="center">
-                <h3>
-                    Здесь нужно разместить область с ссылками на объекты Report с которыми может быть связан данный объект. 
-                    При чем нужно ограничить переходы по этим ссылка для непривелегированных пользователей. Это надо доделать.
-                </h3>
-            </Grid>
-        </Grid>
-
         <CreateElementAdditionalTechnicalInformationDO
             objectId={currentIdSTIXObject}
             reportInfo={state}

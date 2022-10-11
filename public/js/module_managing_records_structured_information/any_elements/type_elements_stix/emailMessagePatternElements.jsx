@@ -4,15 +4,11 @@ import {
     Button,
     Card,
     CardActions,
-    CardHeader,
     CardContent,
     Collapse,
     Grid,
-    IconButton,
     TextField,
 } from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { blue } from "@material-ui/core/colors";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import PropTypes from "prop-types";
@@ -23,6 +19,7 @@ import {
     CreateReceivedLinesList, 
     CreateBodyMultipartList,
 } from "../anyElements.jsx";
+import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
 
 const minDefaultData = "0001-01-01T00:00:00Z";
 
@@ -75,35 +72,6 @@ export default function CreateEmailMessagePatternElements(props){
             dateSend = new Date(Date.parse(campaignPatterElement.date) - (ms * -1));
         }
     }
-
-    let showRefEmailAddr = (obj) => {
-        return <React.Fragment>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Адрес электронной почты:</span></Grid>
-                <Grid item container md={7}>
-                    <TextField
-                        fullWidth
-                        disabled
-                        InputLabelProps={{ shrink: true }}
-                        onChange={() => {}}
-                        value={(obj.value)? obj.value: ""}
-                    />
-                </Grid>
-            </Grid>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Почтовое имя которое видит человек при просмотре письма:</span></Grid>
-                <Grid item container md={7}>
-                    <TextField
-                        fullWidth
-                        disabled
-                        InputLabelProps={{ shrink: true }}
-                        onChange={() => {}}
-                        value={(obj.display_name)? obj.display_name: ""}
-                    />
-                </Grid>
-            </Grid>
-        </React.Fragment>;
-    };
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
@@ -169,21 +137,21 @@ export default function CreateEmailMessagePatternElements(props){
             </Grid>
             <Grid item container md={8}>
                 {campaignPatterElement.from_ref && campaignPatterElement.from_ref.length !== 0?
-                    <Card style={{ width: "100%" }}>
+                    <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
                                 handleExpandClick(campaignPatterElement.from_ref);
                             }}>
                                 <img 
                                     src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.from_ref.split("--")[0]).link}`} 
-                                    width="35" 
-                                    height="35" />
+                                    width="25" 
+                                    height="25" />
                                     &nbsp;{campaignPatterElement.from_ref}
                             </Button>
                         </CardActions>
                         <Collapse in={refId === campaignPatterElement.from_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.from_ref)? showRefEmailAddr(showRefElement.obj): ""}
+                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.from_ref)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
                             </CardContent>
                         </Collapse>
                     </Card>:
@@ -197,21 +165,21 @@ export default function CreateEmailMessagePatternElements(props){
             </Grid>
             <Grid item container md={8}>
                 {campaignPatterElement.sender_ref && campaignPatterElement.sender_ref.length !== 0?
-                    <Card style={{ width: "100%" }}>
+                    <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
                                 handleExpandClick(campaignPatterElement.sender_ref);
                             }}>
                                 <img 
                                     src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.sender_ref.split("--")[0]).link}`} 
-                                    width="35" 
-                                    height="35" />
+                                    width="25" 
+                                    height="25" />
                                 &nbsp;{campaignPatterElement.sender_ref}
                             </Button>
                         </CardActions>
                         <Collapse in={refId === campaignPatterElement.sender_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.sender_ref)? showRefEmailAddr(showRefElement.obj): ""}
+                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.sender_ref)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
                             </CardContent>
                         </Collapse>
                     </Card>:
@@ -236,21 +204,21 @@ export default function CreateEmailMessagePatternElements(props){
                                 return "";
                             }
 
-                            return (<Card style={{ width: "100%" }} key={`key_rf_to_ref_${key}`}>
+                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_to_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
                                         handleExpandClick(item);
                                     }}>
                                         <img 
                                             src={`/images/stix_object/${objectElem.link}`} 
-                                            width="35" 
-                                            height="35" />
+                                            width="25" 
+                                            height="25" />
                                         &nbsp;{item}
                                     </Button>
                                 </CardActions>
                                 <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? showRefEmailAddr(showRefElement.obj): ""}
+                                        {(showRefElement.id !== "" && showRefElement.id === item)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -277,21 +245,21 @@ export default function CreateEmailMessagePatternElements(props){
                                 return "";
                             }
 
-                            return (<Card style={{ width: "100%" }} key={`key_rf_cc_ref_${key}`}>
+                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_cc_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
                                         handleExpandClick(item);
                                     }}>
                                         <img 
                                             src={`/images/stix_object/${objectElem.link}`} 
-                                            width="35" 
-                                            height="35" />
+                                            width="25" 
+                                            height="25" />
                                         &nbsp;{item}
                                     </Button>
                                 </CardActions>
                                 <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? showRefEmailAddr(showRefElement.obj): ""}
+                                        {(showRefElement.id !== "" && showRefElement.id === item)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -318,21 +286,21 @@ export default function CreateEmailMessagePatternElements(props){
                                 return "";
                             }
 
-                            return (<Card style={{ width: "100%" }} key={`key_rf_bcc_ref_${key}`}>
+                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_bcc_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
                                         handleExpandClick(item);
                                     }}>
                                         <img 
                                             src={`/images/stix_object/${objectElem.link}`} 
-                                            width="35" 
-                                            height="35" />
+                                            width="25" 
+                                            height="25" />
                                         &nbsp;{item}
                                     </Button>
                                 </CardActions>
                                 <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? showRefEmailAddr(showRefElement.obj): ""}
+                                        {(showRefElement.id !== "" && showRefElement.id === item)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -432,87 +400,22 @@ export default function CreateEmailMessagePatternElements(props){
             </Grid>
             <Grid item container md={8}>
                 {campaignPatterElement.raw_email_ref && campaignPatterElement.raw_email_ref.length !== 0?
-                    <Card style={{ width: "100%" }}>
+                    <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
                                 handleExpandClick(campaignPatterElement.raw_email_ref);
                             }}>
                                 <img 
                                     src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.raw_email_ref.split("--")[0]).link}`} 
-                                    width="35" 
-                                    height="35" />
+                                    width="25" 
+                                    height="25" />
                                     &nbsp;{campaignPatterElement.raw_email_ref}
                             </Button>
                         </CardActions>
                         <Collapse in={refId === campaignPatterElement.raw_email_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
                                 {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.raw_email_ref)?
-                                    <React.Fragment>
-                                        <Grid container direction="row" spacing={3}>
-                                            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
-                                            <Grid item container md={7}>
-                                                <TextField
-                                                    fullWidth
-                                                    disabled
-                                                    InputLabelProps={{ shrink: true }}
-                                                    onChange={() => {}}
-                                                    value={(showRefElement.obj.name)? showRefElement.obj.name: ""}
-                                                />
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container direction="row" spacing={3}>
-                                            <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Тип файлов IANA:</span></Grid>
-                                            <Grid item container md={7} >
-                                                <TextField
-                                                    fullWidth
-                                                    disabled
-                                                    InputLabelProps={{ shrink: true }}
-                                                    onChange={() => {}}
-                                                    value={(showRefElement.obj.mime_type)? showRefElement.obj.mime_type: ""}
-                                                />
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container direction="row" spacing={3}>
-                                            <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Бинарные данные в base64:</span></Grid>
-                                            <Grid item container md={7} >
-                                                <TextField
-                                                    fullWidth
-                                                    disabled
-                                                    InputLabelProps={{ shrink: true }}
-                                                    onChange={() => {}}
-                                                    value={(showRefElement.obj.payload_bin)? showRefElement.obj.payload_bin: ""}
-                                                />
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container direction="row" spacing={3}>
-                                            <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Унифицированный указатель ресурса (URL):</span></Grid>
-                                            <Grid item container md={7} >
-                                                <TextField
-                                                    fullWidth
-                                                    disabled
-                                                    InputLabelProps={{ shrink: true }}
-                                                    onChange={() => {}}
-                                                    value={(showRefElement.obj.url)? showRefElement.obj.url: ""}
-                                                />
-                                            </Grid>
-                                        </Grid>
-
-                                        <Grid container direction="row" spacing={3}>
-                                            <Grid item container md={5} justifyContent="flex-end" className="mt-2 mb-2"><span className="text-muted">Ключ для дешифрования зашифрованных данных:</span></Grid>
-                                            <Grid item container md={7} >
-                                                <TextField
-                                                    fullWidth
-                                                    disabled
-                                                    InputLabelProps={{ shrink: true }}
-                                                    onChange={() => {}}
-                                                    value={(showRefElement.obj.decryption_key)? showRefElement.obj.decryption_key: ""}
-                                                />
-                                            </Grid>
-                                        </Grid>
-                                    </React.Fragment>:
+                                    <CreateShortInformationSTIXObject obj={showRefElement.obj} />:
                                     ""}
                             </CardContent>
                         </Collapse>

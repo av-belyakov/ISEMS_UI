@@ -76,7 +76,6 @@ export default function CreateAutonomousSystemPatternElements(props){
                     variant="outlined" />
             </Grid>
         </Grid>
-
     </React.Fragment>);
 }
 
