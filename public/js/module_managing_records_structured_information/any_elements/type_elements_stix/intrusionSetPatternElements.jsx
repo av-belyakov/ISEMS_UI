@@ -32,20 +32,6 @@ export default function CreateIntrusionSetPatternElements(props){
         handlerAliasesTokenValuesChange,
     } = props;
 
-    /*
-    let currentTime = helpers.getToISODatetime();
-    
-    if(!campaignPatterElement.created){
-        campaignPatterElement.created = currentTime;
-    }
-    if(!campaignPatterElement.modified){
-        campaignPatterElement.modified = currentTime;
-    }
-
-    let firstSeen = (!campaignPatterElement.first_seen || (campaignPatterElement.first_seen === minDefaultData))? defaultData: campaignPatterElement.first_seen;
-    let lastSeen = (!campaignPatterElement.last_seen || (campaignPatterElement.last_seen === minDefaultData))? defaultData: campaignPatterElement.last_seen;
-*/
-
     let firstSeen = minDefaultData;
     let lastSeen = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
