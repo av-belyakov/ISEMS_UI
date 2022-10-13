@@ -1,6 +1,10 @@
 import React from "react";
 import { 
     Button,
+    Card,
+    CardActions,
+    CardContent,
+    Collapse,
     Grid,
     TextField,
     Typography,
@@ -10,15 +14,37 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateListContextGrouping } from "../anyElements.jsx";
+import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
 
 export default function CreateGroupingPatternElements(props){
     let { 
         isDisabled,
+        showRefElement,
         campaignPatterElement,
         handlerName,
         handlerContext,
         handlerDescription,
+        handlerButtonShowLink,
     } = props;
+
+    let [ expanded, setExpanded ] = React.useState(false);
+    let [ refId, setRefId ] = React.useState("");
+
+    let handleExpandClick = (id) => {
+        if(id !== refId){
+            setExpanded(true); 
+            setRefId(id);
+        } else {
+            if(expanded){
+                setExpanded(false);
+            } else {
+                setExpanded(true); 
+            }    
+        }
+
+        handlerButtonShowLink(id);
+    };
+
 
     let currentTime = helpers.getToISODatetime();
     
@@ -97,15 +123,60 @@ export default function CreateGroupingPatternElements(props){
             </Grid>
         </Grid>
 
-        {campaignPatterElement.object_refs && (() => {
-            return (campaignPatterElement.object_refs.length === 0)? 
-                <Typography variant="caption">
-                    <span  style={{ color: red[800] }}>
-                        * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Отчётом
-                    </span>
-                </Typography>:
-                campaignPatterElement.object_refs.map((item, key) => {
-                    let type = item.split("--");
+        <Grid container direction="row" style={{ marginTop: 4 }}>
+            <Grid item container md={12} justifyContent="flex-start">
+                {campaignPatterElement.object_refs && (() => {
+                    return (campaignPatterElement.object_refs.length === 0)? 
+                        <Typography variant="caption">
+                            <span  style={{ color: red[800] }}>
+                                * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Отчётом
+                            </span>
+                        </Typography>:
+                        campaignPatterElement.object_refs.map((item, key) => {
+                            let type = item.split("--");
+                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+    
+                            if(typeof objectElem === "undefined" ){
+                                return "";
+                            }
+
+                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_object_ref_${key}`}>
+                                <CardActions>
+                                    <Button onClick={() => { 
+                                        handleExpandClick(item);
+                                    }}>
+                                        <img 
+                                            src={`/images/stix_object/${objectElem.link}`} 
+                                            width="25" 
+                                            height="25" />
+                                    &nbsp;{item}
+                                    </Button>
+                                </CardActions>
+                                <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                                    <CardContent>
+                                        {(showRefElement.id !== "" && showRefElement.id === item)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
+                                    </CardContent>
+                                </Collapse>
+                            </Card>);
+                        });
+                })()}
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+}
+
+CreateGroupingPatternElements.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    showRefElement: PropTypes.object.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerName: PropTypes.func.isRequired,
+    handlerContext: PropTypes.func.isRequired,
+    handlerDescription: PropTypes.func.isRequired, 
+    handlerButtonShowLink: PropTypes.func.isRequired,
+};
+
+/**
+let type = item.split("--");
                     let objectElem = helpers.getLinkImageSTIXObject(type[0]);
         
                     if(typeof objectElem === "undefined" ){
@@ -125,20 +196,7 @@ export default function CreateGroupingPatternElements(props){
                         </Grid>
                     </Grid>);
                 });
-        })()}
-
-    </React.Fragment>);
-}
-
-CreateGroupingPatternElements.propTypes = {
-    isDisabled: PropTypes.bool.isRequired,
-    campaignPatterElement: PropTypes.object.isRequired,
-    handlerName: PropTypes.func.isRequired,
-    handlerContext: PropTypes.func.isRequired,
-    handlerDescription: PropTypes.func.isRequired, 
-};
-
-/**
+ * 
  //GroupingDomainObjectsSTIX объект "Grouping", по терминалогии STIX, объединяет различные объекты STIX в рамках какого то общего контекста
 // Name - имя используемое для идентификации "Grouping" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
 // Description - более подробное описание

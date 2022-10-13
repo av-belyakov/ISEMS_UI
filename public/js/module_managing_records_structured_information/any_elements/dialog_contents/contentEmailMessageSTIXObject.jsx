@@ -7,7 +7,6 @@ import {
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 
-import { helpers } from "../../../common_helpers/helpers.js";
 import reducerEmailMessagePatternSTIXObjects from "../reducer_handlers/reducerEmailMessageSTIXObject.js";
 import CreateEmailMessagePatternElements from "../type_elements_stix/emailMessagePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
@@ -134,12 +133,6 @@ function CreateMajorContent(props){
             console.log("__________________");
             console.log(obj, " ||||||| ", stateShowRef, " ********* ", state);
 
-            /*if(obj.id === stateShowRef.id){
-                dispatchShowRef({ type: "addObject", data: obj });
-
-                continue;
-            }*/
-            
             if(state.type !== obj.type){
                 dispatchShowRef({ type: "addObject", data: obj });
 

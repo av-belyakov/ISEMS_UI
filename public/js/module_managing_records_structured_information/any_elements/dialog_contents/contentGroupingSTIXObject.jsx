@@ -14,6 +14,19 @@ import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateGroupingPatternElements from "../type_elements_stix/groupingPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+function reducerShowRef(state, action){
+    switch(action.type){
+    case "addObject":
+        /*if(action.data.date && action.data.date){
+                action.data.date = new Date(Date.parse(action.data.date)).toISOString();
+            }*/
+
+        return {...state, obj: action.data};
+    case "addId":
+        return {...state, id: action.data};
+    }
+}
+
 export default function CreateDialogContentGroupingSTIXObject(props){
     let { 
         socketIo,
@@ -99,6 +112,7 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, beginDataObject);
+    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
 
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
@@ -118,8 +132,11 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
+            if(state.type !== obj.type){
+                dispatchShowRef({ type: "addObject", data: obj });
 
-            console.log("++++++++++++ func 'listener', reseived data: ", obj);
+                continue;
+            }
 
             dispatch({ type: "newAll", data: obj });
         }
@@ -157,16 +174,9 @@ function CreateMajorContent(props){
     };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
-        console.log(state);
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
-        console.log(obj);
-
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
             case "hashes_update":
-                console.log("external_references - hashes_update");
-
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
                 
                 if(checkRequiredValue(state.context, state.object_refs)){
@@ -177,9 +187,6 @@ function CreateMajorContent(props){
 
                 break;
             case "hashes_delete":
-                console.log("external_references - hashes_delete");
-                console.log(obj);
-
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
                
                 if(checkRequiredValue(state.context, state.object_refs)){
@@ -190,9 +197,6 @@ function CreateMajorContent(props){
 
                 break;
             default:
-                console.log("external_references - default");
-                console.log("obj.modalType - ", obj.modalType);
-
                 dispatch({ type: "updateExternalReferences", data: obj.data });
 
                 if(checkRequiredValue(state.context, state.object_refs)){
@@ -204,9 +208,6 @@ function CreateMajorContent(props){
         }
     
         if(obj.modalType === "granular_markings") {
-            console.log("updateGranularMarkings......");
-            console.log(obj);
-
             dispatch({ type: "updateGranularMarkings", data: obj.data });
 
             if(checkRequiredValue(state.context, state.object_refs)){
@@ -217,8 +218,6 @@ function CreateMajorContent(props){
         }
     
         if(obj.modalType === "extensions") {
-            console.log("obj.modalType === extensions, obj: ", obj);
-
             dispatch({ type: "updateExtensions", data: obj.data });
 
             if(checkRequiredValue(state.context, state.object_refs)){
@@ -229,10 +228,25 @@ function CreateMajorContent(props){
         }
     };
     
+    const handlerButtonShowLink = (refId) => {
+        dispatchShowRef({ type: "addId", data: refId });
+
+        if(stateShowRef.id === refId){       
+            
+            return;
+        }
+
+        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+            searchObjectId: refId,
+            parentObjectId: state.id,
+        }});
+    };
+
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
             <CreateGroupingPatternElements 
                 isDisabled={false}
+                showRefElement={stateShowRef}
                 campaignPatterElement={state}
                 handlerName={() => {}}
                 handlerContext={(e) => { 
@@ -253,6 +267,7 @@ function CreateMajorContent(props){
                         handlerButtonIsDisabled(true);
                     }
                 }}
+                handlerButtonShowLink={handlerButtonShowLink}
             />
         </Grid> 
 
@@ -260,7 +275,7 @@ function CreateMajorContent(props){
             objectId={currentIdSTIXObject}
             reportInfo={state}
             isNotDisabled={isNotDisabled}
-            handlerName={(e) => {}}
+            handlerName={() => {}}
             handlerElementConfidence={(e) => { 
                 dispatch({ type: "updateConfidence", data: e }); 
                 

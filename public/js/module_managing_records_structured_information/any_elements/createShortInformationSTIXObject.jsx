@@ -41,19 +41,31 @@ let patternDescription = (description) => {
 };
 
 let patternAliases = (aliases) => {
+    if(typeof aliases === "undefined" || aliases.length){
+        return;
+    }
+
     return <Grid container direction="row" spacing={3}>
         <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Альтернативные имена:</span></Grid>
         <Grid item container md={7} >
-            <TextField
-                fullWidth
-                disabled
-                InputLabelProps={{ shrink: true }}
-                onChange={() => {}}
-                value={(aliases)? aliases.join(", "): ""}
-            />
+            <TokenInput
+                readOnly
+                style={{ height: "40px", width: "auto" }}
+                tokenValues={(!aliases) ? []: aliases}
+                onTokenValuesChange={() => {}} />
         </Grid>
     </Grid>;
 };
+
+/**
+ * 
+ *
+ * Нужно добавить ссылку на STIX объект типа network-traffic в STIX объект типа grouping
+ * для дополнительной настройки данных получаемых по ссылке из свойств src_ref и dst_ref на объекты ipv4-addr, ipv6- addr, mac-addr и domain-name
+ * 
+ * 
+ */
+
 
 export default function CreateShortInformationSTIXObject(props){
     let { obj } = props;
@@ -70,37 +82,33 @@ export default function CreateShortInformationSTIXObject(props){
         "email-message": emailMessageFunc,
         "file": fileFunc,
         "identity": identityFunc,
+        "indicator": indicatorFunc,
         "infrastructure": infrastructureFunc,
         "intrusion-set": intrusionSetFunc,
+        "ipv4-addr": ipv4AddrFunc,
+        "ipv6-addr": ipv6AddrFunc,
         "grouping": groupingFunc,
         "observed-data": observedDataFunc,
         "opinion": opinionFunc,
-        "mutex": mutexFunc,
+        "mac-addr": macAddrFunc,
         "malware": malwareFunc,
+        "malware-analysis": malwareAnalysisFunc,
+        "mutex": mutexFunc,
         "note": noteFunc,
+        "network-traffic": networkTrafficFunc,
         "process": processFunc,
+        "location": locationFunc,
+        "software": softwareFunc,
+        "tool": toolFunc,
+        "threat-actor": threatActorFunc,
+        "vulnerability": vulnerabilityFunc,
+        "url": urlFunc,
+        "user-account": userAccountFunc,
+        "windows-registry-key": windowsRegistryKeyFunc,
+        "x509-certificate": x509CertificateFunc,
     };
 
-    /**
-        "software": ContentSoftwareSTIXObject,
-        "url": ContentURLSTIXObject,
-        "windows-registry-key": ContentWindowsRegistryKeySTIXObject,
-        "x509-certificate": ContentX509CertificateSTIXObject,
-        "ipv4-addr": ContentIPv4AddrSTIXObject,
-        "ipv6-addr": ContentIPv6AddrSTIXObject,
-        "location": ContentLocationSTIXObject,
-        "mac-addr": ContentMacAddrSTIXObject,
-        "network-traffic": ContentNetworkTrafficSTIXObject,
-        "threat-actor": ContentThreatActorSTIXObject,
-        "tool": ContentToolSTIXObject,
-        "user-account": ContentUserAccountSTIXObject,
-        "vulnerability": ContentVulnerabilitySTIXObject,
-        "indicator": ContentAuxiliarySTIXObject,
-        "malware-analysis": ContentAuxiliarySTIXObject,
-
-        "relationship": ContentAuxiliarySTIXObject,
-        "sighting": ContentAuxiliarySTIXObject,
-     */
+    console.log("func 'CreateShortInformationSTIXObject' _____________ obj:", obj);
 
     if(typeof objectList[obj.type] !== "undefined"){
         return objectList[obj.type](obj);
@@ -223,12 +231,12 @@ let campaignFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Основная цель или желаемый результат:</span></Grid>
             <Grid item container md={7} >
                 <TextField
+                    multiline
                     fullWidth
                     disabled
-                    InputLabelProps={{ shrink: true }}
                     onChange={() => {}}
                     value={(obj.objective)? obj.objective: ""}
-                />
+                    variant="outlined"/>
             </Grid>
         </Grid>
     </React.Fragment>);
@@ -740,6 +748,541 @@ let processFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время создания процесса:</span></Grid>
             <Grid item md={7}>
                 {helpers.convertDateFromString(createdTime, { monthDescription: "long", dayDescription: "numeric" })}
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+let locationFunc = (obj) => {
+    return (<React.Fragment>
+        {patternName(obj.name)}
+        {patternDescription(obj.description)}
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
+            <Grid item container md={3} justifyContent="flex-start">
+                <TextField
+                    label="Страна (на латинице)"
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    value={(obj.country)? obj.country: ""}
+                    onChange={() => {}}
+                />
+            </Grid>
+            <Grid item container md={3} justifyContent="center">
+                <TextField
+                    label="Административный округ"
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    value={(obj.administrative_area)? obj.administrative_area: ""}
+                    onChange={() => {}}
+                />
+            </Grid>
+            <Grid item container md={3} justifyContent="flex-start">
+                <TextField
+                    label="Город"
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    value={(obj.city)? obj.city: ""}
+                    onChange={() => {}}
+                />
+            </Grid>
+            <Grid item container md={3} justifyContent="flex-end">
+                <TextField
+                    label="Почтовый код"
+                    type="number"
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    value={(obj.postal_code)? obj.postal_code: ""}
+                    onChange={() => {}}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <TextField
+                    fullWidth
+                    label="Адрес"
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    value={(obj.street_address)? obj.street_address: ""}
+                    onChange={() => {}}
+                />
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+let threatActorFunc = (obj) => {
+    return (<React.Fragment>
+        {patternName(obj.name)}
+        {patternDescription(obj.description)}
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end">
+                <span className="text-muted">Тип субъектов угроз:</span>
+            </Grid>
+            <Grid item container md={7}>
+                <Select
+                    multiple
+                    value={obj.threat_actor_types? obj.threat_actor_types: []}
+                    onChange={() => {}}
+                >
+                </Select>
+            </Grid>
+        </Grid>
+
+        {patternAliases(obj.aliases)}
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end">
+                <span className="text-muted">Роль субъектов угроз:</span>
+            </Grid>
+            <Grid item container md={7}>
+                <Select
+                    multiple
+                    value={obj.roles? obj.roles: []}
+                    onChange={() => {}}
+                >
+                </Select>
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Высокоуровневые цели субъекта угроз:</span></Grid>
+            <Grid item md={7}>
+                <TokenInput
+                    style={{ height: "80px", width: "auto" }}
+                    readOnly
+                    tokenValues={(!obj.goals) ? []: obj.goals}
+                    onTokenValuesChange={() => {}} />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Перечень причин, мотиваций или целей стоящих за этим субъектом угрозы:</span></Grid>
+            <Grid item md={7}>
+                <TextField
+                    select
+                    disabled
+                    fullWidth
+                    value={obj.primary_motivation? obj.primary_motivation: "" }
+                    onChange={() => {}} 
+                >
+                </TextField>
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+let softwareFunc = (obj) => {
+    return (<React.Fragment>
+        {patternName(obj.name)}
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Производитель:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.vendor)? obj.vendor: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Версия:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.version)? obj.version: ""}
+                />
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+let toolFunc = (obj) => {
+    return (<React.Fragment>
+        {patternName(obj.name)}
+        {patternDescription(obj.description)}
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end">
+                <span className="text-muted">Тип субъектов угроз:</span>
+            </Grid>
+            <Grid item container md={7}>
+                <Select
+                    multiple
+                    value={obj.tool_types? obj.tool_types: []}
+                    onChange={() => {}}
+                >
+                </Select>
+            </Grid>
+        </Grid>
+
+        {patternAliases(obj.aliases)}
+    </React.Fragment>);
+};
+
+let vulnerabilityFunc = (obj) => {
+    return (<React.Fragment>
+        {patternName(obj.name)}
+        {patternDescription(obj.description)}
+    </React.Fragment>);
+};
+
+let urlFunc = (obj) => {
+    return (<React.Fragment>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Уникальный идентификатор ресурса (URL):</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.value)? obj.value: ""}
+                />
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+let malwareAnalysisFunc = (obj) => {
+    return (<React.Fragment>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Наименование продукта:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.product)? obj.product: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Версия:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.version)? obj.version: ""}
+                />
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+let userAccountFunc = (obj) => {
+    return (<React.Fragment>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">ID пользователя:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.user_id)? obj.user_id: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Логин аккаунта:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.account_login)? obj.account_login: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Отображаемое имя:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.display_name)? obj.display_name: ""}
+                />
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+/**
+ * 
+ * @param {*} obj 
+ * @returns 
+ * 
+ * Для данного типа STIX объекта нужно будет предусмотреть несколько запросо так как
+ * в данном объекте есть ссылки src_ref и dst_ref на объекты ipv4-addr, ipv6- addr, mac-addr и domain-name
+ * Нужно будеть модифицировать поля src_ref и dst_ref данного объекта
+ */
+let networkTrafficFunc = (obj) => {
+    let startTime = obj.start;
+    let endTime = obj.end;
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+    let st = Date.parse(obj.start);
+    let et = Date.parse(obj.end);
+    
+    if(currentTimeZoneOffsetInHours > 0){
+        startTime = new Date(st + ms);
+        endTime = new Date(et + ms);
+    } else {
+        startTime = new Date(st - (ms * -1));
+        endTime = new Date(et - (ms * -1));
+    }
+
+    return (<React.Fragment>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время начала отрезка сетевого трафика:</span></Grid>
+            <Grid item md={7}>
+                {helpers.convertDateFromString(startTime, { monthDescription: "long", dayDescription: "numeric" })}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время окончания отрезка сетевого трафика:</span></Grid>
+            <Grid item md={7}>
+                {helpers.convertDateFromString(endTime, { monthDescription: "long", dayDescription: "numeric" })}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">IP адрес или доменное имя источника:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.src_ref)? obj.src_ref: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">IP адрес или доменное имя назначения:</span></Grid>
+            <Grid item md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.dst_ref)? obj.dst_ref: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Порт источник:</span></Grid>
+            <Grid item md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.src_port)? obj.src_port: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Порт назначения:</span></Grid>
+            <Grid item md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.dst_port)? obj.dst_port: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Сетевые протоколы:</span></Grid>
+            <Grid item md={7}>
+                <Grid item md={7}>
+                    <TokenInput
+                        readOnly
+                        style={{ height: "80px", width: "auto" }}
+                        tokenValues={(!obj.protocols) ? []: obj.protocols}
+                        onTokenValuesChange={() => {}} />
+                </Grid>
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+let ipv4AddrFunc = (obj) => {
+    return <Grid container direction="row" spacing={3}>
+        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">IP адрес:</span></Grid>
+        <Grid item md={7}>
+            <TextField
+                select
+                disabled
+                fullWidth
+                value={obj.value? obj.value: "" }
+                onChange={() => {}} >
+            </TextField>
+        </Grid>
+    </Grid>;
+};
+
+let ipv6AddrFunc = (obj) => {
+    return <Grid container direction="row" spacing={3}>
+        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">IP адрес:</span></Grid>
+        <Grid item md={7}>
+            <TextField
+                select
+                disabled
+                fullWidth
+                value={obj.value? obj.value: "" }
+                onChange={() => {}} >
+            </TextField>
+        </Grid>
+    </Grid>;
+};
+
+let macAddrFunc = (obj) => {
+    return <Grid container direction="row" spacing={3}>
+        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">MAC адрес:</span></Grid>
+        <Grid item md={7}>
+            <TextField
+                select
+                disabled
+                fullWidth
+                value={obj.value? obj.value: "" }
+                onChange={() => {}} >
+            </TextField>
+        </Grid>
+    </Grid>;
+};
+
+let indicatorFunc = (obj) => {
+    return (<React.Fragment>
+        {patternName(obj.name)}
+        {patternDescription(obj.description)}
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Порт назначения:</span></Grid>
+            <Grid item md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.pattern)? obj.pattern: ""}
+                />
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+let windowsRegistryKeyFunc = (obj) => {
+    return (<React.Fragment>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Ключ:</span></Grid>
+            <Grid item md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.key)? obj.key: ""}
+                />
+            </Grid>
+        </Grid>
+    </React.Fragment>);
+};
+
+let x509CertificateFunc = (obj) => {
+    let beforeTime = obj.validity_not_before;
+    let afterTime = obj.validity_not_after;
+    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
+    let ms = currentTimeZoneOffsetInHours * 3600000;
+    let vbt = Date.parse(obj.validity_not_before);
+    let vat = Date.parse(obj.validity_not_after);
+    
+    if(currentTimeZoneOffsetInHours > 0){
+        beforeTime = new Date(vbt + ms);
+        afterTime = new Date(vat + ms);
+    } else {
+        beforeTime = new Date(vbt - (ms * -1));
+        afterTime = new Date(vat - (ms * -1));
+    }
+
+    return (<React.Fragment>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Эмитент:</span></Grid>
+            <Grid item md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.issuer)? obj.issuer: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время начала отрезка сетевого трафика:</span></Grid>
+            <Grid item md={7}>
+                {helpers.convertDateFromString(beforeTime, { monthDescription: "long", dayDescription: "numeric" })}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время окончания отрезка сетевого трафика:</span></Grid>
+            <Grid item md={7}>
+                {helpers.convertDateFromString(afterTime, { monthDescription: "long", dayDescription: "numeric" })}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Субъект:</span></Grid>
+            <Grid item md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.subject)? obj.subject: ""}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Серийный номер:</span></Grid>
+            <Grid item md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.serial_number)? obj.serial_number: ""}
+                />
             </Grid>
         </Grid>
     </React.Fragment>);
