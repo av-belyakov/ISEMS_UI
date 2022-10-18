@@ -555,10 +555,12 @@ function CreateReportInformation(props){
             />}
         </Row>
         <Row>
-            <Col md={12} className="mt-3">
+            <Col md={12} className="mt-3 text-muted text-start">подробное описание</Col>
+        </Row>
+        <Row>
+            <Col md={12} className="mt-1">
                 <TextField
                     id="outlined-multiline-static"
-                    label={"подробное описание"}
                     multiline
                     minRows={3}
                     maxRows={8}
@@ -568,7 +570,8 @@ function CreateReportInformation(props){
                         handlerButtonSaveIsNotDisabled();
                     }}
                     defaultValue={state.description}
-                    variant="outlined"/>
+                    variant="outlined"
+                />
             </Col>  
         </Row>
         {state.object_refs && <CreateListObjectRefsReport

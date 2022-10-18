@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    Button,
     Grid,
     Select,
     TextField,
@@ -57,18 +58,8 @@ let patternAliases = (aliases) => {
     </Grid>;
 };
 
-/**
- * 
- *
- * Нужно добавить ссылку на STIX объект типа network-traffic в STIX объект типа grouping
- * для дополнительной настройки данных получаемых по ссылке из свойств src_ref и dst_ref на объекты ipv4-addr, ipv6- addr, mac-addr и domain-name
- * 
- * 
- */
-
-
 export default function CreateShortInformationSTIXObject(props){
-    let { obj } = props;
+    let { obj, handlerClick } = props;
 
     let objectList = {
         "artifact": artifactFunc,
@@ -111,7 +102,7 @@ export default function CreateShortInformationSTIXObject(props){
     console.log("func 'CreateShortInformationSTIXObject' _____________ obj:", obj);
 
     if(typeof objectList[obj.type] !== "undefined"){
-        return objectList[obj.type](obj);
+        return objectList[obj.type](obj, handlerClick);
     } else {
         return <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Не найден соответствующий объект</span></Grid>
@@ -121,6 +112,7 @@ export default function CreateShortInformationSTIXObject(props){
 
 CreateShortInformationSTIXObject.propTypes = {
     obj: PropTypes.object.isRequired,
+    handlerClick: PropTypes.func.isRequired,
 };
 
 let attackPatternFunc = (obj) => {
@@ -1036,7 +1028,7 @@ let userAccountFunc = (obj) => {
  * в данном объекте есть ссылки src_ref и dst_ref на объекты ipv4-addr, ipv6- addr, mac-addr и domain-name
  * Нужно будеть модифицировать поля src_ref и dst_ref данного объекта
  */
-let networkTrafficFunc = (obj) => {
+let networkTrafficFunc = (obj, handlerClick) => {
     let startTime = obj.start;
     let endTime = obj.end;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
@@ -1051,6 +1043,9 @@ let networkTrafficFunc = (obj) => {
         startTime = new Date(st - (ms * -1));
         endTime = new Date(et - (ms * -1));
     }
+
+    let type = obj.dst_ref.split("--");
+    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -1068,7 +1063,7 @@ let networkTrafficFunc = (obj) => {
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">IP адрес или доменное имя источника:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес или доменное имя источника:</span></Grid>
             <Grid item container md={7}>
                 <TextField
                     fullWidth
@@ -1081,20 +1076,29 @@ let networkTrafficFunc = (obj) => {
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">IP адрес или доменное имя назначения:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес или доменное имя назначения:</span></Grid>
             <Grid item md={7}>
-                <TextField
+                <Button onClick={() => {                                        
+                    handlerClick(obj.id, obj.dst_ref);
+                }}>
+                    <img 
+                        src={`/images/stix_object/${objectElem.link}`} 
+                        width="25" 
+                        height="25" />
+                    &nbsp;{obj.dst_ref}
+                </Button>
+                {/*<TextField
                     fullWidth
                     disabled
                     InputLabelProps={{ shrink: true }}
                     onChange={() => {}}
                     value={(obj.dst_ref)? obj.dst_ref: ""}
-                />
+                />*/}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Порт источник:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Порт источник:</span></Grid>
             <Grid item md={7}>
                 <TextField
                     fullWidth
@@ -1107,7 +1111,7 @@ let networkTrafficFunc = (obj) => {
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Порт назначения:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Порт назначения:</span></Grid>
             <Grid item md={7}>
                 <TextField
                     fullWidth

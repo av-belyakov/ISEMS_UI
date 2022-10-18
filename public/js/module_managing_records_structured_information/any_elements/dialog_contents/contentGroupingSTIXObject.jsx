@@ -1,6 +1,4 @@
-"use strict";
-
-import React, { useEffect, useReducer } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { 
     Button,
     DialogActions,
@@ -111,8 +109,12 @@ function CreateMajorContent(props){
         }
     }
 
-    const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, beginDataObject);
-    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
+    console.log("func 'CreateDialogContentGroupingSTIXObject', START...");
+
+    const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, { mainObj: beginDataObject, refObj: {}, refId: "" });
+
+    //const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, beginDataObject);
+    //const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
 
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
@@ -131,12 +133,21 @@ function CreateMajorContent(props){
             return;
         }
 
+        console.log("+++++++ =++++++++ state.mainObj:", state.mainObj);
+
         for(let obj of data.information.additional_parameters.transmitted_data){
+            console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER OBJ:", obj, " state.refId: ", state.refId, " ======== state.refObj:", state.refObj);
+            console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER state.mainObj:", state.mainObj);
+
             if(state.type !== obj.type){
-                dispatchShowRef({ type: "addObject", data: obj });
+                console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER ADD OBJECT:", obj);
+
+                dispatch({ type: "updateRefObj", data: obj });
 
                 continue;
             }
+
+            console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER NEW ALL:", obj);
 
             dispatch({ type: "newAll", data: obj });
         }
@@ -159,7 +170,7 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state.mainObj ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
@@ -179,7 +190,7 @@ function CreateMajorContent(props){
             case "hashes_update":
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
                 
-                if(checkRequiredValue(state.context, state.object_refs)){
+                if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -189,7 +200,7 @@ function CreateMajorContent(props){
             case "hashes_delete":
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
                
-                if(checkRequiredValue(state.context, state.object_refs)){
+                if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -199,7 +210,7 @@ function CreateMajorContent(props){
             default:
                 dispatch({ type: "updateExternalReferences", data: obj.data });
 
-                if(checkRequiredValue(state.context, state.object_refs)){
+                if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -210,7 +221,7 @@ function CreateMajorContent(props){
         if(obj.modalType === "granular_markings") {
             dispatch({ type: "updateGranularMarkings", data: obj.data });
 
-            if(checkRequiredValue(state.context, state.object_refs)){
+            if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                 handlerButtonIsDisabled(false);
             } else {
                 handlerButtonIsDisabled(true);
@@ -220,7 +231,7 @@ function CreateMajorContent(props){
         if(obj.modalType === "extensions") {
             dispatch({ type: "updateExtensions", data: obj.data });
 
-            if(checkRequiredValue(state.context, state.object_refs)){
+            if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                 handlerButtonIsDisabled(false);
             } else {
                 handlerButtonIsDisabled(true);
@@ -229,30 +240,49 @@ function CreateMajorContent(props){
     };
     
     const handlerButtonShowLink = (refId) => {
-        dispatchShowRef({ type: "addId", data: refId });
+        console.log("_____________________ func 'handlerButtonShowLink', refId:'", refId, "'________________");
+        
+        //handlerCurrentRefId(refId);
+        //dispatchShowRef({ type: "addId", data: refId });
+        dispatch({ type: "updateRefId", data: refId });
+        dispatch({ type: "updateRefObj", data: {} });
+        //setShowRefId(refId);
 
-        if(stateShowRef.id === refId){       
-            
+        //if(stateShowRef.id === refId){     
+        if(state.refId === refId){  
             return;
         }
 
+        console.log("_____________________ func 'handlerButtonShowLink', refId:'", refId, "'_______ SEND ---> _________");
+
         socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
             searchObjectId: refId,
-            parentObjectId: state.id,
+            parentObjectId: state.mainObj.id,
         }});
     };
 
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
             <CreateGroupingPatternElements 
+                socketIo={socketIo}
                 isDisabled={false}
-                showRefElement={stateShowRef}
-                campaignPatterElement={state}
+                //showRefElement={stateShowRef}
+                showRefId={state.refId}
+                showRefObj={state.refObj}
+                campaignPatterElement={state.mainObj}
                 handlerName={() => {}}
+                handlerClick={(parentId, refId) => {
+                    console.log("======= PARENTID: ", parentId, " REFID: ", refId, " =======");
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: parentId,
+                    }});
+                }}
                 handlerContext={(e) => { 
                     dispatch({ type: "updateContex", data: e.target.value });
 
-                    if(checkRequiredValue(e.target.value, state.object_refs)){
+                    if(checkRequiredValue(e.target.value, state.mainObj.object_refs)){
                         handlerButtonIsDisabled(false);
                     } else {
                         handlerButtonIsDisabled(true);
@@ -261,7 +291,7 @@ function CreateMajorContent(props){
                 handlerDescription={(e) => { 
                     dispatch({ type: "updateDescription", data: e.target.value }); 
 
-                    if(checkRequiredValue(state.context, state.object_refs)){
+                    if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                         handlerButtonIsDisabled(false);
                     } else {
                         handlerButtonIsDisabled(true);
@@ -273,13 +303,13 @@ function CreateMajorContent(props){
 
         <CreateElementAdditionalTechnicalInformationDO
             objectId={currentIdSTIXObject}
-            reportInfo={state}
+            reportInfo={state.mainObj}
             isNotDisabled={isNotDisabled}
             handlerName={() => {}}
             handlerElementConfidence={(e) => { 
                 dispatch({ type: "updateConfidence", data: e }); 
                 
-                if(checkRequiredValue(state.context, state.object_refs)){
+                if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -288,7 +318,7 @@ function CreateMajorContent(props){
             handlerElementDefanged={(e) => { 
                 dispatch({ type: "updateDefanged", data: e }); 
 
-                if(checkRequiredValue(state.context, state.object_refs)){
+                if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -296,7 +326,7 @@ function CreateMajorContent(props){
             }}
             handlerElementLabels={(e) => { 
                 dispatch({ type: "updateLabels", data: e }); 
-                if(checkRequiredValue(state.context, state.object_refs)){
+                if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -304,7 +334,7 @@ function CreateMajorContent(props){
             }}
             handlerElementDelete={(e) => { 
                 dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); 
-                if(checkRequiredValue(state.context, state.object_refs)){
+                if(checkRequiredValue(state.mainObj.context, state.mainObj.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);

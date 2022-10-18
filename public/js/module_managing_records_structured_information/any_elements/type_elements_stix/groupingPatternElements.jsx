@@ -18,10 +18,14 @@ import CreateShortInformationSTIXObject from "../createShortInformationSTIXObjec
 
 export default function CreateGroupingPatternElements(props){
     let { 
+        socketIo,
         isDisabled,
-        showRefElement,
+        showRefId,
+        showRefObj,
+        //showRefElement,
         campaignPatterElement,
         handlerName,
+        handlerClick,
         handlerContext,
         handlerDescription,
         handlerButtonShowLink,
@@ -30,7 +34,27 @@ export default function CreateGroupingPatternElements(props){
     let [ expanded, setExpanded ] = React.useState(false);
     let [ refId, setRefId ] = React.useState("");
 
+    /*let listener = (data) => {
+
+        console.log("func 88888 'CreateGroupingPatternElements' 88888, LISTENER refId:", refId, " data:", data);
+
+        //handlerButtonShowLink(refId, data);
+    };
+
+    React.useEffect(() => {
+        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+
+        return () => {
+            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
+        };
+    }, []);*/
+
+    console.log("func 'CreateGroupingPatternElements', campaignPatterElement:", campaignPatterElement, " showRefObj:", showRefObj, " showRefId:", showRefId);
+
     let handleExpandClick = (id) => {
+
+        console.log("func 'handleExpandClick', ID:", id);
+
         if(id !== refId){
             setExpanded(true); 
             setRefId(id);
@@ -43,8 +67,15 @@ export default function CreateGroupingPatternElements(props){
         }
 
         handlerButtonShowLink(id);
+        /*socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+            searchObjectId: id,
+            parentObjectId: campaignPatterElement.id,
+        }});*/
     };
 
+    /*let handlerClick = (id) => {
+        console.log("func 'handlerClick', TEST TEST TEST id:", id);
+    };*/
 
     let currentTime = helpers.getToISODatetime();
     
@@ -142,19 +173,34 @@ export default function CreateGroupingPatternElements(props){
 
                             return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_object_ref_${key}`}>
                                 <CardActions>
-                                    <Button onClick={() => { 
+                                    <Button onClick={() => {                                        
                                         handleExpandClick(item);
                                     }}>
                                         <img 
                                             src={`/images/stix_object/${objectElem.link}`} 
                                             width="25" 
                                             height="25" />
-                                    &nbsp;{item}
+                                        &nbsp;{item}
                                     </Button>
                                 </CardActions>
                                 <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
+                                        {//(showRefElement.id !== "" && showRefElement.id === item)? 
+                                            (showRefId !== "" && showRefId === item)?  
+                                                <CreateShortInformationSTIXObject 
+                                                //obj={showRefElement.obj} 
+                                                    obj={showRefObj}
+                                                    handlerClick={(id, refId) => {
+
+                                                        console.log("func 'CreateGroupingPatternElements' func 'handlerClick' SEND ---> refId:", refId, " id:", id);
+
+                                                        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                                                            searchObjectId: refId,
+                                                            parentObjectId: id,
+                                                        }});
+                                                    }
+                                                    } />: 
+                                                ""}
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -166,37 +212,20 @@ export default function CreateGroupingPatternElements(props){
 }
 
 CreateGroupingPatternElements.propTypes = {
+    socketIo: PropTypes.object.isRequired,
     isDisabled: PropTypes.bool.isRequired,
-    showRefElement: PropTypes.object.isRequired,
+    showRefId: PropTypes.string.isRequired,
+    showRefObj: PropTypes.object.isRequired,
+    //showRefElement: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerName: PropTypes.func.isRequired,
+    handlerClick: PropTypes.func.isRequired,
     handlerContext: PropTypes.func.isRequired,
     handlerDescription: PropTypes.func.isRequired, 
     handlerButtonShowLink: PropTypes.func.isRequired,
 };
 
 /**
-let type = item.split("--");
-                    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-        
-                    if(typeof objectElem === "undefined" ){
-                        return "";
-                    }
-
-                    return (<Grid container direction="row" key={`key_object_ref_${key}`}>
-                        <Grid item container md={12} justifyContent="flex-start">
-                            <Button onClick={() => {}} disabled>
-                                <img 
-                                    key={`key_object_ref_type_${key}`} 
-                                    src={`/images/stix_object/${objectElem.link}`} 
-                                    width="25" 
-                                    height="25" />
-                                    &nbsp;{item}&nbsp;
-                            </Button>
-                        </Grid>
-                    </Grid>);
-                });
- * 
  //GroupingDomainObjectsSTIX объект "Grouping", по терминалогии STIX, объединяет различные объекты STIX в рамках какого то общего контекста
 // Name - имя используемое для идентификации "Grouping" (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
 // Description - более подробное описание
