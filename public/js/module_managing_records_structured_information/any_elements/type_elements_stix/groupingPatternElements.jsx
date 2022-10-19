@@ -185,22 +185,11 @@ export default function CreateGroupingPatternElements(props){
                                 </CardActions>
                                 <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {//(showRefElement.id !== "" && showRefElement.id === item)? 
-                                            (showRefId !== "" && showRefId === item)?  
-                                                <CreateShortInformationSTIXObject 
-                                                //obj={showRefElement.obj} 
-                                                    obj={showRefObj}
-                                                    handlerClick={(id, refId) => {
-
-                                                        console.log("func 'CreateGroupingPatternElements' func 'handlerClick' SEND ---> refId:", refId, " id:", id);
-
-                                                        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-                                                            searchObjectId: refId,
-                                                            parentObjectId: id,
-                                                        }});
-                                                    }
-                                                    } />: 
-                                                ""}
+                                        {(showRefId !== "" && showRefId === item)?  
+                                            <CreateShortInformationSTIXObject  
+                                                obj={showRefObj}
+                                                handlerClick={handlerClick} />: 
+                                            ""}
                                     </CardContent>
                                 </Collapse>
                             </Card>);

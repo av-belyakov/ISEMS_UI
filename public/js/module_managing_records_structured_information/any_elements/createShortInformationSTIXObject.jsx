@@ -176,6 +176,7 @@ let artifactFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Бинарные данные в base64:</span></Grid>
             <Grid item container md={7} >
                 <TextField
+                    multiline
                     fullWidth
                     disabled
                     InputLabelProps={{ shrink: true }}
@@ -189,6 +190,7 @@ let artifactFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Унифицированный указатель ресурса (URL):</span></Grid>
             <Grid item container md={7} >
                 <TextField
+                    multiline
                     fullWidth
                     disabled
                     InputLabelProps={{ shrink: true }}
@@ -202,6 +204,7 @@ let artifactFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end" className="mt-2 mb-2"><span className="text-muted">Ключ для дешифрования зашифрованных данных:</span></Grid>
             <Grid item container md={7} >
                 <TextField
+                    multiline
                     fullWidth
                     disabled
                     InputLabelProps={{ shrink: true }}
@@ -258,7 +261,10 @@ let domainNameFunc = (obj) => {
     </React.Fragment>);
 };
 
-let directoryFunc = (obj) => {
+let directoryFunc = (obj, handlerClick) => {
+    //let [ expanded, setExpanded ] = React.useState(false);
+    //let [ refId, setRefId ] = React.useState("");            
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
@@ -270,6 +276,89 @@ let directoryFunc = (obj) => {
                     onChange={() => {}}
                     value={(obj.path)? obj.path: ""}
                 />
+            </Grid>
+        </Grid>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start"><span className="text-muted mt-2"> Список ссылок на объекты файлов или директорий:</span></Grid>
+            <Grid item container md={12} justifyContent="flex-start" className="mt-2">
+                {/*(typeof objectElemSrc !== "undefined")?
+                    <Button onClick={() => {                                        
+                        handlerClick(obj.id, obj.src_ref);
+                    }}>
+                        <img src={`/images/stix_object/${objectElemSrc.link}`} width="25" height="25" />
+                        &nbsp;{obj.src_ref}
+                    </Button>:
+                    <TextField
+                        fullWidth
+                        disabled
+                        InputLabelProps={{ shrink: true }}
+                        onChange={() => {}}
+                        value={obj.src_ref}
+                />*/
+                    /*campaignPatterElement.contains_refs.map((item, key) => {
+                        let type = item.split("--");
+                        let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+
+                        if(typeof objectElem === "undefined" ){
+                            return "";
+                        }
+
+                        /*if(type[0] === "file"){
+return (<React.Fragment>
+    <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.path)? obj.path: ""}
+                />
+            </Grid>
+        </Grid>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    fullWidth
+                    disabled
+                    InputLabelProps={{ shrink: true }}
+                    onChange={() => {}}
+                    value={(obj.path)? obj.path: ""}
+                />
+            </Grid>
+        </Grid>
+</React.Fragment>)
+                    }*/
+
+                    /*if(type[0] === "file"){
+
+                        }
+
+                        return (<Card variant="outlined" style={{ width: "100%" }} key={`key_contains_ref_${key}`}>
+                            <CardActions>
+                                <Button onClick={() => {                                        
+                                    handleExpandClick(item);
+                                }}>
+                                    <img 
+                                        src={`/images/stix_object/${objectElem.link}`} 
+                                        width="25" 
+                                        height="25" />
+                                &nbsp;{item}
+                                </Button>
+                            </CardActions>
+                            <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                                <CardContent>
+                                    {(showRefId !== "" && showRefId === item)?  
+                                        <CreateShortInformationSTIXObject  
+                                            obj={showRefObj}
+                                            handlerClick={handlerClick} />: 
+                                        ""}
+                                </CardContent>
+                            </Collapse>
+                        </Card>);
+                    })*/}
             </Grid>
         </Grid>
     </React.Fragment>);
@@ -305,6 +394,8 @@ let emailAddrFunc = (obj) => {
 };
 
 let emailMessageFunc = (obj) => {
+    console.log("func 'emailMessageFunc', obj:", obj);
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={5} justifyContent="flex-end">
@@ -319,6 +410,8 @@ let emailMessageFunc = (obj) => {
                         onChange={() => {}} 
                         value={obj.is_multipart} 
                     >
+                        <option key={"key_defanged_true"} value={true}>да</option>
+                        <option key={"key_defanged_false"} value={false}>нет</option>
                     </Form.Control>
                 </Form.Group>
             </Grid>
@@ -386,12 +479,19 @@ let emailMessageFunc = (obj) => {
     </React.Fragment>);
 };
 
-let fileFunc = (obj) => {
+let fileFunc = (obj, handlerClick) => {
     let hashList = [];
 
     for(let item in obj.hashes){
         hashList.push({ type: item, hash: obj.hashes[item] });
     }
+
+    let typeContentRef = [""];
+    if(typeof obj.content_ref !== "undefined" && _.isString(obj.content_ref) && obj.content_ref.includes("--")){
+        typeContentRef = obj.content_ref.split("--");
+    }
+
+    let objectElemContentRef = helpers.getLinkImageSTIXObject(typeContentRef[0]);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -424,15 +524,38 @@ let fileFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Словарь хешей для файла:</span></Grid>
             <Grid item container md={7} justifyContent="flex-end"></Grid>
         </Grid>
+        
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Ссылка на объект Артифакт:</span></Grid>
+            <Grid item container md={7}>
+                {(typeof objectElemContentRef !== "undefined")?
+                    <Button onClick={() => {                                        
+                        handlerClick(obj.id, obj.content_ref);
+                    }}>
+                        <img src={`/images/stix_object/${objectElemContentRef.link}`} width="25" height="25" />
+                            &nbsp;{obj.content_ref}
+                    </Button>:
+                    <React.Fragment>
+                        <Grid container direction="row">
+                            <Grid item container md={12} justifyContent="flex-start" className="text-muted mt-2">
+                                {obj.content_ref.id}
+                            </Grid>
+                        </Grid>
+                        <Grid container direction="row">
+                            <Grid item container md={12} justifyContent="flex-start">
+                                {artifactFunc(obj.content_ref)}
+                            </Grid>
+                        </Grid>
+                    </React.Fragment>}
+            </Grid>
+        </Grid>
 
         <Grid container direction="row" spacing={3}>
             <Grid item container md={3} justifyContent="flex-end"></Grid>
             <Grid item container md={9} justifyContent="flex-start">
                 <ol>
                     {hashList.map((item, num) => {
-                        return (<li key={`key_hash_${num}`}>
-                            {`${item.type}:${item.hash}`}
-                        </li>);
+                        return (<li key={`key_hash_${num}`}>{`${item.type}:${item.hash}`}</li>);
                     })}
                 </ol>
             </Grid>
@@ -1019,15 +1142,6 @@ let userAccountFunc = (obj) => {
     </React.Fragment>);
 };
 
-/**
- * 
- * @param {*} obj 
- * @returns 
- * 
- * Для данного типа STIX объекта нужно будет предусмотреть несколько запросо так как
- * в данном объекте есть ссылки src_ref и dst_ref на объекты ipv4-addr, ipv6- addr, mac-addr и domain-name
- * Нужно будеть модифицировать поля src_ref и dst_ref данного объекта
- */
 let networkTrafficFunc = (obj, handlerClick) => {
     let startTime = obj.start;
     let endTime = obj.end;
@@ -1044,8 +1158,17 @@ let networkTrafficFunc = (obj, handlerClick) => {
         endTime = new Date(et - (ms * -1));
     }
 
-    let type = obj.dst_ref.split("--");
-    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+    let typeDst = [""];
+    if(typeof obj.dst_ref !== "undefined" && obj.dst_ref.includes("--")){
+        typeDst = obj.dst_ref.split("--");
+    }
+    let objectElemDst = helpers.getLinkImageSTIXObject(typeDst[0]);
+
+    let typeSrc = [""];
+    if(typeof obj.src_ref !== "undefined" && obj.src_ref.includes("--")){
+        typeSrc = obj.src_ref.split("--");
+    }
+    let objectElemSrc = helpers.getLinkImageSTIXObject(typeSrc[0]);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -1065,35 +1188,40 @@ let networkTrafficFunc = (obj, handlerClick) => {
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес или доменное имя источника:</span></Grid>
             <Grid item container md={7}>
-                <TextField
-                    fullWidth
-                    disabled
-                    InputLabelProps={{ shrink: true }}
-                    onChange={() => {}}
-                    value={(obj.src_ref)? obj.src_ref: ""}
-                />
+                {(typeof objectElemSrc !== "undefined")?
+                    <Button onClick={() => {                                        
+                        handlerClick(obj.id, obj.src_ref);
+                    }}>
+                        <img src={`/images/stix_object/${objectElemSrc.link}`} width="25" height="25" />
+                        &nbsp;{obj.src_ref}
+                    </Button>:
+                    <TextField
+                        fullWidth
+                        disabled
+                        InputLabelProps={{ shrink: true }}
+                        onChange={() => {}}
+                        value={obj.src_ref}
+                    />}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес или доменное имя назначения:</span></Grid>
             <Grid item md={7}>
-                <Button onClick={() => {                                        
-                    handlerClick(obj.id, obj.dst_ref);
-                }}>
-                    <img 
-                        src={`/images/stix_object/${objectElem.link}`} 
-                        width="25" 
-                        height="25" />
-                    &nbsp;{obj.dst_ref}
-                </Button>
-                {/*<TextField
-                    fullWidth
-                    disabled
-                    InputLabelProps={{ shrink: true }}
-                    onChange={() => {}}
-                    value={(obj.dst_ref)? obj.dst_ref: ""}
-                />*/}
+                {(typeof objectElemDst !== "undefined")?
+                    <Button onClick={() => {                                        
+                        handlerClick(obj.id, obj.dst_ref);
+                    }}>
+                        <img src={`/images/stix_object/${objectElemDst.link}`} width="25" height="25" />
+                        &nbsp;{obj.dst_ref}
+                    </Button>:
+                    <TextField
+                        fullWidth
+                        disabled
+                        InputLabelProps={{ shrink: true }}
+                        onChange={() => {}}
+                        value={obj.dst_ref}
+                    />}
             </Grid>
         </Grid>
 

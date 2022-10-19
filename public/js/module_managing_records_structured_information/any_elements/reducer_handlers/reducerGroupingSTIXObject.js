@@ -5,17 +5,33 @@ export default function reducerGroupingSTIXObject(state, action){
     case "cleanAll":
         return {...state, mainObj: {}};
     case "updateRefId":
-
-        console.log("action.type:", action.type, " action.data:", action.data);
+        //console.log("action.type:", action.type, " action.data:", action.data);
 
         state.refId = action.data;
 
         return {...state};
     case "updateRefObj":
-
-        console.log("action.type:", action.type, " action.data:", action.data);
+        //console.log("action.type:", action.type, " action.data:", action.data);
 
         state.refObj = action.data;
+
+        return {...state};
+    case "updateRefObjNetworkTrafficRef":
+        console.log("action.type:", action.type, " action.data:", action.data);
+
+        if(state.refObj.src_ref === action.data.id){
+            state.refObj.src_ref = action.data.value;
+        }
+
+        if(state.refObj.dst_ref === action.data.id){
+            state.refObj.dst_ref = action.data.value;
+        }
+
+        return {...state};
+    case "updateRefObjFileRef":
+        console.log("action.type:", action.type, " action.data:", action.data);
+
+        state.refObj.content_ref = action.data;
 
         return {...state};
     case "updateName":

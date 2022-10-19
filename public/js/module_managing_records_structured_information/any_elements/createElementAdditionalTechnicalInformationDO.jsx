@@ -161,13 +161,13 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             </Grid>
         </Grid>
 
-        {((typeof reportInfo.created_by_ref !== "undefined") && (reportInfo.created_by_ref !== null) && (reportInfo.created_by_ref.length !== 0)) ? 
+        {((typeof reportInfo.created_by_ref !== "undefined") && (reportInfo.created_by_ref !== null) && (reportInfo.created_by_ref.length !== 0))? 
             <Grid container direction="row" spacing={3} className="mt-1 pl-4">
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Идентификатор источника:</span></Grid>
                 <Grid item md={8} className="text-start">
                     <TextField size="small" defaultValue={reportInfo.created_by_ref} disabled fullWidth/>
                 </Grid>
-            </Grid> : ""}
+            </Grid>: ""}
 
         {
             //набор терминов для описание данного объекта

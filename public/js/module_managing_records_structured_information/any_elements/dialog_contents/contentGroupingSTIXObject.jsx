@@ -109,54 +109,39 @@ function CreateMajorContent(props){
         }
     }
 
-    console.log("func 'CreateDialogContentGroupingSTIXObject', START...");
-
     const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, { mainObj: beginDataObject, refObj: {}, refId: "" });
-
-    //const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, beginDataObject);
-    //const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
-
-    const listener = (data) => {
+    const isExistTransmittedData = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
-            return;
+            return false;
         }
 
         if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
+            return false;
         }
 
         if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-            return;
+            return false;
         }
 
         if(data.information.additional_parameters.transmitted_data.length === 0){
+            return false;
+        }
+
+        return true;
+    };
+    const listener = (data) => {
+        if(!isExistTransmittedData(data)){
             return;
         }
 
-        console.log("+++++++ =++++++++ state.mainObj:", state.mainObj);
-
         for(let obj of data.information.additional_parameters.transmitted_data){
-            console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER OBJ:", obj, " state.refId: ", state.refId, " ======== state.refObj:", state.refObj);
-            console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER state.mainObj:", state.mainObj);
-
-            if(state.type !== obj.type){
-                console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER ADD OBJECT:", obj);
-
-                dispatch({ type: "updateRefObj", data: obj });
-
-                continue;
-            }
-
-            console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER NEW ALL:", obj);
-
             dispatch({ type: "newAll", data: obj });
         }
     };
     useEffect(() => {
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
 
         return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
             dispatch({ type: "newAll", data: {} });
         };
     }, []);
@@ -240,15 +225,25 @@ function CreateMajorContent(props){
     };
     
     const handlerButtonShowLink = (refId) => {
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+            if(!isExistTransmittedData){
+                return;
+            }
+    
+            console.log("+++++++ =++++++++ state.mainObj:", state.mainObj);
+    
+            for(let obj of data.information.additional_parameters.transmitted_data){
+                console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER ADD OBJECT:", obj);
+    
+                dispatch({ type: "updateRefObj", data: obj });
+            }
+        });
+
         console.log("_____________________ func 'handlerButtonShowLink', refId:'", refId, "'________________");
         
-        //handlerCurrentRefId(refId);
-        //dispatchShowRef({ type: "addId", data: refId });
         dispatch({ type: "updateRefId", data: refId });
         dispatch({ type: "updateRefObj", data: {} });
-        //setShowRefId(refId);
-
-        //if(stateShowRef.id === refId){     
+ 
         if(state.refId === refId){  
             return;
         }
@@ -272,7 +267,25 @@ function CreateMajorContent(props){
                 campaignPatterElement={state.mainObj}
                 handlerName={() => {}}
                 handlerClick={(parentId, refId) => {
-                    console.log("======= PARENTID: ", parentId, " REFID: ", refId, " =======");
+                    console.log("======= PARENTID: ", parentId, " REFID: ", refId, " ======= state.refId: ", state.refId, " ======== state.refObj:", state.refObj);
+
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){
+                            console.log("============= func 'CreateDialogContentGroupingSTIXObject', REF info:", obj);
+
+                            if(parentId.includes("network-traffic")){
+                                dispatch({ type: "updateRefObjNetworkTrafficRef", data: obj });
+                            }
+
+                            if(parentId.includes("file")){
+                                dispatch({ type: "updateRefObjFileRef", data: obj });
+                            }
+                        }
+                    });
 
                     socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                         searchObjectId: refId,
