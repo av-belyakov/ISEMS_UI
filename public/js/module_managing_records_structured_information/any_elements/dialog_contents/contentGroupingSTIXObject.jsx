@@ -269,6 +269,12 @@ function CreateMajorContent(props){
                 handlerClick={(parentId, refId) => {
                     console.log("======= PARENTID: ", parentId, " REFID: ", refId, " ======= state.refId: ", state.refId, " ======== state.refObj:", state.refObj);
 
+                    /**
+                     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                     * !!!! Нужно сделать обработку ссылок типа email-addr для объекта типа email-message !!!!
+                     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                     */
+
                     socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
                         if(!isExistTransmittedData){
                             return;

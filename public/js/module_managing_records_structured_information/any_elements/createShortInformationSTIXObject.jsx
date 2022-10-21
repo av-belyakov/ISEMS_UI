@@ -11,6 +11,15 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
 
+let getLinkImage = (elem) => {
+    let tmp = [""];
+    if(typeof elem !== "undefined" && elem.includes("--")){
+        tmp = elem.split("--");
+    }
+
+    return helpers.getLinkImageSTIXObject(tmp[0]);
+};
+
 let patternName = (name) => {
     return <Grid container direction="row" spacing={3}>
         <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
@@ -98,8 +107,6 @@ export default function CreateShortInformationSTIXObject(props){
         "windows-registry-key": windowsRegistryKeyFunc,
         "x509-certificate": x509CertificateFunc,
     };
-
-    console.log("func 'CreateShortInformationSTIXObject' _____________ obj:", obj);
 
     if(typeof objectList[obj.type] !== "undefined"){
         return objectList[obj.type](obj, handlerClick);
@@ -393,7 +400,7 @@ let emailAddrFunc = (obj) => {
     </React.Fragment>);
 };
 
-let emailMessageFunc = (obj) => {
+let emailMessageFunc = (obj, handlerClick) => {
     console.log("func 'emailMessageFunc', obj:", obj);
 
     return (<React.Fragment>
@@ -434,46 +441,77 @@ let emailMessageFunc = (obj) => {
 
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted mt-3">Содержимое поля <strong><i>From</i></strong> заголовка email сообщения:</span>
+                <span className="text-muted mt-2">Содержимое поля <strong><i>From</i></strong> заголовка email сообщения:</span>
             </Grid>
             <Grid item container md={7}>
-                <TextField
-                    fullWidth
-                    disabled
-                    InputLabelProps={{ shrink: true }}
-                    onChange={() => {}}
-                    value={(obj.from_ref)? obj.from_ref: ""}
-                />
+                {(typeof getLinkImage(obj.from_ref) !== "undefined")?
+                    <Button onClick={() => {                                        
+                        handlerClick(obj.id, obj.from_ref);
+                    }}>
+                        <img src={`/images/stix_object/${getLinkImage(obj.from_ref).link}`} width="25" height="25" />
+                        &nbsp;{obj.from_ref}
+                    </Button>:
+                    <TextField
+                        fullWidth
+                        disabled
+                        InputLabelProps={{ shrink: true }}
+                        onChange={() => {}}
+                        value={obj.from_ref}
+                    />}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted mt-3">Содержимое поля <strong><i>Sender</i></strong> заголовка email сообщения:</span>
+                <span className="text-muted mt-2">Содержимое поля <strong><i>Sender</i></strong> заголовка email сообщения:</span>
             </Grid>
             <Grid item container md={7}>
-                <TextField
-                    fullWidth
-                    disabled
-                    InputLabelProps={{ shrink: true }}
-                    onChange={() => {}}
-                    value={(obj.sender_ref)? obj.sender_ref: ""}
-                />
+                {(typeof getLinkImage(obj.sender_ref) !== "undefined")?
+                    <Button onClick={() => {                                        
+                        handlerClick(obj.id, obj.sender_ref);
+                    }}>
+                        <img src={`/images/stix_object/${getLinkImage(obj.sender_ref).link}`} width="25" height="25" />
+                        &nbsp;{obj.sender_ref}
+                    </Button>:
+                    <TextField
+                        fullWidth
+                        disabled
+                        InputLabelProps={{ shrink: true }}
+                        onChange={() => {}}
+                        value={obj.sender_ref}
+                    />}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>To</i></strong>):</span>
+            <Grid item container md={12} justifyContent="flex-start">
+                <span className="text-muted mt-2">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>To</i></strong>):</span>
             </Grid>
-            <Grid item container md={7} >
-                <TextField
-                    fullWidth
-                    disabled
-                    InputLabelProps={{ shrink: true }}
-                    onChange={() => {}}
-                    value={(obj.to_refs)? obj.to_refs.join(", "): ""}
-                />
+        </Grid>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12}>
+                {((typeof obj.to_refs !== "undefined") && (obj.to_refs.length > 0))? 
+                    <ol>
+                        {obj.to_refs.map((item, key) => {
+                            return (<ul key={`key_email_message_${key}`}>
+                                {(typeof getLinkImage(item) !== "undefined")?
+                                    <Button onClick={() => {                                        
+                                        handlerClick(obj.id, item);
+                                    }}>
+                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
+                                        &nbsp;{item}
+                                    </Button>:
+                                    <TextField
+                                        fullWidth
+                                        disabled
+                                        InputLabelProps={{ shrink: true }}
+                                        onChange={() => {}}
+                                        value={item}
+                                    />}
+                            </ul>);
+                        })}
+                    </ol>:
+                    ""}
             </Grid>
         </Grid>
     </React.Fragment>);
@@ -485,13 +523,6 @@ let fileFunc = (obj, handlerClick) => {
     for(let item in obj.hashes){
         hashList.push({ type: item, hash: obj.hashes[item] });
     }
-
-    let typeContentRef = [""];
-    if(typeof obj.content_ref !== "undefined" && _.isString(obj.content_ref) && obj.content_ref.includes("--")){
-        typeContentRef = obj.content_ref.split("--");
-    }
-
-    let objectElemContentRef = helpers.getLinkImageSTIXObject(typeContentRef[0]);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -528,11 +559,11 @@ let fileFunc = (obj, handlerClick) => {
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Ссылка на объект Артифакт:</span></Grid>
             <Grid item container md={7}>
-                {(typeof objectElemContentRef !== "undefined")?
+                {(typeof getLinkImage(obj.content_ref) !== "undefined")?
                     <Button onClick={() => {                                        
                         handlerClick(obj.id, obj.content_ref);
                     }}>
-                        <img src={`/images/stix_object/${objectElemContentRef.link}`} width="25" height="25" />
+                        <img src={`/images/stix_object/${getLinkImage(obj.content_ref).link}`} width="25" height="25" />
                             &nbsp;{obj.content_ref}
                     </Button>:
                     <React.Fragment>
@@ -1158,18 +1189,6 @@ let networkTrafficFunc = (obj, handlerClick) => {
         endTime = new Date(et - (ms * -1));
     }
 
-    let typeDst = [""];
-    if(typeof obj.dst_ref !== "undefined" && obj.dst_ref.includes("--")){
-        typeDst = obj.dst_ref.split("--");
-    }
-    let objectElemDst = helpers.getLinkImageSTIXObject(typeDst[0]);
-
-    let typeSrc = [""];
-    if(typeof obj.src_ref !== "undefined" && obj.src_ref.includes("--")){
-        typeSrc = obj.src_ref.split("--");
-    }
-    let objectElemSrc = helpers.getLinkImageSTIXObject(typeSrc[0]);
-
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время начала отрезка сетевого трафика:</span></Grid>
@@ -1188,11 +1207,11 @@ let networkTrafficFunc = (obj, handlerClick) => {
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес или доменное имя источника:</span></Grid>
             <Grid item container md={7}>
-                {(typeof objectElemSrc !== "undefined")?
+                {(typeof getLinkImage(obj.src_ref) !== "undefined")?
                     <Button onClick={() => {                                        
                         handlerClick(obj.id, obj.src_ref);
                     }}>
-                        <img src={`/images/stix_object/${objectElemSrc.link}`} width="25" height="25" />
+                        <img src={`/images/stix_object/${getLinkImage(obj.src_ref).link}`} width="25" height="25" />
                         &nbsp;{obj.src_ref}
                     </Button>:
                     <TextField
@@ -1208,11 +1227,11 @@ let networkTrafficFunc = (obj, handlerClick) => {
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес или доменное имя назначения:</span></Grid>
             <Grid item md={7}>
-                {(typeof objectElemDst !== "undefined")?
+                {(typeof getLinkImage(obj.dst_ref) !== "undefined")?
                     <Button onClick={() => {                                        
                         handlerClick(obj.id, obj.dst_ref);
                     }}>
-                        <img src={`/images/stix_object/${objectElemDst.link}`} width="25" height="25" />
+                        <img src={`/images/stix_object/${getLinkImage(obj.dst_ref).link}`} width="25" height="25" />
                         &nbsp;{obj.dst_ref}
                     </Button>:
                     <TextField
