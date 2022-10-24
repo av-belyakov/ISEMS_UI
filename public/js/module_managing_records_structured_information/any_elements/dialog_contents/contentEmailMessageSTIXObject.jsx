@@ -216,7 +216,7 @@ function CreateMajorContent(props){
                 handlerAddReceivedLines={(e) => { dispatch({ type: "updateReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDeleteReceivedLines={(e) => { dispatch({ type: "deleteReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />
-        </Grid> 
+        </Grid>
 
         <CreateElementAdditionalTechnicalInformationCO 
             objectId={currentIdSTIXObject}

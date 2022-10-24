@@ -16,17 +16,12 @@ export default function reducerEmailMessagePatternSTIXObjects(state, action){
         return {};
     case "addId":
         return {...state, id: action.data};
-
-        /*
-    case "updateValue":
-        return {...state, value: action.data};
-    case "updateDisplayName":
-        return {...state, display_name: action.data};
-    */
     case "updateBody":
         return {...state, body: action.data};
     case "updateSubject":
         return {...state, subject: action.data};
+    case "updateDate":
+        return {...state, date: action.data};
     case "updateDateSend":
         tmp = Date.parse(action.data);
 

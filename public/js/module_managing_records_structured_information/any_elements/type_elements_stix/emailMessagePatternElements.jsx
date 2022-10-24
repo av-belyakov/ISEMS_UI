@@ -73,6 +73,8 @@ export default function CreateEmailMessagePatternElements(props){
         }
     }
 
+    console.log("func 'CreateEmailMessagePatternElements', dateSend:", dateSend);
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Содержит ли email сообщение множественные MIME части:</span></Grid>
@@ -131,12 +133,12 @@ export default function CreateEmailMessagePatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted mt-3">Содержимое поля <strong><i>From</i></strong> заголовка email сообщения:</span>
-            </Grid>
-            <Grid item container md={8}>
-                {campaignPatterElement.from_ref && campaignPatterElement.from_ref.length !== 0?
+        {campaignPatterElement.from_ref && campaignPatterElement.from_ref.length !== 0?
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={4} justifyContent="flex-end">
+                    <span className="text-muted mt-3">Содержимое поля <strong><i>From</i></strong> заголовка email сообщения:</span>
+                </Grid>
+                <Grid item container md={8}>
                     <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
@@ -154,17 +156,17 @@ export default function CreateEmailMessagePatternElements(props){
                                 {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.from_ref)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
                             </CardContent>
                         </Collapse>
-                    </Card>:
-                    ""}
-            </Grid>
-        </Grid>
+                    </Card>
+                </Grid>
+            </Grid>:
+            ""}
 
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end">
-                <span className="text-muted mt-3">Содержимое поля <strong><i>Sender</i></strong> заголовка email сообщения:</span>
-            </Grid>
-            <Grid item container md={8}>
-                {campaignPatterElement.sender_ref && campaignPatterElement.sender_ref.length !== 0?
+        {campaignPatterElement.sender_ref && campaignPatterElement.sender_ref.length !== 0?
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={4} justifyContent="flex-end">
+                    <span className="text-muted mt-3">Содержимое поля <strong><i>Sender</i></strong> заголовка email сообщения:</span>
+                </Grid>
+                <Grid item container md={8}>
                     <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
@@ -182,12 +184,12 @@ export default function CreateEmailMessagePatternElements(props){
                                 {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.sender_ref)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
                             </CardContent>
                         </Collapse>
-                    </Card>:
-                    ""}
-            </Grid>
-        </Grid>
+                    </Card>
+                </Grid>
+            </Grid>:
+            ""}
 
-        {campaignPatterElement.to_refs && campaignPatterElement.to_refs.length > 0?
+        {campaignPatterElement.to_refs && (typeof campaignPatterElement.to_refs !== "undefined") && campaignPatterElement.to_refs.length > 0?
             <React.Fragment>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start">
@@ -228,7 +230,7 @@ export default function CreateEmailMessagePatternElements(props){
             </React.Fragment>:
             ""}
 
-        {campaignPatterElement.cc_refs && campaignPatterElement.cc_refs.length > 0?
+        {campaignPatterElement.cc_refs && (typeof campaignPatterElement.to_refs !== "undefined") && campaignPatterElement.cc_refs.length > 0?
             <React.Fragment>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start">
@@ -269,7 +271,7 @@ export default function CreateEmailMessagePatternElements(props){
             </React.Fragment>:
             ""}
 
-        {campaignPatterElement.bcc_refs && campaignPatterElement.bcc_refs.length > 0?
+        {campaignPatterElement.bcc_refs && (typeof campaignPatterElement.to_refs !== "undefined") && campaignPatterElement.bcc_refs.length > 0?
             <React.Fragment>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start">

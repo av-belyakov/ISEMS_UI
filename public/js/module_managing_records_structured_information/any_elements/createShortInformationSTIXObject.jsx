@@ -490,9 +490,73 @@ let emailMessageFunc = (obj, handlerClick) => {
         </Grid>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={12}>
-                {((typeof obj.to_refs !== "undefined") && (obj.to_refs.length > 0))? 
+                {(obj.to_refs && (typeof obj.to_refs !== "undefined") && (obj.to_refs.length > 0))? 
                     <ol>
                         {obj.to_refs.map((item, key) => {
+                            return (<ul key={`key_email_message_${key}`}>
+                                {(typeof getLinkImage(item) !== "undefined")?
+                                    <Button onClick={() => {                                        
+                                        handlerClick(obj.id, item);
+                                    }}>
+                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
+                                        &nbsp;{item}
+                                    </Button>:
+                                    <TextField
+                                        fullWidth
+                                        disabled
+                                        InputLabelProps={{ shrink: true }}
+                                        onChange={() => {}}
+                                        value={item}
+                                    />}
+                            </ul>);
+                        })}
+                    </ol>:
+                    ""}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <span className="text-muted mt-2">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>CC</i></strong>):</span>
+            </Grid>
+        </Grid>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12}>
+                {(obj.cc_refs && (typeof obj.cc_refs !== "undefined") && (obj.cc_refs.length > 0))? 
+                    <ol>
+                        {obj.cc_refs.map((item, key) => {
+                            return (<ul key={`key_email_message_${key}`}>
+                                {(typeof getLinkImage(item) !== "undefined")?
+                                    <Button onClick={() => {                                        
+                                        handlerClick(obj.id, item);
+                                    }}>
+                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
+                                        &nbsp;{item}
+                                    </Button>:
+                                    <TextField
+                                        fullWidth
+                                        disabled
+                                        InputLabelProps={{ shrink: true }}
+                                        onChange={() => {}}
+                                        value={item}
+                                    />}
+                            </ul>);
+                        })}
+                    </ol>:
+                    ""}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <span className="text-muted mt-2">Список почтовых ящиков, которые являются получателями сообщения электронной почты (содержимое поля <strong><i>BCC</i></strong>):</span>
+            </Grid>
+        </Grid>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12}>
+                {(obj.bcc_refs && (typeof obj.bcc_refs !== "undefined") && (obj.bcc_refs.length > 0))? 
+                    <ol>
+                        {obj.bcc_refs.map((item, key) => {
                             return (<ul key={`key_email_message_${key}`}>
                                 {(typeof getLinkImage(item) !== "undefined")?
                                     <Button onClick={() => {                                        
@@ -559,7 +623,7 @@ let fileFunc = (obj, handlerClick) => {
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Ссылка на объект Артифакт:</span></Grid>
             <Grid item container md={7}>
-                {(typeof getLinkImage(obj.content_ref) !== "undefined")?
+                {(_.isString(obj.content_ref) && typeof getLinkImage(obj.content_ref) !== "undefined")?
                     <Button onClick={() => {                                        
                         handlerClick(obj.id, obj.content_ref);
                     }}>

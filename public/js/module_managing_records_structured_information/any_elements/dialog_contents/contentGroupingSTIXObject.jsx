@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { 
     Button,
     DialogActions,
@@ -12,18 +12,11 @@ import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateGroupingPatternElements from "../type_elements_stix/groupingPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
-function reducerShowRef(state, action){
-    switch(action.type){
-    case "addObject":
-        /*if(action.data.date && action.data.date){
-                action.data.date = new Date(Date.parse(action.data.date)).toISOString();
-            }*/
-
-        return {...state, obj: action.data};
-    case "addId":
-        return {...state, id: action.data};
-    }
-}
+const listFieldSTIXObjectRefs = {
+    "email-message": "updateRefObjEmailMessageRef",    
+    "network-traffic": "updateRefObjNetworkTrafficRef",
+    "file": "updateRefObjFileRef",
+};
 
 export default function CreateDialogContentGroupingSTIXObject(props){
     let { 
@@ -74,7 +67,7 @@ export default function CreateDialogContentGroupingSTIXObject(props){
                 disabled={buttonIsDisabled} 
                 onClick={() => setButtonSaveChangeTrigger(true)}
                 color="primary">
-                сохранить
+                    сохранить
             </Button>}
         </DialogActions>
     </React.Fragment>);
@@ -169,6 +162,16 @@ function CreateMajorContent(props){
         return false;
     };
 
+    const updateRefObj = (parentId, data) => {
+        console.log("func 'updateRefObj', parentId = ", parentId, " data = ", data);
+
+        for(let value in listFieldSTIXObjectRefs){
+            if(parentId.includes(value)){
+                dispatch({ type: listFieldSTIXObjectRefs[value], data: data });
+            }
+        }
+    };
+        
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
@@ -269,7 +272,7 @@ function CreateMajorContent(props){
                 handlerClick={(parentId, refId) => {
                     console.log("======= PARENTID: ", parentId, " REFID: ", refId, " ======= state.refId: ", state.refId, " ======== state.refObj:", state.refObj);
 
-                    /**
+                    /***
                      * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                      * !!!! Нужно сделать обработку ссылок типа email-addr для объекта типа email-message !!!!
                      * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -283,13 +286,7 @@ function CreateMajorContent(props){
                         for(let obj of data.information.additional_parameters.transmitted_data){
                             console.log("============= func 'CreateDialogContentGroupingSTIXObject', REF info:", obj);
 
-                            if(parentId.includes("network-traffic")){
-                                dispatch({ type: "updateRefObjNetworkTrafficRef", data: obj });
-                            }
-
-                            if(parentId.includes("file")){
-                                dispatch({ type: "updateRefObjFileRef", data: obj });
-                            }
+                            updateRefObj(parentId, obj);
                         }
                     });
 

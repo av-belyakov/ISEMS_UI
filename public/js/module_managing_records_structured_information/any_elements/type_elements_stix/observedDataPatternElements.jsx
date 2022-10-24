@@ -168,6 +168,27 @@ export default function CreateObservedDataPatternElements(props){
     </React.Fragment>);
 }
 
+/**
+ * 
+ * Надо сделать просмотр ссылок для данного объекта
+ * ссылки ipv4-addr, ipv6-addr, domain-name
+ * 
+{(typeof getLinkImage(obj.dst_ref) !== "undefined")?
+                    <Button onClick={() => {                                        
+                        handlerClick(obj.id, obj.dst_ref);
+                    }}>
+                        <img src={`/images/stix_object/${getLinkImage(obj.dst_ref).link}`} width="25" height="25" />
+                        &nbsp;{obj.dst_ref}
+                    </Button>:
+                    <TextField
+                        fullWidth
+                        disabled
+                        InputLabelProps={{ shrink: true }}
+                        onChange={() => {}}
+                        value={obj.dst_ref}
+                    />}
+ */
+
 CreateObservedDataPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,

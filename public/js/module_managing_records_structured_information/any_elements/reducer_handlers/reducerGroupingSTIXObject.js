@@ -1,3 +1,9 @@
+const listFieldEmailMessageRef = [
+    "to_refs",
+    "cc_refs",
+    "bcc_refs",
+];
+
 export default function reducerGroupingSTIXObject(state, action){
     switch(action.type){
     case "newAll":
@@ -16,8 +22,33 @@ export default function reducerGroupingSTIXObject(state, action){
         state.refObj = action.data;
 
         return {...state};
+    case "updateRefObjEmailMessageRef":
+        console.log("func 'reducerGroupingSTIXObject' action.type:", action.type, " action.data:", action.data);
+        //console.log("state = ", state);
+
+        if(state.refObj["from_ref"] && state.refObj["from_ref"] === action.data.id){
+            state.refObj["from_ref"] = action.data.value;
+        }
+
+        if(state.refObj["sender_ref"] && state.refObj["sender_ref"] === action.data.id){
+            state.refObj["sender_ref"] = action.data.value;
+        }
+
+        for(let value of listFieldEmailMessageRef){
+            if(state.refObj[value] && state.refObj[value].length > 0){
+                for(let i = 0; i <  state.refObj[value].length; i++){
+                    if(state.refObj[value][i] !== action.data.id){
+                        continue;
+                    }
+
+                    state.refObj[value][i] = action.data.value;
+                }
+            }
+        }
+
+        return {...state};
     case "updateRefObjNetworkTrafficRef":
-        console.log("action.type:", action.type, " action.data:", action.data);
+        console.log("func 'reducerGroupingSTIXObject' action.type:", action.type, " action.data:", action.data);
 
         if(state.refObj.src_ref === action.data.id){
             state.refObj.src_ref = action.data.value;
@@ -29,7 +60,7 @@ export default function reducerGroupingSTIXObject(state, action){
 
         return {...state};
     case "updateRefObjFileRef":
-        console.log("action.type:", action.type, " action.data:", action.data);
+        console.log("func 'reducerGroupingSTIXObject' action.type:", action.type, " action.data:", action.data);
 
         state.refObj.content_ref = action.data;
 
