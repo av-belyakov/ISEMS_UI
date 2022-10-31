@@ -5,11 +5,12 @@ import {
     Select,
     TextField,
 } from "@material-ui/core";
-import { Form, FormControl, } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
+import { CreateListInfrastructureTypes } from "./anyElements.jsx";
 
 let getLinkImage = (elem) => {
     let tmp = [""];
@@ -51,8 +52,8 @@ let patternDescription = (description) => {
 };
 
 let patternAliases = (aliases) => {
-    if(typeof aliases === "undefined" || aliases.length){
-        return;
+    if((aliases === null) || (aliases.length === 0)){
+        return "";
     }
 
     return <Grid container direction="row" spacing={3}>
@@ -61,7 +62,7 @@ let patternAliases = (aliases) => {
             <TokenInput
                 readOnly
                 style={{ height: "40px", width: "auto" }}
-                tokenValues={(!aliases) ? []: aliases}
+                tokenValues={(!aliases)? []: aliases}
                 onTokenValuesChange={() => {}} />
         </Grid>
     </Grid>;
@@ -112,7 +113,7 @@ export default function CreateShortInformationSTIXObject(props){
         return objectList[obj.type](obj, handlerClick);
     } else {
         return <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Не найден соответствующий объект</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">не найден соответствующий объект</span></Grid>
         </Grid>;
     }
 }
@@ -738,14 +739,11 @@ let infrastructureFunc = (obj) => {
                 <span className="text-muted">Тип инфраструктуры:</span>
             </Grid>
             <Grid item container md={7}>
-                <FormControl disabled>
-                    <Select
-                        multiple
-                        value={obj.infrastructure_types? obj.infrastructure_types: []}
-                        onChange={() => {}}
-                    >
-                    </Select>
-                </FormControl>
+                <CreateListInfrastructureTypes
+                    isDisabled={true}
+                    campaignPatterElement={obj}
+                    handlerInfrastructureTypes={() => {}}
+                />
             </Grid>
         </Grid>
     </React.Fragment>);

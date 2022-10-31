@@ -15,13 +15,23 @@ import { helpers } from "../../../common_helpers/helpers";
 
 const minDefaultData = "0001-01-01T00:00:00Z";
 
+let getLinkImage = (elem) => {
+    let tmp = [""];
+    if(typeof elem !== "undefined" && elem.includes("--")){
+        tmp = elem.split("--");
+    }
+
+    return helpers.getLinkImageSTIXObject(tmp[0]);
+};
+
 export default function CreateObservedDataPatternElements(props){
     let { 
         isDisabled,
         campaignPatterElement,
-        handlerFirstObserved,
         handlerLastObserved,
+        handlerFirstObserved,
         handlerNumberObserved,
+        handlerClickButtonObjectRef,
     } = props;
 
     let firstObserved = minDefaultData;
@@ -143,51 +153,33 @@ export default function CreateObservedDataPatternElements(props){
                         * необходимо добавить хотя бы один идентификатор любого кибер-наблюдаемого STIX объекта
                     </span>
                 </Typography>:
-                campaignPatterElement.object_refs.map((item, key) => {
-                    let type = item.split("--");
-                    let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-        
-                    if(typeof objectElem === "undefined" ){
-                        return "";
-                    }
-
-                    return (<Grid container direction="row" key={`key_object_ref_${key}`}>
-                        <Grid item container md={12} justifyContent="flex-start">
-                            <Button onClick={() => {}} disabled>
-                                <img 
-                                    key={`key_object_ref_type_${key}`} 
-                                    src={`/images/stix_object/${objectElem.link}`} 
-                                    width="25" 
-                                    height="25" />
-                                    &nbsp;{item}&nbsp;
-                            </Button>
-                        </Grid>
-                    </Grid>);
-                });
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={12}>
+                        <ol>
+                            {campaignPatterElement.object_refs.map((item, key) => {
+                                return (<ul key={`key_observed_data_object_ref_${key}`}>
+                                    {(typeof getLinkImage(item) !== "undefined")?
+                                        <Button onClick={() => {                                        
+                                            handlerClickButtonObjectRef(item);
+                                        }}>
+                                            <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
+                                            &nbsp;{item}
+                                        </Button>:
+                                        <TextField
+                                            fullWidth
+                                            disabled
+                                            InputLabelProps={{ shrink: true }}
+                                            onChange={() => {}}
+                                            value={item/*obj.dst_ref*/}
+                                        />}
+                                </ul>);
+                            })}
+                        </ol>
+                    </Grid>
+                </Grid>;
         })()}
     </React.Fragment>);
 }
-
-/**
- * 
- * Надо сделать просмотр ссылок для данного объекта
- * ссылки ipv4-addr, ipv6-addr, domain-name
- * 
-{(typeof getLinkImage(obj.dst_ref) !== "undefined")?
-                    <Button onClick={() => {                                        
-                        handlerClick(obj.id, obj.dst_ref);
-                    }}>
-                        <img src={`/images/stix_object/${getLinkImage(obj.dst_ref).link}`} width="25" height="25" />
-                        &nbsp;{obj.dst_ref}
-                    </Button>:
-                    <TextField
-                        fullWidth
-                        disabled
-                        InputLabelProps={{ shrink: true }}
-                        onChange={() => {}}
-                        value={obj.dst_ref}
-                    />}
- */
 
 CreateObservedDataPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
@@ -195,4 +187,5 @@ CreateObservedDataPatternElements.propTypes = {
     handlerFirstObserved: PropTypes.func.isRequired,
     handlerLastObserved: PropTypes.func.isRequired,
     handlerNumberObserved: PropTypes.func.isRequired,
+    handlerClickButtonObjectRef: PropTypes.func.isRequired,
 };

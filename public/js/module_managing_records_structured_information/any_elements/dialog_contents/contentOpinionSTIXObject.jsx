@@ -1,5 +1,3 @@
-"use strict";
-
 import React, { useEffect, useReducer } from "react";
 import {
     Button,
@@ -13,6 +11,17 @@ import reducerOpinionSTIXObjects from "../reducer_handlers/reducerOpinionSTIXObj
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateOpinionPatternElements from "../type_elements_stix/opinionPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
+
+function reducerShowRef(state, action){
+    switch(action.type){
+    case "addObject":
+        return {...state, obj: action.data};
+    case "addId":
+        return {...state, id: action.data};
+    case "cleanObj":
+        return {...state, obj: {}};
+    }
+}
 
 export default function CreateDialogContentOpinionSTIXObject(props){
     let { 
@@ -99,7 +108,7 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerOpinionSTIXObjects, beginDataObject);
-
+    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -118,9 +127,14 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
-            if(!obj.object_refs.find((item) => item === parentIdSTIXObject)){
-                obj.object_refs.push(parentIdSTIXObject);
+            if(state.type !== obj.type){
+                dispatchShowRef({ type: "addObject", data: obj });
+
+                continue;
             }
+            /*if(!obj.object_refs.find((item) => item === parentIdSTIXObject)){
+                obj.object_refs.push(parentIdSTIXObject);
+            }*/
 
             dispatch({ type: "newAll", data: obj });
         }
@@ -223,6 +237,7 @@ function CreateMajorContent(props){
         <Grid container direction="row" className="pt-3">
             <CreateOpinionPatternElements 
                 isDisabled={false}
+                showRefElement={stateShowRef}
                 campaignPatterElement={state}
                 handlerAuthors={(value) => { 
                     dispatch({ type: "updateAuthors", data: value }); 
@@ -250,6 +265,22 @@ function CreateMajorContent(props){
                     } else {
                         handlerButtonIsDisabled(true);
                     } 
+                }}
+                handlerButtonShowLink={(refId) => {
+
+                    console.log("func 'handlerButtonShowLink', refId = ", refId);
+
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+
+                    if(stateShowRef.id === refId){                   
+                        return;
+                    }
+            
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
                 }}
             />
         </Grid> 

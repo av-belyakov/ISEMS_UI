@@ -1,6 +1,10 @@
 import React from "react";
 import {
     Button,
+    Card,
+    CardActions,
+    CardContent,
+    Collapse,
     Grid,
     TextField,
     Typography,
@@ -10,17 +14,37 @@ import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
+import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
 
 export default function CreateOpinionPatternElements(props){
     let { 
         isDisabled,
+        showRefElement,
         campaignPatterElement,
         handlerAuthors,
         handlerOpinion, 
         handlerExplanation,
+        handlerButtonShowLink,
     } = props;
 
     let valuesIsInvalideContent = campaignPatterElement.opinion === "";
+    let [ expanded, setExpanded ] = React.useState(false);
+    let [ refId, setRefId ] = React.useState("");
+
+    let handleExpandClick = (id) => {
+        if(id !== refId){
+            setExpanded(true); 
+            setRefId(id);
+        } else {
+            if(expanded){
+                setExpanded(false);
+            } else {
+                setExpanded(true); 
+            }    
+        }
+
+        handlerButtonShowLink(id);
+    };
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -110,18 +134,29 @@ export default function CreateOpinionPatternElements(props){
                         return "";
                     }
 
-                    return (<Grid container direction="row" key={`key_object_ref_${key}`}>
-                        <Grid item container md={12} justifyContent="flex-start">
-                            <Button onClick={() => {}} disabled>
+                    return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_to_ref_${key}`}>
+                        <CardActions>
+                            <Button onClick={() => { 
+                                handleExpandClick(item);
+                            }}>
                                 <img 
-                                    key={`key_object_ref_type_${key}`} 
                                     src={`/images/stix_object/${objectElem.link}`} 
                                     width="25" 
                                     height="25" />
-                                    &nbsp;{item}&nbsp;
+                                        &nbsp;{item}
                             </Button>
-                        </Grid>
-                    </Grid>);
+                        </CardActions>
+                        <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                            <CardContent>
+                                {(showRefElement.id !== "" && showRefElement.id === item)? 
+                                    <CreateShortInformationSTIXObject 
+                                        obj={showRefElement.obj}
+                                        handlerClick={() => {}}
+                                    />: 
+                                    "информация не найдена"}
+                            </CardContent>
+                        </Collapse>
+                    </Card>);
                 });
         })()}
     </React.Fragment>);
@@ -129,10 +164,12 @@ export default function CreateOpinionPatternElements(props){
 
 CreateOpinionPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
+    showRefElement: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerAuthors: PropTypes.func.isRequired,
     handlerOpinion: PropTypes.func.isRequired, 
     handlerExplanation: PropTypes.func.isRequired,
+    handlerButtonShowLink: PropTypes.func.isRequired,
 };
 
 /**

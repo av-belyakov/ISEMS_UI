@@ -5,10 +5,8 @@ import {
     DialogContent,
     Grid,
 } from "@material-ui/core";
-import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import { helpers } from "../../../common_helpers/helpers.js";
 import reducerObservedDataSTIXObjects from "../reducer_handlers/reducerObservedDataSTIXObject.js";
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateObservedDataPatternElements from "../type_elements_stix/observedDataPatternElements.jsx";
@@ -34,7 +32,6 @@ export default function CreateDialogContentObservedDataSTIXObject(props){
         handlerButtonSaveChangeTrigger = () => {
             setButtonSaveChangeTrigger((prevState) => !prevState);
         };
-    
 
     return (<React.Fragment>
         <DialogContent>
@@ -121,10 +118,9 @@ function CreateMajorContent(props){
         }
     };
     useEffect(() => {
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
 
         return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
             dispatch({ type: "newAll", data: {} });
         };
     }, []);
@@ -180,9 +176,39 @@ function CreateMajorContent(props){
                 <CreateObservedDataPatternElements 
                     isDisabled={false}
                     campaignPatterElement={state}
-                    handlerFirstObserved={(e) => { dispatch({ type: "updateFirstObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerLastObserved={(e) => { dispatch({ type: "updateLastObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerFirstObserved={(e) => { dispatch({ type: "updateFirstObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerNumberObserved={(e) => { dispatch({ type: "updateNumberObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerClickButtonObjectRef={(id) => {
+                        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                            if((data.information === null) || (typeof data.information === "undefined")){
+                                return false;
+                            }
+                    
+                            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                                return false;
+                            }
+                    
+                            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                                return false;
+                            }
+                    
+                            if(data.information.additional_parameters.transmitted_data.length === 0){
+                                return false;
+                            }
+    
+                            for(let obj of data.information.additional_parameters.transmitted_data){    
+                                if(obj.type === "ipv4-addr" || obj.type === "domain-name"){
+                                    dispatch({ type: "updateObjectRefs", data: obj });
+                                }
+                            }
+                        });
+
+                        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                            searchObjectId: id,
+                            parentObjectId: parentIdSTIXObject,
+                        }});
+                    }}
                 />
             </Grid> 
 

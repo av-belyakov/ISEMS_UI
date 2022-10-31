@@ -14,17 +14,8 @@ import CreateElementAdditionalTechnicalInformationCO from "../createElementAddit
 function reducerShowRef(state, action){
     switch(action.type){
     case "addObject":
-        /*if(action.data.date && action.data.date){
-                action.data.date = new Date(Date.parse(action.data.date)).toISOString();
-            }*/
- 
-        console.log("func 'reducerShowRef', action.type:", action.type, " action.data:", action.data);
-
         return {...state, obj: action.data};
     case "addId":
-
-        console.log("func 'reducerShowRef', action.type:", action.type, " action.data:", action.data);
-
         return {...state, id: action.data};
     }
 }
@@ -128,11 +119,6 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){
-
-            console.log("func 'listener', obj.id (", obj.id, ") === (", stateShowRef.id, ") stateShowRef.id");
-            console.log("__________________");
-            console.log(obj, " ||||||| ", stateShowRef, " ********* ", state);
-
             if(state.type !== obj.type){
                 dispatchShowRef({ type: "addObject", data: obj });
 
@@ -182,15 +168,9 @@ function CreateMajorContent(props){
     };
 
     const handlerButtonShowLink = (refId) => {
-
-        console.log("--- func 'handlerButtonShowLink' ---, refId:", refId, " stateShowRef.id:", stateShowRef.id);
-
         dispatchShowRef({ type: "addId", data: refId });
 
-        if(stateShowRef.id === refId){       
-            
-            console.log("--- func 'handlerButtonShowLink' ---, STOP...");
-            
+        if(stateShowRef.id === refId){                   
             return;
         }
 

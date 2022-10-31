@@ -101,7 +101,6 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerAttackPatternSTIXObjects, beginDataObject);
-
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;

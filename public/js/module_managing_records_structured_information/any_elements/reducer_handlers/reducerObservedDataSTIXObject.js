@@ -46,6 +46,14 @@ export default function reducerObservedDataSTIXObjects(state, action){
         return {...state, last_observed: lastObserved};
     case "updateNumberObserved":
         return {...state, number_observed: +action.data};
+    case "updateObjectRefs":
+        for(let i = 0; i < state.object_refs.length; i++){
+            if(state.object_refs[i] === action.data.id){
+                state.object_refs[i] = action.data.value;
+            }
+        }
+
+        return {...state};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

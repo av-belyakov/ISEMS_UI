@@ -12,6 +12,17 @@ import reducerEmailAddrPatternSTIXObjects from "../reducer_handlers/reducerEmail
 import CreateEmailAddrPatternElements from "../type_elements_stix/emailAddressPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
+function reducerShowRef(state, action){
+    switch(action.type){
+    case "addObject":
+        return {...state, obj: action.data};
+    case "addId":
+        return {...state, id: action.data};
+    case "cleanObj":
+        return {...state, obj: {}};
+    }
+}
+
 export default function CreateDialogContentEmailAddrSTIXObject(props){
     let { 
         socketIo,
@@ -87,9 +98,10 @@ function CreateMajorContent(props){
         if(listNewOrModifySTIXObject[i].id === currentIdSTIXObject){
             beginDataObject = listNewOrModifySTIXObject[i];
         }
-    }
+    }    
 
     const [ state, dispatch ] = useReducer(reducerEmailAddrPatternSTIXObjects, beginDataObject);
+    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -107,7 +119,13 @@ function CreateMajorContent(props){
             return;
         }
 
-        for(let obj of data.information.additional_parameters.transmitted_data){            
+        for(let obj of data.information.additional_parameters.transmitted_data){ 
+            if(state.type !== obj.type){
+                dispatchShowRef({ type: "addObject", data: obj });
+
+                continue;
+            }
+
             dispatch({ type: "newAll", data: obj });
         }
     };
@@ -166,9 +184,23 @@ function CreateMajorContent(props){
         <Grid container direction="row" className="pt-3">
             <CreateEmailAddrPatternElements
                 isDisabled={false}
+                showRefElement={stateShowRef}
                 campaignPatterElement={state}
                 handlerValue={(e) => { dispatch({ type: "updateValue", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
                 handlerDisplayName={(e) => { dispatch({ type: "updateDisplayName", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerButtonShowLink={(refId) => {
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+
+                    if(stateShowRef.id === refId){                   
+                        return;
+                    }
+            
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
+                }}
             />
         </Grid> 
 

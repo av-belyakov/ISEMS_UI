@@ -39,8 +39,6 @@ export default function CreateEmailMessagePatternElements(props){
         handlerDeleteReceivedLines,
     } = props;
 
-    console.log("func 'CreateEmailMessagePatternElements', campaignPatterElement:", campaignPatterElement, " showRefElement:", showRefElement);
-
     let [ expanded, setExpanded ] = React.useState(false);
     let [ refId, setRefId ] = React.useState("");
 
@@ -72,8 +70,6 @@ export default function CreateEmailMessagePatternElements(props){
             dateSend = new Date(Date.parse(campaignPatterElement.date) - (ms * -1));
         }
     }
-
-    console.log("func 'CreateEmailMessagePatternElements', dateSend:", dateSend);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
@@ -153,7 +149,12 @@ export default function CreateEmailMessagePatternElements(props){
                         </CardActions>
                         <Collapse in={refId === campaignPatterElement.from_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.from_ref)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
+                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.from_ref)? 
+                                    <CreateShortInformationSTIXObject 
+                                        obj={showRefElement.obj}
+                                        handlerClick={() => {}} 
+                                    />: 
+                                    "информация не найдена"}
                             </CardContent>
                         </Collapse>
                     </Card>
@@ -181,7 +182,12 @@ export default function CreateEmailMessagePatternElements(props){
                         </CardActions>
                         <Collapse in={refId === campaignPatterElement.sender_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.sender_ref)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
+                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.sender_ref)? 
+                                    <CreateShortInformationSTIXObject 
+                                        obj={showRefElement.obj} 
+                                        handlerClick={() => {}} 
+                                    />: 
+                                    "информация не найдена"}
                             </CardContent>
                         </Collapse>
                     </Card>
@@ -220,7 +226,12 @@ export default function CreateEmailMessagePatternElements(props){
                                 </CardActions>
                                 <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
+                                        {(showRefElement.id !== "" && showRefElement.id === item)? 
+                                            <CreateShortInformationSTIXObject 
+                                                obj={showRefElement.obj}
+                                                handlerClick={() => {}}
+                                            />: 
+                                            "информация не найдена"}
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -261,7 +272,12 @@ export default function CreateEmailMessagePatternElements(props){
                                 </CardActions>
                                 <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
+                                        {(showRefElement.id !== "" && showRefElement.id === item)? 
+                                            <CreateShortInformationSTIXObject 
+                                                obj={showRefElement.obj}
+                                                handlerClick={() => {}} 
+                                            />: 
+                                            "информация не найдена"}
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -302,7 +318,12 @@ export default function CreateEmailMessagePatternElements(props){
                                 </CardActions>
                                 <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? <CreateShortInformationSTIXObject obj={showRefElement.obj} />: ""}
+                                        {(showRefElement.id !== "" && showRefElement.id === item)? 
+                                            <CreateShortInformationSTIXObject 
+                                                obj={showRefElement.obj} 
+                                                handlerClick={() => {}} 
+                                            />: 
+                                            "информация не найдена"}
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -322,12 +343,6 @@ export default function CreateEmailMessagePatternElements(props){
                     InputLabelProps={{ shrink: true }}
                     //error={isInvalidValue}
                     onChange={(e) => {
-                        /*if(e.target.value === "" || !helpers.checkInputValidation({ name: "domanName", value: e.target.value })){
-                                setIsInvalidValue(true);
-                            } else {
-                                setIsInvalidValue(false);
-                            }*/
-
                         handlerMessageId(e);
                     }}
                     //helperText="обязательное для заполнения поле"
@@ -346,12 +361,6 @@ export default function CreateEmailMessagePatternElements(props){
                     InputLabelProps={{ shrink: true }}
                     //error={isInvalidValue}
                     onChange={(e) => {
-                        /*if(e.target.value === "" || !helpers.checkInputValidation({ name: "domanName", value: e.target.value })){
-                                setIsInvalidValue(true);
-                            } else {
-                                setIsInvalidValue(false);
-                            }*/
-
                         handlerSubject(e);
                     }}
                     //helperText="обязательное для заполнения поле"
@@ -417,8 +426,11 @@ export default function CreateEmailMessagePatternElements(props){
                         <Collapse in={refId === campaignPatterElement.raw_email_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
                                 {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.raw_email_ref)?
-                                    <CreateShortInformationSTIXObject obj={showRefElement.obj} />:
-                                    ""}
+                                    <CreateShortInformationSTIXObject 
+                                        obj={showRefElement.obj}
+                                        handlerClick={() => {}} 
+                                    />:
+                                    "информация не найдена"}
                             </CardContent>
                         </Collapse>
                     </Card>:

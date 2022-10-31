@@ -1727,7 +1727,10 @@ export function CreateBodyMultipartList(props){
                                             <Collapse in={refId === item.body_raw_ref && expanded} timeout="auto" unmountOnExit>
                                                 <CardContent>
                                                     {(showRefElement.id !== "" && showRefElement.id === item.body_raw_ref)? 
-                                                        <CreateShortInformationSTIXObject obj={showRefElement.obj} />: 
+                                                        <CreateShortInformationSTIXObject
+                                                            obj={showRefElement.obj}
+                                                            handlerClick={() => {}}
+                                                        />: 
                                                         ""}
                                                 </CardContent>
                                             </Collapse>

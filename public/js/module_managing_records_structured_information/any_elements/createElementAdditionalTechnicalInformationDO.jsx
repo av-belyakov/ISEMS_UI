@@ -124,7 +124,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             <Grid item md={12}><span className="text-muted"><strong>Дополнительная техническая информация</strong></span></Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} className="mt-3 pl-4">
+        <Grid container direction="row" spacing={3} className="mt-1 pl-4">
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Версия спецификации STIX:</span></Grid>
             <Grid item md={8} className="text-start">
                 {(reportInfo.id && reportInfo.id !== "")?
