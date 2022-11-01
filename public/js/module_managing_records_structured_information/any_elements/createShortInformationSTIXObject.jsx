@@ -52,7 +52,7 @@ let patternDescription = (description) => {
 };
 
 let patternAliases = (aliases) => {
-    if((aliases === null) || (aliases.length === 0)){
+    if((typeof aliases === "undefined") || (aliases === null) || (aliases.length === 0)){
         return "";
     }
 
@@ -252,7 +252,7 @@ let courseOfActionFunc = (obj) => {
     </React.Fragment>);
 };
 
-let domainNameFunc = (obj) => {
+let domainNameFunc = (obj, handlerClick) => {
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Сетевое доменное имя:</span></Grid>
@@ -266,6 +266,39 @@ let domainNameFunc = (obj) => {
                 />
             </Grid>
         </Grid>
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <span className="text-muted">Ссылки на один или несколько IP-адресов или доменных имен, на которые разрешается доменное имя:</span>
+            </Grid>
+        </Grid>
+
+        {obj.resolves_to_refs && (() => {
+            return <Grid container direction="row" spacing={3}>
+                <Grid item container md={12}>
+                    <ol>
+                        {obj.resolves_to_refs.map((item, key) => {                        
+                            return (<ul key={`key_resolves_to_ref_button_${key}`}>
+                                {(typeof getLinkImage(item) !== "undefined")?
+                                    <Button onClick={() => {                                        
+                                        handlerClick(obj.id, item);
+                                    }}>
+                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
+                                        &nbsp;{item}
+                                    </Button>:
+                                    <TextField
+                                        fullWidth
+                                        disabled
+                                        InputLabelProps={{ shrink: true }}
+                                        onChange={() => {}}
+                                        value={item}
+                                    />}
+                            </ul>);
+                        })}
+                    </ol>
+                </Grid>
+            </Grid>;
+        })()}
     </React.Fragment>);
 };
 
@@ -287,7 +320,7 @@ let directoryFunc = (obj, handlerClick) => {
             </Grid>
         </Grid>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={12} justifyContent="flex-start"><span className="text-muted mt-2"> Список ссылок на объекты файлов или директорий:</span></Grid>
+            <Grid item container md={12} justifyContent="flex-start"><span className="text-muted mt-2">Список ссылок на объекты файлов или директорий:</span></Grid>
             <Grid item container md={12} justifyContent="flex-start" className="mt-2">
                 {/*(typeof objectElemSrc !== "undefined")?
                     <Button onClick={() => {                                        

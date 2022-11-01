@@ -132,9 +132,6 @@ function CreateMajorContent(props){
 
                 continue;
             }
-            /*if(!obj.object_refs.find((item) => item === parentIdSTIXObject)){
-                obj.object_refs.push(parentIdSTIXObject);
-            }*/
 
             dispatch({ type: "newAll", data: obj });
         }

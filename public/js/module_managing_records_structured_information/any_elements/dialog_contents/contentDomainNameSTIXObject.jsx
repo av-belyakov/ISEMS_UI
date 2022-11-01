@@ -11,6 +11,17 @@ import reducerDomainNamePatternSTIXObjects from "../reducer_handlers/reducerDoma
 import CreateDomainNamePatternElements from "../type_elements_stix/domainNamePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
+function reducerShowRef(state, action){
+    switch(action.type){
+    case "addObject":
+        return {...state, obj: action.data};
+    case "addId":
+        return {...state, id: action.data};
+    case "cleanObj":
+        return {...state, obj: {}};
+    }
+}
+
 export default function CreateDialogContentDomainNameSTIXObject(props){
     let { 
         socketIo,
@@ -89,6 +100,7 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerDomainNamePatternSTIXObjects, beginDataObject);
+    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -107,6 +119,12 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){            
+            if(state.type !== obj.type){
+                dispatchShowRef({ type: "addObject", data: obj });
+
+                continue;
+            }
+
             dispatch({ type: "newAll", data: obj });
         }
     };
@@ -165,8 +183,25 @@ function CreateMajorContent(props){
         <Grid container direction="row" className="pt-3">
             <CreateDomainNamePatternElements
                 isDisabled={false}
+                showRefElement={stateShowRef}
                 campaignPatterElement={state}
                 handlerValue={(e) => { dispatch({ type: "updateValue", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handlerButtonShowLink={(refId) => {
+
+                    console.log("func 'handlerButtonShowLink', refId = ", refId);
+
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+
+                    if(stateShowRef.id === refId){                   
+                        return;
+                    }
+            
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
+                }}
             />
         </Grid> 
 

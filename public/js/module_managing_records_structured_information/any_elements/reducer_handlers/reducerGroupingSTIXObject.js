@@ -65,6 +65,26 @@ export default function reducerGroupingSTIXObject(state, action){
         state.refObj.content_ref = action.data;
 
         return {...state};
+    case "updateResolvesToRefs":
+        console.log("@@#$  func 'reducerGroupingSTIXObject' action.type:", action.type, " action.data:", action.data, " state:", state);
+        console.log("%%%%%%%% state.refObj.resolves_to_refs: ", state.refObj.resolves_to_refs, " action.data.id: ", action.data.id);
+        //resolves_to_refs
+
+        /**
+         * 
+         * тут надо разобратся, что то не то с циклом
+         * 
+         */
+
+        for(let i = 0; i < state.refObj.resolves_to_refs; i++){
+            console.log("**************** state.refObj.resolves_to_refs[i]: ", state.refObj.resolves_to_refs[i], " action.data.id: ", action.data.id);
+
+            if(state.refObj.resolves_to_refs[i] === action.data.id){
+                state.refObj.resolves_to_refs[i] = action.data.value;
+            }
+        }
+
+        return {...state};
     case "updateName":
         if(state.mainObj.name === action.data){
             return {...state};

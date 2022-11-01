@@ -16,6 +16,7 @@ const listFieldSTIXObjectRefs = {
     "email-message": "updateRefObjEmailMessageRef",    
     "network-traffic": "updateRefObjNetworkTrafficRef",
     "file": "updateRefObjFileRef",
+    "domain-name": "updateResolvesToRefs",
 };
 
 export default function CreateDialogContentGroupingSTIXObject(props){
@@ -166,6 +167,8 @@ function CreateMajorContent(props){
         console.log("func 'updateRefObj', parentId = ", parentId, " data = ", data);
 
         for(let value in listFieldSTIXObjectRefs){
+            console.log("func 'updateRefObj', parentId = ", parentId, " value = ", value);
+
             if(parentId.includes(value)){
                 dispatch({ type: listFieldSTIXObjectRefs[value], data: data });
             }
