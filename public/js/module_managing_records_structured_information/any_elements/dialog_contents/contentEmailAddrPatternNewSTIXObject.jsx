@@ -133,9 +133,11 @@ function CreateMajorElements(props){
 
             <CreateEmailAddrPatternElements
                 isDisabled={false}
+                showRefElement={{}}
                 campaignPatterElement={state}
                 handlerValue={(e) => { dispatch({ type: "updateValue", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
                 handlerDisplayName={(e) => { dispatch({ type: "updateDisplayName", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerButtonShowLink={() => {}}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 

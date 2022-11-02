@@ -6,7 +6,6 @@ import {
     Typography,
 } from "@material-ui/core";
 import { red } from "@material-ui/core/colors";
-//import TokenInput from "react-customize-token-input";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import PropTypes from "prop-types";
@@ -170,7 +169,7 @@ export default function CreateObservedDataPatternElements(props){
                                             disabled
                                             InputLabelProps={{ shrink: true }}
                                             onChange={() => {}}
-                                            value={item/*obj.dst_ref*/}
+                                            value={item}
                                         />}
                                 </ul>);
                             })}

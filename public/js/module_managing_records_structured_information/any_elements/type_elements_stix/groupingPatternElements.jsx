@@ -18,11 +18,9 @@ import CreateShortInformationSTIXObject from "../createShortInformationSTIXObjec
 
 export default function CreateGroupingPatternElements(props){
     let { 
-        socketIo,
         isDisabled,
         showRefId,
         showRefObj,
-        //showRefElement,
         campaignPatterElement,
         handlerName,
         handlerClick,
@@ -201,11 +199,9 @@ export default function CreateGroupingPatternElements(props){
 }
 
 CreateGroupingPatternElements.propTypes = {
-    socketIo: PropTypes.object.isRequired,
     isDisabled: PropTypes.bool.isRequired,
     showRefId: PropTypes.string.isRequired,
     showRefObj: PropTypes.object.isRequired,
-    //showRefElement: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerName: PropTypes.func.isRequired,
     handlerClick: PropTypes.func.isRequired,

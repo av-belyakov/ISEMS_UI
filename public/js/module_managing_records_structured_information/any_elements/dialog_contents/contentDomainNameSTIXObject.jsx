@@ -11,7 +11,7 @@ import reducerDomainNamePatternSTIXObjects from "../reducer_handlers/reducerDoma
 import CreateDomainNamePatternElements from "../type_elements_stix/domainNamePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-function reducerShowRef(state, action){
+/*function reducerShowRef(state, action){
     switch(action.type){
     case "addObject":
         return {...state, obj: action.data};
@@ -20,7 +20,7 @@ function reducerShowRef(state, action){
     case "cleanObj":
         return {...state, obj: {}};
     }
-}
+}*/
 
 export default function CreateDialogContentDomainNameSTIXObject(props){
     let { 
@@ -100,7 +100,7 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerDomainNamePatternSTIXObjects, beginDataObject);
-    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
+    //const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -119,11 +119,11 @@ function CreateMajorContent(props){
         }
 
         for(let obj of data.information.additional_parameters.transmitted_data){            
-            if(state.type !== obj.type){
+            /*if(state.type !== obj.type){
                 dispatchShowRef({ type: "addObject", data: obj });
 
                 continue;
-            }
+            }*/
 
             dispatch({ type: "newAll", data: obj });
         }
@@ -136,10 +136,9 @@ function CreateMajorContent(props){
             }});
         }
 
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
 
         return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
             dispatch({ type: "newAll", data: {} });
         };
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
@@ -183,11 +182,43 @@ function CreateMajorContent(props){
         <Grid container direction="row" className="pt-3">
             <CreateDomainNamePatternElements
                 isDisabled={false}
-                showRefElement={stateShowRef}
+                //showRefElement={stateShowRef}
                 campaignPatterElement={state}
                 handlerValue={(e) => { dispatch({ type: "updateValue", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerButtonShowLink={(refId) => {
+                handleExpandClick={(refId) => {
 
+                    console.log("func 'handleExpandClick', refId = ", refId);
+
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if((data.information === null) || (typeof data.information === "undefined")){
+                            return false;
+                        }
+                
+                        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                            return false;
+                        }
+                
+                        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                            return false;
+                        }
+                
+                        if(data.information.additional_parameters.transmitted_data.length === 0){
+                            return false;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){    
+                            if(obj.type === "ipv4-addr" || obj.type === "domain-name"){
+                                dispatch({ type: "updateResolvesToRefs", data: obj });
+                            }
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: parentIdSTIXObject,
+                    }});
+                }}
+                /*handlerButtonShowLink={(refId) => {
                     console.log("func 'handlerButtonShowLink', refId = ", refId);
 
                     dispatchShowRef({ type: "addId", data: refId });
@@ -201,7 +232,7 @@ function CreateMajorContent(props){
                         searchObjectId: refId,
                         parentObjectId: state.id,
                     }});
-                }}
+                }}*/
             />
         </Grid> 
 

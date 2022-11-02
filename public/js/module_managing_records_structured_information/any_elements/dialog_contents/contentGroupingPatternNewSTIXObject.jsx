@@ -147,10 +147,14 @@ function CreateMajorElements(props){
             </Grid>
             <CreateGroupingPatternElements 
                 isDisabled={false}
+                showRefId={""}
+                showRefObj={{}}
                 campaignPatterElement={state}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
+                handlerClick={() => {}}
                 handlerContext={(e) => { dispatch({ type: "updateContex", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerButtonShowLink={() => {}}
             />
             <CreateElementAdditionalTechnicalInformationDO
                 objectId={currentObjectId}

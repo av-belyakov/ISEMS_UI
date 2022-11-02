@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
 import { CreateListInfrastructureTypes } from "./anyElements.jsx";
+import { includes } from "lodash";
 
 let getLinkImage = (elem) => {
     let tmp = [""];
@@ -306,6 +307,12 @@ let directoryFunc = (obj, handlerClick) => {
     //let [ expanded, setExpanded ] = React.useState(false);
     //let [ refId, setRefId ] = React.useState("");            
 
+    let containsRefsIsExist = (typeof obj.contains_refs === "undefined" || obj.contains_refs === null || obj.contains_refs.length === 0);
+
+    if(!containsRefsIsExist){
+        obj.contains_refs.sort();
+    }
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
@@ -321,8 +328,40 @@ let directoryFunc = (obj, handlerClick) => {
         </Grid>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={12} justifyContent="flex-start"><span className="text-muted mt-2">Список ссылок на объекты файлов или директорий:</span></Grid>
-            <Grid item container md={12} justifyContent="flex-start" className="mt-2">
-                {/*(typeof objectElemSrc !== "undefined")?
+            <Grid item container md={12} justifyContent="flex-start">
+                {(containsRefsIsExist)?
+                    "":
+                    <ol>
+                        {obj.contains_refs.map((item, key) => {
+                            //                    if(typeof item !== "undefined" && item.includes("directory")){
+                            //                    }
+
+
+                            return (<ul key={`key_directory_${key}`}>
+                                {(typeof getLinkImage(item) !== "undefined")?
+                                    <Button onClick={() => {                                        
+                                        handlerClick(obj.id, item);
+                                    }}>
+                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
+                                        &nbsp;{item}
+                                    </Button>:
+                                    fileFunc(item, () => {
+                                        console.log("CLICK CLICK CLICK CLICK CLICK");
+                                    })}
+                            </ul>);
+                        })}
+                    </ol>
+                
+                    /*
+                                {/*<TextField
+                                        fullWidth
+                                        disabled
+                                        InputLabelProps={{ shrink: true }}
+                                        onChange={() => {}}
+                                        value={item}
+                                />}
+
+                (typeof objectElemSrc !== "undefined")?
                     <Button onClick={() => {                                        
                         handlerClick(obj.id, obj.src_ref);
                     }}>

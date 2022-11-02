@@ -13,20 +13,29 @@ import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+//import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+
+let getLinkImage = (elem) => {
+    let tmp = [""];
+    if(typeof elem !== "undefined" && elem.includes("--")){
+        tmp = elem.split("--");
+    }
+
+    return helpers.getLinkImageSTIXObject(tmp[0]);
+};
 
 export default function CreateDomainNamePatternElements(props){
     let { 
         isDisabled,
-        showRefElement,
+        //        showRefElement,
         campaignPatterElement, 
         handlerValue,
         handleExpandClick,
     } = props;
 
     let [ isInvalidValue, setIsInvalidValue ] = React.useState(((typeof campaignPatterElement.value === "undefined") || (campaignPatterElement.value === "")));
-    let [ expanded, setExpanded ] = React.useState(false);
-    let [ refId, setRefId ] = React.useState("");
+    //    let [ expanded, setExpanded ] = React.useState(false);
+    //    let [ refId, setRefId ] = React.useState("");
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -57,22 +66,50 @@ export default function CreateDomainNamePatternElements(props){
             </Grid>
         </Grid>
 
-        {campaignPatterElement.resolves_to_refs && campaignPatterElement.resolves_to_refs.length > 0?
+        {(typeof campaignPatterElement.resolves_to_refs !== "undefined") && (campaignPatterElement.resolves_to_refs !== null) && (campaignPatterElement.resolves_to_refs.length > 0)?
             <React.Fragment>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start"><span className="text-muted">Список ссылок на один или несколько IP-адресов или доменных имен, на которые разрешается доменное имя:</span></Grid>
                 </Grid>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start">
-                        {campaignPatterElement.resolves_to_refs.map((item, key) => {
-                            let type = item.split("--");
-                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-        
-                            if(typeof objectElem === "undefined" ){
-                                return "";
-                            }
+                        <ol>
+                            {campaignPatterElement.resolves_to_refs.map((item, key) => {
+                                return (<ul key={`key_domain_name_resolves_to_ref_${key}`}>
+                                    {(typeof getLinkImage(item) !== "undefined")?
+                                        <Button onClick={() => {                                        
+                                            handleExpandClick(item);
+                                        }}>
+                                            <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
+                                            &nbsp;{item}
+                                        </Button>:
+                                        <TextField
+                                            fullWidth
+                                            disabled
+                                            InputLabelProps={{ shrink: true }}
+                                            onChange={() => {}}
+                                            value={item}
+                                        />}
+                                </ul>);
+                            })}
+                        </ol>
+                    </Grid>
+                </Grid>
+            </React.Fragment>:
+            ""}
+    </React.Fragment>);
+}
 
-                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_to_ref_${key}`}>
+CreateDomainNamePatternElements.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    //    showRefElement: PropTypes.object.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerValue: PropTypes.func.isRequired,
+    handleExpandClick: PropTypes.func.isRequired,
+};
+
+/*
+return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_to_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
                                         handleExpandClick(item);
@@ -95,7 +132,7 @@ export default function CreateDomainNamePatternElements(props){
                                     </CardContent>
                                 </Collapse>
                             </Card>);
-                            /*
+
                             domain-name--95bc69b6-385e-40d8-9a15-72b1631ec1b7
 
                             return (<Grid container direction="row" key={`key_resolves_ref_${key}`}>
@@ -110,18 +147,3 @@ export default function CreateDomainNamePatternElements(props){
                                     </Button>
                                 </Grid>
                             </Grid>);*/
-                        })}
-                    </Grid>
-                </Grid>
-            </React.Fragment>:
-            ""}
-    </React.Fragment>);
-}
-
-CreateDomainNamePatternElements.propTypes = {
-    isDisabled: PropTypes.bool.isRequired,
-    showRefElement: PropTypes.object.isRequired,
-    campaignPatterElement: PropTypes.object.isRequired,
-    handlerValue: PropTypes.func.isRequired,
-    handleExpandClick: PropTypes.func.isRequired,
-};

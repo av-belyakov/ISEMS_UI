@@ -8,6 +8,16 @@ export default function reducerDomainNamePatternSTIXObjects(state, action){
         return {...state, id: action.data};
     case "updateValue":
         return {...state, value: action.data};
+    case "updateResolvesToRefs":
+        console.log("func 'reducerDomainNamePatternSTIXObjects' action.type:", action.type, " action.data:", action.data, " state: ", state);
+
+        for(let i = 0; i < state.resolves_to_refs.length; i++){
+            if(state.resolves_to_refs[i] === action.data.id){
+                state.resolves_to_refs[i] = action.data.value;
+            }
+        }
+    
+        return {...state};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

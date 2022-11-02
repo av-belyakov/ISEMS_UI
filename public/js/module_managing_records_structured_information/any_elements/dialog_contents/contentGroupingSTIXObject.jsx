@@ -265,9 +265,7 @@ function CreateMajorContent(props){
     return (<Grid item container md={8}>
         <Grid container direction="row" className="pt-3">
             <CreateGroupingPatternElements 
-                socketIo={socketIo}
                 isDisabled={false}
-                //showRefElement={stateShowRef}
                 showRefId={state.refId}
                 showRefObj={state.refObj}
                 campaignPatterElement={state.mainObj}
