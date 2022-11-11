@@ -29,7 +29,6 @@ class MyEventEmitter extends EventEmitter {
     }
 
     createAPIConnection(isDebug = false) {
-
         console.log("Create API connection to module ISEMS-NIH...");
 
         let websocketTmp = new webSocketClient({
@@ -163,7 +162,6 @@ class MyEventEmitter extends EventEmitter {
         taskID: tid = null,
         options: o
     }) {
-
         if (typeof this.msgType[t] === "undefined") {
             this.emit("error", new Error("An error occurred while sending message, field \"msgType\" has incorrect value or is not set"));
 

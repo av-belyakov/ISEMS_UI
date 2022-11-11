@@ -157,6 +157,7 @@ function CreateMajorElements(props){
             </Grid>
             <CreateOpinionPatternElements 
                 isDisabled={false}
+                showRefElement={{id: "", obj: {}}}
                 campaignPatterElement={state}
                 handlerAuthors={(value) => { 
                     dispatch({ type: "updateAuthors", data: value }); 
@@ -170,6 +171,7 @@ function CreateMajorElements(props){
                     dispatch({ type: "updateExplanation", data: e.target.value }); 
                     handlerButtonIsDisabled();
                 }}
+                handlerButtonShowLink={() => {}}
             />
             <CreateElementAdditionalTechnicalInformationDO
                 objectId={currentObjectId}

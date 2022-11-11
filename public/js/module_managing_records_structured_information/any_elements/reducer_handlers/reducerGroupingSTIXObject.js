@@ -64,19 +64,7 @@ export default function reducerGroupingSTIXObject(state, action){
         }
 
         return {...state};
-    case "updateName":
-
-        /**
- * При создании в state нет mainObj, при редактировании ЕСТЬ, надо РЕШИТЬ
- *  Кроме того в модальном окне Report следует обратить внимание на некоректное отображения даты 
- * разделе Отчет доступен для просмотра следующих групп (правый верхний угол модального окна)
- * а также надо продолжить писать вкладку directory в информации по grouping и в отдельном 
- * окне по directory
- *  Также нужно прорверить ВСЕ объекты которыес пометкой "Д" и уже обработаны, так как во многих
- * может не хватать параметров функции, например в contentGroupingSTIXObject их 9 а в contentGroupingPatternNewSTIXObject
- * их только 7
- */
-
+    case "updateName":    
         if(state.mainObj.name === action.data){
             return {...state};
         }

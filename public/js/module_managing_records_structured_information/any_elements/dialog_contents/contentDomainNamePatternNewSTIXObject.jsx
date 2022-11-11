@@ -134,6 +134,7 @@ function CreateMajorElements(props){
                 isDisabled={false}
                 campaignPatterElement={state}
                 handlerValue={(e) => { dispatch({ type: "updateValue", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handleExpandClick={() => {}}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 

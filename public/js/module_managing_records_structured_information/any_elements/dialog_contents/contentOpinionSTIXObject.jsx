@@ -108,7 +108,7 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerOpinionSTIXObjects, beginDataObject);
-    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
+    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, {id: "", obj: {}});
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -153,9 +153,6 @@ function CreateMajorContent(props){
         }
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
-
-        console.log("func SaveData, state: ", state);
-
         if(buttonSaveChangeTrigger){
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
@@ -264,9 +261,6 @@ function CreateMajorContent(props){
                     } 
                 }}
                 handlerButtonShowLink={(refId) => {
-
-                    console.log("func 'handlerButtonShowLink', refId = ", refId);
-
                     dispatchShowRef({ type: "addId", data: refId });
                     dispatchShowRef({ type: "cleanObj", data: {} });
 
@@ -337,4 +331,4 @@ CreateMajorContent.propTypes = {
     handlerDialogClose: PropTypes.func.isRequired,
     handlerButtonIsDisabled: PropTypes.func.isRequired,
     handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
-};
+}; 

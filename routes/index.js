@@ -1,5 +1,6 @@
 "use strict";
 
+const debug = require("debug")("main_route");
 const passport = require("passport");
 
 const pages = require("./pages");
@@ -106,9 +107,11 @@ module.exports = function (app) {
                         res.render("500", {});
                     });
             } else {
-                req.logOut();
-                req.session.destroy();
 
+                debug(req.logOut);
+
+                //req.logOut();
+                req.session.destroy();
                 res.render("auth", {});
             }
         })
@@ -172,7 +175,7 @@ module.exports = function (app) {
 
     //ВЫХОД
     app.get("/logout", (req, res) => {
-        new Promise((resolve, reject) => {
+        new Promise((resolve, reject) => {            
             usersSessionInformation.delete(req.sessionID, (err) => {
                 if (err) reject(err);
                 else resolve(null);
@@ -185,9 +188,10 @@ module.exports = function (app) {
                 });
             });
         }).then(() => {
-            req.logOut();
-            req.session.destroy();
 
+            //req.logout();
+
+            req.session.destroy();
             res.redirect("/auth");
         }).catch((err) => {
             writeLogFile("error", err.toString() + funcName);

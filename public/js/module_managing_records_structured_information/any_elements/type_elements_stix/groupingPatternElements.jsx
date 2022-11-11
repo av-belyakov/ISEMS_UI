@@ -32,6 +32,8 @@ export default function CreateGroupingPatternElements(props){
     let [ expanded, setExpanded ] = React.useState(false);
     let [ refId, setRefId ] = React.useState("");
 
+    console.log("!!!!!!!!!!!!!!!!!! func 'CreateGroupingPatternElements', campaignPatterElement = ", campaignPatterElement);
+
     /*let listener = (data) => {
 
         console.log("func 88888 'CreateGroupingPatternElements' 88888, LISTENER refId:", refId, " data:", data);

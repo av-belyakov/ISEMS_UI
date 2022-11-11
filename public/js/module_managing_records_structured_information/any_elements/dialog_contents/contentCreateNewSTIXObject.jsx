@@ -32,7 +32,7 @@ const CreateIntrusionSetPatternNewSTIXObject = lazy(() => import("./contentIntru
 const CreateLocationPatternNewSTIXObject = lazy(() => import("./contentLocationPatternNewSTIXObject.jsx"));
 const CreateNotePatternNewSTIXObject = lazy(() => import("./contentNotePatternNewSTIXObject.jsx"));
 const CreateToolPatternNewSTIXObject = lazy(() => import("./contentToolPatternNewSTIXObject.jsx"));
-const CreateMalwarePatternNewSTIXObject = lazy(() => import("./contentMalwarePatternSTIXObject.jsx"));
+const CreateMalwarePatternNewSTIXObject = lazy(() => import("./contentMalwarePatternNewSTIXObject.jsx"));
 const CreateThreatActorPatternNewSTIXObject = lazy(() => import("./contentThreatActorPatternSTIXObject.jsx"));
 const CreateOpinionPatternNewSTIXObject = lazy(() => import("./contentOpinionPatternNewSTIXObject.jsx"));
 const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVulnerabilityPatternNewSTIXObject.jsx"));
@@ -226,7 +226,7 @@ export default function CreateDialogContentNewSTIXObject(props){
 
     //console.log("func 'CreateDialogContentNewSTIXObject' currentRefObjectSTIX = ", currentRefObjectSTIX);
     //console.log(helpers.getListLinkImageSTIXObject());
-    //console.log("------ listRefsForObjectSTIX = ", listRefsForObjectSTIX);
+    //console.log("------  listRefsForObjectSTIX = ", listRefsForObjectSTIX);
     //console.log("helpers.getListOnceProperties() = ", helpers.getListOnceProperties());
     //console.log("helpers.getListManyProperties() = ", helpers.getListManyProperties());
 

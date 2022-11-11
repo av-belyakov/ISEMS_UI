@@ -1,11 +1,3 @@
-/**
- * Точка входа для приложения ISEMS_UI
- *
- * Версия 1.0, дата релиза 16.04.2020
- */
-
-"use strict";
-
 const fs = require("fs");
 const async = require("async");
 const https = require("https");
@@ -104,7 +96,7 @@ new Promise((resolve, reject) => {
 
             callback(null);
         },
-        /**
+        /** 
          *       соединение с модулем ISEMS-MRSICT (модуль управления записями структурированной информации о компьютерных угрозах)
          */
         (callback) => {

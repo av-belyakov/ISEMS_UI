@@ -62,16 +62,16 @@ function CreateMajorElements(props){
         handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, {});
+    const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, { mainObj: {}, refObj: {}, refId: "" });
     useEffect(() => {
-        if(projectPatterElement.type === "grouping"){
+        if(typeof projectPatterElement.type !== "undefined" && projectPatterElement.type === "grouping"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
 
     useEffect(() => {
         if(buttonAddClick){
-            let stateTmp = Object.assign(state);
+            let stateTmp = Object.assign(state.mainObj);
             stateTmp.id = currentObjectId;
             stateTmp.type = "grouping";
             stateTmp.spec_version = "2.1";
@@ -120,7 +120,7 @@ function CreateMajorElements(props){
     };
 
     const handlerButtonIsDisabled = (name) => {
-        if(name === "" || (!state.name || state.name === "")){
+        if(name === "" || (!state.mainObj.name || state.mainObj.name === "")){
             handlerChangeButtonAdd(true);
             return;
         }
@@ -143,13 +143,13 @@ function CreateMajorElements(props){
             </Grid>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
+                <Grid item container md={8}>{state.mainObj.id? state.mainObj.id: currentObjectId}</Grid>
             </Grid>
             <CreateGroupingPatternElements 
                 isDisabled={false}
                 showRefId={""}
                 showRefObj={{}}
-                campaignPatterElement={state}
+                campaignPatterElement={state.mainObj}
                 handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
                 handlerClick={() => {}}
                 handlerContext={(e) => { dispatch({ type: "updateContex", data: e.target.value }); handlerButtonIsDisabled(); }}
@@ -158,7 +158,7 @@ function CreateMajorElements(props){
             />
             <CreateElementAdditionalTechnicalInformationDO
                 objectId={currentObjectId}
-                reportInfo={state}
+                reportInfo={state.mainObj}
                 isNotDisabled={isNotDisabled}
                 handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
                 handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
