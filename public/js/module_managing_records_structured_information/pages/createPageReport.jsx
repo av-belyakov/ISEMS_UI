@@ -156,7 +156,7 @@ export default function CreatePageReport(props) {
             setButtonDelModalWindowConfirmDeleteLinkFromObjRefs((prevState) => !prevState);
             handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs();
         };
-
+ 
     return (<React.Fragment>
         <CreateWidgetsPageReport socketIo={socketIo}/>
 
