@@ -16,6 +16,12 @@ export default function CreateAutonomousSystemPatternElements(props){
 
     let [ invalidNumber, setInvalidNumber ] = React.useState(((typeof campaignPatterElement.number === "undefined") || (campaignPatterElement.number === 0)));
 
+    React.useEffect(() => {
+        if((typeof campaignPatterElement.number !== "undefined") && new RegExp("^[0-9]{1,}$").test(campaignPatterElement.number)){
+            setInvalidNumber(false);
+        }
+    }, [campaignPatterElement.number]);
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>

@@ -266,31 +266,40 @@ export default function CreateListObjectRefsReport(props){
         return { currentId: item, childId: [] };
     });
 
-    const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: listNewOrModifySTIXObject, listId: objListBegin});
+    const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: []/*listNewOrModifySTIXObject*/, listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
     const [ currentDeleteId, setCurrentDeleteId ] = useState("");
     const [ deleteIdDepthAndKey, setDeleteIdDepthAndKey ] = useState([]);
     const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
 
     let listener = (data) => {
-        setListObjReducer({ type: "updateListId", data: { listObject: data.information.additional_parameters.transmitted_data }});
-        setListObjReducer({ type: "updateList", data: { current: data.information.additional_parameters.transmitted_data, parent: stateReport }});
+        let listObj = data.information.additional_parameters.transmitted_data.filter((item) => {
+            return item.type !== "relationship" && item.type !== "sighting"; 
+        });
+    
+        setListObjReducer({ type: "updateListId", data: { listObject: listObj }});
+        setListObjReducer({ type: "updateList", data: { current: listObj /*data.information.additional_parameters.transmitted_data*/, parent: stateReport }});
     };
 
     useEffect(() => {
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for list id", listener);
+        let searchList = stateReport.object_refs.filter((item) => {
+            let type = item.split("--");
+
+            return listExtendedObject.find((item) => item.name === type[0]);
+        });
+
+        if(searchList.length === 0){
+            searchList.push(stateReport.id);
+        }
+
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for list id", listener);
         socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
             arguments: { 
-                searchListObjectId: stateReport.object_refs.filter((item) => {
-                    let type = item.split("--");
-                
-                    return listExtendedObject.find((item) => item.name === type[0]);
-                }),
+                searchListObjectId: searchList,
                 parentObjectId: stateReport.id,
             }});
 
         return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for list id", listener);
             setListActivatedObjectNumbers([]);
         };
     }, []);

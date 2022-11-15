@@ -661,6 +661,8 @@ let fileFunc = (obj, handlerClick) => {
         hashList.push({ type: item, hash: obj.hashes[item] });
     }
 
+    console.log("func 'fileFunc' obj.content_ref.length === 0: ", obj.content_ref.length === 0);
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Имя файла:</span></Grid>
@@ -696,25 +698,34 @@ let fileFunc = (obj, handlerClick) => {
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Ссылка на объект Артифакт:</span></Grid>
             <Grid item container md={7}>
-                {(_.isString(obj.content_ref) && typeof getLinkImage(obj.content_ref) !== "undefined")?
-                    <Button onClick={() => {                                        
-                        handlerClick(obj.id, obj.content_ref);
-                    }}>
-                        <img src={`/images/stix_object/${getLinkImage(obj.content_ref).link}`} width="25" height="25" />
+                {
+                /**
+                 * 
+                 * тут надо разобратся поччему при пустой строке obj.content_ref выводится шаблон artifact, надо либо вообще ничего не
+                 * выводить, либо вывести сообщение "информация не найдена"
+                 * 
+                 */
+                
+                    (typeof getLinkImage(obj.content_ref) !== "undefined" && _.isString(obj.content_ref) && obj.content_ref.length === 0)?
+                        <Button onClick={() => {                                        
+                            handlerClick(obj.id, obj.content_ref);
+                        }}>
+                            <img src={`/images/stix_object/${getLinkImage(obj.content_ref).link}`} width="25" height="25" />
                             &nbsp;{obj.content_ref}
-                    </Button>:
-                    <React.Fragment>
-                        <Grid container direction="row">
-                            <Grid item container md={12} justifyContent="flex-start" className="text-muted mt-2">
-                                {obj.content_ref.id}
+                        </Button>:
+                        <React.Fragment>
+                            <Grid container direction="row">
+                                <Grid item container md={12} justifyContent="flex-start" className="text-muted mt-2">
+                                    {obj.content_ref.id}
+                                </Grid>
+
                             </Grid>
-                        </Grid>
-                        <Grid container direction="row">
-                            <Grid item container md={12} justifyContent="flex-start">
-                                {artifactFunc(obj.content_ref)}
+                            <Grid container direction="row">
+                                <Grid item container md={12} justifyContent="flex-start">
+                                    {artifactFunc(obj.content_ref)}
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </React.Fragment>}
+                        </React.Fragment>}
             </Grid>
         </Grid>
 
@@ -730,6 +741,43 @@ let fileFunc = (obj, handlerClick) => {
         </Grid>
     </React.Fragment>);
 };
+
+/**
+ <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Ссылка на объект Артифакт:</span></Grid>
+            <Grid item container md={7}>
+                {(typeof getLinkImage(obj.content_ref) !== "undefined" && _.isString(obj.content_ref) && obj.content_ref.length === 0)?
+                    <Button onClick={() => {                                        
+                        handlerClick(obj.id, obj.content_ref);
+                    }}>
+                        <img src={`/images/stix_object/${getLinkImage(obj.content_ref).link}`} width="25" height="25" />
+                            &nbsp;{obj.content_ref}
+                    </Button>:
+                    <React.Fragment>
+                        <Grid container direction="row">
+                            <Grid item container md={12} justifyContent="flex-start" className="text-muted mt-2">
+                                {obj.content_ref.id}
+                            </Grid>
+
+                        </Grid>
+                        <Grid container direction="row">
+                            <Grid item container md={12} justifyContent="flex-start">
+                                {artifactFunc(obj.content_ref)}
+                            </Grid>
+                        </Grid>
+                    </React.Fragment>}
+            </Grid>
+        </Grid>
+ * 
+<CardContent>
+                                        {(showRefElement.id !== "" && showRefElement.id === item)? 
+                                            <CreateShortInformationSTIXObject 
+                                                obj={showRefElement.obj}
+                                                handlerClick={() => {}} 
+                                            />: 
+                                            "информация не найдена"}
+                                    </CardContent>
+ */
 
 let identityFunc = (obj) => {
     return (<React.Fragment>
@@ -806,18 +854,11 @@ let infrastructureFunc = (obj) => {
         {patternDescription(obj.description)}
         {patternAliases(obj.aliases)}
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted">Тип инфраструктуры:</span>
-            </Grid>
-            <Grid item container md={7}>
-                <CreateListInfrastructureTypes
-                    isDisabled={true}
-                    campaignPatterElement={obj}
-                    handlerInfrastructureTypes={() => {}}
-                />
-            </Grid>
-        </Grid>
+        <CreateListInfrastructureTypes
+            isDisabled={true}
+            campaignPatterElement={obj}
+            handlerInfrastructureTypes={() => {}}
+        />
     </React.Fragment>);
 };
 
@@ -1470,14 +1511,16 @@ let indicatorFunc = (obj) => {
         {patternDescription(obj.description)}
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Порт назначения:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Шаблон:</span></Grid>
             <Grid item md={7}>
                 <TextField
+                    multiline
                     fullWidth
                     disabled
                     InputLabelProps={{ shrink: true }}
                     onChange={() => {}}
                     value={(obj.pattern)? obj.pattern: ""}
+                    variant="outlined"
                 />
             </Grid>
         </Grid>

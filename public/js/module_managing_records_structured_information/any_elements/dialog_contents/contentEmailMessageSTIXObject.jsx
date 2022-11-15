@@ -11,12 +11,34 @@ import reducerEmailMessagePatternSTIXObjects from "../reducer_handlers/reducerEm
 import CreateEmailMessagePatternElements from "../type_elements_stix/emailMessagePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
+function isExistTransmittedData(data){
+    if((data.information === null) || (typeof data.information === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+        return false;
+    }
+
+    if(data.information.additional_parameters.transmitted_data.length === 0){
+        return false;
+    }
+
+    return true;
+}
+
 function reducerShowRef(state, action){
     switch(action.type){
     case "addObject":
         return {...state, obj: action.data};
     case "addId":
         return {...state, id: action.data};
+    case "cleanObj":
+        return {...state, obj: {}};
     }
 }
 
@@ -101,7 +123,7 @@ function CreateMajorContent(props){
 
     const [ state, dispatch ] = useReducer(reducerEmailMessagePatternSTIXObjects, beginDataObject);
     const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
-    const listener = (data) => {
+    /*const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
         }
@@ -140,6 +162,28 @@ function CreateMajorContent(props){
 
         return () => {
             socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
+            dispatch({ type: "newAll", data: {} });
+        };
+    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);*/
+    useEffect(() => {
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+            if(!isExistTransmittedData(data)){
+                return;
+            }
+
+            for(let obj of data.information.additional_parameters.transmitted_data){     
+                dispatch({ type: "newAll", data: obj });
+            }
+        });
+
+        if(currentIdSTIXObject !== ""){
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentIdSTIXObject,
+                parentObjectId: parentIdSTIXObject,
+            }});
+        }
+
+        return () => {
             dispatch({ type: "newAll", data: {} });
         };
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
@@ -192,7 +236,26 @@ function CreateMajorContent(props){
                 handlerMessageId={(e) => { dispatch({ type: "updateMessageId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerContentType={(e) => { dispatch({ type: "updateContentType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerIsMultipart={(e) => { dispatch({ type: "updateIsMultipart", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerButtonShowLink={handlerButtonShowLink}
+                //handlerButtonShowLink={handlerButtonShowLink}
+                handlerButtonShowLink={(refId) => {
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+            
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){ 
+                            dispatchShowRef({ type: "addObject", data: obj });        
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
+                }}
                 handlerAddReceivedLines={(e) => { dispatch({ type: "updateReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDeleteReceivedLines={(e) => { dispatch({ type: "deleteReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />

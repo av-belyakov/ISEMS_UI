@@ -12,6 +12,26 @@ import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateOpinionPatternElements from "../type_elements_stix/opinionPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+function isExistTransmittedData(data){
+    if((data.information === null) || (typeof data.information === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+        return false;
+    }
+
+    if(data.information.additional_parameters.transmitted_data.length === 0){
+        return false;
+    }
+
+    return true;
+}
+
 function reducerShowRef(state, action){
     switch(action.type){
     case "addObject":
@@ -109,48 +129,28 @@ function CreateMajorContent(props){
 
     const [ state, dispatch ] = useReducer(reducerOpinionSTIXObjects, beginDataObject);
     const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, {id: "", obj: {}});
-    const listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-            return;
-        }
-
-        if(data.information.additional_parameters.transmitted_data.length === 0){
-            return;
-        }
-
-        for(let obj of data.information.additional_parameters.transmitted_data){
-            if(state.type !== obj.type){
-                dispatchShowRef({ type: "addObject", data: obj });
-
-                continue;
+  
+    useEffect(() => {
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+            if(!isExistTransmittedData(data)){
+                return;
             }
 
-            dispatch({ type: "newAll", data: obj });
-        }
-    };
-    useEffect(() => {
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+            for(let obj of data.information.additional_parameters.transmitted_data){     
+                dispatch({ type: "newAll", data: obj });
+            }
+        });
 
-        return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
-            dispatch({ type: "newAll", data: {} });
-        };
-    }, []);
-    useEffect(() => {
         if(currentIdSTIXObject !== ""){
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: parentIdSTIXObject,
             }});
         }
+
+        return () => {
+            dispatch({ type: "newAll", data: {} });
+        };
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
@@ -263,11 +263,17 @@ function CreateMajorContent(props){
                 handlerButtonShowLink={(refId) => {
                     dispatchShowRef({ type: "addId", data: refId });
                     dispatchShowRef({ type: "cleanObj", data: {} });
-
-                    if(stateShowRef.id === refId){                   
-                        return;
-                    }
             
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){ 
+                            dispatchShowRef({ type: "addObject", data: obj });        
+                        }
+                    });
+
                     socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                         searchObjectId: refId,
                         parentObjectId: state.id,
