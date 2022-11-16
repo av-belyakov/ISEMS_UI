@@ -660,8 +660,8 @@ let fileFunc = (obj, handlerClick) => {
     for(let item in obj.hashes){
         hashList.push({ type: item, hash: obj.hashes[item] });
     }
-
-    console.log("func 'fileFunc' obj.content_ref.length === 0: ", obj.content_ref.length === 0);
+                
+    console.log("func 'fileFunc' obj: ", obj);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -698,37 +698,35 @@ let fileFunc = (obj, handlerClick) => {
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Ссылка на объект Артифакт:</span></Grid>
             <Grid item container md={7}>
-                {
-                /**
-                 * 
-                 * тут надо разобратся поччему при пустой строке obj.content_ref выводится шаблон artifact, надо либо вообще ничего не
-                 * выводить, либо вывести сообщение "информация не найдена"
-                 * 
-                 */
-                
-                    (typeof getLinkImage(obj.content_ref) !== "undefined" && _.isString(obj.content_ref) && obj.content_ref.length === 0)?
+                {_.isString(obj.content_ref)?
+                    ((typeof getLinkImage(obj.content_ref) !== "undefined")?
                         <Button onClick={() => {                                        
                             handlerClick(obj.id, obj.content_ref);
                         }}>
                             <img src={`/images/stix_object/${getLinkImage(obj.content_ref).link}`} width="25" height="25" />
-                            &nbsp;{obj.content_ref}
+                                &nbsp;{obj.content_ref}
                         </Button>:
-                        <React.Fragment>
-                            <Grid container direction="row">
-                                <Grid item container md={12} justifyContent="flex-start" className="text-muted mt-2">
-                                    {obj.content_ref.id}
-                                </Grid>
+                        <span className="text-muted mt-2"><i>информация не найдена</i></span>):
+                    <React.Fragment>
+                        <Grid container direction="row">
+                            <Grid item container md={12} justifyContent="flex-start" className="text-muted mt-2">
+                                {obj.content_ref.id}
+                            </Grid>
 
+                        </Grid>
+                        <Grid container direction="row">
+                            <Grid item container md={12} justifyContent="flex-start">
+                                {artifactFunc(obj.content_ref)}
                             </Grid>
-                            <Grid container direction="row">
-                                <Grid item container md={12} justifyContent="flex-start">
-                                    {artifactFunc(obj.content_ref)}
-                                </Grid>
-                            </Grid>
-                        </React.Fragment>}
+                        </Grid>
+                    </React.Fragment>}
             </Grid>
         </Grid>
 
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Хеш суммы:</span></Grid>
+            <Grid item container md={7} justifyContent="flex-start"></Grid>
+        </Grid>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={3} justifyContent="flex-end"></Grid>
             <Grid item container md={9} justifyContent="flex-start">

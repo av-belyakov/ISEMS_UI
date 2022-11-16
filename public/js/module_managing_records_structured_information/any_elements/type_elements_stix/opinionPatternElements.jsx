@@ -153,7 +153,7 @@ export default function CreateOpinionPatternElements(props){
                                         obj={showRefElement.obj}
                                         handlerClick={() => {}}
                                     />: 
-                                    "информация не найдена"}
+                                    <i>информация не найдена</i>}
                             </CardContent>
                         </Collapse>
                     </Card>);

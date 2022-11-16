@@ -112,8 +112,6 @@ function CreateMajorContent(props){
         handlerButtonSaveChangeTrigger,
     } = props;
 
-    console.log("func 'CreateDialogContentEmailMessageSTIXObject', CreateMajorContent, START...");
-
     let beginDataObject = {};
     for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
         if(listNewOrModifySTIXObject[i].id === currentIdSTIXObject){
@@ -123,48 +121,7 @@ function CreateMajorContent(props){
 
     const [ state, dispatch ] = useReducer(reducerEmailMessagePatternSTIXObjects, beginDataObject);
     const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
-    /*const listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-            return;
-        }
-
-        if(data.information.additional_parameters.transmitted_data.length === 0){
-            return;
-        }
-
-        for(let obj of data.information.additional_parameters.transmitted_data){
-            if(state.type !== obj.type){
-                dispatchShowRef({ type: "addObject", data: obj });
-
-                continue;
-            }
-             
-            dispatch({ type: "newAll", data: obj });
-        }
-    };
-    useEffect(() => {
-        if(currentIdSTIXObject !== ""){
-            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-                searchObjectId: currentIdSTIXObject,
-                parentObjectId: parentIdSTIXObject,
-            }});
-        }
-
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
-
-        return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
-            dispatch({ type: "newAll", data: {} });
-        };
-    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);*/
+    
     useEffect(() => {
         socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
             if(!isExistTransmittedData(data)){
@@ -211,19 +168,6 @@ function CreateMajorContent(props){
         }
     };
 
-    const handlerButtonShowLink = (refId) => {
-        dispatchShowRef({ type: "addId", data: refId });
-
-        if(stateShowRef.id === refId){                   
-            return;
-        }
-
-        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-            searchObjectId: refId,
-            parentObjectId: state.id,
-        }});
-    };
-
     return (<Grid item container md={12}>
         <Grid container direction="row" className="pt-3">
             <CreateEmailMessagePatternElements
@@ -236,7 +180,6 @@ function CreateMajorContent(props){
                 handlerMessageId={(e) => { dispatch({ type: "updateMessageId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerContentType={(e) => { dispatch({ type: "updateContentType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerIsMultipart={(e) => { dispatch({ type: "updateIsMultipart", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                //handlerButtonShowLink={handlerButtonShowLink}
                 handlerButtonShowLink={(refId) => {
                     dispatchShowRef({ type: "addId", data: refId });
                     dispatchShowRef({ type: "cleanObj", data: {} });

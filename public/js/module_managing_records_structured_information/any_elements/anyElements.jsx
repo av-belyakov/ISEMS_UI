@@ -1632,31 +1632,33 @@ CreateKillChainPhasesList.propTypes = {
 export function CreateBodyMultipartList(props){
     let { 
         isDisabled,
+        refId,
+        expanded,
         showRefElement,
         listBodyMultipart,
+        handlerRefId,
+        handlerExpanded,
         handlerButtonShowLink,
     } = props;
 
     const classes = useStyles();
-    let [ expanded, setExpanded ] = useState(false);
-    let [ refId, setRefId ] = useState("");
-
-    console.log("func 'CreateBodyMultipartList', listBodyMultipart = ", listBodyMultipart, " showRefElement:", showRefElement);
 
     if(listBodyMultipart.length === 0){
         return "";
     }
-
+   
     let handleExpandClick = (id) => {
+        if(id === refId && expanded){
+            handlerExpanded(false);
+
+            return;
+        }
+
         if(id !== refId){
-            setExpanded(true); 
-            setRefId(id);
-        } else {
-            if(expanded){
-                setExpanded(false);
-            } else {
-                setExpanded(true); 
-            }    
+            handlerExpanded(true);
+            handlerRefId(id);
+        } else {            
+            handlerExpanded(!expanded);
         }
 
         handlerButtonShowLink(id);
@@ -1724,14 +1726,12 @@ export function CreateBodyMultipartList(props){
                                                         &nbsp;{item.body_raw_ref}
                                                 </Button>
                                             </CardActions>
-                                            <Collapse in={refId === item.body_raw_ref && expanded} timeout="auto" unmountOnExit>
+                                            <Collapse in={showRefElement.id === item.body_raw_ref && refId === item.body_raw_ref && expanded} timeout="auto" unmountOnExit>
                                                 <CardContent>
-                                                    {(showRefElement.id !== "" && showRefElement.id === item.body_raw_ref)? 
-                                                        <CreateShortInformationSTIXObject
-                                                            obj={showRefElement.obj}
-                                                            handlerClick={() => {}}
-                                                        />: 
-                                                        ""}
+                                                    <CreateShortInformationSTIXObject
+                                                        obj={showRefElement.obj}
+                                                        handlerClick={() => {}}
+                                                    />
                                                 </CardContent>
                                             </Collapse>
                                         </Card>
@@ -1747,8 +1747,12 @@ export function CreateBodyMultipartList(props){
 
 CreateBodyMultipartList.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
+    refId: PropTypes.string.isRequired,
+    expanded: PropTypes.bool.isRequired,
     showRefElement: PropTypes.object.isRequired,
     listBodyMultipart: PropTypes.array.isRequired,
+    handlerRefId: PropTypes.func.isRequired,
+    handlerExpanded: PropTypes.func.isRequired,
     handlerButtonShowLink: PropTypes.func.isRequired,
 };
 

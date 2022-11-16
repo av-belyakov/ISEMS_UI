@@ -113,7 +113,7 @@ export default function CreateEmailAddressPatternElements(props){
                                         obj={showRefElement.obj}
                                         handlerClick={() => {}} 
                                     />: 
-                                    "информация не найдена"}
+                                    <i>информация не найдена</i>}
                             </CardContent>
                         </Collapse>
                     </Card>

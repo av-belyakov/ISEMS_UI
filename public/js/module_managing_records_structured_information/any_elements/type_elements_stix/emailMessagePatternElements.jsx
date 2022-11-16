@@ -43,15 +43,17 @@ export default function CreateEmailMessagePatternElements(props){
     let [ refId, setRefId ] = React.useState("");
 
     let handleExpandClick = (id) => {
+        if(id === refId && expanded){
+            setExpanded(false);
+            
+            return;
+        }
+
         if(id !== refId){
             setExpanded(true); 
             setRefId(id);
-        } else {
-            if(expanded){
-                setExpanded(false);
-            } else {
-                setExpanded(true); 
-            }    
+        } else {            
+            setExpanded(!expanded);
         }
 
         handlerButtonShowLink(id);
@@ -147,14 +149,12 @@ export default function CreateEmailMessagePatternElements(props){
                                     &nbsp;{campaignPatterElement.from_ref}
                             </Button>
                         </CardActions>
-                        <Collapse in={refId === campaignPatterElement.from_ref && expanded} timeout="auto" unmountOnExit>
+                        <Collapse in={showRefElement.id === campaignPatterElement.from_ref && refId === campaignPatterElement.from_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.from_ref)? 
-                                    <CreateShortInformationSTIXObject 
-                                        obj={showRefElement.obj}
-                                        handlerClick={() => {}} 
-                                    />: 
-                                    "информация не найдена"}
+                                <CreateShortInformationSTIXObject 
+                                    obj={showRefElement.obj}
+                                    handlerClick={() => {}} 
+                                />
                             </CardContent>
                         </Collapse>
                     </Card>
@@ -180,14 +180,12 @@ export default function CreateEmailMessagePatternElements(props){
                                 &nbsp;{campaignPatterElement.sender_ref}
                             </Button>
                         </CardActions>
-                        <Collapse in={refId === campaignPatterElement.sender_ref && expanded} timeout="auto" unmountOnExit>
+                        <Collapse in={showRefElement.id === campaignPatterElement.sender_ref && refId === campaignPatterElement.sender_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.sender_ref)? 
-                                    <CreateShortInformationSTIXObject 
-                                        obj={showRefElement.obj} 
-                                        handlerClick={() => {}} 
-                                    />: 
-                                    "информация не найдена"}
+                                <CreateShortInformationSTIXObject 
+                                    obj={showRefElement.obj} 
+                                    handlerClick={() => {}} 
+                                />
                             </CardContent>
                         </Collapse>
                     </Card>
@@ -224,14 +222,12 @@ export default function CreateEmailMessagePatternElements(props){
                                         &nbsp;{item}
                                     </Button>
                                 </CardActions>
-                                <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                                <Collapse in={showRefElement.id === item && refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? 
-                                            <CreateShortInformationSTIXObject 
-                                                obj={showRefElement.obj}
-                                                handlerClick={() => {}}
-                                            />: 
-                                            "информация не найдена"}
+                                        <CreateShortInformationSTIXObject 
+                                            obj={showRefElement.obj}
+                                            handlerClick={() => {}}
+                                        />
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -270,14 +266,12 @@ export default function CreateEmailMessagePatternElements(props){
                                         &nbsp;{item}
                                     </Button>
                                 </CardActions>
-                                <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                                <Collapse in={showRefElement.id === item && refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? 
-                                            <CreateShortInformationSTIXObject 
-                                                obj={showRefElement.obj}
-                                                handlerClick={() => {}} 
-                                            />: 
-                                            "информация не найдена"}
+                                        <CreateShortInformationSTIXObject 
+                                            obj={showRefElement.obj}
+                                            handlerClick={() => {}} 
+                                        />
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -316,14 +310,12 @@ export default function CreateEmailMessagePatternElements(props){
                                         &nbsp;{item}
                                     </Button>
                                 </CardActions>
-                                <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                                <Collapse in={showRefElement.id === item && refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? 
-                                            <CreateShortInformationSTIXObject 
-                                                obj={showRefElement.obj} 
-                                                handlerClick={() => {}} 
-                                            />: 
-                                            "информация не найдена"}
+                                        <CreateShortInformationSTIXObject 
+                                            obj={showRefElement.obj} 
+                                            handlerClick={() => {}} 
+                                        />
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -410,7 +402,7 @@ export default function CreateEmailMessagePatternElements(props){
                 <span className="text-muted  mt-3">Ссылка на {"\"сырое\""} (бинарное) содержимое email сообщения:</span>
             </Grid>
             <Grid item container md={8}>
-                {campaignPatterElement.raw_email_ref && campaignPatterElement.raw_email_ref.length !== 0?
+                {campaignPatterElement.raw_email_ref && (typeof campaignPatterElement.raw_email_ref !== "undefined") && campaignPatterElement.raw_email_ref.length !== 0?
                     <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
@@ -423,14 +415,12 @@ export default function CreateEmailMessagePatternElements(props){
                                     &nbsp;{campaignPatterElement.raw_email_ref}
                             </Button>
                         </CardActions>
-                        <Collapse in={refId === campaignPatterElement.raw_email_ref && expanded} timeout="auto" unmountOnExit>
+                        <Collapse in={showRefElement.id === campaignPatterElement.raw_email_ref && refId === campaignPatterElement.raw_email_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {(showRefElement.id !== "" && showRefElement.id === campaignPatterElement.raw_email_ref)?
-                                    <CreateShortInformationSTIXObject 
-                                        obj={showRefElement.obj}
-                                        handlerClick={() => {}} 
-                                    />:
-                                    "информация не найдена"}
+                                <CreateShortInformationSTIXObject 
+                                    obj={showRefElement.obj}
+                                    handlerClick={() => {}} 
+                                />
                             </CardContent>
                         </Collapse>
                     </Card>:
@@ -440,8 +430,16 @@ export default function CreateEmailMessagePatternElements(props){
 
         <CreateBodyMultipartList
             isDisabled={isDisabled}
+            refId={refId}
+            expanded={expanded}
             showRefElement={showRefElement}
             listBodyMultipart={(!campaignPatterElement.body_multipart)? []: campaignPatterElement.body_multipart}
+            handlerRefId={(refId) => {
+                setRefId(refId);
+            }}
+            handlerExpanded={(status) => {
+                setExpanded(status);
+            }}
             handlerButtonShowLink={handlerButtonShowLink}
         />
 
