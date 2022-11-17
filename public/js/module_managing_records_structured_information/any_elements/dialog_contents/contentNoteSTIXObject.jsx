@@ -14,6 +14,37 @@ import CreateNotePatternElements from "../type_elements_stix/notePatternElements
 import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+function isExistTransmittedData(data){
+    if((data.information === null) || (typeof data.information === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+        return false;
+    }
+
+    if(data.information.additional_parameters.transmitted_data.length === 0){
+        return false;
+    }
+
+    return true;
+}
+
+function reducerShowRef(state, action){
+    switch(action.type){
+    case "addObject":
+        return {...state, obj: action.data};
+    case "addId":
+        return {...state, id: action.data};
+    case "cleanObj":
+        return {...state, obj: {}};
+    }
+}
+
 export default function CreateDialogContentNoteSTIXObject(props){
     let { 
         socketIo,
@@ -99,8 +130,31 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerNoteSTIXObjects, beginDataObject);
+    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
+    
+    useEffect(() => {
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+            if(!isExistTransmittedData(data)){
+                return;
+            }
 
-    const listener = (data) => {
+            for(let obj of data.information.additional_parameters.transmitted_data){     
+                dispatch({ type: "newAll", data: obj });
+            }
+        });
+
+        if(currentIdSTIXObject !== ""){
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentIdSTIXObject,
+                parentObjectId: parentIdSTIXObject,
+            }});
+        }
+
+        return () => {
+            dispatch({ type: "newAll", data: {} });
+        };
+    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    /*const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
         }
@@ -140,7 +194,7 @@ function CreateMajorContent(props){
                 parentObjectId: parentIdSTIXObject,
             }});
         }
-    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);*/
     useEffect(() => {
         if(buttonSaveChangeTrigger){
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
@@ -216,6 +270,7 @@ function CreateMajorContent(props){
         <Grid container direction="row" className="pt-3">
             <CreateNotePatternElements 
                 isDisabled={false}
+                showRefElement={stateShowRef}
                 campaignPatterElement={state}
                 handlerAuthors={(value) => { 
                     dispatch({ type: "updateAuthors", data: value }); 
@@ -243,6 +298,25 @@ function CreateMajorContent(props){
                     } else {
                         handlerButtonIsDisabled(true);
                     } 
+                }}
+                handlerButtonShowLink={(refId) => {
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+            
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){ 
+                            dispatchShowRef({ type: "addObject", data: obj });        
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
                 }}
             />
         </Grid> 

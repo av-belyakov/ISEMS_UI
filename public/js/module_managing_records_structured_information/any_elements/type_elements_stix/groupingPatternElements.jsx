@@ -167,15 +167,21 @@ export default function CreateGroupingPatternElements(props){
                             let type = item.split("--");
                             let objectElem = helpers.getLinkImageSTIXObject(type[0]);
     
-                            if(typeof objectElem === "undefined" ){
+                            if(typeof objectElem === "undefined" || type[0] === "relationship"){
                                 return "";
                             }
+
+                            let disabled = false;
+                            if(type[0] === "report"){                    
+                                disabled = true;
+                            }        
 
                             return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_object_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => {                                        
                                         handleExpandClick(item);
-                                    }}>
+                                    }}
+                                    disabled={disabled} >
                                         <img 
                                             src={`/images/stix_object/${objectElem.link}`} 
                                             width="25" 

@@ -307,6 +307,7 @@ let directoryFunc = (obj, handlerClick) => {
     //let [ expanded, setExpanded ] = React.useState(false);
     //let [ refId, setRefId ] = React.useState("");            
 
+
     let containsRefsIsExist = (typeof obj.contains_refs === "undefined" || obj.contains_refs === null || obj.contains_refs.length === 0);
 
     if(!containsRefsIsExist){
@@ -335,6 +336,11 @@ let directoryFunc = (obj, handlerClick) => {
                         {obj.contains_refs.map((item, key) => {
                             //                    if(typeof item !== "undefined" && item.includes("directory")){
                             //                    }
+                            /**
+                             * 
+                             * Надо что то придумать для вывода дтректорий и файлов
+                             * 
+                             */
 
 
                             return (<ul key={`key_directory_${key}`}>

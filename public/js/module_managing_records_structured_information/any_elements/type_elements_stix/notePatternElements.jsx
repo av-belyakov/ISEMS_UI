@@ -1,6 +1,10 @@
 import React from "react";
 import {
     Button,
+    Card,
+    CardActions,
+    CardContent,
+    Collapse,
     Grid,
     TextField,
     Typography,
@@ -10,15 +14,38 @@ import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
+import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
 
 export default function CreateNotePatternElements(props){
     let { 
         isDisabled,
+        showRefElement,
         campaignPatterElement,
         handlerAuthors,
         handlerContent, 
         handlerAbstract,
+        handlerButtonShowLink,
     } = props;
+
+    let [ expanded, setExpanded ] = React.useState(false);
+    let [ refId, setRefId ] = React.useState("");
+
+    let handleExpandClick = (id) => {
+        if(id === refId && expanded){
+            setExpanded(false);
+            
+            return;
+        }
+
+        if(id !== refId){
+            setExpanded(true); 
+            setRefId(id);
+        } else {            
+            setExpanded(!expanded);
+        }
+
+        handlerButtonShowLink(id);
+    };
 
     let valuesIsInvalideContent = campaignPatterElement.content === "";
 
@@ -102,22 +129,37 @@ export default function CreateNotePatternElements(props){
                     let type = item.split("--");
                     let objectElem = helpers.getLinkImageSTIXObject(type[0]);
         
-                    if(typeof objectElem === "undefined" ){
+                    if(typeof objectElem === "undefined" || type[0] === "relationship"){
                         return "";
                     }
 
-                    return (<Grid container direction="row" key={`key_object_ref_${key}`}>
-                        <Grid item container md={12} justifyContent="flex-start">
-                            <Button onClick={() => {}} disabled>
+                    let disabled = false;
+                    if(type[0] === "report"){                    
+                        disabled = true;
+                    }
+                    
+                    return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_to_ref_${key}`}>
+                        <CardActions>
+                            <Button onClick={() => { 
+                                handleExpandClick(item);
+                            }}
+                            disabled={disabled} >
                                 <img 
-                                    key={`key_object_ref_type_${key}`} 
                                     src={`/images/stix_object/${objectElem.link}`} 
                                     width="25" 
                                     height="25" />
-                                    &nbsp;{item}&nbsp;
+                                &nbsp;{item}
                             </Button>
-                        </Grid>
-                    </Grid>);
+                        </CardActions>
+                        <Collapse in={showRefElement.id === item && refId === item && expanded} timeout="auto" unmountOnExit>
+                            <CardContent>
+                                <CreateShortInformationSTIXObject 
+                                    obj={showRefElement.obj}
+                                    handlerClick={() => {}}
+                                />
+                            </CardContent>
+                        </Collapse>
+                    </Card>); 
                 });
         })()}
     </React.Fragment>);
@@ -125,10 +167,12 @@ export default function CreateNotePatternElements(props){
 
 CreateNotePatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
+    showRefElement: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerAuthors: PropTypes.func.isRequired,
     handlerContent: PropTypes.func.isRequired, 
     handlerAbstract: PropTypes.func.isRequired,
+    handlerButtonShowLink: PropTypes.func.isRequired,
 };
 
 /**

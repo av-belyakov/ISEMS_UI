@@ -135,7 +135,7 @@ function CreateMajorElements(props){
                 handlerMessageId={(e) => { dispatch({ type: "updateMessageId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerContentType={(e) => { dispatch({ type: "updateContentType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerIsMultipart={(e) => { dispatch({ type: "updateIsMultipart", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerButtonShowLink={() => { console.log("func 'CreateEmailMessagePatternElements' handler 'handlerButtonShowLink'"); }}
+                handlerButtonShowLink={() => {}}
                 handlerAddReceivedLines={(e) => { dispatch({ type: "updateReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDeleteReceivedLines={(e) => { dispatch({ type: "deleteReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />

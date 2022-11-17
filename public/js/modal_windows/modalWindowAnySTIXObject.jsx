@@ -88,7 +88,7 @@ export default function ModalWindowAnySTIXObject(props){
         open={showModalWindow} >
         <DialogTitle>
             <Grid container direction="row" spacing={3}>
-                <Grid item container md={11}>{img}&nbsp;<span className="pt-2">{titleName}</span></Grid>
+                <Grid item container md={11}>{img}&nbsp;{titleName}</Grid>
                 <Grid item container md={1} justifyContent="flex-end">
                     <IconButton edge="start" color="inherit" onClick={handlerDialogClose} aria-label="close">
                         <CloseIcon />
