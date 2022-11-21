@@ -151,14 +151,16 @@ function CreateMajorContent(props){
         return () => {
             dispatch({ type: "newAll", data: {} });
         };
-    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
-    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonSaveChangeTrigger ]);
 
     const checkRequiredValue = (content, objectRefs, parentId) => {
         if(typeof objectRefs === "undefined"){

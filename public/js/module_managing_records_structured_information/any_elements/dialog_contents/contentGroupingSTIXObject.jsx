@@ -103,8 +103,7 @@ function CreateMajorContent(props){
         }
     }
 
-    const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, { mainObj: beginDataObject, refObj: {}, refId: "" });
-    const isExistTransmittedData = (data) => {
+    let isExistTransmittedData = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return false;
         }
@@ -123,21 +122,25 @@ function CreateMajorContent(props){
 
         return true;
     };
-    const listener = (data) => {
-        if(!isExistTransmittedData(data)){
-            return;
-        }
 
-        for(let obj of data.information.additional_parameters.transmitted_data){
-            dispatch({ type: "newAll", data: obj });
-        }
-    };
+    const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, { mainObj: beginDataObject, refObj: {}, refId: "" });
     useEffect(() => {
+        let listener = (data) => {
+            if(!isExistTransmittedData(data)){
+                return;
+            }
+    
+            for(let obj of data.information.additional_parameters.transmitted_data){
+                dispatch({ type: "newAll", data: obj });
+            }
+        };
+
         socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
 
         return () => {
             dispatch({ type: "newAll", data: {} });
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         if(currentIdSTIXObject !== ""){
@@ -146,14 +149,16 @@ function CreateMajorContent(props){
                 parentObjectId: parentIdSTIXObject,
             }});
         }
-    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state.mainObj ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
-    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonSaveChangeTrigger ]);
 
     const checkRequiredValue = (content, objectRefs) => {
         if(content !== "" && objectRefs.length > 0){

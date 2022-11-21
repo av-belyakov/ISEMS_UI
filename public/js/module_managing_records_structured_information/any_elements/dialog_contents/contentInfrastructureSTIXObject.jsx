@@ -103,38 +103,35 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerInfrastructureSTIXObject, beginDataObject);
-
-    const listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-            return;
-        }
-
-        if(data.information.additional_parameters.transmitted_data.length === 0){
-            return;
-        }
-
-        for(let obj of data.information.additional_parameters.transmitted_data){
-
-            console.log("++++++++++++ func 'listener', reseived data: ", obj);
-
-            dispatch({ type: "newAll", data: obj });
-        }
-    };
     useEffect(() => {
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+        let listener = (data) => {
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
+            }
+    
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
+    
+            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                return;
+            }
+    
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                return;
+            }
+    
+            for(let obj of data.information.additional_parameters.transmitted_data){    
+                dispatch({ type: "newAll", data: obj });
+            }
+        };
+
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
 
         return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
             dispatch({ type: "newAll", data: {} });
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         if(currentIdSTIXObject !== ""){
@@ -145,7 +142,8 @@ function CreateMajorContent(props){
                 parentObjectId: parentIdSTIXObject,
             }});
         }
-    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
             state.first_seen = new Date(state.first_seen).toISOString();
@@ -155,51 +153,34 @@ function CreateMajorContent(props){
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
-    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonSaveChangeTrigger ]);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', state:");
-        console.log(state);
-        console.log("func 'handlerDialogElementAdditionalThechnicalInfo', obj:");
-        console.log(obj);
-
         if(obj.modalType === "external_references"){
             switch(obj.actionType){
             case "hashes_update":
-                console.log("external_references - hashes_update");
-
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             case "hashes_delete":
-                console.log("external_references - hashes_delete");
-                console.log(obj);
-
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
                 handlerButtonIsDisabled();
 
                 break;
             default:
-                console.log("external_references - default");
-                console.log("obj.modalType - ", obj.modalType);
-
                 dispatch({ type: "updateExternalReferences", data: obj.data });
                 handlerButtonIsDisabled();
             }
         }
     
         if(obj.modalType === "granular_markings") {
-            console.log("updateGranularMarkings......");
-            console.log(obj);
-
             dispatch({ type: "updateGranularMarkings", data: obj.data });
             handlerButtonIsDisabled();
         }
     
         if(obj.modalType === "extensions") {
-            console.log("obj.modalType === extensions, obj: ", obj);
-
             dispatch({ type: "updateExtensions", data: obj.data });
             handlerButtonIsDisabled();
         }

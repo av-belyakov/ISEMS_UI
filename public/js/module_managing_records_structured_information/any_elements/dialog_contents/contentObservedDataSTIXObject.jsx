@@ -96,33 +96,36 @@ function CreateMajorContent(props){
 
         handlerChangeButtonAdd(false);
     };
-    const listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-            return;
-        }
-
-        if(data.information.additional_parameters.transmitted_data.length === 0){
-            return;
-        }
-
-        for(let obj of data.information.additional_parameters.transmitted_data){
-            dispatch({ type: "newAll", data: obj });
-        }
-    };
+    
     useEffect(() => {
+        let listener = (data) => {
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
+            }
+    
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
+    
+            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                return;
+            }
+    
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                return;
+            }
+    
+            for(let obj of data.information.additional_parameters.transmitted_data){
+                dispatch({ type: "newAll", data: obj });
+            }
+        };
+
         socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
 
         return () => {
             dispatch({ type: "newAll", data: {} });
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         if(currentIdSTIXObject !== ""){
@@ -131,14 +134,16 @@ function CreateMajorContent(props){
                 parentObjectId: parentIdSTIXObject,
             }});
         }
-    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
-    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonSaveChangeTrigger ]);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){

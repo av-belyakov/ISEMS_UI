@@ -222,9 +222,13 @@ const loreducer = (state, action) => {
             state.list[searchIndex] = item;
         }
 
+        //console.log("func 'loreducer' action.type = ", action.type, " state.list = ", state.list);
+
         return {...state, list: state.list};
     case "updateListId":
         changeListIdResult = updateState(action.data.listObject, state.listId, 0);
+
+        //console.log("func 'loreducer' action.type = ", action.type, " changeListIdResult = ", changeListIdResult);
 
         return {...state, listId: changeListIdResult};
     case "changeListId":
@@ -272,16 +276,18 @@ export default function CreateListObjectRefsReport(props){
     const [ deleteIdDepthAndKey, setDeleteIdDepthAndKey ] = useState([]);
     const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
 
-    let listener = (data) => {
-        let listObj = data.information.additional_parameters.transmitted_data.filter((item) => {
-            return item.type !== "relationship" && item.type !== "sighting"; 
-        });
-    
-        setListObjReducer({ type: "updateListId", data: { listObject: listObj }});
-        setListObjReducer({ type: "updateList", data: { current: listObj /*data.information.additional_parameters.transmitted_data*/, parent: stateReport }});
-    };
+    //console.log("func 'CreateListObjectRefsReport', listActivatedObjectNumbers ======= ", listActivatedObjectNumbers);
 
     useEffect(() => {
+        let listener = (data) => {
+            let listObj = data.information.additional_parameters.transmitted_data.filter((item) => {
+                return item.type !== "relationship" && item.type !== "sighting"; 
+            });
+        
+            setListObjReducer({ type: "updateListId", data: { listObject: listObj }});
+            setListObjReducer({ type: "updateList", data: { current: listObj /*data.information.additional_parameters.transmitted_data*/, parent: stateReport }});
+        };
+
         let searchList = stateReport.object_refs.filter((item) => {
             let type = item.split("--");
 
@@ -292,7 +298,7 @@ export default function CreateListObjectRefsReport(props){
             searchList.push(stateReport.id);
         }
 
-        socketIo.once("isems-mrsi response ui: send search request, get STIX object for list id", listener);
+        socketIo.on("isems-mrsi response ui: send search request, get STIX object for list id", listener);
         socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
             arguments: { 
                 searchListObjectId: searchList,
@@ -300,65 +306,67 @@ export default function CreateListObjectRefsReport(props){
             }});
 
         return () => {
+            socketIo.off("isems-mrsi response ui: send search request, get STIX object for list id", listener);
             setListActivatedObjectNumbers([]);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
+        let deleteIdFromSTIXObject = () => {
+            let parrentObject = lodash.cloneDeep(listObjReducer.list[currentParentId]);
+    
+            if(!parrentObject){
+                return;
+            }
+    
+            let id = currentParentId.split("--")[0];
+            let listSaveRefs = [];
+    
+            for(let value of listExtendedObject){
+                if(value.name === id){
+                    listSaveRefs = value.listProperties;
+    
+                    break;
+                }
+            }
+    
+            for(let value of listSaveRefs){
+                if(Array.isArray(parrentObject[value])){
+                    let tmp = parrentObject[value].filter((item) => item !== currentDeleteId);
+    
+                    parrentObject[value] = tmp;
+                } else {
+                    if(parrentObject[value] === currentDeleteId){
+                        parrentObject[value] = "";
+                    }
+                }
+            }
+    
+            if(parrentObject.type === "report"){
+                handlerReportUpdateObjectRefs(parrentObject.object_refs);  
+            }
+            
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ parrentObject ] });
+        };
+
         if(!confirmDeleteLink){
             return;
-        }
+        }        
 
+        deleteIdFromSTIXObject();
         setListObjReducer({ type: "deleteIdFromListId", data: { 
             currentParentId: currentParentId, 
             currentDeleteId: currentDeleteId,
             deleteIdDepthAndKey: deleteIdDepthAndKey, 
         }});
-
-        deleteIdFromSTIXObject();
         setListActivatedObjectNumbers([]);
         handlerDialogConfirm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ confirmDeleteLink ]),
     useEffect(() => {
         setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
-    }, [ listNewOrModifySTIXObject.length ]);
+    }, [ majorParentId, listNewOrModifySTIXObject ]);
 
-    let deleteIdFromSTIXObject = () => {
-        let parrentObject = lodash.cloneDeep(listObjReducer.list[currentParentId]);
-
-        if(!parrentObject){
-            return;
-        }
-
-        let id = currentParentId.split("--")[0];
-        let listSaveRefs = [];
-
-        for(let value of listExtendedObject){
-            if(value.name === id){
-                listSaveRefs = value.listProperties;
-
-                break;
-            }
-        }
-
-        for(let value of listSaveRefs){
-            if(Array.isArray(parrentObject[value])){
-                let tmp = parrentObject[value].filter((item) => item !== currentDeleteId);
-
-                parrentObject[value] = tmp;
-            } else {
-                if(parrentObject[value] === currentDeleteId){
-                    parrentObject[value] = "";
-                }
-            }
-        }
-
-        if(parrentObject.type === "report"){
-            handlerReportUpdateObjectRefs(parrentObject.object_refs);  
-        }
-        
-        socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ parrentObject ] });
-    };
-    
     const findObjectId = (list, id) => {
             let listTmp = new Set([]);
 
@@ -382,14 +390,25 @@ export default function CreateListObjectRefsReport(props){
 
             return listTmp;
         },
-        handleClick = (num, currentId, depth) => {       
+        handleClick = (num, currentId, depth) => {  
+            
+            //console.log("func 'handleClick' __________ num: '", num, "' currentId: '", currentId, "' depth: '", depth, "'");
+
             let tmp = listActivatedObjectNumbers.slice();
             if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] === num){        
+
+                //console.log("func 'handleClick' __________ 111");
+
                 tmp.splice(depth, 10);
-            } else if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] !== num && depth === 0) {
-                tmp = [];
-                tmp.push(num);
+            } else if (listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] !== num) {
+
+                //console.log("func 'handleClick' __________ 222");
+
+                tmp[depth] = num;
             } else {        
+
+                //console.log("func 'handleClick' __________ 333");
+
                 tmp.push(num);
             }
 

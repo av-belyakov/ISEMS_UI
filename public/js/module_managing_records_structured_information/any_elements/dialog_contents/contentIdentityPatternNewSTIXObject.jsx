@@ -88,6 +88,7 @@ function CreateMajorElements(props){
         if(buttonChangeClick){
             handlerChangeNewSTIXObject(state);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonChangeClick ]);
 
 

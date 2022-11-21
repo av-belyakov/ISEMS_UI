@@ -89,28 +89,29 @@ function CreateMajorContent(props){
     }
 
     const [ state, dispatch ] = useReducer(reducerAutonomousSystemSTIXObject, beginDataObject);
-    const listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-            return;
-        }
-
-        if(data.information.additional_parameters.transmitted_data.length === 0){
-            return;
-        }
-
-        for(let obj of data.information.additional_parameters.transmitted_data){            
-            dispatch({ type: "newAll", data: obj });
-        }
-    };
     useEffect(() => {
+        let listener = (data) => {
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
+            }
+    
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
+    
+            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                return;
+            }
+    
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                return;
+            }
+    
+            for(let obj of data.information.additional_parameters.transmitted_data){            
+                dispatch({ type: "newAll", data: obj });
+            }
+        };
+
         if(currentIdSTIXObject !== ""){
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
@@ -118,13 +119,13 @@ function CreateMajorContent(props){
             }});
         }
 
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
 
         return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
             dispatch({ type: "newAll", data: {} });
         };
-    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         let data = state;
         data.number = +state.number;
@@ -134,6 +135,7 @@ function CreateMajorContent(props){
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
     const handlerCheckStateButtonIsDisabled = (number) => {

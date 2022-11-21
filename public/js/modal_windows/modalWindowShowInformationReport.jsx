@@ -401,37 +401,32 @@ function CreateReportInformation(props){
     } = props;
 
     const [state, dispatch] = useReducer(reducer, {});
-    const listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-            return;
-        }
-
-        if(data.information.additional_parameters.transmitted_data.length === 0){
-            return;
-        }
-
-        for(let obj of data.information.additional_parameters.transmitted_data){
-            if(obj.type === "report"){
-                dispatch({ type: "newAll", data: obj });
-
-                break;
-            }
-        }
-    };
     useEffect(() => {
-        socketIo.on("isems-mrsi response ui: send search request, get report for id", listener);
+        socketIo.once("isems-mrsi response ui: send search request, get report for id", (data) => {
+            if((data.information === null) || (typeof data.information === "undefined")){
+                return;
+            }
     
-        return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get report for id", listener);
-        };
+            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                return;
+            }
+    
+            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                return;
+            }
+    
+            if(data.information.additional_parameters.transmitted_data.length === 0){
+                return;
+            }
+    
+            for(let obj of data.information.additional_parameters.transmitted_data){
+                if(obj.type === "report"){
+                    dispatch({ type: "newAll", data: obj });
+    
+                    break;
+                }
+            }
+        });
     }, []);
     useEffect(() => {
         if(showReportId !== ""){
