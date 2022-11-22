@@ -5,6 +5,7 @@ import {
     DialogContent,
     Grid,
 } from "@material-ui/core";
+import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import reducerGroupingSTIXObject from "../reducer_handlers/reducerGroupingSTIXObject.js";
@@ -63,10 +64,14 @@ export default function CreateDialogContentGroupingSTIXObject(props){
             </Grid>            
         </DialogContent>
         <DialogActions>
-            <Button onClick={handlerDialogClose} color="primary">закрыть</Button>            
+            <Button 
+                onClick={handlerDialogClose} 
+                style={{ color: blue[500] }} 
+                color="primary">закрыть</Button>            
             {isNotDisabled && <Button
                 disabled={buttonIsDisabled} 
                 onClick={() => setButtonSaveChangeTrigger(true)}
+                style={{ color: blue[500] }}
                 color="primary">
                     сохранить
             </Button>}
@@ -246,6 +251,10 @@ function CreateMajorContent(props){
             for(let obj of data.information.additional_parameters.transmitted_data){
                 console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER ADD OBJECT:", obj);
     
+                if(!obj.id.includes("directory")){
+                    continue;
+                }
+
                 dispatch({ type: "updateRefObj", data: obj });
             }
         });
@@ -275,7 +284,7 @@ function CreateMajorContent(props){
                 showRefObj={state.refObj}
                 campaignPatterElement={state.mainObj}
                 handlerName={() => {}}
-                handlerClick={(parentId, refId) => {
+                handlerClick={(refId, parentId) => {
                     console.log("======= PARENTID: ", parentId, " REFID: ", refId, " ======= state.refId: ", state.refId, " ======== state.refObj:", state.refObj);
 
                     /***
@@ -292,7 +301,10 @@ function CreateMajorContent(props){
                         for(let obj of data.information.additional_parameters.transmitted_data){
                             console.log("============= func 'CreateDialogContentGroupingSTIXObject', REF info:", obj);
 
-                            updateRefObj(parentId, obj);
+                            //updateRefObj(parentId, obj);
+                            dispatch({ type: "addRefObj", data: obj });
+                            //надо добавить dispatch({ type: "updateRefId", data: refId });
+                            
                         }
                     });
 

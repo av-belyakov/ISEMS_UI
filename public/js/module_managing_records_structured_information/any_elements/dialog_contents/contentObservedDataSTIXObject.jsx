@@ -5,6 +5,7 @@ import {
     DialogContent,
     Grid,
 } from "@material-ui/core";
+import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import reducerObservedDataSTIXObjects from "../reducer_handlers/reducerObservedDataSTIXObject.js";
@@ -56,10 +57,14 @@ export default function CreateDialogContentObservedDataSTIXObject(props){
             </Grid>            
         </DialogContent>
         <DialogActions>
-            <Button onClick={handlerDialogClose} color="primary">закрыть</Button>            
+            <Button 
+                onClick={handlerDialogClose} 
+                style={{ color: blue[500] }} 
+                color="primary">закрыть</Button>            
             {isNotDisabled && <Button
                 disabled={buttonIsDisabled} 
                 onClick={() => setButtonSaveChangeTrigger(true)}
+                style={{ color: blue[500] }} 
                 color="primary">
                 сохранить
             </Button>}

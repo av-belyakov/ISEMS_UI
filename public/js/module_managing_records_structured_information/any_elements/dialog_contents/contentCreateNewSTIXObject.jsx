@@ -505,7 +505,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                     //setTypeObjectSTIX(""); 
                     setButtonAddIsDisabled(true);
                 }}
-                style={{ color: blue[400] }}>
+                style={{ color: blue[500] }}>
                     добавить объект
             </Button>:
                 <Button 
@@ -516,13 +516,13 @@ export default function CreateDialogContentNewSTIXObject(props){
                         //setButtonAddClick(true);
                         //setButtonAddIsDisabled(true);
                     }}
-                    style={{ color: blue[400] }}>
+                    style={{ color: blue[500] }}>
                     сохранить изменения
                 </Button>}
             <Button 
                 disabled={buttonSaveIsDisabled}
                 onClick={() => { handlerDialog(parentSTIXObject, listRefsForObjectSTIX, listNewOrModifySTIXObject); }}
-                style={{ color: green[400] }}>
+                style={{ color: green[500] }}>
                     добавить ссылки
             </Button>
         </DialogActions>
