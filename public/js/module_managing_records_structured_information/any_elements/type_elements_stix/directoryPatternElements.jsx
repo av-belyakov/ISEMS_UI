@@ -1,25 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Button,
+    Card,
+    CardActions,
+    CardContent,
+    Collapse,
     Grid,
     Link,
     TextField,
+    Typography,
 } from "@material-ui/core";
-import { blue } from "@material-ui/core/colors";
+import { red, blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
+import { CreateShortInformationSTIXObject, showDirectoryList } from "../createShortInformationSTIXObject.jsx";
 
 export default function CreateDirectoryPatternElements(props){
     let { 
         isDisabled,
+        showRefElement,
         campaignPatterElement, 
         handlerPath,
+        handlerButtonShowLink,
     } = props;
 
     console.log("func 'CreateDirectoryPatternElements', campaignPatterElement:", campaignPatterElement);
 
-    let [ isInvalidPath, setIsInvalidPath ] = React.useState(((typeof campaignPatterElement.path === "undefined") || (campaignPatterElement.path === "")));
+    let [ isInvalidPath, setIsInvalidPath ] = useState(((typeof campaignPatterElement.path === "undefined") || (campaignPatterElement.path === "")));
+    let [ expanded, setExpanded ] = React.useState(false);
+    let [ refId, setRefId ] = React.useState("");
+
+    let handleExpandClick = (id) => {
+        if(id !== refId){
+            setExpanded(true); 
+            setRefId(id);
+        } else {
+            if(expanded){
+                setExpanded(false);
+            } else {
+                setExpanded(true); 
+            }    
+        }
+
+        handlerButtonShowLink(id);
+    };
+
+    if(campaignPatterElement.contains_refs && campaignPatterElement.contains_refs.length > 0){
+        campaignPatterElement.contains_refs.sort();
+    }
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -91,6 +120,8 @@ export default function CreateDirectoryPatternElements(props){
                 </Grid>
                 <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start">
+                        {/*showDirectoryList(refs, parentId, 0, () => {})*/}
+--------------------------------------------------------------------------------------------
                         {campaignPatterElement.contains_refs.map((item, key) => {
                             let type = item.split("--");
                             let objectElem = helpers.getLinkImageSTIXObject(type[0]);
@@ -116,11 +147,54 @@ export default function CreateDirectoryPatternElements(props){
                 </Grid>
             </React.Fragment>:
             ""}
+
+        {/*
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            Надо сделать вывод списка дирекорий и файлов с последующим просмотром
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
+
+        (campaignPatterElement.contains_refs && campaignPatterElement.contains_refs.length === 0)? 
+            "":
+            campaignPatterElement.contains_refs.map((item, key) => {
+                let type = item.split("--");
+                let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+        
+                if(typeof objectElem === "undefined" ){
+                    return "";
+                }
+
+                return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_to_ref_${key}`}>
+                    <CardActions>
+                        <Button onClick={() => { 
+                            handleExpandClick(item);
+                        }}>
+                            <img 
+                                src={`/images/stix_object/${objectElem.link}`} 
+                                width="25" 
+                                height="25" />
+                                        &nbsp;{item}
+                        </Button>
+                    </CardActions>
+                    <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                        <CardContent>
+                            {(showRefElement.id !== "" && showRefElement.id === item)? 
+                                <CreateShortInformationSTIXObject 
+                                    obj={showRefElement.obj}
+                                    handlerClick={() => {}}
+                                />: 
+                                <i>информация не найдена</i>}
+                        </CardContent>
+                    </Collapse>
+                </Card>);
+            })
+        */}
     </React.Fragment>);
 }
 
 CreateDirectoryPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
+    showRefElement: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerPath: PropTypes.func.isRequired,
+    handlerButtonShowLink: PropTypes.func.isRequired,
 };

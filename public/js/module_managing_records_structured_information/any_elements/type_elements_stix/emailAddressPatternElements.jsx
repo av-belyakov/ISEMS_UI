@@ -12,7 +12,8 @@ import validator from "validatorjs";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+//import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 export default function CreateEmailAddressPatternElements(props){
     let { 

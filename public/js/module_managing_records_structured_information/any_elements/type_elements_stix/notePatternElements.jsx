@@ -14,7 +14,8 @@ import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+//import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 export default function CreateNotePatternElements(props){
     let { 

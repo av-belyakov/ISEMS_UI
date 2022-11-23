@@ -171,8 +171,9 @@ function CreateMajorContent(props){
         }
     };
 
-    return (<Grid item container md={12}>
-        <Grid container direction="row" className="pt-3">
+    return (<React.Fragment>
+        <Grid item container md={1}></Grid>
+        <Grid item container md={10}>
             <CreateAutonomousSystemPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
@@ -180,17 +181,18 @@ function CreateMajorContent(props){
                 handlerName={(e) => {}}
                 handlerNumber={(e) => { dispatch({ type: "updateNumber", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
             />
-        </Grid> 
 
-        <CreateElementAdditionalTechnicalInformationCO 
-            objectId={currentIdSTIXObject}
-            reportInfo={state}
-            isNotDisabled={isNotDisabled}
-            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
-            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
-            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
-        />
-    </Grid>);
+            <CreateElementAdditionalTechnicalInformationCO 
+                objectId={currentIdSTIXObject}
+                reportInfo={state}
+                isNotDisabled={isNotDisabled}
+                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
+            />
+        </Grid>
+        <Grid item container md={1}></Grid>
+    </React.Fragment>);
 }
 
 CreateMajorContent.propTypes = {

@@ -14,7 +14,8 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateListContextGrouping } from "../anyElements.jsx";
-import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+//import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 export default function CreateGroupingPatternElements(props){
     let { 

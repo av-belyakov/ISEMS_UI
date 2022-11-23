@@ -8,8 +8,6 @@ const listFieldEmailMessageRef = [
 
 export default function reducerGroupingSTIXObject(state, action){
     let searchElemRef = (state, data) => {
-        console.log("()())()()() searchElemRef, state:", state, " data:", data);
-
         if(typeof state.refs !== "undefined" && _.isArray(state.refs)){
             for(let i = 0; i < state.refs.length; i++){
                 if(state.refs[i].id === data.id){
@@ -31,8 +29,6 @@ export default function reducerGroupingSTIXObject(state, action){
     case "cleanAll":
         return {...state, mainObj: {}};
     case "addRefObj":
-        console.log("func 'reducerGroupingSTIXObject', action.type = ", action.type, " action.data = ", action.data, " state.refObj = ", state.refObj);
-
         if(action.data.type === "directory"){
             action.data.refs = action.data.contains_refs.map((item) => {
                 return { id: item, value: item };
@@ -41,32 +37,18 @@ export default function reducerGroupingSTIXObject(state, action){
 
         state.refObj = searchElemRef(state.refObj, action.data);
 
-        console.log("YYYYYYYYYYY ", state);
-
         return {...state};
     case "updateRefId":
         state.refId = action.data;
 
-
-
         return {...state};
     case "updateRefObj":
-        console.log("func 'reducerGroupingSTIXObject', action.type = ", action.type, " action.data = ", action.data);
-
-        /*
-        state.refObj.id = action.data.id;
-        state.refObj.type = action.data.type;
-        state.refObj.path = action.data.path;
-        */
-
         state.refObj = action.data;
         if(action.data.type === "directory" && typeof action.data.contains_refs !== "undefined"){
             state.refObj.refs = action.data.contains_refs.map((item) => {
                 return { id: item, value: item };
             });
         }
-
-        //state.refObj = action.data;
 
         return {...state};
     case "updateRefObjEmailMessageRef":

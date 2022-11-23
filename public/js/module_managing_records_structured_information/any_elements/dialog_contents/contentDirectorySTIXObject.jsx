@@ -93,6 +93,8 @@ function CreateMajorContent(props){
         }
     }
 
+    //const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, {id: "", obj: {}});
+
     const [ state, dispatch ] = useReducer(reducerDirectorySTIXObject, beginDataObject);
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
@@ -166,24 +168,46 @@ function CreateMajorContent(props){
         }
     };
 
-    return (<Grid item container md={12}>
-        <Grid container direction="row" className="pt-3">
+    return (<React.Fragment>
+        <Grid item container md={1}></Grid>
+        <Grid item container md={10}>
             <CreateDirectoryPatternElements
                 isDisabled={false}
+                showRefElement={{}/*stateShowRef*/}
                 campaignPatterElement={state}
                 handlerPath={(e) => { dispatch({ type: "updatePath", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-            />
-        </Grid> 
+                handlerButtonShowLink={(refId) => {
+                    /*dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+            
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
 
-        <CreateElementAdditionalTechnicalInformationCO 
-            objectId={currentIdSTIXObject}
-            reportInfo={state}
-            isNotDisabled={isNotDisabled}
-            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
-            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
-            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
-        />
-    </Grid>);
+                        for(let obj of data.information.additional_parameters.transmitted_data){ 
+                            dispatchShowRef({ type: "addObject", data: obj });        
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});*/
+                }}
+            />
+
+            <CreateElementAdditionalTechnicalInformationCO 
+                objectId={currentIdSTIXObject}
+                reportInfo={state}
+                isNotDisabled={isNotDisabled}
+                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
+            />
+        </Grid>
+        <Grid item container md={1}></Grid>
+    </React.Fragment>);
 }
 
 CreateMajorContent.propTypes = {

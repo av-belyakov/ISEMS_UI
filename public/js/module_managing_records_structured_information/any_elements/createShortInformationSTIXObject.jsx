@@ -1,17 +1,37 @@
 import React from "react";
 import {
+    Box,
     Button,
     Grid,
+    Paper,
     Select,
     TextField,
+    Typography,
 } from "@material-ui/core";
 import { Form } from "react-bootstrap";
 import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
+//import { helpers as h } from "../../common_helpers/"
 import { CreateListInfrastructureTypes } from "./anyElements.jsx";
-import _, { includes } from "lodash";
+import _ from "lodash";
+
+//module.exports.CreateShortInformationSTIXObject = CreateShortInformationSTIXObject;
+//module.exports.showDirectoryList = showDirectoryList;
+
+let sortId = (a, b) => {
+    const idA = a.id.toUpperCase();
+    const idB = b.id.toUpperCase(); 
+    if(idA < idB){
+        return -1;
+    }
+    if(idA > idB){
+        return 1;
+    }
+
+    return 0;
+};
 
 let getLinkImage = (elem) => {
     let tmp = [""];
@@ -69,7 +89,8 @@ let patternAliases = (aliases) => {
     </Grid>;
 };
 
-export default function CreateShortInformationSTIXObject(props){
+//export default function CreateShortInformationSTIXObject(props){
+export function CreateShortInformationSTIXObject(props){
     let { obj, handlerClick } = props;
 
     let objectList = {
@@ -304,103 +325,58 @@ let domainNameFunc = (obj, handlerClick) => {
 };
 
 let directoryFunc = (obj, handlerClick) => {
-
-    console.log("func '______ directoryFunc _____', obj = ", obj);
-
-    //let containsRefsIsExist = (typeof obj.contains_refs === "undefined" || obj.contains_refs === null || obj.contains_refs.length === 0);
     let containsRefsIsExist = (typeof obj.refs === "undefined" || obj.refs === null || obj.refs.length === 0);
 
     if(!containsRefsIsExist){
-        //obj.contains_refs.sort();
-
-        obj.refs.sort((a, b) => {
-            const idA = a.id.toUpperCase(); // ignore upper and lowercase
-            const idB = b.id.toUpperCase(); // ignore upper and lowercase
-            if (idA < idB) {
-                return -1;
-            }
-            if (idA > idB) {
-                return 1;
-            }
-
-            return 0;
-        });
+        obj.refs.sort(sortId);
     }
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
-            <Grid item container md={7}>
-                <TextField
-                    fullWidth
-                    disabled
-                    InputLabelProps={{ shrink: true }}
-                    onChange={() => {}}
-                    value={(obj.path)? obj.path: ""}
-                />
+            <Grid item container md={4} justifyContent="flex-start">
+                <span className="text-muted">mtime:</span>&nbsp;{(obj.mtime)? obj.mtime: ""}
+            </Grid>
+            <Grid item container md={4} justifyContent="flex-start">
+                <span className="text-muted">atime:</span>&nbsp;{(obj.atime)? obj.atime: ""}
+            </Grid>
+            <Grid item container md={4} justifyContent="flex-start">
+                <span className="text-muted">ctime:</span>&nbsp;{(obj.ctime)? obj.ctime: ""}
             </Grid>
         </Grid>
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={12} justifyContent="flex-start"><span className="text-muted mt-2">Список ссылок на объекты файлов или директорий:</span></Grid>
+        <Grid container direction="row" className="mt-2">
             <Grid item container md={12} justifyContent="flex-start">
-                {showDirectoryList(obj.refs, obj.id, 0, handlerClick)}
-                {/*containsRefsIsExist?
-                    "":
-                    <ol>
-                        {obj.refs.map((item, key) => {
-                            return (<ul key={`key_directory_${key}`}>
-                                {(typeof getLinkImage(item.id) !== "undefined")?
-                                    <Button onClick={() => {                                        
-                                        handlerClick(obj.id, item);
-                                    }}>
-                                        <img src={`/images/stix_object/${getLinkImage(item.id).link}`} width="25" height="25" />
-                                        &nbsp;{item.id}
-                                    </Button>:
-                                    fileFunc(item, () => {
-                                        console.log("CLICK CLICK CLICK CLICK CLICK");
-                                    })}
-                            </ul>);
-                        })}
-                    </ol>
-                    */}
+                <span className="text-muted">
+                    <Typography variant="h6" gutterBottom>{(obj.path)? obj.path: ""}</Typography>
+                </span>
             </Grid>
         </Grid>
+        {showDirectoryList(obj.refs, obj.id, 0, handlerClick)}
     </React.Fragment>);
 };
 
-let showDirectoryList = (element, parentId, num, handlerClick) => {
-
-    console.log("********************************* showDirectoryList -------- parentId:", parentId);
-
+function showDirectoryList(element, parentId, num, handlerClick){
     if(!_.isArray(element)){
         return "";
     }
 
-    return (<ol key={`key_ol_directory_${num}`}>
+    element.sort(sortId);
+
+    return (<ol key={`key_ol_directory_${num}`} style={{ marginBottom: "-2px" }}>
         {element.map((item, key) => {
             if(typeof item.value.refs !== "undefined" && _.isArray(item.value.refs)){
-
-                console.log("QQQQQQQ num = ", num);
-
                 return (<React.Fragment key={`_key_ul_directory_${key}_${num}`}>
                     <ul key={`key_ul_directory_${key}_${num}`}>
-                        <Grid container direction="row" spacing={3}>
-                            <Grid item container md={12} justifyContent="flex-start">
-                                <span className="text-muted mt-2">Директория: {item.value.path}</span>
-                            </Grid>
-                        </Grid>
-                        <Grid container direction="row" spacing={3}>
-                            <Grid item container md={12} justifyContent="flex-start">
-                                {showDirectoryList(item.value.refs, item.value.id, ++num, handlerClick)}
-                            </Grid>
-                        </Grid>
+                        <Typography variant="h6" gutterBottom>
+                            &nbsp;<span className="text-muted">{item.value.path}</span>
+                        </Typography>
+                        {showDirectoryList(item.value.refs, item.value.id, ++num, handlerClick)}
                     </ul>
                 </React.Fragment>);
             } else if(_.isString(item.value)){
                 return (<ul key={`key_ul_directory_${key}_${num}`}>
                     {(typeof getLinkImage(item.id) !== "undefined")?
                         <Button onClick={() => {                                        
-                            handlerClick(item.id, parentId);
+                            handlerClick(parentId, item.id);
                         }}>
                             <img src={`/images/stix_object/${getLinkImage(item.id).link}`} width="25" height="25" />
                             &nbsp;{item.value}
@@ -408,158 +384,38 @@ let showDirectoryList = (element, parentId, num, handlerClick) => {
                         item.value}
                 </ul>);
             } else {
-                return JSON.stringify(item.value);
+                let e = helpers.changeByteSize(item.value.size);
+
+                return (<Paper key={`key_paper_directory_${key}_${num}`} elevation={3} style={{ width: "100%" }}>
+                    <Box m={2}>
+                        <Grid container direction="row" spacing={3}>
+                            <Grid item container md={5} justifyContent="flex-start">
+                                <span className="text-muted">наименование:</span>&nbsp;{item.value.name}
+                            </Grid>
+                            <Grid item container md={4} justifyContent="flex-start">
+                                <span className="text-muted">размер:</span>&nbsp;{e.size}&nbsp;{e.name}
+                            </Grid>
+                            <Grid item container md={3} justifyContent="flex-start">
+                                <span className="text-muted">MIME тип:</span>&nbsp;{item.value.mime_type}
+                            </Grid>
+                        </Grid>
+                        <Grid container direction="row" spacing={3}>
+                            <Grid item container md={4} justifyContent="flex-start">
+                                <span className="text-muted">mtime:</span>&nbsp;{(item.value.mtime)? item.value.mtime: ""}
+                            </Grid>
+                            <Grid item container md={4} justifyContent="flex-start">
+                                <span className="text-muted">atime:</span>&nbsp;{(item.value.atime)? item.value.atime: ""}
+                            </Grid>
+                            <Grid item container md={4} justifyContent="flex-start">
+                                <span className="text-muted">ctime:</span>&nbsp;{(item.value.ctime)? item.value.ctime: ""}
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Paper>);
             }
         })}
     </ol>);
-};
-
-let directoryTmpFunc = (obj, handlerClick) => {
-    //let [ expanded, setExpanded ] = React.useState(false);
-    //let [ refId, setRefId ] = React.useState("");            
-
-
-    let containsRefsIsExist = (typeof obj.contains_refs === "undefined" || obj.contains_refs === null || obj.contains_refs.length === 0);
-
-    if(!containsRefsIsExist){
-        obj.contains_refs.sort();
-    }
-
-    return (<React.Fragment>
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
-            <Grid item container md={7}>
-                <TextField
-                    fullWidth
-                    disabled
-                    InputLabelProps={{ shrink: true }}
-                    onChange={() => {}}
-                    value={(obj.path)? obj.path: ""}
-                />
-            </Grid>
-        </Grid>
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={12} justifyContent="flex-start"><span className="text-muted mt-2">Список ссылок на объекты файлов или директорий:</span></Grid>
-            <Grid item container md={12} justifyContent="flex-start">
-                {(containsRefsIsExist)?
-                    "":
-                    <ol>
-                        {obj.contains_refs.map((item, key) => {
-                            //                    if(typeof item !== "undefined" && item.includes("directory")){
-                            //                    }
-                            /**
-                             * 
-                             * Надо что то придумать для вывода дтректорий и файлов
-                             * 
-                             */
-
-
-                            return (<ul key={`key_directory_${key}`}>
-                                {(typeof getLinkImage(item) !== "undefined")?
-                                    <Button onClick={() => {                                        
-                                        handlerClick(obj.id, item);
-                                    }}>
-                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
-                                        &nbsp;{item}
-                                    </Button>:
-                                    fileFunc(item, () => {
-                                        console.log("CLICK CLICK CLICK CLICK CLICK");
-                                    })}
-                            </ul>);
-                        })}
-                    </ol>
-                
-                    /*
-                                {/*<TextField
-                                        fullWidth
-                                        disabled
-                                        InputLabelProps={{ shrink: true }}
-                                        onChange={() => {}}
-                                        value={item}
-                                />}
-
-                (typeof objectElemSrc !== "undefined")?
-                    <Button onClick={() => {                                        
-                        handlerClick(obj.id, obj.src_ref);
-                    }}>
-                        <img src={`/images/stix_object/${objectElemSrc.link}`} width="25" height="25" />
-                        &nbsp;{obj.src_ref}
-                    </Button>:
-                    <TextField
-                        fullWidth
-                        disabled
-                        InputLabelProps={{ shrink: true }}
-                        onChange={() => {}}
-                        value={obj.src_ref}
-                />*/
-                    /*campaignPatterElement.contains_refs.map((item, key) => {
-                        let type = item.split("--");
-                        let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-
-                        if(typeof objectElem === "undefined" ){
-                            return "";
-                        }
-
-                        /*if(type[0] === "file"){
-return (<React.Fragment>
-    <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
-            <Grid item container md={7}>
-                <TextField
-                    fullWidth
-                    disabled
-                    InputLabelProps={{ shrink: true }}
-                    onChange={() => {}}
-                    value={(obj.path)? obj.path: ""}
-                />
-            </Grid>
-        </Grid>
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
-            <Grid item container md={7}>
-                <TextField
-                    fullWidth
-                    disabled
-                    InputLabelProps={{ shrink: true }}
-                    onChange={() => {}}
-                    value={(obj.path)? obj.path: ""}
-                />
-            </Grid>
-        </Grid>
-</React.Fragment>)
-                    }*/
-
-                    /*if(type[0] === "file"){
-
-                        }
-
-                        return (<Card variant="outlined" style={{ width: "100%" }} key={`key_contains_ref_${key}`}>
-                            <CardActions>
-                                <Button onClick={() => {                                        
-                                    handleExpandClick(item);
-                                }}>
-                                    <img 
-                                        src={`/images/stix_object/${objectElem.link}`} 
-                                        width="25" 
-                                        height="25" />
-                                &nbsp;{item}
-                                </Button>
-                            </CardActions>
-                            <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
-                                <CardContent>
-                                    {(showRefId !== "" && showRefId === item)?  
-                                        <CreateShortInformationSTIXObject  
-                                            obj={showRefObj}
-                                            handlerClick={handlerClick} />: 
-                                        ""}
-                                </CardContent>
-                            </Collapse>
-                        </Card>);
-                    })*/}
-            </Grid>
-        </Grid>
-    </React.Fragment>);
-};
+}
 
 let emailAddrFunc = (obj) => {
     return (<React.Fragment>
@@ -1730,3 +1586,5 @@ let x509CertificateFunc = (obj) => {
         </Grid>
     </React.Fragment>);
 };
+
+export { showDirectoryList };

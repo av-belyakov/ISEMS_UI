@@ -34,7 +34,8 @@ import PropTypes from "prop-types";
 import { helpers } from "../../common_helpers/helpers.js";
 import dictionaryLists from "../../common_helpers/dictionaryLists.js";
 import listExtendedObject from "../../common_helpers/listExtendedObject";
-import CreateShortInformationSTIXObject from "./createShortInformationSTIXObject.jsx";
+//import CreateShortInformationSTIXObject from "./createShortInformationSTIXObject.jsx";
+import { CreateShortInformationSTIXObject } from "./createShortInformationSTIXObject.jsx";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {

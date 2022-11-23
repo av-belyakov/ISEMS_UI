@@ -18,6 +18,7 @@ const listFieldSTIXObjectRefs = {
     "network-traffic": "updateRefObjNetworkTrafficRef",
     "file": "updateRefObjFileRef",
     "domain-name": "updateResolvesToRefs",
+    "directory": "addRefObj",
 };
 
 export default function CreateDialogContentGroupingSTIXObject(props){
@@ -180,6 +181,8 @@ function CreateMajorContent(props){
             console.log("func 'updateRefObj', parentId = ", parentId, " value = ", value);
 
             if(parentId.includes(value)){
+                console.log("func 'updateRefObj', VALUE = ", value, " ************* listFieldSTIXObjectRefs[value]:", listFieldSTIXObjectRefs[value]);
+
                 dispatch({ type: listFieldSTIXObjectRefs[value], data: data });
             }
         }
@@ -251,9 +254,9 @@ function CreateMajorContent(props){
             for(let obj of data.information.additional_parameters.transmitted_data){
                 console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER ADD OBJECT:", obj);
     
-                if(!obj.id.includes("directory")){
+                /*if(!obj.id.includes("directory")){
                     continue;
-                }
+                }*/
 
                 dispatch({ type: "updateRefObj", data: obj });
             }
@@ -284,14 +287,8 @@ function CreateMajorContent(props){
                 showRefObj={state.refObj}
                 campaignPatterElement={state.mainObj}
                 handlerName={() => {}}
-                handlerClick={(refId, parentId) => {
-                    console.log("======= PARENTID: ", parentId, " REFID: ", refId, " ======= state.refId: ", state.refId, " ======== state.refObj:", state.refObj);
-
-                    /***
-                     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                     * !!!! Нужно сделать обработку ссылок типа email-addr для объекта типа email-message !!!!
-                     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                     */
+                handlerClick={(parentId, refId) => {
+                    //console.log("======= PARENTID: ", parentId, " REFID: ", refId, " ======= state.refId: ", state.refId, " ======== state.refObj:", state.refObj);
 
                     socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
                         if(!isExistTransmittedData){
@@ -299,12 +296,7 @@ function CreateMajorContent(props){
                         }
 
                         for(let obj of data.information.additional_parameters.transmitted_data){
-                            console.log("============= func 'CreateDialogContentGroupingSTIXObject', REF info:", obj);
-
-                            //updateRefObj(parentId, obj);
-                            dispatch({ type: "addRefObj", data: obj });
-                            //надо добавить dispatch({ type: "updateRefId", data: refId });
-                            
+                            updateRefObj(parentId, obj);                           
                         }
                     });
 

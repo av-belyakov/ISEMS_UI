@@ -19,7 +19,8 @@ import {
     CreateReceivedLinesList, 
     CreateBodyMultipartList,
 } from "../anyElements.jsx";
-import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+//import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
+import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 const minDefaultData = "0001-01-01T00:00:00Z";
 
