@@ -230,6 +230,7 @@ export default function CreateListPreviousStateSTIX(props){
             dispatchOptionsPreviousState({ type: "cleanAll" });
             setListPreviousState([]);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     let framePreviousState = React.useMemo(() => <CreateFrame
@@ -240,6 +241,7 @@ export default function CreateListPreviousStateSTIX(props){
         hasMore={hasMore}
         socketIo={socketIo}
         handlerHasMore={handlerHasMore}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     />, [ showListPreviousState, hasMore, listPreviousState ]);
     
     return (<React.Fragment>

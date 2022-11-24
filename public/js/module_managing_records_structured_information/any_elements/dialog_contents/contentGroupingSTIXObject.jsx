@@ -31,6 +31,8 @@ export default function CreateDialogContentGroupingSTIXObject(props){
         handlerDialogClose,
     } = props;
 
+    console.log("func 'CreateDialogContentGroupingSTIXObject' START... parentIdSTIXObject:", parentIdSTIXObject, " listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " currentAdditionalIdSTIXObject:", currentAdditionalIdSTIXObject);
+
     let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
     let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
 
@@ -108,6 +110,8 @@ function CreateMajorContent(props){
             beginDataObject = listNewOrModifySTIXObject[i];
         }
     }
+
+    console.log("func 'CreateDialogContentGroupingSTIXObject', CreateMajorContent --- START...");
 
     let isExistTransmittedData = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
@@ -279,7 +283,7 @@ function CreateMajorContent(props){
         }});
     };
 
-    return (<Grid item container md={8}>
+    return (<Grid item container md={8} style={{ display: "block" }}>
         <Grid container direction="row" className="pt-3">
             <CreateGroupingPatternElements 
                 isDisabled={false}

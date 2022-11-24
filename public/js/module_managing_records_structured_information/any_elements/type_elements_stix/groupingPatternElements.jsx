@@ -14,7 +14,6 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateListContextGrouping } from "../anyElements.jsx";
-//import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 export default function CreateGroupingPatternElements(props){
@@ -34,23 +33,6 @@ export default function CreateGroupingPatternElements(props){
     let [ refId, setRefId ] = React.useState("");
 
     console.log("!!!!!!!!!!!!!!!!!! func 'CreateGroupingPatternElements', campaignPatterElement = ", campaignPatterElement);
-
-    /*let listener = (data) => {
-
-        console.log("func 88888 'CreateGroupingPatternElements' 88888, LISTENER refId:", refId, " data:", data);
-
-        //handlerButtonShowLink(refId, data);
-    };
-
-    React.useEffect(() => {
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
-
-        return () => {
-            socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
-        };
-    }, []);*/
-
-    console.log("func 'CreateGroupingPatternElements', campaignPatterElement:", campaignPatterElement, " showRefObj:", showRefObj, " showRefId:", showRefId);
 
     let handleExpandClick = (id) => {
 

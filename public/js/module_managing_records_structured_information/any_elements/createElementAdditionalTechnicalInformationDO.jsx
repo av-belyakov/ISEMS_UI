@@ -25,6 +25,7 @@ import TokenInput from "react-customize-token-input";
 import { grey, green, red } from "@material-ui/core/colors";
 import { v4 as uuidv4 } from "uuid";
 import validatorjs from "validatorjs";
+import _ from "lodash";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -76,11 +77,11 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         handlerDialogElementAdditionalThechnicalInfo,
     } = props;
 
-    const classes = useStyles();
+    /*const classes = useStyles();
     const [ expanded, setExpanded ] = useState(false);
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded? panel: false);
-    };
+    };*/
 
     let handlerElConf = (data) => {
             handlerElementConfidence({ data: +data.target.value, objectId: objectId });
@@ -192,6 +193,95 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             </Grid>
         </Grid>
 
+        {/*<Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel-add-technic-info"
+                id="panel-added-links">
+                <Typography className={classes.heading}>дополнительные внешние ссылки</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <GetExternalReferences
+                    objectId={objectId}
+                    reportInfo={reportInfo}
+                    handlerElementDelete={handlerElementDelete}
+                    handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
+    />
+            </AccordionDetails>
+        </Accordion>
+        <Accordion expanded={expanded === "panel2"} onChange={handleChange("panel2")}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel-add-technic-info"
+                id="panel-added-granular-labels">
+                <Typography className={classes.heading}>дополнительные {"\"гранулярные\""} метки</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <GetGranularMarkings
+                    objectId={objectId}
+                    reportInfo={reportInfo}
+                    handlerElementDelete={handlerElementDelete}
+                    handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
+/>
+            </AccordionDetails>
+        </Accordion>
+        <Accordion expanded={expanded === "panel3"} onChange={handleChange("panel3")}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel-add-technic-info"
+                id="panel-added-any-info">
+                <Typography className={classes.heading}>любая дополнительная информация</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <GetExtensions 
+                    objectId={objectId}
+                    reportInfo={reportInfo}
+                    handlerElementDelete={handlerElementDelete}
+                    handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
+/>
+            </AccordionDetails>
+    </Accordion>*/}
+
+        <CreateAccordion
+            objectId={objectId}
+            reportInfo={reportInfo}
+            handlerElementDelete={handlerElementDelete}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+        />
+
+        <hr/>
+        <Grid container direction="row" className="mb-2">
+            <Grid item md={12} className="text-end"><small>1 - чем больше тем увереннее</small></Grid>
+        </Grid>
+    </React.Fragment>);
+}
+
+CreateElementAdditionalTechnicalInformationDO.propTypes = {
+    objectId: PropTypes.string.isRequired,
+    reportInfo: PropTypes.object.isRequired,
+    isNotDisabled: PropTypes.bool,
+    handlerElementConfidence: PropTypes.func.isRequired,
+    handlerElementDefanged: PropTypes.func.isRequired,
+    handlerElementLabels: PropTypes.func.isRequired,
+    handlerElementDelete: PropTypes.func.isRequired,
+    handlerDialogElementAdditionalThechnicalInfo: PropTypes.func.isRequired,
+};
+
+function CreateAccordion(props){
+    let {
+        objectId,
+        reportInfo,
+        handlerElementDelete,
+        handlerDialogElementAdditionalThechnicalInfo,
+    } = props;
+
+    const classes = useStyles();
+    const [ expanded, setExpanded ] = useState(false);
+    const handleChange = (panel) => (event, isExpanded) => {
+        setExpanded(isExpanded? panel: false);
+    };
+
+    return (<div style={{ width: "100%" }}>
         <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -240,21 +330,12 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
                 />
             </AccordionDetails>
         </Accordion>
-
-        <hr/>
-        <Grid container direction="row" className="mb-2">
-            <Grid item md={12} className="text-end"><small>1 - чем больше тем увереннее</small></Grid>
-        </Grid>
-    </React.Fragment>);
+    </div>);
 }
 
-CreateElementAdditionalTechnicalInformationDO.propTypes = {
+CreateAccordion.propTypes = {
     objectId: PropTypes.string.isRequired,
     reportInfo: PropTypes.object.isRequired,
-    isNotDisabled: PropTypes.bool,
-    handlerElementConfidence: PropTypes.func.isRequired,
-    handlerElementDefanged: PropTypes.func.isRequired,
-    handlerElementLabels: PropTypes.func.isRequired,
     handlerElementDelete: PropTypes.func.isRequired,
     handlerDialogElementAdditionalThechnicalInfo: PropTypes.func.isRequired,
 };

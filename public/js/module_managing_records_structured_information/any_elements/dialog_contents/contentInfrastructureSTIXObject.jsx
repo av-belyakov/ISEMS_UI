@@ -191,7 +191,7 @@ function CreateMajorContent(props){
         }
     };
 
-    return (<Grid item container md={8}>
+    return (<Grid item container md={8} style={{ display: "block" }}>
         <Grid container direction="row" className="pt-3">
             <CreateInfrastructurePatternElements 
                 isDisabled={false}
