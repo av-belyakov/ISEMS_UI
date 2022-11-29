@@ -17,9 +17,6 @@ import { helpers } from "../../common_helpers/helpers.js";
 import { CreateListInfrastructureTypes } from "./anyElements.jsx";
 import _ from "lodash";
 
-//module.exports.CreateShortInformationSTIXObject = CreateShortInformationSTIXObject;
-//module.exports.showDirectoryList = showDirectoryList;
-
 let sortId = (a, b) => {
     const idA = a.id.toUpperCase();
     const idB = b.id.toUpperCase(); 
@@ -331,6 +328,8 @@ let directoryFunc = (obj, handlerClick) => {
         obj.refs.sort(sortId);
     }
 
+    console.log("@@@@@@@@@@@ func 'directoryFunc', obj = ", obj);
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-start">
@@ -354,14 +353,14 @@ let directoryFunc = (obj, handlerClick) => {
     </React.Fragment>);
 };
 
-function showDirectoryList(element, parentId, num, handlerClick){
+export function showDirectoryList(element, parentId, num, handlerClick){
     if(!_.isArray(element)){
         return "";
     }
 
     element.sort(sortId);
 
-    return (<ol key={`key_ol_directory_${num}`} style={{ marginBottom: "-2px" }}>
+    return (<ol key={`key_ol_directory_${num}`} style={{ marginBottom: "-2px", width: "100%" }}>
         {element.map((item, key) => {
             if(typeof item.value.refs !== "undefined" && _.isArray(item.value.refs)){
                 return (<React.Fragment key={`_key_ul_directory_${key}_${num}`}>
@@ -389,24 +388,25 @@ function showDirectoryList(element, parentId, num, handlerClick){
                 return (<Paper key={`key_paper_directory_${key}_${num}`} elevation={3} style={{ width: "100%" }}>
                     <Box m={2}>
                         <Grid container direction="row" spacing={3}>
-                            <Grid item container md={5} justifyContent="flex-start">
-                                <span className="text-muted">наименование:</span>&nbsp;{item.value.name}
+                            <Grid item container md={4} justifyContent="flex-start">
+                                <span className="text-muted">наименование:</span>&nbsp;
+                                <strong>{item.value.name}</strong>
                             </Grid>
                             <Grid item container md={4} justifyContent="flex-start">
                                 <span className="text-muted">размер:</span>&nbsp;{e.size}&nbsp;{e.name}
                             </Grid>
-                            <Grid item container md={3} justifyContent="flex-start">
+                            <Grid item container md={4} justifyContent="flex-start">
                                 <span className="text-muted">MIME тип:</span>&nbsp;{item.value.mime_type}
                             </Grid>
                         </Grid>
                         <Grid container direction="row" spacing={3}>
-                            <Grid item container md={4} justifyContent="flex-start">
+                            <Grid item container md={4} justifyContent="center">
                                 <span className="text-muted">mtime:</span>&nbsp;{(item.value.mtime)? item.value.mtime: ""}
                             </Grid>
-                            <Grid item container md={4} justifyContent="flex-start">
+                            <Grid item container md={4} justifyContent="center">
                                 <span className="text-muted">atime:</span>&nbsp;{(item.value.atime)? item.value.atime: ""}
                             </Grid>
-                            <Grid item container md={4} justifyContent="flex-start">
+                            <Grid item container md={4} justifyContent="center">
                                 <span className="text-muted">ctime:</span>&nbsp;{(item.value.ctime)? item.value.ctime: ""}
                             </Grid>
                         </Grid>
@@ -1586,5 +1586,3 @@ let x509CertificateFunc = (obj) => {
         </Grid>
     </React.Fragment>);
 };
-
-export { showDirectoryList };

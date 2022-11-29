@@ -107,6 +107,8 @@ function CreateMajorContent(props){
         }
     }
 
+    console.log("func 'CreateDialogContentCourseOfActionSTIXObject', START...");
+
     const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, beginDataObject);
     useEffect(() => {
         let listener = (data) => {

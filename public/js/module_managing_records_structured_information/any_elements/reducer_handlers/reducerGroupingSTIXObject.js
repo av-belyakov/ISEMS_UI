@@ -29,13 +29,20 @@ export default function reducerGroupingSTIXObject(state, action){
     case "cleanAll":
         return {...state, mainObj: {}};
     case "addRefObj":
+
+        console.log("func 'reducerGroupingSTIXObject', action.type:", action.type, " action.data:", action.data);
+
         if(action.data.type === "directory"){
             action.data.refs = action.data.contains_refs.map((item) => {
                 return { id: item, value: item };
             });
         }
 
+        console.log("func 'reducerGroupingSTIXObject', action.data.refs:", action.data.refs);
+
         state.refObj = searchElemRef(state.refObj, action.data);
+
+        console.log("func 'reducerGroupingSTIXObject', state.refObj:", state.refObj);
 
         return {...state};
     case "updateRefId":

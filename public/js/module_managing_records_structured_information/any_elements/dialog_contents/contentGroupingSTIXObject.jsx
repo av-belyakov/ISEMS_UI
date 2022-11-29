@@ -179,13 +179,13 @@ function CreateMajorContent(props){
     };
 
     const updateRefObj = (parentId, data) => {
-        console.log("func 'updateRefObj', parentId = ", parentId, " data = ", data);
+        //console.log("func 'updateRefObj', parentId = ", parentId, " data = ", data);
 
         for(let value in listFieldSTIXObjectRefs){
-            console.log("func 'updateRefObj', parentId = ", parentId, " value = ", value);
+            //console.log("func 'updateRefObj', parentId = ", parentId, " value = ", value);
 
             if(parentId.includes(value)){
-                console.log("func 'updateRefObj', VALUE = ", value, " ************* listFieldSTIXObjectRefs[value]:", listFieldSTIXObjectRefs[value]);
+                //console.log("func 'updateRefObj', VALUE = ", value, " ************* listFieldSTIXObjectRefs[value]:", listFieldSTIXObjectRefs[value]);
 
                 dispatch({ type: listFieldSTIXObjectRefs[value], data: data });
             }
@@ -249,7 +249,7 @@ function CreateMajorContent(props){
     
     const handlerButtonShowLink = (refId) => {
         socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-            if(!isExistTransmittedData){
+            if(!isExistTransmittedData(data)){
                 return;
             }
     
@@ -295,7 +295,7 @@ function CreateMajorContent(props){
                     //console.log("======= PARENTID: ", parentId, " REFID: ", refId, " ======= state.refId: ", state.refId, " ======== state.refObj:", state.refObj);
 
                     socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-                        if(!isExistTransmittedData){
+                        if(!isExistTransmittedData(data)){
                             return;
                         }
 

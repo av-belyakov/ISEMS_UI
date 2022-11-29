@@ -188,27 +188,27 @@ const reducer = (state, action) => {
     }
 };
 
-export default function ModalWindowShowInformationReport(props) {
-    let {
-        show,
-        onHide,
-        socketIo,
-        groupList,
-        showReportId,
-        userPermissions,
-        parentSTIXObject,
-        confirmDeleteLink,
-        fieldNameForChange,
-        listNewOrModifySTIXObject,
-        handlerButtonSave,
-        handlerDialogConfirm, 
-        handlerShowObjectRefSTIXObject,
-        handlerShowModalWindowCreateNewSTIXObject,
-        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
-    } = props;
-
+function ModalWindowShowInformationReport({
+    show,
+    onHide,
+    socketIo,
+    groupList,
+    showReportId,
+    userPermissions,
+    parentSTIXObject,
+    confirmDeleteLink,
+    fieldNameForChange,
+    listNewOrModifySTIXObject,
+    handlerButtonSave,
+    handlerDialogConfirm, 
+    handlerShowObjectRefSTIXObject,
+    handlerShowModalWindowCreateNewSTIXObject,
+    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
+}) {
     const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
     const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = useState(false);
+
+    console.log("func 'ModalWindowShowInformationReport', START...");
 
     let handlerButtonSaveIsNotDisabled = () => {
             if(buttonSaveIsDisabled){
@@ -273,6 +273,8 @@ ModalWindowShowInformationReport.propTypes = {
     handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.func.isRequired,
 };
 
+export default React.memo(ModalWindowShowInformationReport);
+
 function CreateAppBar(props){
     const classes = useStyles();
     const { 
@@ -282,7 +284,7 @@ function CreateAppBar(props){
         handlerDialogClose, 
         handlerDialogButton 
     } = props;
-    
+
     return (<AppBar className={classes.appBar}>
         <Toolbar>
             <IconButton edge="start" color="inherit" onClick={handlerDialogClose} aria-label="close">
@@ -400,6 +402,8 @@ function CreateReportInformation(props){
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
+    console.log("func 'CreateReportInformation', START...");
+
     const [state, dispatch] = useReducer(reducer, {});
     useEffect(() => {
         socketIo.once("isems-mrsi response ui: send search request, get report for id", (data) => {
@@ -427,6 +431,7 @@ function CreateReportInformation(props){
                 }
             }
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         if(showReportId !== ""){
@@ -453,6 +458,7 @@ function CreateReportInformation(props){
         }
 
         dispatch({ type: "updateObjectRefs", data: objectRefs });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ parentSTIXObject, fieldNameForChange, listNewOrModifySTIXObject ]);
 
     const handlerPublished = () => {
@@ -730,7 +736,6 @@ function GroupsViewingAvailable(props){
     } = props;
 
     const [ listGroupAccessToReport, setListGroupAccessToReport ] = useState([]);
-
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;

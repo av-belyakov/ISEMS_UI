@@ -62,7 +62,7 @@ function CreateMajorElements(props){
         handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerDirectoryPatternSTIXObjects, {});
+    const [ state, dispatch ] = useReducer(reducerDirectoryPatternSTIXObjects, { mainObj: {}, refObj: {}, refId: "" });
     useEffect(() => {
         if(projectPatterElement.type === "directory"){
             dispatch({ type: "newAll", data: projectPatterElement });
@@ -70,7 +70,7 @@ function CreateMajorElements(props){
     }, [ projectPatterElement ]);
     useEffect(() => {
         if(buttonAddClick){
-            let stateTmp = Object.assign(state);
+            let stateTmp = Object.assign(state.mainObj);
             stateTmp.id = currentObjectId;
             stateTmp.type = "directory";
             stateTmp.spec_version = "2.1";
@@ -85,6 +85,7 @@ function CreateMajorElements(props){
         if(buttonChangeClick){
             handlerChangeNewSTIXObject(state);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonChangeClick ]);
 
     const handlerCheckStateButtonIsDisabled = (path) => {
@@ -96,7 +97,7 @@ function CreateMajorElements(props){
             return handlerChangeButtonAdd(true);
         }
 
-        if(state && (typeof state.path !== "undefined") && (state.path !== "")){
+        if(state.mainObj && (typeof state.mainObj.path !== "undefined") && (state.mainObj.path !== "")){
             handlerChangeButtonAdd(false);
         } else {
             handlerChangeButtonAdd(true);
@@ -127,18 +128,20 @@ function CreateMajorElements(props){
 
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
+                <Grid item container md={8}>{state.mainObj.id? state.mainObj.id: currentObjectId}</Grid>
             </Grid>
 
             <CreateDirectoryPatternElements
                 isDisabled={false}
-                campaignPatterElement={state}
+                showRefElement={{}}
+                campaignPatterElement={state.mainObj}
                 handlerPath={(e) => { dispatch({ type: "updatePath", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handlerClick={() => {}}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 
                 objectId={currentObjectId}
-                reportInfo={state}
+                reportInfo={state.mainObj}
                 isNotDisabled={isNotDisabled}
                 handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}

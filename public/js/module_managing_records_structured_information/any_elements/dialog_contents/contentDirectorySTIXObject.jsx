@@ -12,6 +12,11 @@ import reducerDirectorySTIXObject from "../reducer_handlers/reducerDirectorySTIX
 import CreateDirectoryPatternElements from "../type_elements_stix/directoryPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
+const listFieldSTIXObjectRefs = {
+    "file": "updateRefObjFileRef",
+    "directory": "addRefObj",
+};
+
 export default function CreateDialogContentDirectorySTIXObject(props){
     let { 
         socketIo,
@@ -93,9 +98,29 @@ function CreateMajorContent(props){
         }
     }
 
+    let isExistTransmittedData = (data) => {
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return false;
+        }
+
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return false;
+        }
+
+        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+            return false;
+        }
+
+        if(data.information.additional_parameters.transmitted_data.length === 0){
+            return false;
+        }
+
+        return true;
+    };
+
     //const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, {id: "", obj: {}});
-    //const [ state, dispatch ] = useReducer(reducerGroupingSTIXObject, { mainObj: beginDataObject, refObj: {}, refId: "" });
-    const [ state, dispatch ] = useReducer(reducerDirectorySTIXObject, beginDataObject);
+    const [ state, dispatch ] = useReducer(reducerDirectorySTIXObject, { mainObj: beginDataObject });
+    //    const [ state, dispatch ] = useReducer(reducerDirectorySTIXObject, beginDataObject);
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -118,6 +143,8 @@ function CreateMajorContent(props){
         }
     };
     useEffect(() => {
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
+
         if(currentIdSTIXObject !== ""){
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
@@ -125,7 +152,7 @@ function CreateMajorContent(props){
             }});
         }
 
-        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
+        //        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
 
         return () => {
             socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
@@ -134,12 +161,26 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [state] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [state.mainObj] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+
+    const updateRefObj = (parentId, data) => {
+        console.log("func 'updateRefObj', parentId = ", parentId, " data = ", data);
+
+        for(let value in listFieldSTIXObjectRefs){
+            console.log("func 'updateRefObj', parentId = ", parentId, " value = ", value);
+
+            if(parentId.includes(value)){
+                console.log("func 'updateRefObj', VALUE = ", value, " ************* listFieldSTIXObjectRefs[value]:", listFieldSTIXObjectRefs[value]);
+
+                dispatch({ type: listFieldSTIXObjectRefs[value], data: data });
+            }
+        }
+    };
 
     const handlerCheckStateButtonIsDisabled = (path) => {
         if(typeof path !== "undefined"){
@@ -150,7 +191,7 @@ function CreateMajorContent(props){
             return handlerButtonIsDisabled(false);
         }
 
-        if(state && state.path !== ""){
+        if(state.mainObj && state.mainObj.path !== ""){
             handlerButtonIsDisabled(false);
         } else {
             handlerButtonIsDisabled(true);
@@ -175,35 +216,35 @@ function CreateMajorContent(props){
             <CreateDirectoryPatternElements
                 isDisabled={false}
                 showRefElement={{}/*stateShowRef*/}
-                //showRefId={state.refId}
-                //showRefObj={state.refObj}
-                //campaignPatterElement={state.mainObj}
-                campaignPatterElement={state}
+                campaignPatterElement={state.mainObj}
                 handlerPath={(e) => { dispatch({ type: "updatePath", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerButtonShowLink={(refId) => {
-                    /*dispatchShowRef({ type: "addId", data: refId });
-                    dispatchShowRef({ type: "cleanObj", data: {} });
-            
+                handlerClick={(parentId, refId) => {
+
+                    console.log("======= PARENTID: ", parentId, " REFID: ", refId, " ======== state.refObj:", state.refObj);
+                    
                     socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+
+                        console.log("&&&&&&8888999999997377333 data, ", data, " _________");
+
                         if(!isExistTransmittedData(data)){
                             return;
                         }
-
-                        for(let obj of data.information.additional_parameters.transmitted_data){ 
-                            dispatchShowRef({ type: "addObject", data: obj });        
+                    
+                        for(let obj of data.information.additional_parameters.transmitted_data){
+                            updateRefObj(parentId, obj);                           
                         }
                     });
-
+                    
                     socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                         searchObjectId: refId,
-                        parentObjectId: state.id,
-                    }});*/
+                        parentObjectId: parentId,
+                    }});                    
                 }}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 
                 objectId={currentIdSTIXObject}
-                reportInfo={state}
+                reportInfo={state.mainObj}
                 isNotDisabled={isNotDisabled}
                 handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
