@@ -15,8 +15,6 @@ export default function CreateCourseOfActionPatternElements(props){
         handlerDescription 
     } = props;
 
-    console.log("func 'CreateCourseOfActionPatternElements', START...");
-
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>            
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>

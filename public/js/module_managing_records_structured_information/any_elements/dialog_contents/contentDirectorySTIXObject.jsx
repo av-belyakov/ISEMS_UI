@@ -118,9 +118,7 @@ function CreateMajorContent(props){
         return true;
     };
 
-    //const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, {id: "", obj: {}});
     const [ state, dispatch ] = useReducer(reducerDirectorySTIXObject, { mainObj: beginDataObject });
-    //    const [ state, dispatch ] = useReducer(reducerDirectorySTIXObject, beginDataObject);
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -152,8 +150,6 @@ function CreateMajorContent(props){
             }});
         }
 
-        //        socketIo.on("isems-mrsi response ui: send search request, get STIX object for id", listener);
-
         return () => {
             socketIo.off("isems-mrsi response ui: send search request, get STIX object for id", listener);
             dispatch({ type: "newAll", data: {} });
@@ -169,14 +165,8 @@ function CreateMajorContent(props){
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
     const updateRefObj = (parentId, data) => {
-        console.log("func 'updateRefObj', parentId = ", parentId, " data = ", data);
-
         for(let value in listFieldSTIXObjectRefs){
-            console.log("func 'updateRefObj', parentId = ", parentId, " value = ", value);
-
             if(parentId.includes(value)){
-                console.log("func 'updateRefObj', VALUE = ", value, " ************* listFieldSTIXObjectRefs[value]:", listFieldSTIXObjectRefs[value]);
-
                 dispatch({ type: listFieldSTIXObjectRefs[value], data: data });
             }
         }
@@ -211,21 +201,13 @@ function CreateMajorContent(props){
     };
 
     return (<React.Fragment>
-        <Grid item container md={1}></Grid>
         <Grid item container md={10}>
             <CreateDirectoryPatternElements
                 isDisabled={false}
-                showRefElement={{}/*stateShowRef*/}
                 campaignPatterElement={state.mainObj}
                 handlerPath={(e) => { dispatch({ type: "updatePath", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerClick={(parentId, refId) => {
-
-                    console.log("======= PARENTID: ", parentId, " REFID: ", refId, " ======== state.refObj:", state.refObj);
-                    
+                handlerClick={(parentId, refId) => {                   
                     socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-
-                        console.log("&&&&&&8888999999997377333 data, ", data, " _________");
-
                         if(!isExistTransmittedData(data)){
                             return;
                         }
@@ -251,7 +233,6 @@ function CreateMajorContent(props){
                 handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
             />
         </Grid>
-        <Grid item container md={1}></Grid>
     </React.Fragment>);
 }
 

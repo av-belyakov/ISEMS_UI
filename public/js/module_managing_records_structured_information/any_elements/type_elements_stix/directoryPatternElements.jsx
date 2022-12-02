@@ -13,13 +13,10 @@ import { showDirectoryList } from "../createShortInformationSTIXObject.jsx";
 export default function CreateDirectoryPatternElements(props){
     let { 
         isDisabled,
-        showRefElement,
         campaignPatterElement, 
         handlerPath,
         handlerClick,
     } = props;
-
-    console.log("func 'CreateDirectoryPatternElements', campaignPatterElement:", campaignPatterElement);
 
     let [ isInvalidPath, setIsInvalidPath ] = useState(((typeof campaignPatterElement.path === "undefined") || (campaignPatterElement.path === "")));
 
@@ -92,7 +89,7 @@ export default function CreateDirectoryPatternElements(props){
 
         {campaignPatterElement.refs && campaignPatterElement.refs.length > 0?
             <React.Fragment>
-                <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+                <Grid container direction="row" spacing={3} style={{ marginTop: 4, marginBottom: 4 }}>
                     <Grid item container md={12} justifyContent="flex-start"><span className="text-muted">Список ссылок на файловые объекты или директории содержащиеся внутри данной директории:</span></Grid>
                 </Grid>
                 {showDirectoryList(campaignPatterElement.refs, campaignPatterElement.id, 0, handlerClick)}
@@ -103,7 +100,6 @@ export default function CreateDirectoryPatternElements(props){
 
 CreateDirectoryPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
-    showRefElement: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerPath: PropTypes.func.isRequired,
     handlerClick: PropTypes.func.isRequired,

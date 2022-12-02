@@ -32,3 +32,13 @@ CreateMutexPatternElements.propTypes = {
     handlerOpinion: PropTypes.func.isRequired, 
     handlerExplanation: PropTypes.func.isRequired,
 };
+
+/**
+//MutexCyberObservableObjectSTIX объект "Mutex Object", по терминалогии STIX, содержит свойства объекта взаимного исключения (mutex).
+// Name - указывает имя объекта мьютекса (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ).
+type MutexCyberObservableObjectSTIX struct {
+	CommonPropertiesObjectSTIX
+	OptionalCommonPropertiesCyberObservableObjectSTIX
+	Name string `json:"name" bson:"name"`
+}
+ */

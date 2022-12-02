@@ -19,10 +19,10 @@ import {
     CreateReceivedLinesList, 
     CreateBodyMultipartList,
 } from "../anyElements.jsx";
-//import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
-const minDefaultData = "0001-01-01T00:00:00Z";
+const defaultData = "0001-01-01T00:00:00.000Z";
+const minDefaultData = new Date();
 
 export default function CreateEmailMessagePatternElements(props){
     let { 
@@ -63,13 +63,13 @@ export default function CreateEmailMessagePatternElements(props){
     let dateSend = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
-
+    
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.date !== "undefined" && campaignPatterElement.date !== dateSend){
+        if(typeof campaignPatterElement.date !== "undefined" && campaignPatterElement.date !== defaultData){
             dateSend = new Date(Date.parse(campaignPatterElement.date) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.date !== "undefined" && campaignPatterElement.date !== dateSend){
+        if(typeof campaignPatterElement.date !== "undefined" && campaignPatterElement.date !== defaultData){
             dateSend = new Date(Date.parse(campaignPatterElement.date) - (ms * -1));
         }
     }

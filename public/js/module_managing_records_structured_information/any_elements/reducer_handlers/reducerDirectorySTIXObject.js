@@ -18,8 +18,6 @@ export default function reducerDirectoryPatternSTIXObjects(state, action){
 
     switch(action.type){
     case "newAll":
-        console.log("WWWWWWW func 'reducerDirectoryPatternSTIXObjects' action.type:", action.type, " action.data:", action.data);
-
         if(action.data.contains_refs && Array.isArray(action.data.contains_refs)){
             refs = action.data.contains_refs.map((item) => {
                 return { id: item, value: item };
@@ -38,39 +36,15 @@ export default function reducerDirectoryPatternSTIXObjects(state, action){
 
         return {...state};
     case "addRefObj":
-
-        console.log("_______ func 'reducerDirectoryPatternSTIXObjects' action.type:", action.type, " action.data:", action.data);
-
         if(action.data.type === "directory"){
             action.data.refs = action.data.contains_refs.map((item) => {
                 return { id: item, value: item };
             });
         }
 
-        /**
-         * 
-         * вроде все работает, с просмотром директорий, но надо протестировать на свежую голову
-         * 
-         */
-
         state.mainObj = searchElemRef(state.mainObj, action.data);
 
-        console.log("_______ func 'reducerDirectoryPatternSTIXObjects' state:", state, " state.mainObj.refs:", state.mainObj.refs);
-
         return {...state};
-    /*case "updateRefObj":
-        console.log("___++++__ func 'reducerDirectoryPatternSTIXObjects' action.type:", action.type, " action.data:", action.data);
-
-        state.refObj = action.data;
-        if(action.data.type === "directory" && typeof action.data.contains_refs !== "undefined"){
-            state.refObj.refs = action.data.contains_refs.map((item) => {
-                return { id: item, value: item };
-            });
-        }
-
-        console.log("___++++__ func 'reducerDirectoryPatternSTIXObjects' state.refObj:", state.refObj);
-
-        return {...state};*/
     case "updateConfidence":
         state.mainObj.confidence === action.data.data;
 

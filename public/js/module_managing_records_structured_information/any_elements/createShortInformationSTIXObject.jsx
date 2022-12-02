@@ -324,11 +324,11 @@ let domainNameFunc = (obj, handlerClick) => {
 let directoryFunc = (obj, handlerClick) => {
     let containsRefsIsExist = (typeof obj.refs === "undefined" || obj.refs === null || obj.refs.length === 0);
 
+    //console.log("func 'CreateShortInformationSTIXObject', method 'directoryFunc', obj = ", obj);
+
     if(!containsRefsIsExist){
         obj.refs.sort(sortId);
     }
-
-    console.log("@@@@@@@@@@@ func 'directoryFunc', obj = ", obj);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -344,9 +344,7 @@ let directoryFunc = (obj, handlerClick) => {
         </Grid>
         <Grid container direction="row" className="mt-2">
             <Grid item container md={12} justifyContent="flex-start">
-                <span className="text-muted">
-                    <Typography variant="h6" gutterBottom>{(obj.path)? obj.path: ""}</Typography>
-                </span>
+                <Typography variant="h6" gutterBottom>{(obj.path)? obj.path: ""}</Typography>
             </Grid>
         </Grid>
         {showDirectoryList(obj.refs, obj.id, 0, handlerClick)}
@@ -363,21 +361,25 @@ export function showDirectoryList(element, parentId, num, handlerClick){
     return (<ol key={`key_ol_directory_${num}`} style={{ marginBottom: "-2px", width: "100%" }}>
         {element.map((item, key) => {
             if(typeof item.value.refs !== "undefined" && _.isArray(item.value.refs)){
-                return (<React.Fragment key={`_key_ul_directory_${key}_${num}`}>
-                    <ul key={`key_ul_directory_${key}_${num}`}>
-                        <Typography variant="h6" gutterBottom>
-                            &nbsp;<span className="text-muted">{item.value.path}</span>
-                        </Typography>
-                        {showDirectoryList(item.value.refs, item.value.id, ++num, handlerClick)}
-                    </ul>
-                </React.Fragment>);
+                return (<ul key={`key_ul_directory_${key}_${num}`} style={{ paddingLeft: "40px" }}>
+                    <div style={{"display": "flex" }}>
+                        <img src={`/images/stix_object/${getLinkImage(item.id).link}`} width="25" height="25"/>
+                            &nbsp;
+                        <span style={{marginTop: "-3px"}}>
+                            <Typography variant="h6" gutterBottom>
+                                {item.value.path}
+                            </Typography>
+                        </span>
+                    </div>
+                    {showDirectoryList(item.value.refs, item.value.id, ++num, handlerClick)}
+                </ul>);
             } else if(_.isString(item.value)){
                 return (<ul key={`key_ul_directory_${key}_${num}`}>
                     {(typeof getLinkImage(item.id) !== "undefined")?
                         <Button onClick={() => {                                        
                             handlerClick(parentId, item.id);
                         }}>
-                            <img src={`/images/stix_object/${getLinkImage(item.id).link}`} width="25" height="25" />
+                            <img src={`/images/stix_object/${getLinkImage(item.id).link}`} width="25" height="25"/>
                             &nbsp;{item.value}
                         </Button>:
                         item.value}
@@ -385,33 +387,46 @@ export function showDirectoryList(element, parentId, num, handlerClick){
             } else {
                 let e = helpers.changeByteSize(item.value.size);
 
-                return (<Paper key={`key_paper_directory_${key}_${num}`} elevation={3} style={{ width: "100%" }}>
-                    <Box m={2}>
-                        <Grid container direction="row" spacing={3}>
-                            <Grid item container md={4} justifyContent="flex-start">
-                                <span className="text-muted">наименование:</span>&nbsp;
-                                <strong>{item.value.name}</strong>
+                return (<ul key={`key_paper_directory_${key}_${num}`} style={{ paddingLeft: "42px" }}>
+                    <Paper elevation={3} style={{ width: "100%" }}>
+                        <Box m={2}>
+                            <Grid container direction="row" spacing={3}>
+                                <Grid item container md={12} justifyContent="flex-start">
+                                    <img src={`/images/stix_object/${getLinkImage(item.id).link}`} width="25" height="25"/>
+                                    &nbsp;
+                                    <span style={{ marginTop: "-3px" }}>
+                                        <Typography variant="overline" gutterBottom>
+                                            {item.id}
+                                        </Typography>
+                                    </span>
+                                </Grid>
                             </Grid>
-                            <Grid item container md={4} justifyContent="flex-start">
-                                <span className="text-muted">размер:</span>&nbsp;{e.size}&nbsp;{e.name}
+                            <Grid container direction="row" spacing={3}>
+                                <Grid item container md={4} justifyContent="flex-start">
+                                    <span className="text-muted">имя:</span>&nbsp;
+                                    <strong>{item.value.name}</strong>
+                                </Grid>
+                                <Grid item container md={4} justifyContent="flex-start">
+                                    <span className="text-muted">размер:</span>&nbsp;{e.size}&nbsp;{e.name}
+                                </Grid>
+                                <Grid item container md={4} justifyContent="flex-start">
+                                    <span className="text-muted">MIME тип:</span>&nbsp;{item.value.mime_type}
+                                </Grid>
                             </Grid>
-                            <Grid item container md={4} justifyContent="flex-start">
-                                <span className="text-muted">MIME тип:</span>&nbsp;{item.value.mime_type}
+                            <Grid container direction="row" spacing={3}>
+                                <Grid item container md={4} justifyContent="center">
+                                    <span className="text-muted">mtime:</span>&nbsp;{(item.value.mtime)? item.value.mtime: ""}
+                                </Grid>
+                                <Grid item container md={4} justifyContent="center">
+                                    <span className="text-muted">atime:</span>&nbsp;{(item.value.atime)? item.value.atime: ""}
+                                </Grid>
+                                <Grid item container md={4} justifyContent="center">
+                                    <span className="text-muted">ctime:</span>&nbsp;{(item.value.ctime)? item.value.ctime: ""}
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid container direction="row" spacing={3}>
-                            <Grid item container md={4} justifyContent="center">
-                                <span className="text-muted">mtime:</span>&nbsp;{(item.value.mtime)? item.value.mtime: ""}
-                            </Grid>
-                            <Grid item container md={4} justifyContent="center">
-                                <span className="text-muted">atime:</span>&nbsp;{(item.value.atime)? item.value.atime: ""}
-                            </Grid>
-                            <Grid item container md={4} justifyContent="center">
-                                <span className="text-muted">ctime:</span>&nbsp;{(item.value.ctime)? item.value.ctime: ""}
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Paper>);
+                        </Box>
+                    </Paper>
+                </ul>);
             }
         })}
     </ol>);

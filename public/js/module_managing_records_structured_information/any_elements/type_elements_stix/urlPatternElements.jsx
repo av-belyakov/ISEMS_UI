@@ -32,3 +32,13 @@ CreateUrlPatternElements.propTypes = {
     handlerOpinion: PropTypes.func.isRequired, 
     handlerExplanation: PropTypes.func.isRequired,
 };
+
+/**
+//URLCyberObservableObjectSTIX объект "URL Object", по терминологии STIX, содержит унифицированный указатель информационного ресурса (URL).
+// Value - содержит унифицированный указатель информационного ресурса (URL).
+type URLCyberObservableObjectSTIX struct {
+	CommonPropertiesObjectSTIX
+	OptionalCommonPropertiesCyberObservableObjectSTIX
+	Value string `json:"value" bson:"value"`
+}
+ */

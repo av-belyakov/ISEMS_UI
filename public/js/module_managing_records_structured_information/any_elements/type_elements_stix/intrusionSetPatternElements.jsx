@@ -15,7 +15,8 @@ import {
     CreateListSecondaryMotivations,
 } from "../anyElements.jsx";
 
-const minDefaultData = "0001-01-01T00:00:00Z";
+const defaultData = "0001-01-01T00:00:00.000Z";
+const minDefaultData = new Date();
 
 export default function CreateIntrusionSetPatternElements(props){
     let { 
@@ -36,24 +37,22 @@ export default function CreateIntrusionSetPatternElements(props){
     let lastSeen = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
-    let ft = Date.parse(campaignPatterElement.first_seen);
-    let lt = Date.parse(campaignPatterElement.last_seen);
-
+    
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
-            firstSeen = new Date(ft + ms);
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== defaultData){
+            firstSeen = new Date(Date.parse(campaignPatterElement.first_seen) + ms);
         }
 
-        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== lastSeen){
-            lastSeen = new Date(lt + ms);
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== defaultData){
+            lastSeen = new Date(Date.parse(campaignPatterElement.last_seen) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
-            firstSeen = new Date(ft - (ms * -1));
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== defaultData){
+            firstSeen = new Date(Date.parse(campaignPatterElement.first_seen) - (ms * -1));
         }
 
-        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== lastSeen){
-            lastSeen = new Date(lt - (ms * -1));
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== defaultData){
+            lastSeen = new Date(Date.parse(campaignPatterElement.last_seen) - (ms * -1));
         }
     }
 

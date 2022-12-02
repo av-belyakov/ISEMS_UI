@@ -12,7 +12,8 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 
-const minDefaultData = "0001-01-01T00:00:00Z";
+const defaultData = "0001-01-01T00:00:00.000Z";
+const minDefaultData = new Date();
 
 let getLinkImage = (elem) => {
     let tmp = [""];
@@ -37,24 +38,22 @@ export default function CreateObservedDataPatternElements(props){
     let lastObserved = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
-    let ft = Date.parse(campaignPatterElement.first_observed);
-    let lt = Date.parse(campaignPatterElement.last_observed);
     
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed !== firstObserved){
-            firstObserved = new Date(ft + ms);
+        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed !== defaultData){
+            firstObserved = new Date(Date.parse(campaignPatterElement.first_observed) + ms);
         }
 
-        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed !== lastObserved){
-            lastObserved = new Date(lt + ms);
+        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed !== defaultData){
+            lastObserved = new Date(Date.parse(campaignPatterElement.last_observed) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed !== firstObserved){
-            firstObserved = new Date(ft - (ms * -1));
+        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed !== defaultData){
+            firstObserved = new Date(Date.parse(campaignPatterElement.first_observed) - (ms * -1));
         }
 
-        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed !== lastObserved){
-            lastObserved = new Date(lt - (ms * -1));
+        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed !== defaultData){
+            lastObserved = new Date(Date.parse(campaignPatterElement.last_observed) - (ms * -1));
         }
     }
 

@@ -51,7 +51,7 @@ export default function reducerCampaignSTIXObjects(state, action){
             firstSeen = new Date(tmp - (ms * -1));
         }
 
-        return {...state, first_seen: firstSeen};
+        return {...state, first_seen: new Date(Date.parse(firstSeen)).toISOString()};
     case "updateDateTimeLastSeen":
         tmp = Date.parse(action.data);
 
@@ -61,7 +61,7 @@ export default function reducerCampaignSTIXObjects(state, action){
             lastSeen = new Date(tmp - (ms * -1));
         }
 
-        return {...state, last_seen: lastSeen};
+        return {...state, last_seen: new Date(Date.parse(lastSeen)).toISOString()};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

@@ -172,7 +172,6 @@ function CreateMajorContent(props){
     };
 
     return (<React.Fragment>
-        <Grid item container md={1}></Grid>
         <Grid item container md={10}>
             <CreateAutonomousSystemPatternElements 
                 isDisabled={false}
@@ -191,7 +190,6 @@ function CreateMajorContent(props){
                 handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
             />
         </Grid>
-        <Grid item container md={1}></Grid>
     </React.Fragment>);
 }
 
