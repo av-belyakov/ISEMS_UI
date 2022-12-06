@@ -6,11 +6,18 @@ import {
     CardContent,
     Collapse,
     Grid,
+    Select,
+    IconButton,
+    InputLabel,
     TextField,
+    FormControl,
+    MenuItem,
 } from "@material-ui/core";
-import { blue } from "@material-ui/core/colors";
+import { red } from "@material-ui/core/colors";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
+import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
+import _ from "lodash";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
@@ -26,8 +33,11 @@ export default function CreateFilePatternElements(props){
         campaignPatterElement, 
         handlerName,
         handlerSize,
+        handlerClick,
         handlerNameEnc,
         handlerMimeType,
+        handlerAddHashes,
+        handlerDelHashes,
         handlerButtonShowLink,
         handlerMagicNumberHex,
         handlerChangeDateTimeMtime,
@@ -37,8 +47,14 @@ export default function CreateFilePatternElements(props){
     let [ expanded, setExpanded ] = React.useState(false);
     let [ refId, setRefId ] = React.useState("");
 
-    let [ isInvalidSizeValue, setIsInvalidSizeValue ] = useState(((typeof campaignPatterElement.size === "undefined") || (campaignPatterElement.size === "")));
+    let [ isInvalidSizeValue, setIsInvalidSizeValue ] = useState(((typeof campaignPatterElement.size !== "undefined") && (campaignPatterElement.size !== 0)));
     let [ isInvalidNameValue, setIsInvalidNameValue ] = useState(((typeof campaignPatterElement.name === "undefined") || (campaignPatterElement.name === "")));
+    let [ valueTmpHashSum, setValueTmpHashSum ] = useState({ type: "", description: "" });
+    let [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true);
+
+    console.log("func 'CreateFilePatternElements', isInvalidSizeValue = '", isInvalidSizeValue, "', campaignPatterElement.size === '':", campaignPatterElement.size === "", " typeof campaignPatterElement.size === 'undefined':", typeof campaignPatterElement.size === "undefined");
+    console.log("((typeof campaignPatterElement.size === 'undefined') || (campaignPatterElement.size === 0)) : ", ((typeof campaignPatterElement.size === "undefined") || (campaignPatterElement.size === 0)));
+    console.log("func 'CreateFilePatternElements', campaignPatterElement:", campaignPatterElement, " showRefElement:", showRefElement);
 
     let mtime = minDefaultData;
     let atime = minDefaultData;
@@ -63,6 +79,23 @@ export default function CreateFilePatternElements(props){
         }
     }
 
+    let getListHashes = () => {
+        let list = [];
+        if((campaignPatterElement.hashes !== null) && (typeof campaignPatterElement.hashes !== "undefined")){
+            for(let k in campaignPatterElement.hashes){
+                list.push(<li key={`hash_${campaignPatterElement.hashes[k]}`}>
+                    {k}: {campaignPatterElement.hashes[k]}&nbsp;
+                    <IconButton aria-label="delete-ext_ref-item" onClick={() => { 
+                        handlerDelHashes(k); 
+                    }}><RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                    </IconButton>
+                </li>);
+            }    
+        }
+
+        return list;
+    };
+
     let handleExpandClick = (id) => {
         if(id === refId && expanded){
             setExpanded(false);
@@ -80,7 +113,7 @@ export default function CreateFilePatternElements(props){
         handlerButtonShowLink(id);
     };
 
-    console.log("func 'CreateFilePatternElements', campaignPatterElement:", campaignPatterElement, " showRefElement:", showRefElement);
+    let listHashes = getListHashes();
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -258,7 +291,7 @@ export default function CreateFilePatternElements(props){
                             <CardContent>
                                 <CreateShortInformationSTIXObject 
                                     obj={showRefElement.obj}
-                                    handlerClick={() => {}} 
+                                    handlerClick={handlerClick} 
                                 />
                             </CardContent>
                         </Collapse>
@@ -266,6 +299,154 @@ export default function CreateFilePatternElements(props){
                 </Grid>
             </Grid>:
             ""}
+
+        {campaignPatterElement.content_ref && campaignPatterElement.content_ref.length !== ""?
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={4} justifyContent="flex-end">
+                    <span className="text-muted mt-3">Контент файла:</span>
+                </Grid>
+                <Grid item container md={8}>
+                    <Card variant="outlined" style={{ width: "100%" }}>
+                        <CardActions>
+                            <Button onClick={() => { 
+                                handleExpandClick(campaignPatterElement.content_ref);
+                            }}>
+                                <img 
+                                    src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.content_ref.split("--")[0]).link}`} 
+                                    width="25" 
+                                    height="25" />
+                                    &nbsp;{campaignPatterElement.content_ref}
+                            </Button>
+                        </CardActions>
+                        <Collapse 
+                            in={showRefElement.id === campaignPatterElement.content_ref && refId === campaignPatterElement.content_ref && expanded} 
+                            timeout="auto" 
+                            unmountOnExit
+                        >
+                            <CardContent>
+                                <CreateShortInformationSTIXObject 
+                                    obj={showRefElement.obj}
+                                    handlerClick={handlerClick} 
+                                />
+                            </CardContent>
+                        </Collapse>
+                    </Card>
+                </Grid>
+            </Grid>:
+            ""}
+
+        <Grid container direction="row" style={{ marginTop: 2 }}>
+            <Grid container direction="row" spacing={3} key="key_input_hash_field">
+                <Grid item md={2}>
+                    <FormControl style={{ minWidth: 120 }}>
+                        <InputLabel id="label-hash-type-change">тип хеша</InputLabel>
+                        <Select
+                            labelId="chose-hash-select-label"
+                            id="chose-hash-select-label"
+                            value={valueTmpHashSum.type}
+                            fullWidth
+                            onChange={(e) => {
+                                let tmp = valueTmpHashSum.description,
+                                    v = e.target.value;
+                                setValueTmpHashSum({ type: v, description: tmp });
+
+                                ((v.length > 0) && (tmp.length > 0))? setButtonAddHashIsDisabled(false): setButtonAddHashIsDisabled(true);
+                            }}>
+                            {helpers.getListHashType().map((elem, num)=>{
+                                return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
+                            })}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item md={8}>
+                    <TextField
+                        id="external-references-hash"
+                        label="хеш-сумма"
+                        fullWidth
+                        value={valueTmpHashSum.description}
+                        onChange={(e) => {
+                            let tmp = valueTmpHashSum.type,
+                                v = e.target.value;
+                            setValueTmpHashSum({ type: tmp, description: v });
+
+                            ((v.length > 0) && (tmp.length > 0))? setButtonAddHashIsDisabled(false): setButtonAddHashIsDisabled(true);
+                        }}
+                    />
+                </Grid>
+                <Grid item md={2} className="text-end mt-4">
+                    <Button 
+                        onClick={() => {
+                            handlerAddHashes(valueTmpHashSum);
+
+                            setValueTmpHashSum({ type: "", description: "" });
+                            setButtonAddHashIsDisabled(true);
+                        }} 
+                        disabled={buttonAddHashIsDisabled}
+                    >добавить хеш</Button>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        {(listHashes.length !== 0)? 
+            <Grid container direction="row" className="mt-2">
+                <Grid item md={12} className="pl-4 pr-4">
+                    <span className="text-muted">хеш суммы</span>:<ol>{listHashes}</ol>
+                </Grid>
+            </Grid>: 
+            ""}
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={12} justifyContent="flex-start">
+                <span className="text-muted">Идентификаторы объектов:</span>
+            </Grid>
+        </Grid>
+        <Grid container direction="row">
+            <Grid item container md={12} justifyContent="flex-start">
+                {campaignPatterElement.contains_refs && campaignPatterElement.contains_refs.length > 0?
+                    campaignPatterElement.contains_refs.map((item, key) => {
+                        let type = item.split("--");
+                        let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+    
+                        if(typeof objectElem === "undefined" || type[0] === "relationship"){
+                            return "";
+                        }
+
+                        let disabled = false;
+                        if(type[0] === "report"){                    
+                            disabled = true;
+                        }        
+
+                        return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_object_ref_${key}`}>
+                            <CardActions>
+                                <Button onClick={() => {                                        
+                                    handleExpandClick(item);
+                                }}
+                                disabled={disabled} >
+                                    <img 
+                                        src={`/images/stix_object/${objectElem.link}`} 
+                                        width="25" 
+                                        height="25" />
+                                        &nbsp;{item}
+                                </Button>
+                            </CardActions>
+                            <Collapse 
+                                in={showRefElement.id !== "" && showRefElement.id === refId && showRefElement.id === item && expanded} 
+                                timeout="auto" 
+                                unmountOnExit
+                            >
+                                <CardContent>
+                                    <CreateShortInformationSTIXObject 
+                                        obj={showRefElement.obj}
+                                        handlerClick={handlerClick} 
+                                    />
+                                </CardContent>
+                            </Collapse>                            
+                        </Card>);
+                    }):
+                    ""}
+            </Grid>
+        </Grid>
+
         {
             /**
              * (e) => handlerMimeType(validatorjs.escape(e.target.value))
@@ -278,31 +459,11 @@ export default function CreateFilePatternElements(props){
             + MagicNumberHex
             + MimeType
             + ParentDirectoryRef
-            Hashes HashesTypeSTIX         `json:"hashes" bson:"hashes"`
-            ContainsRefs []IdentifierTypeSTIX ([]string)
-	        ContentRef         IdentifierTypeSTIX
+            + Hashes HashesTypeSTIX         `json:"hashes" bson:"hashes"`
+            + ContainsRefs []IdentifierTypeSTIX ([]string)
+	        + ContentRef         IdentifierTypeSTIX
              */
         }
-
-        {
-            //ParentDirectoryRef IdentifierTypeSTIX     `json:"parent_directory_ref" bson:"parent_directory_ref"`
-        }
-
-        {/*
-            //ContainsRefs       []IdentifierTypeSTIX   `json:"contains_refs" bson:"contains_refs"`
-        campaignPatterElement.refs && campaignPatterElement.refs.length > 0?
-            <React.Fragment>
-                <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                    <Grid item container md={12} justifyContent="flex-start"><span className="text-muted">Список ссылок на файловые объекты или директории содержащиеся внутри данной директории:</span></Grid>
-                </Grid>
-                {showDirectoryList(campaignPatterElement.refs, campaignPatterElement.id, 0, handlerClick)}
-            </React.Fragment>:
-    ""*/}
-
-        {
-            //ContentRef IdentifierTypeSTIX      `json:"content_ref" bson:"content_ref"`
-        }
-
     </React.Fragment>);
 }
 
@@ -312,43 +473,16 @@ CreateFilePatternElements.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,
     handlerName: PropTypes.func.isRequired,
     handlerSize: PropTypes.func.isRequired,
+    handlerClick: PropTypes.func.isRequired,
     handlerNameEnc: PropTypes.func.isRequired,
     handlerMimeType: PropTypes.func.isRequired,
+    handlerAddHashes: PropTypes.func.isRequired,
+    handlerDelHashes: PropTypes.func.isRequired,
     handlerButtonShowLink: PropTypes.func.isRequired,
     handlerMagicNumberHex: PropTypes.func.isRequired,
     handlerChangeDateTimeMtime: PropTypes.func.isRequired,
     handlerChangeDateTimeAtime: PropTypes.func.isRequired,
 };
-
-/**
- *                      HASHES
- let listHashes = [];
- {(listHashes.length !== 0) ? 
-                            <Grid container direction="row" key={`key_external_references_${key}_5`} className="mt-2">
-                                <Grid item md={12} className="pl-4 pr-4">
-                                    <span><span className="text-muted">хеш суммы</span>:<ol>{listHashes}</ol></span>
-                                </Grid>
-                            </Grid>: 
-                            ""}
- * 
-if((item.hashes !== null) && (typeof item.hashes !== "undefined")){
-                    for(let k in item.hashes){
-                        listHashes.push(<li key={`hash_${item.hashes[k]}`}>
-                            {k}: {item.hashes[k]}&nbsp;
-                            <IconButton aria-label="delete-ext_ref-item" onClick={() => { 
-                                handlerDialogElementAdditionalThechnicalInfo({ 
-                                    actionType: "hashes_delete",
-                                    modalType: "external_references", 
-                                    objectId: objectId,
-                                    orderNumber: key,
-                                    hashName: k,
-                                }); 
-                            }}><RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                            </IconButton>
-                        </li>);
-                    }    
-                }
- */
 
 /**
 //FileCyberObservableObjectSTIX объект "File Object", по терминалогии STIX, последекодирования из JSON (основной, рабочий объект)

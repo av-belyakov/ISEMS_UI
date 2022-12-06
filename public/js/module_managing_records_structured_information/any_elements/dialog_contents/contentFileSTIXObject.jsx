@@ -9,9 +9,15 @@ import { blue } from "@material-ui/core/colors";
 import _ from "lodash";
 import PropTypes from "prop-types";
 
+import { helpers } from "../../../common_helpers/helpers";
 import reducerFilePatternSTIXObjects from "../reducer_handlers/reducerFileSTIXObject.js";
 import CreateFilePatternElements from "../type_elements_stix/filePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
+
+const listFieldSTIXObjectRefs = {
+    "file": "updateRefObjFile",
+    "directory": "updateRefObjDirectory",
+};
 
 function isExistTransmittedData(data){
     if((data.information === null) || (typeof data.information === "undefined")){
@@ -52,13 +58,8 @@ function reducerShowRef(state, action){
 
     switch(action.type){
     case "addObject":
-        /**
-                            if(obj.type === "directory"){
-                                dispatch({ type: "updateNameEnc", data: obj });
-                            } else if(obj.type === "file"){
-                                dispatch({ type: "updateNameEnc", data: obj });
-                            } else {
- */
+
+        //        console.log("func 'reducerShowRef', action.type:", action.type, " action.data:", action.data);
 
         if(action.data.type === "directory" && action.data.contains_refs && Array.isArray(action.data.contains_refs)){
             action.data.refs = action.data.contains_refs.map((item) => {
@@ -66,16 +67,20 @@ function reducerShowRef(state, action){
             });
         }
 
-        if(state.type === "directory"){
-            state.obj.refs = searchElemRef(state.obj, action.data);
-        } else {
-            state.obj = action.data;
+        state.obj = action.data;
+
+        return {...state};
+    case "updateRefObjDirectory":
+
+        console.log("func 'reducerShowRef', action.type:", action.type, " action.data:", action.data);
+
+        if(action.data.type === "directory"){
+            action.data.refs = action.data.contains_refs.map((item) => {
+                return { id: item, value: item };
+            });
         }
 
-        /**
- * нужно проверить добавление родительской директории и поддиреторий
- * добавления файлов нужно сделать тут же 
- */
+        state.obj = searchElemRef(state.obj, action.data);
 
         return {...state};
     case "addId":
@@ -210,6 +215,7 @@ function CreateMajorContent(props){
         if(buttonSaveChangeTrigger){
             state.mtime = new Date(state.mtime).toISOString();
             state.atime = new Date(state.atime).toISOString();
+            state.size = Number(state.size);
 
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
@@ -218,31 +224,37 @@ function CreateMajorContent(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonSaveChangeTrigger ]);
 
-    /*const handlerCheckStateButtonIsDisabled = (name) => {
-        if(typeof path !== "undefined"){
-            if(path.length === 0){
-                return handlerButtonIsDisabled(true);
+    const handlerCheckStateButtonIsDisabled = (size) => {
+        if(typeof size !== "undefined"){
+            if(helpers.checkInputValidation({
+                "name": "integer", 
+                "value": size, 
+            }) && size[0] !== "0"){
+                return handlerButtonIsDisabled(false);
             }
 
-            return handlerButtonIsDisabled(false);
+            return handlerButtonIsDisabled(true);
         }
 
-        if(state && state.path !== ""){
+        if(state && helpers.checkInputValidation({
+            "name": "integer", 
+            "value": state.size, 
+        }) && state.size[0] !== "0"){           
             handlerButtonIsDisabled(false);
         } else {
             handlerButtonIsDisabled(true);
         }
-    };*/
+    };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
         if(obj.modalType === "granular_markings") {
             dispatch({ type: "updateGranularMarkings", data: obj.data });
-            handlerButtonIsDisabled();
+            handlerCheckStateButtonIsDisabled();
         }
     
         if(obj.modalType === "extensions") {
             dispatch({ type: "updateExtensions", data: obj.data });
-            handlerButtonIsDisabled();
+            handlerCheckStateButtonIsDisabled();
         }
     };
 
@@ -254,19 +266,48 @@ function CreateMajorContent(props){
                 campaignPatterElement={state}
                 //handlerName={(e) => { dispatch({ type: "updateName", data: e }); handlerCheckStateButtonIsDisabled(e); }}
                 handlerName={() => {}}
-                handlerSize={(e) => { dispatch({ type: "updateSize", data: e }); handlerButtonIsDisabled(); }}
-                handlerNameEnc={(e) => { dispatch({ type: "updateNameEnc", data: e }); handlerButtonIsDisabled(); }}
-                handlerMimeType={(e) => { dispatch({ type: "updateMineType", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerButtonShowLink={(refId) => {
-                    dispatchShowRef({ type: "addId", data: refId });
-                    dispatchShowRef({ type: "cleanObj", data: {} });
-            
+                handlerSize={(size) => { dispatch({ type: "updateSize", data: size }); handlerCheckStateButtonIsDisabled(size); }}
+                handlerClick={(parentId, refId) => {
+                    console.log("func 'CreateDialogContentFileSTIXObject', handlerClick, CLICK ref id: ", refId, " parentId: ", parentId, " stateShowRef.id:", stateShowRef.id);
+
                     socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
                         if(!isExistTransmittedData(data)){
                             return;
                         }
 
                         for(let obj of data.information.additional_parameters.transmitted_data){
+                            dispatchShowRef({ type: "updateRefObjDirectory", data: obj });
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: parentId,
+                    }});
+                }}
+                handlerNameEnc={(e) => { dispatch({ type: "updateNameEnc", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerMimeType={(e) => { dispatch({ type: "updateMineType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAddHashes={(hashObj) => {
+                    dispatch({ type: "updateAddHashes", data: hashObj }); handlerCheckStateButtonIsDisabled();
+                }}
+                handlerDelHashes={(elem) => {
+                    dispatch({ type: "handlerDelHashes", data: elem }); handlerCheckStateButtonIsDisabled();
+                }}
+                handlerButtonShowLink={(refId) => {
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+            
+                    console.log("func 'CreateDialogContentFileSTIXObject', handlerButtonShowLink, CLICK ref id:", refId);
+
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){
+
+                            console.log("func handlerButtonShowLink, RESEIVED obj:", obj);
+
                             dispatchShowRef({ type: "addObject", data: obj });        
                         }
                     });
@@ -276,9 +317,9 @@ function CreateMajorContent(props){
                         parentObjectId: state.id,
                     }});
                 }}
-                handlerMagicNumberHex={(e) => { dispatch({ type: "updateMagicNumberHex", data: e }); handlerButtonIsDisabled(); }}
-                handlerChangeDateTimeMtime={(e) => { dispatch({ type: "updateDateTimeMtime", data: e }); handlerButtonIsDisabled(); }}
-                handlerChangeDateTimeAtime={(e) => { dispatch({ type: "updateDateTimeAtime", data: e }); handlerButtonIsDisabled(); }}
+                handlerMagicNumberHex={(e) => { dispatch({ type: "updateMagicNumberHex", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerChangeDateTimeMtime={(e) => { dispatch({ type: "updateDateTimeMtime", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerChangeDateTimeAtime={(e) => { dispatch({ type: "updateDateTimeAtime", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />
         </Grid> 
 
@@ -286,8 +327,8 @@ function CreateMajorContent(props){
             objectId={currentIdSTIXObject}
             reportInfo={state}
             isNotDisabled={isNotDisabled}
-            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
-            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
+            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
             handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
         />
     </Grid>);

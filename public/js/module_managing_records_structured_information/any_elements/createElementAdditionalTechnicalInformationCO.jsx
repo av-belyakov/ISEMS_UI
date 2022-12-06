@@ -14,6 +14,7 @@ import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
 import { makeStyles } from "@material-ui/core/styles";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import { grey, green, red } from "@material-ui/core/colors";
+import { JSONTree } from "reactjsontree";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
@@ -42,6 +43,25 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 120,
     },
 }));
+
+const theme = {
+    base00: "#272822",
+    base01: "#383830",
+    base02: "#49483e",
+    base03: "#75715e",
+    base04: "#a59f85",
+    base05: "#f8f8f2",
+    base06: "#f5f4f1",
+    base07: "#f9f8f5",
+    base08: "#f92672",
+    base09: "#fd971f",
+    base0A: "#f4bf75",
+    base0B: "#a6e22e",
+    base0C: "#a1efe4",
+    base0D: "#66d9ef",
+    base0E: "#ae81ff",
+    base0F: "#cc6633",
+};
 
 export default function CreateElementAdditionalTechnicalInformationCO(props){
     let { 
@@ -74,7 +94,7 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} className="pl-4 mt-1 mb-3">
+        <Grid container direction="row" spacing={3} className="pl-4">
             <Grid item md={4} className="text-end mt-1"><span className="text-muted">Определены ли данные содержащиеся в объекте:</span></Grid>
             <Grid item container md={8} justifyContent="flex-start">
                 <Form.Group>
@@ -92,6 +112,21 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
             </Grid>
         </Grid>
 
+        <Grid container direction="row" spacing={3}>
+            <Grid item md={4} className="text-end mt-2">
+                <span className="text-muted">Дополнительная информация, относящаяся к объекту:</span>
+            </Grid>
+            <Grid item md={8}>
+                {(reportInfo !== null && reportInfo.extensions)?
+                    <JSONTree 
+                        data={reportInfo.extensions} 
+                        theme={theme}
+                        hideRoot
+                    />:
+                    ""}
+            </Grid>
+        </Grid>
+
         <Grid container direction="row" className="mt-2">
             <Grid item md={12}><span className="text-muted">Дополнительные {"\"гранулярные\""} метки:</span></Grid>
         </Grid>
@@ -101,22 +136,6 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
             handlerElementDelete={handlerElementDelete}
             handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}
         />
-
-        {
-            //в поле extensions будут различные расширения, пока не реализованно в ISEMS-MRSICT
-            (reportInfo !== null && reportInfo.extensions)?
-                Object.keys(reportInfo.extensions).length === 0?
-                    "":
-                    <React.Fragment>
-                        <Grid container direction="row" className="mt-2">
-                            <Grid item md={12}><span className="text-muted">Дополнительная информация, относящаяся к объекту:</span></Grid>
-                        </Grid>
-                        <Grid container direction="row" className="mt-2">
-                            <Grid item md={12}><strong>{JSON.stringify(reportInfo.extensions, null, 2)}</strong></Grid>
-                        </Grid>
-                    </React.Fragment>:
-                ""
-        }
     </React.Fragment>);
 }
 

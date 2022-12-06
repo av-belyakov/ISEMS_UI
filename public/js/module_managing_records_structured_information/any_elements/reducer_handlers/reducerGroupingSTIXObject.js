@@ -91,7 +91,7 @@ export default function reducerGroupingSTIXObject(state, action){
 
         return {...state};
     case "updateRefObjFileRef":
-        //console.log("func 'reducerGroupingSTIXObject' action.type:", action.type, " action.data:", action.data);
+        console.log("func 'reducerGroupingSTIXObject' action.type:", action.type, " action.data:", action.data);
 
         state.refObj.content_ref = action.data;
 

@@ -28,6 +28,8 @@ import validatorjs from "validatorjs";
 import _ from "lodash";
 import PropTypes from "prop-types";
 
+import { helpers } from "../../common_helpers/helpers.js";
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: "100%",
@@ -53,17 +55,6 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 120,
     },
 }));
-
-const listHashType = [ 
-    { type: "MD5", description: "MD5" },
-    { type: "SHA-1", description: "SHA-1" },
-    { type: "SHA256", description: "SHA-2 (256)" },
-    { type: "SHA384", description: "SHA-2 (384)" },
-    { type: "SHA512", description: "SHA-2 (512)" },
-    { type: "SHA-3", description: "SHA-3" },
-    { type: "RIPEMD", description: "RIPEMD" },
-    { type: "Base64", description: "Base64" },
-];
 
 export default function CreateElementAdditionalTechnicalInformationDO(props){
     let { 
@@ -395,7 +386,7 @@ function GetExternalReferences(props){
 
                                 ((v.length > 0) && (tmp.length > 0))? setButtonAddHashIsDisabled(false): setButtonAddHashIsDisabled(true);
                             }}>
-                            {listHashType.map((elem, num)=>{
+                            {helpers.getListHashType().map((elem, num)=>{
                                 return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
                             })}
                         </Select>
@@ -600,7 +591,7 @@ function GetExternalReferences(props){
 
                                             setValueTmpUpdateHashSumER(tmp);
                                         }}>
-                                        {listHashType.map((elem, num)=>{
+                                        {helpers.getListHashType().map((elem, num)=>{
                                             return <MenuItem value={elem.type} key={`key_${elem.type}_${num}`}>{elem.description}</MenuItem>;
                                         })}
                                     </Select>

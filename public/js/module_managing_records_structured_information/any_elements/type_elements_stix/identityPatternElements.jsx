@@ -83,7 +83,7 @@ export default function CreateIdentityPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Роли для идентификации действий:</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Роли для идентификации действий:</span></Grid>
             <Grid item md={8}>
                 <TokenInput
                     readOnly={isDisabled}

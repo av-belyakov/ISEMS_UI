@@ -44,6 +44,7 @@ module.exports = {
             "react-infinite-scroll-component",
             "react-search-autocomplete",
             "validatorjs",
+            "reactjsontree",
         ],
         authPage: "./authPage.js",
         mainPage: "./mainPage.js",
@@ -137,6 +138,7 @@ module.exports = {
             "react-infinite-scroll-component": "react-infinite-scroll-component/dist/index.js",
             "react-search-autocomplete": "react-search-autocomplete/dist/index.js",
             "validatorjs": "validator/validator.min.js",
+            "reactjsontree": "react-json-tree",
         }
     },
 

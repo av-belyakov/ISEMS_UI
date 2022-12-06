@@ -68,7 +68,14 @@ export default function reducerFilePatternSTIXObjects(state, action){
             ContainsRefs []IdentifierTypeSTIX ([]string)
 	        ContentRef         IdentifierTypeSTIX
         */
+    case "updateAddHashes":
+        state.hashes[action.data.type] = action.data.description;
 
+        return {...state};
+    case "handlerDelHashes":
+        delete state.hashes[action.data];
+
+        return {...state};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

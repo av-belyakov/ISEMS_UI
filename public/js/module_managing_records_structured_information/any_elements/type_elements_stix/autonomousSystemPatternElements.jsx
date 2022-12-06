@@ -40,7 +40,9 @@ export default function CreateAutonomousSystemPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Номер присвоенный Автономной системе:</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end">
+                <span className="text-muted mt-2">Номер присвоенный Автономной системе:</span>
+            </Grid>
             <Grid item md={8}>
                 <TextField
                     id="outlined-number-autonomous-system"
@@ -62,12 +64,14 @@ export default function CreateAutonomousSystemPatternElements(props){
                     }}
                     value={(campaignPatterElement.number)? campaignPatterElement.number: ""}
                     helperText="поле может содержать только цифры"
-                    variant="outlined" />
+                />
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Название регионального Интернет-реестра (Regional Internet Registry):</span></Grid>
+            <Grid item container md={4} justifyContent="flex-end">
+                <span className="text-muted mt-2">Название регионального Интернет-реестра (RIR):</span>
+            </Grid>
             <Grid item md={8}>
                 <TextField
                     id="outlined-rir"
@@ -79,7 +83,7 @@ export default function CreateAutonomousSystemPatternElements(props){
                     disabled={isDisabled}
                     onChange={handlerRIR}
                     value={(campaignPatterElement.rir)? campaignPatterElement.rir: ""}
-                    variant="outlined" />
+                />
             </Grid>
         </Grid>
     </React.Fragment>);

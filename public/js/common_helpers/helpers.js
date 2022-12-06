@@ -194,6 +194,19 @@ let listManyProperties = [
 ];
 
 let helpers = {
+    getListHashType() {
+        return [ 
+            { type: "MD5", description: "MD5" },
+            { type: "SHA-1", description: "SHA-1" },
+            { type: "SHA256", description: "SHA-2 (256)" },
+            { type: "SHA384", description: "SHA-2 (384)" },
+            { type: "SHA512", description: "SHA-2 (512)" },
+            { type: "SHA-3", description: "SHA-3" },
+            { type: "RIPEMD", description: "RIPEMD" },
+            { type: "Base64", description: "Base64" },
+        ];
+    },
+    
     //настраивает высоту отступа для элемента выводящего загрузку сетевых интерфейсов
     loadNetworkMarginTop() {
         let arrayLoadNetwork = document.getElementsByName("loadNetwork");

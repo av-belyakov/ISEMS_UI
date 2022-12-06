@@ -9,13 +9,13 @@ import {
     Typography,
 } from "@material-ui/core";
 import { Form } from "react-bootstrap";
+import _ from "lodash";
 import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
-//import { helpers as h } from "../../common_helpers/"
+import dictionaryLists from "../../common_helpers/dictionaryLists.js";
 import { CreateListInfrastructureTypes } from "./anyElements.jsx";
-import _ from "lodash";
 
 let sortId = (a, b) => {
     const idA = a.id.toUpperCase();
@@ -64,7 +64,9 @@ let patternDescription = (description) => {
                 disabled
                 onChange={() => {}}
                 value={(description)? description: ""}
-                variant="outlined"/>
+                variant="outlined"
+                size="small"
+            />
         </Grid>
     </Grid>;
 };
@@ -75,7 +77,7 @@ let patternAliases = (aliases) => {
     }
 
     return <Grid container direction="row" spacing={3}>
-        <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Альтернативные имена:</span></Grid>
+        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Альтернативные имена:</span></Grid>
         <Grid item container md={7} >
             <TokenInput
                 readOnly
@@ -131,9 +133,9 @@ export function CreateShortInformationSTIXObject(props){
     if(typeof objectList[obj.type] !== "undefined"){
         return objectList[obj.type](obj, handlerClick);
     } else {
-        return <Grid container direction="row" spacing={3}>
+        return (<Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">не найден соответствующий объект</span></Grid>
-        </Grid>;
+        </Grid>);
     }
 }
 
@@ -155,7 +157,7 @@ let autonomousSystemFunc = (obj) => {
         {patternName(obj.name)}
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Номер присвоенный Автономной системе:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Номер присвоенный Автономной системе:</span></Grid>
             <Grid item md={7}>
                 <TextField
                     fullWidth
@@ -163,12 +165,12 @@ let autonomousSystemFunc = (obj) => {
                     disabled
                     onChange={() => {}}
                     value={(obj.number)? obj.number: ""}
-                    variant="outlined" />
+                />
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Название регионального Интернет-реестра (Regional Internet Registry):</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Название регионального Интернет-реестра (Regional Internet Registry):</span></Grid>
             <Grid item md={7}>
                 <TextField
                     fullWidth
@@ -176,7 +178,7 @@ let autonomousSystemFunc = (obj) => {
                     disabled
                     onChange={() => {}}
                     value={(obj.rir)? obj.rir: ""}
-                    variant="outlined" />
+                />
             </Grid>
         </Grid>
     </React.Fragment>);
@@ -186,8 +188,8 @@ let artifactFunc = (obj) => {
     return (<React.Fragment>
         {patternName(obj.name)}
 
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Тип файлов IANA:</span></Grid>
+        <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Тип файлов IANA:</span></Grid>
             <Grid item container md={7} >
                 <TextField
                     fullWidth
@@ -199,7 +201,7 @@ let artifactFunc = (obj) => {
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3}>
+        <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
             <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Бинарные данные в base64:</span></Grid>
             <Grid item container md={7} >
                 <TextField
@@ -209,12 +211,14 @@ let artifactFunc = (obj) => {
                     InputLabelProps={{ shrink: true }}
                     onChange={() => {}}
                     value={(obj.payload_bin)? obj.payload_bin: ""}
+                    variant="outlined"
+                    size="small"
                 />
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Унифицированный указатель ресурса (URL):</span></Grid>
+        <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Унифицированный указатель ресурса (URL):</span></Grid>
             <Grid item container md={7} >
                 <TextField
                     multiline
@@ -223,11 +227,13 @@ let artifactFunc = (obj) => {
                     InputLabelProps={{ shrink: true }}
                     onChange={() => {}}
                     value={(obj.url)? obj.url: ""}
+                    variant="outlined"
+                    size="small"
                 />
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3}>
+        <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
             <Grid item container md={5} justifyContent="flex-end" className="mt-2 mb-2"><span className="text-muted">Ключ для дешифрования зашифрованных данных:</span></Grid>
             <Grid item container md={7} >
                 <TextField
@@ -237,6 +243,8 @@ let artifactFunc = (obj) => {
                     InputLabelProps={{ shrink: true }}
                     onChange={() => {}}
                     value={(obj.decryption_key)? obj.decryption_key: ""}
+                    variant="outlined"
+                    size="small"
                 />
             </Grid>
         </Grid>
@@ -250,7 +258,7 @@ let campaignFunc = (obj) => {
         {patternAliases(obj.aliases)}
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end" className="mt-2"><span className="text-muted">Основная цель или желаемый результат:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Основная цель или желаемый результат:</span></Grid>
             <Grid item container md={7} >
                 <TextField
                     multiline
@@ -258,7 +266,9 @@ let campaignFunc = (obj) => {
                     disabled
                     onChange={() => {}}
                     value={(obj.objective)? obj.objective: ""}
-                    variant="outlined"/>
+                    variant="outlined"
+                    size="small"
+                />
             </Grid>
         </Grid>
     </React.Fragment>);
@@ -323,8 +333,6 @@ let domainNameFunc = (obj, handlerClick) => {
 
 let directoryFunc = (obj, handlerClick) => {
     let containsRefsIsExist = (typeof obj.refs === "undefined" || obj.refs === null || obj.refs.length === 0);
-
-    //console.log("func 'CreateShortInformationSTIXObject', method 'directoryFunc', obj = ", obj);
 
     if(!containsRefsIsExist){
         obj.refs.sort(sortId);
@@ -728,50 +736,40 @@ let fileFunc = (obj, handlerClick) => {
     </React.Fragment>);
 };
 
-/**
- <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Ссылка на объект Артифакт:</span></Grid>
-            <Grid item container md={7}>
-                {(typeof getLinkImage(obj.content_ref) !== "undefined" && _.isString(obj.content_ref) && obj.content_ref.length === 0)?
-                    <Button onClick={() => {                                        
-                        handlerClick(obj.id, obj.content_ref);
-                    }}>
-                        <img src={`/images/stix_object/${getLinkImage(obj.content_ref).link}`} width="25" height="25" />
-                            &nbsp;{obj.content_ref}
-                    </Button>:
-                    <React.Fragment>
-                        <Grid container direction="row">
-                            <Grid item container md={12} justifyContent="flex-start" className="text-muted mt-2">
-                                {obj.content_ref.id}
-                            </Grid>
-
-                        </Grid>
-                        <Grid container direction="row">
-                            <Grid item container md={12} justifyContent="flex-start">
-                                {artifactFunc(obj.content_ref)}
-                            </Grid>
-                        </Grid>
-                    </React.Fragment>}
-            </Grid>
-        </Grid>
- * 
-<CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? 
-                                            <CreateShortInformationSTIXObject 
-                                                obj={showRefElement.obj}
-                                                handlerClick={() => {}} 
-                                            />: 
-                                            "информация не найдена"}
-                                    </CardContent>
- */
-
 let identityFunc = (obj) => {
+    const getContentText = (elem, dicListType) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists[dicListType].content.length; i++){
+            if(elem === dictionaryLists[dicListType].content[i].name){
+                return dictionaryLists[dicListType].content[i].summary;
+            }
+        }
+
+        return "";
+    };
+
+    let textIdentityClass = getContentText(obj.identity_class, "identity-class-ov");
+    if(typeof textIdentityClass === "undefined"){
+        textIdentityClass = obj.identity_class;
+    }
+
+    let listSectors = obj.sectors.map((item) => {
+        let sector = getContentText(item, "industry-sector-ov");
+
+        return sector === "undefined"? item: sector;
+    });
+
     return (<React.Fragment>
         {patternName(obj.name)}
         {patternDescription(obj.description)}
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Роли для идентификации действий:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end">
+                <span className="text-muted mt-2">Роли для идентификации действий:</span>
+            </Grid>
             <Grid item md={7}>
                 <TokenInput
                     readOnly
@@ -783,52 +781,46 @@ let identityFunc = (obj) => {
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted">Тип физического лица или организации:</span>
+                <span className="text-muted mt-2">Тип физического лица или организации:</span>
             </Grid>
             <Grid item container md={7}>
                 <TextField
                     multiline
-                    //minRows={3}
-                    //maxRows={8}
                     disabled
                     fullWidth
                     onChange={() => {}}
-                    value={(obj.identity_class)? obj.identity_class: ""}
-                    variant="outlined"/>
+                    value={(textIdentityClass)? textIdentityClass: ""}
+                />
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted">Тип промышленного сектора:</span>
+                <span className="text-muted mt-2">Тип промышленного сектора:</span>
             </Grid>
             <Grid item container md={7}>
                 <TextField
                     multiline
-                    //minRows={3}
-                    //maxRows={8}
                     disabled
                     fullWidth
                     onChange={() => {}}
-                    value={(obj.sectors)? obj.sectors: ""}
-                    variant="outlined"/>
+                    value={(listSectors.length > 0)? listSectors.join(", "): ""}
+                />
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted">Любая контактная информация (email, телефонные номера и т.д.):</span>
+                <span className="text-muted mt-2">Любая контактная информация (email, тел. номера и т.д.):</span>
             </Grid>
             <Grid item container md={7}>
                 <TextField
                     multiline
-                    //minRows={3}
-                    //maxRows={8}
                     disabled
                     fullWidth
                     onChange={() => {}}
                     value={(obj.contact_information)? obj.contact_information: ""}
-                    variant="outlined"/>
+                />
             </Grid>
         </Grid>
     </React.Fragment>);
@@ -855,7 +847,9 @@ let intrusionSetFunc = (obj) => {
         {patternAliases(obj.aliases)}
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Высокоуровневые цели этого набора вторжения:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end">
+                <span className="text-muted mt-2">Высокоуровневые цели этого набора вторжения:</span>
+            </Grid>
             <Grid item md={7}>
                 <TokenInput
                     readOnly
@@ -866,15 +860,16 @@ let intrusionSetFunc = (obj) => {
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Уровень ресурсов атаки:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end">
+                <span className="text-muted mt-2">Уровень ресурсов атаки:</span>
+            </Grid>
             <Grid item md={7}>
                 <TextField
-                    select
                     disabled
                     fullWidth
                     value={obj.resource_level? obj.resource_level: "" }
-                    onChange={() => {}} >
-                </TextField>
+                    onChange={() => {}} 
+                />
             </Grid>
         </Grid>
     </React.Fragment>);
@@ -919,7 +914,9 @@ let opinionFunc = (obj) => {
                     fullWidth
                     onChange={() => {}}
                     value={(obj.explanation)? obj.explanation: ""}
-                    variant="outlined"/>
+                    variant="outlined"
+                    size="small"
+                />
             </Grid>
         </Grid>
 
@@ -934,12 +931,16 @@ let opinionFunc = (obj) => {
                     fullWidth
                     onChange={() => {}}
                     value={(obj.opinion)? obj.opinion: ""}
-                    variant="outlined"/>
+                    variant="outlined"
+                    size="small"
+                />
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Список авторов этого мнения:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end mt-2">
+                <span className="text-muted">Список авторов этого мнения:</span>
+            </Grid>
             <Grid item md={7}>
                 <TokenInput
                     readOnly
@@ -1004,7 +1005,9 @@ let noteFunc = (obj) => {
                     disabled
                     onChange={() => {}}
                     value={(obj.abstract)? obj.abstract: ""}
-                    variant="outlined"/>
+                    variant="outlined"
+                    size="small"
+                />
             </Grid>
         </Grid>
 
@@ -1017,7 +1020,9 @@ let noteFunc = (obj) => {
                     disabled
                     onChange={() => {}}
                     value={(obj.content)? obj.content: ""}
-                    variant="outlined"/>
+                    variant="outlined"
+                    size="small"
+                />
             </Grid>
         </Grid>
 
@@ -1039,20 +1044,23 @@ let processFunc = (obj) => {
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор процесса:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end">
+                <span className="text-muted mt-2">Уникальный идентификатор процесса:</span>
+            </Grid>
             <Grid item md={7}>
                 <TextField
-                    select
                     disabled
                     fullWidth
                     value={obj.pid? obj.pid: "" }
-                    onChange={() => {}} >
-                </TextField>
+                    onChange={() => {}} 
+                />
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время создания процесса:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end">
+                <span className="text-muted mt-2">Время создания процесса:</span>
+            </Grid>
             <Grid item md={7}>
                 {helpers.convertDateFromString(createdTime, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
@@ -1070,6 +1078,7 @@ let locationFunc = (obj) => {
                 <TextField
                     label="Страна (на латинице)"
                     disabled
+                    fullWidth
                     InputLabelProps={{ shrink: true }}
                     value={(obj.country)? obj.country: ""}
                     onChange={() => {}}
@@ -1079,6 +1088,7 @@ let locationFunc = (obj) => {
                 <TextField
                     label="Административный округ"
                     disabled
+                    fullWidth
                     InputLabelProps={{ shrink: true }}
                     value={(obj.administrative_area)? obj.administrative_area: ""}
                     onChange={() => {}}
@@ -1088,6 +1098,7 @@ let locationFunc = (obj) => {
                 <TextField
                     label="Город"
                     disabled
+                    fullWidth
                     InputLabelProps={{ shrink: true }}
                     value={(obj.city)? obj.city: ""}
                     onChange={() => {}}
@@ -1098,6 +1109,7 @@ let locationFunc = (obj) => {
                     label="Почтовый код"
                     type="number"
                     disabled
+                    fullWidth
                     InputLabelProps={{ shrink: true }}
                     value={(obj.postal_code)? obj.postal_code: ""}
                     onChange={() => {}}
@@ -1108,9 +1120,9 @@ let locationFunc = (obj) => {
         <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
             <Grid item container md={12} justifyContent="flex-start">
                 <TextField
-                    fullWidth
                     label="Адрес"
                     disabled
+                    fullWidth
                     InputLabelProps={{ shrink: true }}
                     value={(obj.street_address)? obj.street_address: ""}
                     onChange={() => {}}
@@ -1170,13 +1182,14 @@ let threatActorFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Перечень причин, мотиваций или целей стоящих за этим субъектом угрозы:</span></Grid>
             <Grid item md={7}>
                 <TextField
-                    select
                     disabled
                     fullWidth
+                    multiline
                     value={obj.primary_motivation? obj.primary_motivation: "" }
-                    onChange={() => {}} 
-                >
-                </TextField>
+                    onChange={() => {}}
+                    variant="outlined"
+                    size="small"
+                />
             </Grid>
         </Grid>
     </React.Fragment>);
@@ -1448,45 +1461,42 @@ let networkTrafficFunc = (obj, handlerClick) => {
 
 let ipv4AddrFunc = (obj) => {
     return <Grid container direction="row" spacing={3}>
-        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">IP адрес:</span></Grid>
+        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес:</span></Grid>
         <Grid item md={7}>
             <TextField
-                select
                 disabled
                 fullWidth
                 value={obj.value? obj.value: "" }
-                onChange={() => {}} >
-            </TextField>
+                onChange={() => {}} 
+            />
         </Grid>
     </Grid>;
 };
 
 let ipv6AddrFunc = (obj) => {
     return <Grid container direction="row" spacing={3}>
-        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">IP адрес:</span></Grid>
+        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес:</span></Grid>
         <Grid item md={7}>
             <TextField
-                select
                 disabled
                 fullWidth
                 value={obj.value? obj.value: "" }
-                onChange={() => {}} >
-            </TextField>
+                onChange={() => {}} 
+            />
         </Grid>
     </Grid>;
 };
 
 let macAddrFunc = (obj) => {
     return <Grid container direction="row" spacing={3}>
-        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">MAC адрес:</span></Grid>
+        <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">MAC адрес:</span></Grid>
         <Grid item md={7}>
             <TextField
-                select
                 disabled
                 fullWidth
                 value={obj.value? obj.value: "" }
-                onChange={() => {}} >
-            </TextField>
+                onChange={() => {}} 
+            />
         </Grid>
     </Grid>;
 };
@@ -1507,6 +1517,7 @@ let indicatorFunc = (obj) => {
                     onChange={() => {}}
                     value={(obj.pattern)? obj.pattern: ""}
                     variant="outlined"
+                    size="small"
                 />
             </Grid>
         </Grid>
@@ -1519,11 +1530,14 @@ let windowsRegistryKeyFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Ключ:</span></Grid>
             <Grid item md={7}>
                 <TextField
+                    multiline
                     fullWidth
                     disabled
                     InputLabelProps={{ shrink: true }}
                     onChange={() => {}}
                     value={(obj.key)? obj.key: ""}
+                    variant="outlined"
+                    size="small"
                 />
             </Grid>
         </Grid>
@@ -1551,11 +1565,14 @@ let x509CertificateFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Эмитент:</span></Grid>
             <Grid item md={7}>
                 <TextField
+                    multiline
                     fullWidth
                     disabled
                     InputLabelProps={{ shrink: true }}
                     onChange={() => {}}
                     value={(obj.issuer)? obj.issuer: ""}
+                    variant="outlined"
+                    size="small"
                 />
             </Grid>
         </Grid>
@@ -1578,17 +1595,20 @@ let x509CertificateFunc = (obj) => {
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Субъект:</span></Grid>
             <Grid item md={7}>
                 <TextField
+                    multiline
                     fullWidth
                     disabled
                     InputLabelProps={{ shrink: true }}
                     onChange={() => {}}
                     value={(obj.subject)? obj.subject: ""}
+                    variant="outlined"
+                    size="small"
                 />
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Серийный номер:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Серийный номер:</span></Grid>
             <Grid item md={7}>
                 <TextField
                     fullWidth
