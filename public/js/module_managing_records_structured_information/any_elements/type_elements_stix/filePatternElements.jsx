@@ -266,7 +266,7 @@ export default function CreateFilePatternElements(props){
         </Grid>
 
         {campaignPatterElement.parent_directory_ref && campaignPatterElement.parent_directory_ref.length !== 0?
-            <Grid container direction="row" spacing={3}>
+            <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
                 <Grid item container md={4} justifyContent="flex-end">
                     <span className="text-muted mt-3">Родительская директория файла:</span>
                 </Grid>
@@ -301,7 +301,7 @@ export default function CreateFilePatternElements(props){
             ""}
 
         {campaignPatterElement.content_ref && campaignPatterElement.content_ref.length !== ""?
-            <Grid container direction="row" spacing={3}>
+            <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
                 <Grid item container md={4} justifyContent="flex-end">
                     <span className="text-muted mt-3">Контент файла:</span>
                 </Grid>

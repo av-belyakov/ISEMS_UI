@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
+import { JSONTree } from "reactjsontree";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
@@ -93,7 +94,7 @@ export default function CreateEmailMessagePatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end">
                 <span className="text-muted mt-2">Время когда email сообщение было отправлено:</span>
             </Grid>
@@ -133,7 +134,7 @@ export default function CreateEmailMessagePatternElements(props){
         </Grid>
 
         {campaignPatterElement.from_ref && campaignPatterElement.from_ref.length !== 0?
-            <Grid container direction="row" spacing={3}>
+            <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
                 <Grid item container md={4} justifyContent="flex-end">
                     <span className="text-muted mt-3">Содержимое поля <strong><i>From</i></strong> заголовка email сообщения:</span>
                 </Grid>
@@ -458,7 +459,32 @@ export default function CreateEmailMessagePatternElements(props){
                             <Grid item md={12}><span className="text-muted">Дополнительная информация, относящаяся к объекту:</span></Grid>
                         </Grid>
                         <Grid container direction="row" className="mt-2">
-                            <Grid item md={12}><strong>{JSON.stringify(campaignPatterElement.additional_header_fields, null, 2)}</strong></Grid>
+                            <Grid item md={12}>
+                                {(campaignPatterElement !== null && campaignPatterElement.additional_header_fields)?
+                                    <JSONTree 
+                                        data={campaignPatterElement.additional_header_fields} 
+                                        theme={{
+                                            base00: "#272822",
+                                            base01: "#383830",
+                                            base02: "#49483e",
+                                            base03: "#75715e",
+                                            base04: "#a59f85",
+                                            base05: "#f8f8f2",
+                                            base06: "#f5f4f1",
+                                            base07: "#f9f8f5",
+                                            base08: "#f92672",
+                                            base09: "#fd971f",
+                                            base0A: "#f4bf75",
+                                            base0B: "#a6e22e",
+                                            base0C: "#a1efe4",
+                                            base0D: "#66d9ef",
+                                            base0E: "#ae81ff",
+                                            base0F: "#cc6633",
+                                        }}
+                                        hideRoot
+                                    />:
+                                    ""}    
+                            </Grid>
                         </Grid>
                     </React.Fragment>:
                 ""

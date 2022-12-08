@@ -14,9 +14,39 @@ import reducerFilePatternSTIXObjects from "../reducer_handlers/reducerFileSTIXOb
 import CreateFilePatternElements from "../type_elements_stix/filePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-const listFieldSTIXObjectRefs = {
-    "file": "updateRefObjFile",
-    "directory": "updateRefObjDirectory",
+/**
+ * Надо рассмотреть все CO STIX объекты ссылки на которые могут содержатся в свойстве contains_refs!!!!!!!
+ */
+let listObjRefs = {
+    "file": {
+        "artifact": [
+            { elemName: "content_ref", elemType: "string" }, 
+            { elemName: "contains_refs", elemType: "array" },
+        ]
+    },
+    "domain-name": {
+        "ipv4-addr": [
+            { elemName: "resolves_to_refs", elemType: "array" },
+        ],
+        "ipv6-addr": [
+            { elemName: "resolves_to_refs", elemType: "array" },
+        ],
+        "domain-name": [
+            { elemName: "resolves_to_refs", elemType: "array" },
+        ],
+    },
+    "email-message": {
+        "artifact": [
+            { elemName: "raw_email_ref", elemType: "string" },
+        ],
+        "email-addr": [
+            { elemName: "from_ref", elemType: "string" },
+            { elemName: "sender_ref", elemType: "string" },
+            { elemName: "to_refs", elemType: "array" },
+            { elemName: "cc_refs", elemType: "array" },
+            { elemName: "bcc_refs", elemType: "array" },
+        ],
+    },
 };
 
 function isExistTransmittedData(data){
@@ -56,6 +86,8 @@ function reducerShowRef(state, action){
         return state;
     };
 
+    let type;
+
     switch(action.type){
     case "addObject":
 
@@ -68,6 +100,45 @@ function reducerShowRef(state, action){
         }
 
         state.obj = action.data;
+
+        return {...state};
+    case "updateRefObj":
+        console.log("func |||'reducerShowRef'|||, action.type:", action.type, " action.data:", action.data, "state.id = ", state.id, " state.obj = ", state.obj);
+        
+        //file--fa4c163f-e7e2-42a2-a93e-d44f26f522ff
+        //email-message--cf9b4b7f-14c8-5955-8065-020e0316b559
+
+        type = state.id.split("--")[0];
+        if((typeof listObjRefs[type] !== "undefined") && (typeof listObjRefs[type][action.data.type] !== "undefined") && Array.isArray(listObjRefs[type][action.data.type])){
+            for(let obj of listObjRefs[type][action.data.type]){
+                console.log("======= state.obj:", state.obj, " obj.elemName:", obj.elemName, " state.obj[obj.elemName]:", state.obj[obj.elemName]);
+                
+                switch(obj.elemType){
+                case "string":
+
+                    console.log("OBJ NAME = ", obj.elemName);
+
+                    if(state.obj[obj.elemName] === action.data.id){
+                        state.obj[obj.elemName] = action.data;
+                    }
+                    break;
+                case "array":
+                    if(!Array.isArray(state.obj[obj.elemName])){
+                        break;
+                    }
+
+                    for(let i = 0; i < state.obj[obj.elemName].length; i++){
+                        if(state.obj[obj.elemName][i] !== action.data.id){
+                            continue;
+                        }
+
+                        state.obj[obj.elemName][i] = action.data;
+                    }
+
+                    break;
+                }
+            }
+        }
 
         return {...state};
     case "updateRefObjDirectory":
@@ -276,7 +347,13 @@ function CreateMajorContent(props){
                         }
 
                         for(let obj of data.information.additional_parameters.transmitted_data){
-                            dispatchShowRef({ type: "updateRefObjDirectory", data: obj });
+                            if(parentId.includes("directory")){
+                                dispatchShowRef({ type: "updateRefObjDirectory", data: obj });
+
+                                return;
+                            }
+
+                            dispatchShowRef({ type: "updateRefObj", data: obj });
                         }
                     });
 

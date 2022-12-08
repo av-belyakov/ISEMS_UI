@@ -9,7 +9,7 @@ import {
     Typography,
 } from "@material-ui/core";
 import { Form } from "react-bootstrap";
-import _ from "lodash";
+import _, { isString } from "lodash";
 import TokenInput from "react-customize-token-input";
 import PropTypes from "prop-types";
 
@@ -31,6 +31,10 @@ let sortId = (a, b) => {
 };
 
 let getLinkImage = (elem) => {
+    if(!isString(elem)){
+        return;
+    }
+
     let tmp = [""];
     if(typeof elem !== "undefined" && elem.includes("--")){
         tmp = elem.split("--");
@@ -282,6 +286,13 @@ let courseOfActionFunc = (obj) => {
 };
 
 let domainNameFunc = (obj, handlerClick) => {
+    /**
+     * obj.resolves_to_refs может быть только
+     * - ipv4-addr
+     * - ipv6-addr
+     * - domain-name
+     */
+
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Сетевое доменное имя:</span></Grid>
@@ -306,21 +317,26 @@ let domainNameFunc = (obj, handlerClick) => {
             return <Grid container direction="row" spacing={3}>
                 <Grid item container md={12}>
                     <ol>
-                        {obj.resolves_to_refs.map((item, key) => {                        
+                        {obj.resolves_to_refs.map((item, key) => {
+                            let elem = item;
+                            if(!isString(item)){
+                                elem = item.value;
+                            }
+
                             return (<ul key={`key_resolves_to_ref_button_${key}`}>
-                                {(typeof getLinkImage(item) !== "undefined")?
+                                {(typeof getLinkImage(elem) !== "undefined")?
                                     <Button onClick={() => {                                        
-                                        handlerClick(obj.id, item);
+                                        handlerClick(obj.id, elem);
                                     }}>
-                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
-                                        &nbsp;{item}
+                                        <img src={`/images/stix_object/${getLinkImage(elem).link}`} width="25" height="25" />
+                                        &nbsp;{elem}
                                     </Button>:
                                     <TextField
                                         fullWidth
                                         disabled
                                         InputLabelProps={{ shrink: true }}
                                         onChange={() => {}}
-                                        value={item}
+                                        value={elem}
                                     />}
                             </ul>);
                         })}
@@ -470,7 +486,25 @@ let emailAddrFunc = (obj) => {
 };
 
 let emailMessageFunc = (obj, handlerClick) => {
+    /**
+     * from_ref может быть только
+     * - email-address
+     * sender_ref может быть только
+     * - email-address
+     * to_refs может быть только
+     * - email-address
+     * cc_refs может быть только
+     * - email-address
+     * bcc_refs может быть только
+     * - email-address
+     * raw_email_ref может быть только
+     * - artifact
+     */
+
     console.log("func 'emailMessageFunc', obj:", obj);
+
+    let fromRef = isString(obj.from_ref)? obj.from_ref: obj.from_ref.value;
+    let senderRef = isString(obj.sender_ref)? obj.sender_ref: obj.sender_ref.value;
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
@@ -513,19 +547,19 @@ let emailMessageFunc = (obj, handlerClick) => {
                 <span className="text-muted mt-2">Содержимое поля <strong><i>From</i></strong> заголовка email сообщения:</span>
             </Grid>
             <Grid item container md={7}>
-                {(typeof getLinkImage(obj.from_ref) !== "undefined")?
+                {(typeof getLinkImage(fromRef) !== "undefined")?
                     <Button onClick={() => {                                        
-                        handlerClick(obj.id, obj.from_ref);
+                        handlerClick(obj.id, fromRef);
                     }}>
-                        <img src={`/images/stix_object/${getLinkImage(obj.from_ref).link}`} width="25" height="25" />
-                        &nbsp;{obj.from_ref}
+                        <img src={`/images/stix_object/${getLinkImage(fromRef).link}`} width="25" height="25" />
+                        &nbsp;{fromRef}
                     </Button>:
                     <TextField
                         fullWidth
                         disabled
                         InputLabelProps={{ shrink: true }}
                         onChange={() => {}}
-                        value={obj.from_ref}
+                        value={fromRef}
                     />}
             </Grid>
         </Grid>
@@ -535,19 +569,19 @@ let emailMessageFunc = (obj, handlerClick) => {
                 <span className="text-muted mt-2">Содержимое поля <strong><i>Sender</i></strong> заголовка email сообщения:</span>
             </Grid>
             <Grid item container md={7}>
-                {(typeof getLinkImage(obj.sender_ref) !== "undefined")?
+                {(typeof getLinkImage(senderRef) !== "undefined")?
                     <Button onClick={() => {                                        
-                        handlerClick(obj.id, obj.sender_ref);
+                        handlerClick(obj.id, senderRef);
                     }}>
-                        <img src={`/images/stix_object/${getLinkImage(obj.sender_ref).link}`} width="25" height="25" />
-                        &nbsp;{obj.sender_ref}
+                        <img src={`/images/stix_object/${getLinkImage(senderRef).link}`} width="25" height="25" />
+                        &nbsp;{senderRef}
                     </Button>:
                     <TextField
                         fullWidth
                         disabled
                         InputLabelProps={{ shrink: true }}
                         onChange={() => {}}
-                        value={obj.sender_ref}
+                        value={senderRef}
                     />}
             </Grid>
         </Grid>
@@ -559,23 +593,25 @@ let emailMessageFunc = (obj, handlerClick) => {
         </Grid>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={12}>
-                {(obj.to_refs && (typeof obj.to_refs !== "undefined") && (obj.to_refs.length > 0))? 
+                {(obj.to_refs && (typeof obj.to_refs !== "undefined") && (Array.isArray(obj.to_refs)))?
                     <ol>
                         {obj.to_refs.map((item, key) => {
+                            let elem = isString(item)? item: item.value;
+
                             return (<ul key={`key_email_message_${key}`}>
-                                {(typeof getLinkImage(item) !== "undefined")?
+                                {(typeof getLinkImage(elem) !== "undefined")?
                                     <Button onClick={() => {                                        
-                                        handlerClick(obj.id, item);
+                                        handlerClick(obj.id, elem);
                                     }}>
-                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
-                                        &nbsp;{item}
+                                        <img src={`/images/stix_object/${getLinkImage(elem).link}`} width="25" height="25" />
+                                        &nbsp;{elem}
                                     </Button>:
                                     <TextField
                                         fullWidth
                                         disabled
                                         InputLabelProps={{ shrink: true }}
                                         onChange={() => {}}
-                                        value={item}
+                                        value={elem}
                                     />}
                             </ul>);
                         })}
@@ -591,23 +627,25 @@ let emailMessageFunc = (obj, handlerClick) => {
         </Grid>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={12}>
-                {(obj.cc_refs && (typeof obj.cc_refs !== "undefined") && (obj.cc_refs.length > 0))? 
+                {(obj.cc_refs && (typeof obj.cc_refs !== "undefined") && (Array.isArray(obj.cc_refs)))? 
                     <ol>
                         {obj.cc_refs.map((item, key) => {
+                            let elem = isString(item)? item: item.value;
+
                             return (<ul key={`key_email_message_${key}`}>
-                                {(typeof getLinkImage(item) !== "undefined")?
+                                {(typeof getLinkImage(elem) !== "undefined")?
                                     <Button onClick={() => {                                        
-                                        handlerClick(obj.id, item);
+                                        handlerClick(obj.id, elem);
                                     }}>
-                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
-                                        &nbsp;{item}
+                                        <img src={`/images/stix_object/${getLinkImage(elem).link}`} width="25" height="25" />
+                                        &nbsp;{elem}
                                     </Button>:
                                     <TextField
                                         fullWidth
                                         disabled
                                         InputLabelProps={{ shrink: true }}
                                         onChange={() => {}}
-                                        value={item}
+                                        value={elem}
                                     />}
                             </ul>);
                         })}
@@ -623,23 +661,25 @@ let emailMessageFunc = (obj, handlerClick) => {
         </Grid>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={12}>
-                {(obj.bcc_refs && (typeof obj.bcc_refs !== "undefined") && (obj.bcc_refs.length > 0))? 
+                {(obj.bcc_refs && (typeof obj.bcc_refs !== "undefined") && (Array.isArray(obj.bcc_refs)))? 
                     <ol>
                         {obj.bcc_refs.map((item, key) => {
+                            let elem = isString(item)? item: item.value;
+
                             return (<ul key={`key_email_message_${key}`}>
-                                {(typeof getLinkImage(item) !== "undefined")?
+                                {(typeof getLinkImage(elem) !== "undefined")?
                                     <Button onClick={() => {                                        
-                                        handlerClick(obj.id, item);
+                                        handlerClick(obj.id, elem);
                                     }}>
-                                        <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
-                                        &nbsp;{item}
+                                        <img src={`/images/stix_object/${getLinkImage(elem).link}`} width="25" height="25" />
+                                        &nbsp;{elem}
                                     </Button>:
                                     <TextField
                                         fullWidth
                                         disabled
                                         InputLabelProps={{ shrink: true }}
                                         onChange={() => {}}
-                                        value={item}
+                                        value={elem}
                                     />}
                             </ul>);
                         })}

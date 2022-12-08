@@ -12,7 +12,6 @@ import validator from "validatorjs";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-//import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 export default function CreateEmailAddressPatternElements(props){
@@ -90,7 +89,7 @@ export default function CreateEmailAddressPatternElements(props){
         </Grid>
 
         {campaignPatterElement.belongs_to_ref && campaignPatterElement.belongs_to_ref.length !== 0?
-            <Grid container direction="row" spacing={3}>
+            <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
                 <Grid item container md={4} justifyContent="flex-end">
                     <span className="text-muted mt-3">Ссылка на учетную запись пользователя, которой принадлежит адрес электронной почты:</span>
                 </Grid>
