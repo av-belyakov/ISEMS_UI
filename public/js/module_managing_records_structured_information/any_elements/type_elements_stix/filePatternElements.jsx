@@ -17,14 +17,13 @@ import { red } from "@material-ui/core/colors";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
-import _ from "lodash";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 const defaultData = "0001-01-01T00:00:00.000Z";
-const minDefaultData = new Date();
+const currentData = new Date();
 
 export default function CreateFilePatternElements(props){
     let { 
@@ -47,20 +46,27 @@ export default function CreateFilePatternElements(props){
     let [ expanded, setExpanded ] = React.useState(false);
     let [ refId, setRefId ] = React.useState("");
 
-    let [ isInvalidSizeValue, setIsInvalidSizeValue ] = useState(((typeof campaignPatterElement.size !== "undefined") && (campaignPatterElement.size !== 0)));
+    let [ isInvalidSizeValue, setIsInvalidSizeValue ] = useState(((typeof campaignPatterElement.size === "undefined") || (campaignPatterElement.size === 0)));
     let [ isInvalidNameValue, setIsInvalidNameValue ] = useState(((typeof campaignPatterElement.name === "undefined") || (campaignPatterElement.name === "")));
     let [ valueTmpHashSum, setValueTmpHashSum ] = useState({ type: "", description: "" });
     let [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true);
 
-    console.log("func 'CreateFilePatternElements', isInvalidSizeValue = '", isInvalidSizeValue, "', campaignPatterElement.size === '':", campaignPatterElement.size === "", " typeof campaignPatterElement.size === 'undefined':", typeof campaignPatterElement.size === "undefined");
+    //console.log("func 'CreateFilePatternElements', isInvalidSizeValue = '", isInvalidSizeValue, "', campaignPatterElement.size === '':", campaignPatterElement.size === "", " typeof campaignPatterElement.size === 'undefined':", typeof campaignPatterElement.size === "undefined");
     console.log("((typeof campaignPatterElement.size === 'undefined') || (campaignPatterElement.size === 0)) : ", ((typeof campaignPatterElement.size === "undefined") || (campaignPatterElement.size === 0)));
-    console.log("func 'CreateFilePatternElements', campaignPatterElement:", campaignPatterElement, " showRefElement:", showRefElement);
+    console.log("campaignPatterElement: ", campaignPatterElement);
+    //console.log("func 'CreateFilePatternElements', campaignPatterElement:", campaignPatterElement, " showRefElement:", showRefElement);
 
-    let mtime = minDefaultData;
-    let atime = minDefaultData;
+    React.useEffect(() => {
+        if((typeof campaignPatterElement.size !== "undefined") && new RegExp("^[0-9]{1,}$").test(campaignPatterElement.size) && campaignPatterElement.size[0] !== "0"){
+            setIsInvalidSizeValue(false);
+        }
+    }, [ campaignPatterElement.size ]);
+
+    let mtime = currentData;
+    let atime = currentData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
-    
+
     if(currentTimeZoneOffsetInHours > 0){
         if(typeof campaignPatterElement.mtime !== "undefined" && campaignPatterElement.mtime !== defaultData){
             mtime = new Date(Date.parse(campaignPatterElement.mtime) + ms);

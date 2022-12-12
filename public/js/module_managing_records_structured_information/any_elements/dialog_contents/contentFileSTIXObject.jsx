@@ -15,8 +15,11 @@ import CreateFilePatternElements from "../type_elements_stix/filePatternElements
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
 /**
- * Надо рассмотреть все CO STIX объекты ссылки на которые могут содержатся в свойстве contains_refs!!!!!!!
- */
+            * Надо рассмотреть все CO STIX объекты ссылки на которые могут содержатся в свойстве contains_refs!!!!!!!
+             * 
+                Доделать здесь и обратить внимание на доделки в contentFileSTIXObject.jsx
+             *
+            */
 let listObjRefs = {
     "file": {
         "artifact": [
@@ -284,11 +287,34 @@ function CreateMajorContent(props){
     }, [ currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
+
             state.mtime = new Date(state.mtime).toISOString();
             state.atime = new Date(state.atime).toISOString();
             state.size = Number(state.size);
 
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            console.log("func 'useEffect(()' [ buttonSaveChangeTrigger ] state:", state);
+
+            /**
+email-message--cf9b4b7f-14c8-5955-8065-020e0316b559
+ipv4-addr--ff26c055-6336-5bc5-b98d-13d6226742dd
+directory--93c0a9b0-520d-545d-9094-1a08ddf46b05
+domain-name--95bc69b6-385e-40d8-9a15-72b1631ec1b7
+file--0203b5c8-f8b6-4ddb-9ad0-527d727f968b
+artifact--67129693-01e7-4945-b0fb-0074288647dc
+
+
+
+artifact--4cce66f8-6eaa-53cb-85d5-3a85fca3a6c5
+ */
+
+            //Пока что отключил передачу обновление в MRSICT
+            //похоже проблемма в самом MRSICT так как я забыл добавить в метод
+            //func (fstix FileCyberObservableObjectSTIX) DecoderJSON(raw *json.RawMessage) (interface{}, error) {
+            //добавить ContainsRefs: commonObject.ContainsRefs и ContentRef: commonObject.ContentRef,
+            //однако есть проблемма с ContainsRefs: commonObject.ContainsRefs, ну и кроме того, потом нужно обновить
+            //MRSICT
+
+            //socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }

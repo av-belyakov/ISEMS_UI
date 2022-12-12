@@ -17,20 +17,12 @@ export default function reducerFilePatternSTIXObjects(state, action){
         return {};
     case "addId":
         return {...state, id: action.data};
-    /*case "updateValue":
-        return {...state, value: action.data};
-    case "updateResolvesToRefs":
-        for(let i = 0; i < state.resolves_to_refs.length; i++){
-            if(state.resolves_to_refs[i] === action.data.id){
-                state.resolves_to_refs[i] = action.data.value;
-            }
-        }
-    
-        return {...state};*/
     case "updateName":
         return {...state, name: action.data};
     case "updateSize":
         return {...state, size: action.data};
+    case "updateCTime":
+        return {...state, ctime: action.data};
     case "updateNameEnc":
         return {...state, name_enc: action.data};
     case "updateMineType":
@@ -46,8 +38,6 @@ export default function reducerFilePatternSTIXObjects(state, action){
         } else {
             mtime = new Date(tmp - (ms * -1)).toISOString();
         }
-    
-        //console.log("func 'reducerFilePatternSTIXObjects', action.type:", action.type, " action.data:", action.data, " mtime:", mtime);
 
         return {...state, mtime: mtime};
     case "updateDateTimeAtime":
@@ -60,15 +50,11 @@ export default function reducerFilePatternSTIXObjects(state, action){
         }
     
         return {...state, atime: atime};
+    case "updateAddHashes":       
+        if(!state.hashes){
+            state.hashes = {};
+        }
 
-        /**
-            ParentDirectoryRef IdentifierTypeSTIX (string)
-            Hashes HashesTypeSTIX         `json:"hashes" bson:"hashes"`
-            ParentDirectoryRef IdentifierTypeSTIX
-            ContainsRefs []IdentifierTypeSTIX ([]string)
-	        ContentRef         IdentifierTypeSTIX
-        */
-    case "updateAddHashes":
         state.hashes[action.data.type] = action.data.description;
 
         return {...state};

@@ -17,7 +17,7 @@ export default function CreateAutonomousSystemPatternElements(props){
     let [ invalidNumber, setInvalidNumber ] = React.useState(((typeof campaignPatterElement.number === "undefined") || (campaignPatterElement.number === 0)));
 
     React.useEffect(() => {
-        if((typeof campaignPatterElement.number !== "undefined") && new RegExp("^[0-9]{1,}$").test(campaignPatterElement.number)){
+        if((typeof campaignPatterElement.number !== "undefined") && new RegExp("^[0-9]{1,}$").test(campaignPatterElement.number) && campaignPatterElement.number[0] !== "0"){
             setInvalidNumber(false);
         }
     }, [campaignPatterElement.number]);
@@ -54,7 +54,9 @@ export default function CreateAutonomousSystemPatternElements(props){
                     size="small"
                     disabled={isDisabled}
                     onChange={(e) => {
-                        if(!new RegExp("^[0-9]{1,}$").test(e.target.value)){
+                        let number = e.target.value;
+
+                        if(!new RegExp("^[0-9]{1,}$").test(number) || number[0] === "0"){
                             setInvalidNumber(true);
                         } else {
                             setInvalidNumber(false);

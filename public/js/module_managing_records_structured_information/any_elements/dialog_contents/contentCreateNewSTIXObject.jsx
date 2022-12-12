@@ -43,6 +43,7 @@ const CreateDirectoryPatternNewSTIXObject = lazy(() => import("./contentDirector
 const CreateDomainNamePatternNewSTIXObject = lazy(() => import("./contentDomainNamePatternNewSTIXObject.jsx"));
 const CreateEmailAddrPatternNewSTIXObject = lazy(() => import("./contentEmailAddrPatternNewSTIXObject.jsx"));
 const CreateEmailMessagePatternNewSTIXObject = lazy(() => import("./contentEmailMessagePatternNewSTIXObject.jsx"));
+const CreateFilePatternNewSTIXObject = lazy(() => import("./contentFilePatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -556,7 +557,7 @@ function somethingModule(nameSTIX){
     const nameList = {
         "artifact": CreateArtifactPatternNewSTIXObject, 
         "directory": CreateDirectoryPatternNewSTIXObject, 
-        //"file": CreateFilePatternElements, 
+        "file": CreateFilePatternNewSTIXObject, 
         //"mutex": CreateMutexPatternElements,
         //"process": CreateProcessPatternElements, 
         //"software": CreateSoftwarePatternElements,

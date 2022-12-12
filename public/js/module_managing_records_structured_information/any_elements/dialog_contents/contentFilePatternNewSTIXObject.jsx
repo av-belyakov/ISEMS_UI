@@ -66,12 +66,15 @@ function CreateMajorElements(props){
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerFilePatternSTIXObjects, {});
-    if(!state.date){
-        dispatch({ type: "updateDate", data: currentTime });
+
+    console.log("func 'CreateFilePatternNewSTIXObject', state:", state);
+
+    if(!state.ctime){
+        dispatch({ type: "updateCTime", data: currentTime });
     }
 
     useEffect(() => {
-        if(projectPatterElement.type === "email-message"){
+        if(projectPatterElement.type === "file"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
@@ -79,7 +82,7 @@ function CreateMajorElements(props){
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "email-message";
+            stateTmp.type = "file";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -95,10 +98,6 @@ function CreateMajorElements(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonChangeClick ]);
 
-    //const handlerCheckStateButtonIsDisabled = () => {
-    //    handlerChangeButtonAdd(false);
-    //};
-
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
         if(obj.modalType === "granular_markings") {
             dispatch({ type: "updateGranularMarkings", data: obj.data });
@@ -112,9 +111,16 @@ function CreateMajorElements(props){
     };
 
     const handlerCheckStateButtonIsDisabled = (elem, type) => {
+        if(typeof state === "undefined"){
+            return;
+        }
+
+        let isNameExist = (typeof state.name === "undefined");
+        let isSizeExist = (typeof state.size === "undefined");
+
         switch(type){
         case "name":
-            if((elem.length !== 0) && state && helpers.checkInputValidation({
+            if((elem.length !== 0) && !isSizeExist && helpers.checkInputValidation({
                 "name": "integer", 
                 "value": state.size, 
             })){           
@@ -125,21 +131,10 @@ function CreateMajorElements(props){
 
             break;
         case "size":
-            /*if(typeof elem !== "undefined"){
-                if(helpers.checkInputValidation({
-                    "name": "integer", 
-                    "value": elem, 
-                }) && elem[0] !== "0"){
-                    return handlerChangeButtonAdd(false);
-                }
-
-                return handlerChangeButtonAdd(true);
-            }*/
-
             if((helpers.checkInputValidation({
                 "name": "integer", 
                 "value": elem, 
-            }) && elem[0] !== "0") && state && (state.name.length !== 0)){           
+            }) && elem[0] !== "0") && !isNameExist && (state.name.length !== 0)){           
                 handlerChangeButtonAdd(false);
             } else {
                 handlerChangeButtonAdd(true);
@@ -147,10 +142,10 @@ function CreateMajorElements(props){
 
             break;
         default:
-            if(state && ((helpers.checkInputValidation({
+            if(!isSizeExist && ((helpers.checkInputValidation({
                 "name": "integer", 
                 "value": state.size, 
-            }) && state.size[0] !== "0") && (state.name.length !== 0))){           
+            }) && state.size[0] !== "0") && !isNameExist && (state.name.length !== 0))){           
                 handlerChangeButtonAdd(false);
             } else {
                 handlerChangeButtonAdd(true);
@@ -173,12 +168,6 @@ function CreateMajorElements(props){
                 <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
 
-            {/**
-             * 
-                Доделать здесь и обратить внимание на доделки в contentFileSTIXObject.jsx
-             *
-            */}
-
             <CreateFilePatternElements 
                 isDisabled={false}
                 showRefElement={{}}
@@ -199,20 +188,6 @@ function CreateMajorElements(props){
                 handlerChangeDateTimeMtime={(e) => { dispatch({ type: "updateDateTimeMtime", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerChangeDateTimeAtime={(e) => { dispatch({ type: "updateDateTimeAtime", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />
-            {/*<CreateEmailMessagePatternElements
-                isDisabled={false}
-                showRefElement={{}}
-                campaignPatterElement={state}
-                handlerBody={(e) => { dispatch({ type: "updateBody", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerSubject={(e) => { dispatch({ type: "updateSubject", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDateSend={(e) => { dispatch({ type: "updateDateSend", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerMessageId={(e) => { dispatch({ type: "updateMessageId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerContentType={(e) => { dispatch({ type: "updateContentType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerIsMultipart={(e) => { dispatch({ type: "updateIsMultipart", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerButtonShowLink={() => {}}
-                handlerAddReceivedLines={(e) => { dispatch({ type: "updateReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDeleteReceivedLines={(e) => { dispatch({ type: "deleteReceivedLines", data: e }); handlerCheckStateButtonIsDisabled(); }}
-/>*/}
 
             <CreateElementAdditionalTechnicalInformationCO 
                 objectId={currentObjectId}
