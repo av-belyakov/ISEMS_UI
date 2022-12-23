@@ -152,9 +152,11 @@ function CreateMajorContent(props){
     useEffect(() => {
         if(buttonSaveChangeTrigger){
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
     const handlerCheckStateButtonIsDisabled = () => {

@@ -13,7 +13,7 @@ import {
 import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
 import { makeStyles } from "@material-ui/core/styles";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
-import { grey, green, red } from "@material-ui/core/colors";
+import { grey, green, red, blue } from "@material-ui/core/colors";
 import { JSONTree } from "reactjsontree";
 import { v4 as uuidv4 } from "uuid";
 import { cloneDeep } from "lodash";
@@ -287,7 +287,8 @@ function GetGranularMarkings(props){
                         setButtonAddNewGMIsDisabled(false);
                         setButtonAddSelectorIsDisabled(true);
                     }} 
-                    disabled={buttonAddSelectorIsDisabled} 
+                    disabled={buttonAddSelectorIsDisabled}
+                    style={{ color: blue[500] }} 
                     color="primary" >
                         добавить селектор
                 </Button>

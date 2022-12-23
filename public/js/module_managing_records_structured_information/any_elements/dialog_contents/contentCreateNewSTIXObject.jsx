@@ -44,6 +44,7 @@ const CreateDomainNamePatternNewSTIXObject = lazy(() => import("./contentDomainN
 const CreateEmailAddrPatternNewSTIXObject = lazy(() => import("./contentEmailAddrPatternNewSTIXObject.jsx"));
 const CreateEmailMessagePatternNewSTIXObject = lazy(() => import("./contentEmailMessagePatternNewSTIXObject.jsx"));
 const CreateFilePatternNewSTIXObject = lazy(() => import("./contentFilePatternNewSTIXObject.jsx"));
+const CreateIPv4AddrPatternNewSTIXObject = lazy(() => import("./contentIPv4AddrPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -471,7 +472,6 @@ export default function CreateDialogContentNewSTIXObject(props){
  4. если поиск выполняется по id то надо автоматически проверить тип объетка по его id
  5. а при выборе типа объекта автоматически выбирать свойство в которое добавлять свойство (если данный тип можно добавить в несколько свойств то приоритет тому
  в котором хранится список), если такого нет или их несколько то выбирать первое попавшийся свойство
-
 /
 здесь должно быть поле для просмотра и редактирования найденных STIX объектов и вновь созданных объектов, при этом вся обработка данных объекта
 должна выполнятся здесь. Нужно предусмотреть кнопку 'добавить' для добавления вновь созданных объектов и объектов по которым выполнялось редактирование
@@ -576,7 +576,7 @@ function somethingModule(nameSTIX){
         ////"incident": CreateIncidentSTIXObject,
         "infrastructure": CreateInfrastructurePatternNewSTIXObject,
         "intrusion-set": CreateIntrusionSetPatternNewSTIXObject,
-        //"ipv4-addr": CreateIpv4AddrPatternElements,
+        "ipv4-addr": CreateIPv4AddrPatternNewSTIXObject,
         //"ipv6-addr": CreateIpv6AddrPatternElements,
         "location": CreateLocationPatternNewSTIXObject,
         //"mac-addr": CreateMacAddrPatternElements,

@@ -14,7 +14,8 @@ import {
     Typography, 
     Grid,
     Paper, 
-    LinearProgress } from "@material-ui/core";
+    LinearProgress,
+} from "@material-ui/core";
 import { red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
@@ -22,7 +23,7 @@ import PropTypes from "prop-types";
 import { helpers } from "../../common_helpers/helpers";
 import { CreateButtonNewReport } from "../buttons/createButtonNewReport.jsx";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((/*theme*/) => ({
     root: {
         width: "100%",
     },
@@ -106,11 +107,9 @@ export default function CreateMainTableForReport(props) {
                 listIdReport.push(item.id);
             }
     
-            if(listIdReport.length > 0){
-                setIsShowProgress(false);
-            }
-    
+            setIsShowProgress(false);
             setListReports(listReportsTmp);
+
             socketIo.emit("isems-mrsi ui request: get short information about groups which report available", { arguments: listIdReport });
         };
 
@@ -119,11 +118,13 @@ export default function CreateMainTableForReport(props) {
         return () => {
             socketIo.off("isems-mrsi response ui: send search request, table page report", listenerSearchTableReport);    
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ listReports, setListReports, sendNewSearch, handlerChangeSendNewSearch ]);
 
     useEffect(() => {
         //запрос полной информации по заданным параметрам
         socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: searchReguest });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     console.log("func 'CreateMainTableForReport' MOUNT === TABLE ===");
@@ -249,6 +250,7 @@ function ShowDocumentCount(props){
         return () => {
             socketIo.off("isems-mrsi response ui: send search request, count found elem, table page report", listenerCountFoundElem);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ setCountSearchReports, handlerCountSearchedReports ]);
 
     return (<Grid container direction="row" className="pb-2">
@@ -296,8 +298,6 @@ function CreateTable(props){
                 return;
             }
     
-            //console.log(333333333);
-    
             let tmp = listGroupsWhichReportAvailable.slice();
             for(let item of data.information.additional_parameters){
                 if(typeof tmp.find((elem) => {
@@ -315,6 +315,7 @@ function CreateTable(props){
         return () => {
             socketIo.off("isems-mrsi response ui: short information about groups which report available", listenerGroupAvailable);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ listGroupsWhichReportAvailable, setListGroupsWhichReportAvailable ]);
 
     const classes = useStyles();
@@ -356,75 +357,79 @@ function CreateTable(props){
         </Grid>);
     }
 
-    //console.log("countSearchReports: ", countSearchReports);
-    //console.log("countShowReportsPerPage: ", countShowReportsPerPage);
-    //console.log("numCurrentPagePagination: ", numCurrentPagePagination);
-
     return (<Paper className={classes.root}>
-        <TableContainer className={classes.container}>
-            <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                    <TableRow>
-                        {columns.map((column) => (
-                            <TableCell
-                                key={column.id}
-                                align={column.align}
-                                style={{ minWidth: column.minWidth }} >
-                                {column.label}
-                            </TableCell>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {listReports.map((item, num) => {
-                        let imgTypeSTIX = "",
-                            timePublished = <span className="text-secondary">не опубликован</span>;
-                        
-                        if(Date.parse(item.published) > 0){
-                            timePublished = helpers.convertDateFromString(item.published, {});
-                        }
-
-                        let currentType = helpers.getLinkImageSTIXObject(item.type);
-                        if(typeof currentType !== "undefined"){
-                            imgTypeSTIX = <Tooltip title={currentType.description} key={`key_tooltip_report_type_${currentType.link}`}>
-                                <img src={`/images/stix_object/${currentType.link}`} width="35" height="35" />
-                            </Tooltip>;
-                        }
-
-                        if((num >= (countShowReportsPerPage * numCurrentPagePagination)) && (num < (countShowReportsPerPage * (numCurrentPagePagination + 1)))){
-                            return (<TableRow 
-                                key={`table_row_${item.id}`} 
-                                hover role="checkbox" tabIndex={-1} 
-                                onClick={(elem) => { handlerTableOnClick(elem, item.id); }}>
-                                <TableCell>{`${++num}.`}</TableCell>
-                                <TableCell align="center">{imgTypeSTIX}</TableCell>
-                                <TableCell >{getChipForGroups(item.id)}</TableCell>
-                                <TableCell>{helpers.convertDateFromString(item.created, {})}</TableCell>
-                                <TableCell>{helpers.convertDateFromString(item.modified, {})}</TableCell>
-                                <TableCell>{timePublished}</TableCell>
-                                <TableCell>{item.name}</TableCell>
-                                <TableCell align="right">{item.report_types.map((elem) => {
-                                    let linkImage = helpers.getLinkImageSTIXObject(elem);
-    
-                                    if(typeof linkImage === "undefined"){
-                                        return;
-                                    }
-    
-                                    return (<Tooltip title={linkImage.description} key={`key_tooltip_report_type_${elem}`}>
-                                        <img 
-                                            key={`key_report_type_${elem}`} 
-                                            src={`/images/stix_object/${linkImage.link}`} 
-                                            width="35" 
-                                            height="35" />
-                                    </Tooltip>);
-                                })}
+        {listReports.length > 0? 
+            <TableContainer className={classes.container}>
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                        <TableRow>
+                            {columns.map((column) => (
+                                <TableCell
+                                    key={column.id}
+                                    align={column.align}
+                                    style={{ minWidth: column.minWidth }} >
+                                    {column.label}
                                 </TableCell>
-                            </TableRow>);
-                        }
-                    })}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {listReports.map((item, num) => {
+                            let imgTypeSTIX = "",
+                                timePublished = <span className="text-secondary">не опубликован</span>;
+                        
+                            if(Date.parse(item.published) > 0){
+                                timePublished = helpers.convertDateFromString(item.published, {});
+                            }
+
+                            let currentType = helpers.getLinkImageSTIXObject(item.type);
+                            if(typeof currentType !== "undefined"){
+                                imgTypeSTIX = <Tooltip title={currentType.description} key={`key_tooltip_report_type_${currentType.link}`}>
+                                    <img src={`/images/stix_object/${currentType.link}`} width="35" height="35" />
+                                </Tooltip>;
+                            }
+
+                            if((num >= (countShowReportsPerPage * numCurrentPagePagination)) && (num < (countShowReportsPerPage * (numCurrentPagePagination + 1)))){
+                                return (<TableRow 
+                                    key={`table_row_${item.id}`} 
+                                    hover role="checkbox" tabIndex={-1} 
+                                    onClick={(elem) => { handlerTableOnClick(elem, item.id); }}>
+                                    <TableCell>{`${++num}.`}</TableCell>
+                                    <TableCell align="center">{imgTypeSTIX}</TableCell>
+                                    <TableCell >{getChipForGroups(item.id)}</TableCell>
+                                    <TableCell>{helpers.convertDateFromString(item.created, {})}</TableCell>
+                                    <TableCell>{helpers.convertDateFromString(item.modified, {})}</TableCell>
+                                    <TableCell>{timePublished}</TableCell>
+                                    <TableCell>{item.name}</TableCell>
+                                    <TableCell align="right">{item.report_types.map((elem) => {
+                                        let linkImage = helpers.getLinkImageSTIXObject(elem);
+    
+                                        if(typeof linkImage === "undefined"){
+                                            return;
+                                        }
+    
+                                        return (<Tooltip title={linkImage.description} key={`key_tooltip_report_type_${elem}`}>
+                                            <img 
+                                                key={`key_report_type_${elem}`} 
+                                                src={`/images/stix_object/${linkImage.link}`} 
+                                                width="35" 
+                                                height="35" />
+                                        </Tooltip>);
+                                    })}
+                                    </TableCell>
+                                </TableRow>);
+                            }
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>:
+            <Grid container direction="row">
+                <Grid item container md={12} justifyContent="center">
+                    <Typography variant="caption" display="block" gutterBottom style={{ color: red[400] }}>
+                        ни одного отчета по заданным параметрам найдено не было
+                    </Typography>
+                </Grid>
+            </Grid>}
         <TablePagination
             rowsPerPageOptions={[10, 20, 30]}
             component="div"
