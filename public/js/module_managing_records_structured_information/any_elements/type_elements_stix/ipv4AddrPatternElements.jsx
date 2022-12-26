@@ -28,8 +28,6 @@ export default function CreateIpv4AddrPatternElements(props){
 
     let [ isInvalidValue, setIsInvalidValue ] = useState(true);
 
-    console.log("func 'CreateIpv4AddrPatternElements', campaignPatterElement: ", campaignPatterElement);
-
     React.useEffect(() => {
         let isInvalid = true;
 

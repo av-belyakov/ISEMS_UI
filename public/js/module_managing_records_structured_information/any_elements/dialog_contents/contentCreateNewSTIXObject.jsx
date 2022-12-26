@@ -45,6 +45,8 @@ const CreateEmailAddrPatternNewSTIXObject = lazy(() => import("./contentEmailAdd
 const CreateEmailMessagePatternNewSTIXObject = lazy(() => import("./contentEmailMessagePatternNewSTIXObject.jsx"));
 const CreateFilePatternNewSTIXObject = lazy(() => import("./contentFilePatternNewSTIXObject.jsx"));
 const CreateIPv4AddrPatternNewSTIXObject = lazy(() => import("./contentIPv4AddrPatternNewSTIXObject.jsx"));
+const CreateIPv6AddrPatternNewSTIXObject = lazy(() => import("./contentIPv6AddrPatternNewSTIXObject.jsx"));
+const CreateMacAddrPatternNewSTIXObject = lazy(() => import("./contentMacAddrPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -109,12 +111,15 @@ const listRefPropertyObject = {
         "user-account",
         "vulnerability",
     ],
-    "operating_system_refs": [ "software" ],
+    "analysis_sco_refs": sco,
+    "sample_ref": sco,
     "sample_refs": [ "artifact", "file" ],
     "host_vm_ref": [ "software" ],
     "operating_system_ref": [ "software" ],
+    "operating_system_refs": [ "software" ],
     "installed_software_refs": [ "software" ],
-    "resolves_to_refs": [ "ipv4-addr", "ipv6-addr", "domain-name" ],
+    "resolves_to_refs": [ "ipv4-addr", "ipv6-addr", "mac-addr", "domain-name" ],
+    "contain_ref": [ "artifact" ],
     "contains_refs": [ "file", "directory" ], 
     "src_ref": [ "ipv4-addr", "ipv6-addr", "mac-addr", "domain-name" ], 
     "dst_ref": [ "ipv4-addr", "ipv6-addr", "mac-addr", "domain-name" ],
@@ -129,12 +134,13 @@ const listRefPropertyObject = {
     "parent_ref": [ "process" ],
     "child_refs": [ "process" ],
     "belongs_to_ref": [ "user-account" ],
+    "belongs_to_refs": [ "autonomous-system" ],
     "raw_email_ref": [ "artifact" ],
-    "bcc_refs": [ "email-address" ],
-    "cc_refs": [ "email-address" ],
-    "to_refs": [ "email-address" ],
-    "sender_ref": [ "email-address" ],
-    "from_ref": [ "email-address" ],
+    "bcc_refs": [ "email-addr" ],
+    "cc_refs": [ "email-addr" ],
+    "to_refs": [ "email-addr" ],
+    "sender_ref": [ "email-addr" ],
+    "from_ref": [ "email-addr" ],
 };
 
 const typesRelationshipsBetweenObjects = {
@@ -193,8 +199,29 @@ export default function CreateDialogContentNewSTIXObject(props){
 
     let listObjectTypeTmp = new Set();
     for(let value of listRefsForObjectSTIX){
+        console.log("VALUE ==== ", value);
+        console.log("listRefPropertyObject[value] ==== ", listRefPropertyObject[value]);
+        
         if(listRefPropertyObject[value]){
-            listRefPropertyObject[value].forEach((item) => listObjectTypeTmp.add(item));
+            listRefPropertyObject[value].forEach((item) => {
+                console.log("currentIdSTIXObject = ", currentIdSTIXObject, "currentIdSTIXObject.includes('domain-name') = ", currentIdSTIXObject.includes("domain-name"));
+                console.log("item = ", item);
+
+                if(currentIdSTIXObject.includes("domain-name")){
+                    if(item !== "mac-addr"){
+                        listObjectTypeTmp.add(item);
+                    }
+                } else if(currentIdSTIXObject.includes("ipv4-addr") || currentIdSTIXObject.includes("ipv6-addr")){
+                    if(item === "mac-addr" || item === "autonomous-system"){
+                        listObjectTypeTmp.add(item);
+                    }
+                } else {
+
+                    console.log("************************ item: ", item);
+
+                    listObjectTypeTmp.add(item);
+                }
+            });
         }
     }
 
@@ -224,6 +251,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                 return;
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ typeObjectSTIX ]);
 
     //console.log("func 'CreateDialogContentNewSTIXObject' currentRefObjectSTIX = ", currentRefObjectSTIX);
@@ -409,7 +437,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                         {(listRefsForObjectSTIX.length > 1)?
                             <Grid container direction="row" className="pt-3">
                                 <Grid item container md={12} justifyContent="flex-start">
-                                    <RadioGroup row aria-label="quiz" name="quiz" value={currentRefObjectSTIX} onChange={handleRadioChange}>
+                                    <RadioGroup row aria-label="quiz" name="quiz" value={currentRefObjectSTIX} onChange={handleRadioChange} style={{ color: red[400] }}>
                                         {listRefsForObjectSTIX.map((item) => {
                                             let isDisabled = false;
                                             if(typeObjectSTIX === ""){
@@ -577,9 +605,9 @@ function somethingModule(nameSTIX){
         "infrastructure": CreateInfrastructurePatternNewSTIXObject,
         "intrusion-set": CreateIntrusionSetPatternNewSTIXObject,
         "ipv4-addr": CreateIPv4AddrPatternNewSTIXObject,
-        //"ipv6-addr": CreateIpv6AddrPatternElements,
+        "ipv6-addr": CreateIPv6AddrPatternNewSTIXObject,
         "location": CreateLocationPatternNewSTIXObject,
-        //"mac-addr": CreateMacAddrPatternElements,
+        "mac-addr": CreateMacAddrPatternNewSTIXObject,
         "malware": CreateMalwarePatternNewSTIXObject,//"malware-analysis": "", напрямую относится к "malware"
         //"network-traffic": CreateNetworkTrafficPatternElements,
         "note": CreateNotePatternNewSTIXObject,

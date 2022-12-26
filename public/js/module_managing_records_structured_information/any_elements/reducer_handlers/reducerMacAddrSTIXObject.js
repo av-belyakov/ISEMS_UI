@@ -1,8 +1,6 @@
-export default function reducerIPv4AddrPatternSTIXObjects(state, action){
+export default function reducerMacAddrPatternSTIXObjects(state, action){
     switch(action.type){
     case "newAll":
-        console.log("func 'reducerIPv4AddrPatternSTIXObjects', action.data = ", action.data);
-    
         return action.data;
     case "cleanAll":
         return {};

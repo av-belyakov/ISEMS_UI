@@ -1,91 +1,281 @@
-"use strict";
-
-import React from "react";
-import { Col, Row } from "react-bootstrap";
+import React, { useEffect, useReducer } from "react";
 import { 
-    //AppBar,
-    //Button,
-    //Container,
-    //Dialog,
+    Button,
+    DialogActions,
     DialogContent,
-    LinearProgress,
     Grid,
-    //Toolbar,
-    //Typography,
 } from "@material-ui/core";
-import { teal, grey } from "@material-ui/core/colors";
-import { makeStyles } from "@material-ui/core/styles";
-//import { v4 as uuidv4 } from "uuid";
+import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
+import validatorjs from "validatorjs";
 
+import reducerIPv6AddrSTIXObject from "../reducer_handlers/reducerIPv4or6AddrSTIXObject.js";
 import CreateIpv6AddrPatternElements from "../type_elements_stix/ipv6AddrPatternElements.jsx";
+import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: "fixed",
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    appBreadcrumbs: {
-        position: "fixed",
-        top: "60px",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        paddingLeft: theme.spacing(4),
-    },
-    buttonSave: {
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    title: {
-        marginLeft: theme.spacing(2),
-        flex: 1,
-    },
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-}));
+function isExistTransmittedData(data){
+    if((data.information === null) || (typeof data.information === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+        return false;
+    }
+
+    if(data.information.additional_parameters.transmitted_data.length === 0){
+        return false;
+    }
+
+    return true;
+}
+
+function reducerShowRef(state, action){
+    switch(action.type){
+    case "addId":
+        return {...state, id: action.data};
+    case "addObject":
+        state.obj = action.data;
+
+        return {...state};
+    case "cleanObj":
+        return {...state, obj: {}};
+    }
+}
 
 export default function CreateDialogContentIPv6AddrSTIXObject(props){
     let { 
-        listObjectInfo, 
-        currentIdSTIXObject,
-        handlerDialog,
-        handlerDialogClose,
+        socketIo,
         isNotDisabled,
+        parentIdSTIXObject,
+        listNewOrModifySTIXObject,
+        currentAdditionalIdSTIXObject,
+        handlerDialogClose,
     } = props;
 
-    if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<DialogContent>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={12} justifyContent="center" className="pb-3">
-                    поиск информации об STIX объекте типа IP адрес версии 6 (IPv6 address CO STIX)
-                </Grid>
-            </Grid>
-            <LinearProgress />
-        </DialogContent>);
-    }
+    let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
+    let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
+
+    const handlerButtonIsDisabled = (status) => {
+            setButtonIsDisabled(status);
+        },
+        handlerButtonSaveChangeTrigger = () => {
+            setButtonSaveChangeTrigger((prevState) => !prevState);
+        };
 
     return (<React.Fragment>
         <DialogContent>
-            <Row className="mt-2">
-                <Col md={12} className="pl-3 pr-3">
-                Просмотр и редактирование STIX объекта типа IP адрес версии 6 (IPv6 address CO STIX)
-                </Col>
-                <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
-            </Row>
+            <Grid container direction="row" spacing={3}>
+                <CreateMajorContent 
+                    socketIo={socketIo}
+                    parentIdSTIXObject={parentIdSTIXObject}
+                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
+                    listNewOrModifySTIXObject={listNewOrModifySTIXObject}
+                    buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+                    isNotDisabled={isNotDisabled}
+                    handlerDialogClose={handlerDialogClose}
+                    handlerButtonIsDisabled={handlerButtonIsDisabled}
+                    handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
+                />
+            </Grid>            
         </DialogContent>
+        <DialogActions>
+            <Button 
+                onClick={handlerDialogClose} 
+                style={{ color: blue[500] }}
+                color="primary">закрыть</Button>            
+            {isNotDisabled && <Button
+                disabled={buttonIsDisabled} 
+                onClick={() => setButtonSaveChangeTrigger(true)}
+                style={{ color: blue[500] }}
+                color="primary">
+                сохранить
+            </Button>}
+        </DialogActions>
     </React.Fragment>);
 }
 
 CreateDialogContentIPv6AddrSTIXObject.propTypes = {
-    listObjectInfo: PropTypes.object.isRequired,
-    currentIdSTIXObject: PropTypes.string.isRequired,
-    handlerDialog: PropTypes.func.isRequired,
-    handlerDialogClose: PropTypes.func.isRequired,
+    socketIo: PropTypes.object.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    listNewOrModifySTIXObject: PropTypes.array.isRequired,
+    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
 };
+
+function CreateMajorContent(props){
+    let {
+        socketIo,
+        parentIdSTIXObject,
+        currentIdSTIXObject,
+        listNewOrModifySTIXObject,
+        buttonSaveChangeTrigger,
+        isNotDisabled,
+        handlerDialogClose,
+        handlerButtonIsDisabled,
+        handlerButtonSaveChangeTrigger,
+    } = props;
+
+    let beginDataObject = {};
+    for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
+        if(listNewOrModifySTIXObject[i].id === currentIdSTIXObject){
+            beginDataObject = listNewOrModifySTIXObject[i];
+        }
+    }
+
+    const [ state, dispatch ] = useReducer(reducerIPv6AddrSTIXObject, beginDataObject);
+    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
+
+    useEffect(() => {
+        let listener = (data) => {
+            if(!isExistTransmittedData(data)){
+                return;
+            }
+    
+            for(let obj of data.information.additional_parameters.transmitted_data){            
+                dispatch({ type: "newAll", data: obj });
+            }
+        };
+
+        if(currentIdSTIXObject !== ""){
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentIdSTIXObject,
+                parentObjectId: parentIdSTIXObject,
+            }});
+        }
+
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
+
+        return () => {
+            dispatch({ type: "newAll", data: {} });
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ currentIdSTIXObject, parentIdSTIXObject ]);
+    useEffect(() => {
+        if(buttonSaveChangeTrigger){
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+
+            handlerButtonSaveChangeTrigger();
+            handlerDialogClose();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonSaveChangeTrigger ]);
+
+    const handlerCheckStateButtonIsDisabled = (value) => {
+        if(typeof value !== "undefined"){
+            if(!value.includes("/")){
+                if(validatorjs.isIP(value, 6)){
+                    return handlerButtonIsDisabled(false);  
+                }
+            } else {
+                let b = value.split("/");
+                if(validatorjs.isIP(b[0], 6) && (b[1] && +b[1] <= 128)){   
+                    return handlerButtonIsDisabled(false);
+                }
+            }
+
+            return handlerButtonIsDisabled(true);
+        }
+
+        if(!state || !state.value){
+            return handlerButtonIsDisabled(true);            
+        }
+
+        if(!state.value.includes("/")){
+            if(validatorjs.isIP(state.value, 4)){
+                return handlerButtonIsDisabled(false);  
+            }
+        } else {
+            let b = state.value.split("/");
+            if(validatorjs.isIP(b[0], 4) && (b[1] && +b[1] <= 128)){   
+                return handlerButtonIsDisabled(false);
+            }
+        }
+
+        return handlerButtonIsDisabled(true);
+    };
+
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
+        if(obj.modalType === "granular_markings") {
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
+        }
+    
+        if(obj.modalType === "extensions") {
+            dispatch({ type: "updateExtensions", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
+        }
+    };
+
+    return (<Grid item container md={12}>
+        <Grid container direction="row" className="pt-3">
+            <CreateIpv6AddrPatternElements
+                isDisabled={false}
+                showRefElement={stateShowRef}
+                campaignPatterElement={state}
+                handlerValue={(e) => { let value = e.target.value; dispatch({ type: "updateValue", data: value }); handlerCheckStateButtonIsDisabled(value); }}
+                handlerButtonShowLink={(refId) => {
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){
+                            dispatchShowRef({ type: "addObject", data: obj });        
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
+                }}
+            />
+        </Grid> 
+
+        <CreateElementAdditionalTechnicalInformationCO 
+            objectId={currentIdSTIXObject}
+            reportInfo={state}
+            isNotDisabled={isNotDisabled}
+            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
+        />
+    </Grid>);
+}
+
+CreateMajorContent.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
+    listNewOrModifySTIXObject: PropTypes.array.isRequired,
+    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
+    handlerButtonIsDisabled: PropTypes.func.isRequired,
+    handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
+};
+
+/**
+//IPv4AddressCyberObservableObjectSTIX объект "IPv4 Address Object", по терминалогии STIX, содержит один или более IPv4 адресов, выраженных с помощью нотации CIDR.
+// Value - указывает значения одного или нескольких IPv4-адресов, выраженные с помощью нотации CIDR. Если данный объект IPv4-адреса представляет собой один IPv4-адрес,
+//  суффикс CIDR /32 МОЖЕТ быть опущен. (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// ResolvesToRefs - указывает список ссылок на один или несколько MAC-адресов управления доступом к носителям уровня 2, на которые разрешается IPv6-адрес. Объекты,
+//  на которые ссылается этот список, ДОЛЖНЫ иметь тип macaddr.
+// BelongsToRefs - указывает список ссылок на одну или несколько автономных систем (AS), к которым принадлежит IPv6-адрес. Объекты, на которые ссылается этот список,
+//  ДОЛЖНЫ быть типа autonomous-system.
+type IPv4AddressCyberObservableObjectSTIX struct {
+	CommonPropertiesObjectSTIX
+	OptionalCommonPropertiesCyberObservableObjectSTIX
+	Value          string               `json:"value" bson:"value"`
+	ResolvesToRefs []IdentifierTypeSTIX `json:"resolves_to_refs" bson:"resolves_to_refs"`
+	BelongsToRefs  []IdentifierTypeSTIX `json:"belongs_to_refs" bson:"belongs_to_refs"`
+}
+*/

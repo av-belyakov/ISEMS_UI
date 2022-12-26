@@ -50,6 +50,16 @@ const listExtendedObject = [
     {name: "file", listProperties: [ 
         "contains_refs" 
     ]}, //contains_refs (any STIX object)
+    {name: "ipv4-addr", listProperties: [ 
+        "resolves_to_refs", 
+        "belongs_to_refs" 
+    ]},//resolves_to_refs (SCO mac-addr) 
+    // and belongs_to_refs (SCO autonomous-system)
+    {name: "ipv6-addr", listProperties: [ 
+        "resolves_to_refs", 
+        "belongs_to_refs" 
+    ]},//resolves_to_refs (SCO mac-addr) 
+    // and belongs_to_refs (SCO autonomous-system)
     {name: "network-traffic", listProperties: [ 
         "src_ref", 
         "dst_ref",

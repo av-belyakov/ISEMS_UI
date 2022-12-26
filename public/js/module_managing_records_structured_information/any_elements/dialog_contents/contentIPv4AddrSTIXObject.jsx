@@ -9,11 +9,9 @@ import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 import validatorjs from "validatorjs";
 
-import reducerIPv4AddrSTIXObject from "../reducer_handlers/reducerIPv4AddrSTIXObject.js";
+import reducerIPv4AddrSTIXObject from "../reducer_handlers/reducerIPv4or6AddrSTIXObject.js";
 import CreateIpv4AddrPatternElements from "../type_elements_stix/ipv4AddrPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
-
-const regPattern = /(([0-9]{1,3}\.){3}[0-9]{1,3}\/[0-9]{1,2})/;
 
 function isExistTransmittedData(data){
     if((data.information === null) || (typeof data.information === "undefined")){
@@ -40,12 +38,6 @@ function reducerShowRef(state, action){
     case "addId":
         return {...state, id: action.data};
     case "addObject":
-        if(action.data.type === "directory" && action.data.contains_refs && Array.isArray(action.data.contains_refs)){
-            action.data.refs = action.data.contains_refs.map((item) => {
-                return { id: item, value: item };
-            });
-        }
-
         state.obj = action.data;
 
         return {...state};
@@ -140,22 +132,10 @@ function CreateMajorContent(props){
 
     useEffect(() => {
         let listener = (data) => {
-            if((data.information === null) || (typeof data.information === "undefined")){
+            if(!isExistTransmittedData(data)){
                 return;
             }
-    
-            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-                return;
-            }
-    
-            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-                return;
-            }
-    
-            if(data.information.additional_parameters.transmitted_data.length === 0){
-                return;
-            }
-    
+
             for(let obj of data.information.additional_parameters.transmitted_data){            
                 dispatch({ type: "newAll", data: obj });
             }
@@ -177,8 +157,6 @@ function CreateMajorContent(props){
     }, [ currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-
-            console.log("func 'CreateDialogContentIPv4AddrSTIXObject', useEffect, buttonSaveChangeTrigger ------- ");
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
 
             handlerButtonSaveChangeTrigger();
@@ -194,8 +172,8 @@ function CreateMajorContent(props){
                     return handlerButtonIsDisabled(false);  
                 }
             } else {
-                let b = value.split("/")[1];
-                if(regPattern.test(value) && (b && +b <= 32)){   
+                let b = value.split("/");
+                if(validatorjs.isIP(b[0], 4) && (b[1] && +b[1] <= 32)){   
                     return handlerButtonIsDisabled(false);
                 }
             }
@@ -212,8 +190,8 @@ function CreateMajorContent(props){
                 return handlerButtonIsDisabled(false);  
             }
         } else {
-            let b = state.value.split("/")[1];
-            if(regPattern.test(state.value) && (b && +b <= 32)){   
+            let b = state.value.split("/");
+            if(validatorjs.isIP(b[0], 4) && (b[1] && +b[1] <= 32)){   
                 return handlerButtonIsDisabled(false);
             }
         }

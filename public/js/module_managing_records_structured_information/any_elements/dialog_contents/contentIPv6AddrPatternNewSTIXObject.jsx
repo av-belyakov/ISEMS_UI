@@ -10,11 +10,11 @@ import validatorjs from "validatorjs";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerIPv4AddrPatternSTIXObjects from "../reducer_handlers/reducerIPv4or6AddrSTIXObject.js";
-import CreateIpv4AddrPatternElements from "../type_elements_stix/ipv4AddrPatternElements.jsx";
+import reducerIPv6AddrPatternSTIXObjects from "../reducer_handlers/reducerIPv4or6AddrSTIXObject.js";
+import CreateIpv6AddrPatternElements from "../type_elements_stix/ipv6AddrPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-export default function CreateIPv4AddrPatternNewSTIXObject(props){
+export default function CreateIPv6AddrPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
@@ -29,7 +29,7 @@ export default function CreateIPv4AddrPatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`ipv4-addr--${uuidv4()}`}
+        currentObjectId={`ipv6-addr--${uuidv4()}`}
         buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -39,7 +39,7 @@ export default function CreateIPv4AddrPatternNewSTIXObject(props){
     />;
 }
      
-CreateIPv4AddrPatternNewSTIXObject.propTypes = {
+CreateIPv6AddrPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
@@ -63,9 +63,9 @@ function CreateMajorElements(props){
         handlerChangeNewSTIXObject,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerIPv4AddrPatternSTIXObjects, {});
+    const [ state, dispatch ] = useReducer(reducerIPv6AddrPatternSTIXObjects, {});
     useEffect(() => {
-        if(projectPatterElement.type === "ipv4-addr"){
+        if(projectPatterElement.type === "ipv6-addr"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
@@ -73,7 +73,7 @@ function CreateMajorElements(props){
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "ipv4-addr";
+            stateTmp.type = "ipv6-addr";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -92,12 +92,12 @@ function CreateMajorElements(props){
     const handlerCheckStateButtonIsDisabled = (value) => {        
         if(typeof value !== "undefined"){
             if(!value.includes("/")){
-                if(validatorjs.isIP(value, 4)){
+                if(validatorjs.isIP(value, 6)){
                     return handlerChangeButtonAdd(false);
                 }
             } else {
                 let b = value.split("/");
-                if(validatorjs.isIP(b[0], 4) && (b[1] && +b[1] <= 32)){   
+                if(validatorjs.isIP(b[0], 6) && (b[1] && +b[1] <= 128)){   
                     return handlerChangeButtonAdd(false);
                 }
             }
@@ -110,12 +110,12 @@ function CreateMajorElements(props){
         }
 
         if(!state.value.includes("/")){
-            if(validatorjs.isIP(state.value, 4)){
+            if(validatorjs.isIP(state.value, 6)){
                 return handlerChangeButtonAdd(false);
             }
         } else {
             let b = state.value.split("/");
-            if(validatorjs.isIP(b[0], 4) && (b[1] && +b[1] <= 32)){   
+            if(validatorjs.isIP(b[0], 6) && (b[1] && +b[1] <= 128)){   
                 return handlerChangeButtonAdd(false);
             }
         }
@@ -140,7 +140,7 @@ function CreateMajorElements(props){
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("ipv4-addr").description}`}
+                        {`${helpers.getLinkImageSTIXObject("ipv6-addr").description}`}
                     </Typography> 
                 </Grid>
             </Grid>
@@ -150,7 +150,7 @@ function CreateMajorElements(props){
                 <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
 
-            <CreateIpv4AddrPatternElements
+            <CreateIpv6AddrPatternElements
                 isDisabled={false}
                 showRefElement={{}}
                 campaignPatterElement={state}
