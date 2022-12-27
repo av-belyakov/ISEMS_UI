@@ -47,6 +47,8 @@ const CreateFilePatternNewSTIXObject = lazy(() => import("./contentFilePatternNe
 const CreateIPv4AddrPatternNewSTIXObject = lazy(() => import("./contentIPv4AddrPatternNewSTIXObject.jsx"));
 const CreateIPv6AddrPatternNewSTIXObject = lazy(() => import("./contentIPv6AddrPatternNewSTIXObject.jsx"));
 const CreateMacAddrPatternNewSTIXObject = lazy(() => import("./contentMacAddrPatternNewSTIXObject.jsx"));
+const CreateMutexPatternNewSTIXObject = lazy(() => import("./contentMutexPatternNewSTIXObject.jsx"));
+const CreateURLPatternNewSTIXObject = lazy(() => import("./contentURLPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -586,10 +588,10 @@ function somethingModule(nameSTIX){
         "artifact": CreateArtifactPatternNewSTIXObject, 
         "directory": CreateDirectoryPatternNewSTIXObject, 
         "file": CreateFilePatternNewSTIXObject, 
-        //"mutex": CreateMutexPatternElements,
+        "mutex": CreateMutexPatternNewSTIXObject,
         //"process": CreateProcessPatternElements, 
         //"software": CreateSoftwarePatternElements,
-        //"url":CreateUrlPatternElements,
+        "url": CreateURLPatternNewSTIXObject,
         //"windows-registry-key": CreateWindowsRegistryKeyPatternElements,
         //"x509-certificate": CreateX509CertificatePatternElements,
         "attack-pattern": CreateDialogContentAttackPatternNewSTIXObject,

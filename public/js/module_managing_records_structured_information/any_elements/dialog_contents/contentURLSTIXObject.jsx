@@ -1,91 +1,226 @@
-"use strict";
-
-import React from "react";
-import { Col, Row } from "react-bootstrap";
+import React, { useEffect, useReducer } from "react";
 import { 
-    //AppBar,
-    //Button,
-    //Container,
-    //Dialog,
+    Button,
+    DialogActions,
     DialogContent,
-    LinearProgress,
     Grid,
-    //Toolbar,
-    //Typography,
 } from "@material-ui/core";
-import { teal, grey } from "@material-ui/core/colors";
-import { makeStyles } from "@material-ui/core/styles";
-//import { v4 as uuidv4 } from "uuid";
+import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
+import validatorjs from "validatorjs";
 
-import CreateUrlPatternElements from "../type_elements_stix/urlPatternElements.jsx";
+import reducerURLSTIXObject from "../reducer_handlers/reducerIPv4or6AddrSTIXObject.js";
+import CreateURLPatternElements from "../type_elements_stix/urlPatternElements.jsx";
+import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: "fixed",
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    appBreadcrumbs: {
-        position: "fixed",
-        top: "60px",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        paddingLeft: theme.spacing(4),
-    },
-    buttonSave: {
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    title: {
-        marginLeft: theme.spacing(2),
-        flex: 1,
-    },
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-}));
+function isExistTransmittedData(data){
+    if((data.information === null) || (typeof data.information === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+        return false;
+    }
+
+    if(data.information.additional_parameters.transmitted_data.length === 0){
+        return false;
+    }
+
+    return true;
+}
 
 export default function CreateDialogContentURLSTIXObject(props){
     let { 
-        listObjectInfo, 
-        currentIdSTIXObject,
-        handlerDialog,
-        handlerDialogClose,
+        socketIo,
         isNotDisabled,
+        parentIdSTIXObject,
+        listNewOrModifySTIXObject,
+        currentAdditionalIdSTIXObject,
+        handlerDialogClose,
     } = props;
 
-    if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<DialogContent>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={12} justifyContent="center" className="pb-3">
-                    поиск информации об STIX объекте типа Унифицированный указатель ресурса (URL CO STIX)
-                </Grid>
-            </Grid>
-            <LinearProgress />
-        </DialogContent>);
-    }
+    let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
+    let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
+
+    const handlerButtonIsDisabled = (status) => {
+            setButtonIsDisabled(status);
+        },
+        handlerButtonSaveChangeTrigger = () => {
+            setButtonSaveChangeTrigger((prevState) => !prevState);
+        };
 
     return (<React.Fragment>
         <DialogContent>
-            <Row className="mt-2">
-                <Col md={12} className="pl-3 pr-3">
-                Просмотр и редактирование STIX объекта типа Унифицированный указатель ресурса (URL CO STIX)
-                </Col>
-                <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
-            </Row>
+            <Grid container direction="row" spacing={3}>
+                <CreateMajorContent 
+                    socketIo={socketIo}
+                    parentIdSTIXObject={parentIdSTIXObject}
+                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
+                    listNewOrModifySTIXObject={listNewOrModifySTIXObject}
+                    buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+                    isNotDisabled={isNotDisabled}
+                    handlerDialogClose={handlerDialogClose}
+                    handlerButtonIsDisabled={handlerButtonIsDisabled}
+                    handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
+                />
+            </Grid>            
         </DialogContent>
+        <DialogActions>
+            <Button 
+                onClick={handlerDialogClose} 
+                style={{ color: blue[500] }}
+                color="primary">закрыть</Button>            
+            {isNotDisabled && <Button
+                disabled={buttonIsDisabled} 
+                onClick={() => setButtonSaveChangeTrigger(true)}
+                style={{ color: blue[500] }}
+                color="primary">
+                сохранить
+            </Button>}
+        </DialogActions>
     </React.Fragment>);
 }
 
 CreateDialogContentURLSTIXObject.propTypes = {
-    listObjectInfo: PropTypes.object.isRequired,
-    currentIdSTIXObject: PropTypes.string.isRequired,
-    handlerDialog: PropTypes.func.isRequired,
-    handlerDialogClose: PropTypes.func.isRequired,
+    socketIo: PropTypes.object.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    listNewOrModifySTIXObject: PropTypes.array.isRequired,
+    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
 };
+
+function CreateMajorContent(props){
+    let {
+        socketIo,
+        parentIdSTIXObject,
+        currentIdSTIXObject,
+        listNewOrModifySTIXObject,
+        buttonSaveChangeTrigger,
+        isNotDisabled,
+        handlerDialogClose,
+        handlerButtonIsDisabled,
+        handlerButtonSaveChangeTrigger,
+    } = props;
+
+    let beginDataObject = {};
+    for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
+        if(listNewOrModifySTIXObject[i].id === currentIdSTIXObject){
+            beginDataObject = listNewOrModifySTIXObject[i];
+        }
+    }
+
+    const [ state, dispatch ] = useReducer(reducerURLSTIXObject, beginDataObject);
+
+    useEffect(() => {
+        let listener = (data) => {
+            if(!isExistTransmittedData(data)){
+                return;
+            }
+
+            for(let obj of data.information.additional_parameters.transmitted_data){            
+                dispatch({ type: "newAll", data: obj });
+            }
+        };
+
+        if(currentIdSTIXObject !== ""){
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentIdSTIXObject,
+                parentObjectId: parentIdSTIXObject,
+            }});
+        }
+
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
+
+        return () => {
+            dispatch({ type: "newAll", data: {} });
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ currentIdSTIXObject, parentIdSTIXObject ]);
+    useEffect(() => {
+        if(buttonSaveChangeTrigger){
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+
+            handlerButtonSaveChangeTrigger();
+            handlerDialogClose();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonSaveChangeTrigger ]);
+
+    const handlerCheckStateButtonIsDisabled = (value) => {
+        if(typeof value !== "undefined"){            
+            if(validatorjs.isURL(value)){
+                return handlerButtonIsDisabled(false);  
+            }
+
+            return handlerButtonIsDisabled(true);
+        }
+
+        if(!state || !state.value){
+            return handlerButtonIsDisabled(true);            
+        }
+
+        if(validatorjs.isURL(state.value)){
+            return handlerButtonIsDisabled(false);  
+        }
+
+        return handlerButtonIsDisabled(true);
+    };
+
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
+        if(obj.modalType === "granular_markings") {
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
+        }
+    
+        if(obj.modalType === "extensions") {
+            dispatch({ type: "updateExtensions", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
+        }
+    };
+
+    return (<Grid item container md={12}>
+        <Grid container direction="row" className="pt-3">
+            <CreateURLPatternElements
+                isDisabled={false}
+                campaignPatterElement={state}
+                handlerValue={(e) => { let value = e.target.value; dispatch({ type: "updateValue", data: value }); handlerCheckStateButtonIsDisabled(value); }}
+            />
+        </Grid> 
+
+        <CreateElementAdditionalTechnicalInformationCO 
+            objectId={currentIdSTIXObject}
+            reportInfo={state}
+            isNotDisabled={isNotDisabled}
+            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
+        />
+    </Grid>);
+}
+
+CreateMajorContent.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
+    listNewOrModifySTIXObject: PropTypes.array.isRequired,
+    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
+    handlerButtonIsDisabled: PropTypes.func.isRequired,
+    handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
+};
+
+/**
+//URLCyberObservableObjectSTIX объект "URL Object", по терминологии STIX, содержит унифицированный указатель информационного ресурса (URL).
+// Value - содержит унифицированный указатель информационного ресурса (URL).
+type URLCyberObservableObjectSTIX struct {
+	CommonPropertiesObjectSTIX
+	OptionalCommonPropertiesCyberObservableObjectSTIX
+	Value string `json:"value" bson:"value"`
+}
+*/

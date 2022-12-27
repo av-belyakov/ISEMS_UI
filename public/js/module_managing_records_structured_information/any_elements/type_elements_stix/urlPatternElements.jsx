@@ -1,36 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-    Button,
     Grid,
     TextField,
-    Typography,
 } from "@material-ui/core";
-import { red } from "@material-ui/core/colors";
-import TokenInput from "react-customize-token-input";
+import validatorjs from "validatorjs";
 import PropTypes from "prop-types";
 
-import { helpers } from "../../../common_helpers/helpers";
-
-export default function CreateUrlPatternElements(props){
+export default function CreateURLPatternElements(props){
     let { 
         isDisabled,
         campaignPatterElement,
-        handlerAuthors,
-        handlerOpinion, 
-        handlerExplanation,
+        handlerValue,
     } = props;
 
-    return (<React.Fragment>
+    let [ isInvalidValue, setIsInvalidValue ] = useState(true);
 
+    React.useEffect(() => {
+        if(!campaignPatterElement.value || (typeof campaignPatterElement.value === "undefined")){
+            setIsInvalidValue(true);
+
+            return;
+        }
+
+        if(validatorjs.isURL(campaignPatterElement.value)){
+            setIsInvalidValue(false);
+
+            return;
+        }
+
+        setIsInvalidValue(true);
+    }, [ campaignPatterElement.value ]);
+
+    return (<React.Fragment>
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Унифицированный указатель информационного ресурса:</span></Grid>
+            <Grid item container md={8}>
+                <TextField
+                    fullWidth
+                    disabled={isDisabled}
+                    id="name-element"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={handlerValue}
+                    value={(campaignPatterElement.value)? campaignPatterElement.value: ""}
+                    error={isInvalidValue}
+                />
+            </Grid>
+        </Grid>
     </React.Fragment>);
 }
 
-CreateUrlPatternElements.propTypes = {
+CreateURLPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
-    handlerAuthors: PropTypes.func.isRequired,
-    handlerOpinion: PropTypes.func.isRequired, 
-    handlerExplanation: PropTypes.func.isRequired,
+    handlerValue: PropTypes.func.isRequired,
 };
 
 /**
@@ -41,4 +63,4 @@ type URLCyberObservableObjectSTIX struct {
 	OptionalCommonPropertiesCyberObservableObjectSTIX
 	Value string `json:"value" bson:"value"`
 }
- */
+*/
