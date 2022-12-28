@@ -1491,6 +1491,70 @@ CreateListSecondaryMotivations.propTypes = {
     handlerSecondaryMotivations: PropTypes.func.isRequired,
 };
 
+export function CreateListLanguageCodeISO639_2(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        headerCodeLanguages, 
+    } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+    const listCodeLanguages = [
+        { code: "rus", nameRussia: "Русский" },
+        { code: "eng", nameRussia: "Английский" },
+        { code: "ger", nameRussia: "Немецкий" },
+        { code: "fre", nameRussia: "Французский" },
+        { code: "spa", nameRussia: "Испанский" },
+        { code: "shi", nameRussia: "Китайский" },
+    ];
+
+    const getSummary = (value) => {
+        for(let i = 0; i < listCodeLanguages.length; i++){
+            if(value === listCodeLanguages[i].code){
+                return listCodeLanguages[i].nameRussia;
+            }
+        }
+
+        return value;
+    };
+
+    return (<FormControl fullWidth disabled={isDisabled} className={classes.formControl}>
+        <InputLabel id="languages-code-mutiple-chip-lable">коды языков в формате ISO 639-2</InputLabel>
+        <Select
+            labelId="languages-code-mutiple-chip"
+            id="languages-code-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.languages? campaignPatterElement.languages: []}
+            onChange={headerCodeLanguages}
+            input={<Input id="language-code-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {listCodeLanguages.map((item, key) => (
+                <MenuItem 
+                    key={`language-code-item-${key}`} 
+                    value={item.code} 
+                    style={getStyles(item.code, campaignPatterElement.languages, theme)}
+                >
+                    {item.nameRussia}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+}
+
+CreateListLanguageCodeISO639_2.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired, 
+    headerCodeLanguages: PropTypes.func.isRequired,
+};
+
 /**
  * Формирование набора элементов цепочки фактов, приведших к какому либо урону
  * @param {*} props 
