@@ -33,18 +33,16 @@ export default function CreateSoftwarePatternElements(props){
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
             <Grid item container md={8}>
-                {
-                /** !!!! ОБЯЗАТЕЛЕН ДЛЯ ЗАПОЛНЕНИЯ !!!! */
-                    (campaignPatterElement.id && campaignPatterElement.id !== "")? 
-                        <span className="mt-2">{campaignPatterElement.name}</span>:
-                        <TextField
-                            fullWidth
-                            disabled={isDisabled}
-                            id="name-element"
-                            InputLabelProps={{ shrink: true }}
-                            onChange={handlerName}
-                            value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
-                        />}
+                {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
+                    <span className="mt-2">{campaignPatterElement.name}</span>:
+                    <TextField
+                        fullWidth
+                        disabled={isDisabled}
+                        id="name-element"
+                        InputLabelProps={{ shrink: true }}
+                        onChange={handlerName}
+                        value={(campaignPatterElement.name)? campaignPatterElement.name: ""}
+                    />}
             </Grid>
         </Grid>
 
@@ -54,7 +52,7 @@ export default function CreateSoftwarePatternElements(props){
                 <TextField
                     fullWidth
                     disabled={isDisabled}
-                    id="name-element"
+                    id="cpe-element"
                     InputLabelProps={{ shrink: true }}
                     onChange={handlerCPE}
                     value={(campaignPatterElement.cpe)? campaignPatterElement.cpe: ""}
@@ -68,7 +66,7 @@ export default function CreateSoftwarePatternElements(props){
                 <TextField
                     fullWidth
                     disabled={isDisabled}
-                    id="name-element"
+                    id="swid-element"
                     InputLabelProps={{ shrink: true }}
                     onChange={handlerSWID}
                     value={(campaignPatterElement.swid)? campaignPatterElement.swid: ""}
@@ -89,13 +87,13 @@ export default function CreateSoftwarePatternElements(props){
             headerCodeLanguages={handlerLanguages}
         />
 
-        <Grid container direction="row" spacing={3}>
+        <Grid container direction="row" spacing={3} style={{ marginTop: "2px" }}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Название производителя программного обеспечения:</span></Grid>
             <Grid item container md={8}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}
-                    id="name-element"
+                    id="vendor-element"
                     InputLabelProps={{ shrink: true }}
                     onChange={handlerVendor}
                     value={(campaignPatterElement.vendor)? campaignPatterElement.vendor: ""}
@@ -109,7 +107,7 @@ export default function CreateSoftwarePatternElements(props){
                 <TextField
                     fullWidth
                     disabled={isDisabled}
-                    id="name-element"
+                    id="version-element"
                     InputLabelProps={{ shrink: true }}
                     onChange={handlerVersion}
                     value={(campaignPatterElement.version)? campaignPatterElement.version: ""}

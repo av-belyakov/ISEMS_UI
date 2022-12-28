@@ -49,7 +49,7 @@ const CreateIPv6AddrPatternNewSTIXObject = lazy(() => import("./contentIPv6AddrP
 const CreateMacAddrPatternNewSTIXObject = lazy(() => import("./contentMacAddrPatternNewSTIXObject.jsx"));
 const CreateMutexPatternNewSTIXObject = lazy(() => import("./contentMutexPatternNewSTIXObject.jsx"));
 const CreateURLPatternNewSTIXObject = lazy(() => import("./contentURLPatternNewSTIXObject.jsx"));
-const CreateSoftwarePatternNewSTIXObject = lazy(() => import("./contentSoftwareSTIXObject.jsx"));
+const CreateSoftwarePatternNewSTIXObject = lazy(() => import("./contentSoftwarePatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
