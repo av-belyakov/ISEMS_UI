@@ -1,5 +1,3 @@
-"use strict";
-
 export { intManipulation };
 
 //преобразование чисел к строкам

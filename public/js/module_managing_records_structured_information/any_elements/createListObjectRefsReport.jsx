@@ -228,7 +228,7 @@ const loreducer = (state, action) => {
     case "updateListId":
         changeListIdResult = updateState(action.data.listObject, state.listId, 0);
 
-        //console.log("func 'loreducer' action.type = ", action.type, " changeListIdResult = ", changeListIdResult);
+        console.log("@@@@=- func 'loreducer' action.type = ", action.type, " changeListIdResult = ", changeListIdResult, " -=@@@@");
 
         return {...state, listId: changeListIdResult};
     case "changeListId":
@@ -269,6 +269,8 @@ export default function CreateListObjectRefsReport(props){
     let objListBegin = stateReport.object_refs.map((item) => {
         return { currentId: item, childId: [] };
     });
+    
+    console.log("()()()()( func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", stateReport:", stateReport, ", listNewOrModifySTIXObject:", listNewOrModifySTIXObject);
 
     const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: []/*listNewOrModifySTIXObject*/, listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
@@ -279,11 +281,18 @@ export default function CreateListObjectRefsReport(props){
     //console.log("func 'CreateListObjectRefsReport', listActivatedObjectNumbers ======= ", listActivatedObjectNumbers);
 
     useEffect(() => {
+        console.log("func 'CreateListObjectRefsReport', useEffect START LOADING ----------------------------------------------------");
+
         let listener = (data) => {
+
+            console.log("1111 - socketIo.on 'isems-mrsi ui request: send search request, get STIX object for list id', data:", data);
+
             let listObj = data.information.additional_parameters.transmitted_data.filter((item) => {
                 return item.type !== "relationship" && item.type !== "sighting"; 
             });
         
+            console.log("2222 - socketIo.on 'isems-mrsi ui request: send search request, get STIX object for list id', listObj:", listObj);
+
             setListObjReducer({ type: "updateListId", data: { listObject: listObj }});
             setListObjReducer({ type: "updateList", data: { current: listObj /*data.information.additional_parameters.transmitted_data*/, parent: stateReport }});
         };
@@ -363,7 +372,25 @@ export default function CreateListObjectRefsReport(props){
         handlerDialogConfirm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ confirmDeleteLink ]),
+    /*useEffect(() => {
+
+        console.log("+++++++ useEffect 11111 +++++++");
+
+        setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
+    }, [ stateReport.object_refs ]);*/
+
+
     useEffect(() => {
+
+        console.log("+++++++ useEffect 22222 +++++++");
+        console.log("++++++ отслеживается обновление majorParentId, listNewOrModifySTIXObject при добавлении ссылки на новый объект +++ listActivatedObjectNumbers:", listActivatedObjectNumbers, " ++++++++");
+
+        /**
+         * 
+         * не отслеживается обновление stateReport.object_refs при добавлении ссылки на новый объект
+         * 
+         */
+
         setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
     }, [ majorParentId, listNewOrModifySTIXObject ]);
 
@@ -385,14 +412,13 @@ export default function CreateListObjectRefsReport(props){
                         listTmp.add(value);
                     }
                 }
-    
             }
 
             return listTmp;
         },
         handleClick = (num, currentId, depth) => {  
             
-            //console.log("func 'handleClick' __________ num: '", num, "' currentId: '", currentId, "' depth: '", depth, "'");
+            console.log("func 'handleClick' __________ num: '", num, "' currentId: '", currentId, "' depth: '", depth, "'");
 
             let tmp = listActivatedObjectNumbers.slice();
             if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] === num){        
@@ -424,6 +450,8 @@ export default function CreateListObjectRefsReport(props){
                 if(searchListObjectId.size === 0){
                     return;
                 }
+
+                console.log("______jjj+++++*********jjjjj------");
 
                 socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
                     arguments: { 

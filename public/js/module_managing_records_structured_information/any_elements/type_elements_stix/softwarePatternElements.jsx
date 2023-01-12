@@ -74,13 +74,6 @@ export default function CreateSoftwarePatternElements(props){
             </Grid>
         </Grid>
 
-        {/**
-         * Languages -содержит языки, поддерживаемые программным обеспечением. Значение каждого елемента списка ДОЛЖНО быть кодом языка ISO 639-2
-         * Languages []string `json:"languages" bson:"languages"`
-         * 
-         * не совсем правельно сделал, нужно хранить список из выбранных кодов языка
-         */}
-
         <CreateListLanguageCodeISO639_2 
             isDisabled={isDisabled}
             campaignPatterElement={campaignPatterElement} 

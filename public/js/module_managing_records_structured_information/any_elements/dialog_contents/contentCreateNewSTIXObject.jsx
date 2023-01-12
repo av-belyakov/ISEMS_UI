@@ -160,10 +160,11 @@ let reducer = (state, action) => {
      * через useEffect
      */
 
-    console.log("func 'reducer' action.type = ", action.type, " action.data = ", action.data, " !!!!!!!!!");
-
     switch(action.type){
     case "newAll":
+
+        console.log("func 'reducer' action.type = ", action.type, " action.data = ", action.data, " !!!!!!!!!");
+
         return action.data;
     case "cleanAll":
         return {};
@@ -201,15 +202,9 @@ export default function CreateDialogContentNewSTIXObject(props){
     }, [ listNewOrModifySTIXObject ]);
 
     let listObjectTypeTmp = new Set();
-    for(let value of listRefsForObjectSTIX){
-        console.log("VALUE ==== ", value);
-        console.log("listRefPropertyObject[value] ==== ", listRefPropertyObject[value]);
-        
+    for(let value of listRefsForObjectSTIX){      
         if(listRefPropertyObject[value]){
             listRefPropertyObject[value].forEach((item) => {
-                console.log("currentIdSTIXObject = ", currentIdSTIXObject, "currentIdSTIXObject.includes('domain-name') = ", currentIdSTIXObject.includes("domain-name"));
-                console.log("item = ", item);
-
                 if(currentIdSTIXObject.includes("domain-name")){
                     if(item !== "mac-addr"){
                         listObjectTypeTmp.add(item);
@@ -219,9 +214,6 @@ export default function CreateDialogContentNewSTIXObject(props){
                         listObjectTypeTmp.add(item);
                     }
                 } else {
-
-                    console.log("************************ item: ", item);
-
                     listObjectTypeTmp.add(item);
                 }
             });
@@ -291,13 +283,14 @@ export default function CreateDialogContentNewSTIXObject(props){
 
     let handlerAddSTIXObject = (elem) => {
 
-        console.log("@@@@@@@ func 'handlerAddSTIXObject', elem: ", elem, ", listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " @@@@@@");
+        console.log("^^^^^^^^^^^^^ func 'handlerAddSTIXObject', elem: ", elem, ", listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " ^^^^^^^^^");
 
         let elemIsExist = false;
         let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
 
         for(let item of listNewOrModifySTIXObjectTmp){
-            if(item.id === elem.id){
+            if(item.obj.id === elem.id){
+            //if(item.id === elem.id){
                 elemIsExist = true;
         
                 return;
@@ -308,7 +301,8 @@ export default function CreateDialogContentNewSTIXObject(props){
             return; 
         }
 
-        listNewOrModifySTIXObjectTmp.push(elem);
+        listNewOrModifySTIXObjectTmp.push({ "obj": elem, "ref": currentRefObjectSTIX });
+        //listNewOrModifySTIXObjectTmp.push(elem);
         setButtonAddClick(false);
         setListNewOrModifySTIXObject(listNewOrModifySTIXObjectTmp);
     };
@@ -324,8 +318,10 @@ export default function CreateDialogContentNewSTIXObject(props){
         console.log("!!!! ____ func 'handlerChangeNewSTIXObject', state = ", state);
 
         for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
-            if(listNewOrModifySTIXObject[i].id === state.id){
-                listNewOrModifySTIXObject[i] = state;
+            if(listNewOrModifySTIXObject[i].obj.id === state.id){
+                listNewOrModifySTIXObject[i].obj = state;
+                //if(listNewOrModifySTIXObject[i].id === state.id){
+                //listNewOrModifySTIXObject[i] = state;
 
                 break;
             }
@@ -338,8 +334,6 @@ export default function CreateDialogContentNewSTIXObject(props){
 
     let MyModule = somethingModule(typeObjectSTIX);
 
-    console.log("func 'CreateDialogContentNewSTIXObject' projectPatterElement:", projectPatterElement);
-
     return (<React.Fragment>
         <DialogContent>
             <Grid container direction="row" className="pt-3" spacing={3}>
@@ -348,13 +342,13 @@ export default function CreateDialogContentNewSTIXObject(props){
                         <Grid container direction="row">
                             <Grid item container md={12} justifyContent="flex-start">
                                 <Typography variant="overline" display="block" gutterBottom>
-                                    {`родительский объект ${currentIdSTIXObject}`}
+                                    <span className="text-muted">родительский объект:</span>&nbsp;{currentIdSTIXObject}
                                 </Typography>
                                 {listNewOrModifySTIXObject.length > 0? 
                                     <span className="text-muted pb-2">добавлены ссылки на следующие STIX объекты:</span>:
                                     ""}
                                 {listNewOrModifySTIXObject.map((item, key) => {
-                                    let objectElem = helpers.getLinkImageSTIXObject(item.type);
+                                    let objectElem = helpers.getLinkImageSTIXObject(item.obj.type);
 
                                     return (<Grid container direction="row" key={`key_new_or_modify_${key}`}>
                                         <Grid item container md={12} justifyContent="flex-start">
@@ -363,18 +357,21 @@ export default function CreateDialogContentNewSTIXObject(props){
                                                 size="small" 
                                                 aria-label="show-element" 
                                                 onClick={() => {
-                                                    console.log("1. ____ func Show Element ____ item.id:", item.id, " listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " projectPatterElement:", projectPatterElement);
+                                                    //console.log("1. ____ func Show Element ____ item.obj.id:", item.obj.id, " listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " projectPatterElement:", projectPatterElement);
                                                     
                                                     for(let k of listNewOrModifySTIXObject){
 
-                                                        console.log("2. ____ func Show Element ____ k (listNewOrModifySTIXObject) = ", k, " item.id = ", item.id);
+                                                        //console.log("2. ____ func Show Element ____ k (listNewOrModifySTIXObject) = ", k, " item.id = ", item.id);
 
-                                                        if(k.id === item.id){
-                                                            console.log("3. ____ func Show Element ____ k.id === item.id, k = '", k, "' _____");
+                                                        if(k.obj.id === item.obj.id){
+                                                        //if(k.id === item.id){
+                                                            //console.log("3. ____ func Show Element ____ k.obj.id === item.id, k = '", k, "' _____");
 
                                                             //setModifySTIXObject(k);
-                                                            dispatchProjectPatterElement({ type: "newAll", data: k });
-                                                            setTypeObjectSTIX(k.type);
+                                                            dispatchProjectPatterElement({ type: "newAll", data: k.obj });
+                                                            setTypeObjectSTIX(k.obj.type);
+                                                            //dispatchProjectPatterElement({ type: "newAll", data: k });
+                                                            //setTypeObjectSTIX(k.type);
 
                                                             break;
                                                         }
@@ -387,7 +384,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                                                     src={`/images/stix_object/${objectElem.link}`} 
                                                     width="30" 
                                                     height="30" />&nbsp;
-                                                <span className="pt-1">{item.id}</span>
+                                                <span className="pt-1">{item.obj.id}</span>
                                             </Button>
                                             &nbsp;
                                             <IconButton className="mb-2" size="small" aria-label="delete" onClick={() => {
@@ -440,7 +437,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                         {(listRefsForObjectSTIX.length > 1)?
                             <Grid container direction="row" className="pt-3">
                                 <Grid item container md={12} justifyContent="flex-start">
-                                    <RadioGroup row aria-label="quiz" name="quiz" value={currentRefObjectSTIX} onChange={handleRadioChange} style={{ color: red[400] }}>
+                                    <RadioGroup row aria-label="quiz" name="quiz" value={currentRefObjectSTIX} onChange={handleRadioChange}>
                                         {listRefsForObjectSTIX.map((item) => {
                                             let isDisabled = false;
                                             if(typeObjectSTIX === ""){
@@ -451,7 +448,14 @@ export default function CreateDialogContentNewSTIXObject(props){
                                                 }
                                             }
 
-                                            return <FormControlLabel disabled={isDisabled} key={`key-${item}`} value={item} control={<Radio size="small"/>} label={item} />;
+                                            return <FormControlLabel 
+                                                disabled={isDisabled} 
+                                                key={`key-${item}`} 
+                                                value={item} 
+                                                control={isDisabled?
+                                                    <Radio size="small"/>:
+                                                    <Radio size="small" style={{ color: red[400] }}/>} 
+                                                label={item} />;
                                         })}
                                     </RadioGroup>
                                 </Grid>
@@ -553,7 +557,7 @@ export default function CreateDialogContentNewSTIXObject(props){
                 </Button>}
             <Button 
                 disabled={buttonSaveIsDisabled}
-                onClick={() => { handlerDialog(parentSTIXObject, listRefsForObjectSTIX, listNewOrModifySTIXObject); }}
+                onClick={() => { handlerDialog(currentIdSTIXObject, listNewOrModifySTIXObject); }}
                 style={{ color: green[500] }}>
                     добавить ссылки
             </Button>
@@ -565,6 +569,7 @@ CreateDialogContentNewSTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
     parentSTIXObject: PropTypes.object.isRequired,
+    //parentSTIXObject: PropTypes.string.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired, 
     listRefsForObjectSTIX: PropTypes.array.isRequired,
     handlerDialog: PropTypes.func.isRequired,

@@ -117,14 +117,14 @@ function CreateMajorContent(props){
             }
         };
 
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
+
         if(currentIdSTIXObject !== ""){
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: parentIdSTIXObject,
             }});
         }
-
-        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", listener);
 
         return () => {
             dispatch({ type: "newAll", data: {} });
