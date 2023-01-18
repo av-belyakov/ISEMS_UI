@@ -24,10 +24,8 @@ export default function CreatePageReport(props) {
     let [ currentReportId, setCurrentReportId ] = useState("");
     let [ currentObjectId, setCurrentObjectId ] = useState("");
     let [ parentSTIXObject, setParentSTIXObject ] = useState({});
-    //let [ fieldNameForChange, setFieldNameForChange ] = useState([]);
     let [ listRefsForObjectSTIX, setListRefsForObjectSTIX ] = useState([]);
-    let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = useState([]);
-    let [ idForCreateListObjectRefs, setIdForCreateListObjectRefs ] = useState({ "parentId": "", "addId": "" }); //вот это нужно пробросить через 
+    let [ idForCreateListObjectRefs, setIdForCreateListObjectRefs ] = useState({ "parentId": "", "addId": [] }); //вот это нужно пробросить через 
     //ModalWindowShowInformationReport в CreateListObjectRefsReport для обновления списка ссылок на объекты
     let [ currentAdditionalIdSTIXObject, setCurrentAdditionalIdSTIXObject ] = useState("");
     let [ objectsIdModalWindowConfirmDeleteLinkFromObjRefs, setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs ] = useState([]);
@@ -84,25 +82,6 @@ export default function CreatePageReport(props) {
                 setParentSTIXObject(reportObject);
             }
 
-            /*if(typeof parentObject === "undefined"){
-
-                console.log("func '=== HANDLERShowModalWindowCreateNewSTIXObject ===', listNewOrModifySTIXObject:", listNewOrModifySTIXObject);
-
-                for(let item of listNewOrModifySTIXObject){
-                    console.log("func '=== HANDLERShowModalWindowCreateNewSTIXObject ===', elemId: ", elemId, " item.id = ", item.id);
-
-                    if(elemId === item.id ){
-                        setParentSTIXObject(item);
-
-                        break;
-                    }
-                }
-
-                //setParentSTIXObject({});
-            } else {
-                setParentSTIXObject(reportObject);
-            }*/
-
             setListRefsForObjectSTIX(listRefsForObjectSTIX);
             setShowModalWindowCreateNewSTIXObject(true);
         },
@@ -111,45 +90,16 @@ export default function CreatePageReport(props) {
             setShowModalWindowCreateNewSTIXObject(false);
         },
         handlerDialogSaveNewSTIXObject = (currentIdSTIXObject, listSTIXObject) => { 
-            /**
-             * срабатывает при нажатии кнопки "добавить ссылки" в окне создания новых или поиска уже существующих STIX объектов
-             */
-
-            /**
-             * при добавлении нового объекта выполняется сразу после нажатии кнопки "добавить новый объект" в окне добавления объектов
-             * по идее parentSTIXObject должен содержать модифицируемый объект (но возможно кроме Report). Значит, возможно надо будет 
-             * в CreateListObjectRefsReport хранить все запрашиваемые в строке 311, функции CreateListObjectRefsReport, объекты и если
-             * это не Report искать и выбирать из них объект который подвергся модификации (добавили в какое либо поле новую ссылку). А
-             * затем возвращать этот объект сюда и сохранять его в listNewOrModifySTIXObject наряду с вновь созданным объектом для их
-             * последующей отправки в MRSICT
-             * 
-             * Кстати с удалением ссылки из объекта тоже надо проверить
-             */
+            // срабатывает при нажатии кнопки "добавить ссылки" в окне создания новых или поиска уже существующих STIX объектов
             
             console.log("func '===== HANDLERDialogSaveNewSTIXObject =====', currentIdSTIXObject: ", currentIdSTIXObject, ", listSTIXObject: ", listSTIXObject);
 
-            //setFieldNameForChange(fieldName);
             setShowModalWindowCreateNewSTIXObject(false);
+            setIdForCreateListObjectRefs({ "parentId": currentIdSTIXObject, "addId": listSTIXObject });
 
-            if(currentIdSTIXObject.includes("report")){
-
-                console.log("---=======++++++ ADD ref to REPORT BEFORE", parentSTIXObject, " ++++++=======-----");
-
-                setParentSTIXObject((prevState) => {
-                    for(let item of listSTIXObject){
-                        console.log("==== listSTIXObject: ITEM:", item);
-
-                        prevState.object_refs.push(item.obj.id);
-                    }
-
-                    return prevState;
-                });
-
-                console.log("---=======++++++ ADD ref to REPORT AFTER", parentSTIXObject, " ++++++=======-----");
-
-                return;
-            }
-
+            //здесь запрашиваем родительский объект в котором модифицируем свойство со сылками на другие объекты
+            // и выполняем модификацию этих свойств, затем отправляем модифицированный родительский объект и 
+            // объект который мы добавили или модифицировали
             socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
                 console.log("------------------------------------");
                 console.log("func '===== HANDLERDialogSaveNewSTIXObject =====', recived 'isems-mrsi response ui: send search request, get STIX object for id' DATA:", data);
@@ -170,10 +120,9 @@ export default function CreatePageReport(props) {
                     return;
                 }
         
+                let listObjectUpdate = [];
                 for(let obj of data.information.additional_parameters.transmitted_data){   
                     for(let item of listSTIXObject){
-                        console.log("==== listSTIXObject: ITEM:", item);
-
                         if(item.ref.includes("refs")){
                             if(Array.isArray(obj[item.ref])){
                                 obj[item.ref].push(item.obj.id);
@@ -183,27 +132,23 @@ export default function CreatePageReport(props) {
                         } else {
                             obj[item.ref] = item.obj.id;
                         }
+
+                        listObjectUpdate.push(item.obj);
                     }
 
-                    //за место добавлении модифицированных объектов в ListNewOrModifySTIXObject стоит отправлять данные объекты 
-                    // прямиком в MRSICT
-
-                    /**
-                     * к сожалению не получится сразу отправлять данные в MRSICT так как некоторые из создаваемых объектов должны ОБЯЗАТЕЛЬНО
-                     * хранить ссылки на другие объекты (в функции CreateListObjectRefsReport есть переменная isAddAlarmProblems информирующая пользователя 
-                     * о наличии таких объектов)
-                     */
-                    setListNewOrModifySTIXObject((prevState) => {
-                        console.log("func 'setListNewOrModifySTIXObject', 000 obj:", obj);
-
-                        prevState.push(obj);
-        
-                        return prevState;
-                    });
+                    listObjectUpdate.push(obj);
                 }
 
-                console.log("==== listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
-                console.log("------------------------------------");
+                console.log("==== listSTIXObject: listObjectUpdate:", listObjectUpdate);
+
+                /**
+                 * 
+                 * Теперь нужно сделать отправку модифицированного объекта и вновь добавленных объектов в MRSICT
+                 * socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: listObjectUpdate });
+                 * 
+                 * Кроме того нужно переделать удаление ссылки на объекты
+                 * 
+                 */
             });
 
             socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
@@ -211,61 +156,7 @@ export default function CreatePageReport(props) {
                 parentObjectId: currentObjectId,
             }});
 
-            /*if(listSTIXObject.length === 0){
-                return;
-            }
-
-            setListNewOrModifySTIXObject((prevState) => {
-                //console.log("func 'setListNewOrModifySTIXObject', 000 listSTIXObject:", listSTIXObject);
-
-                for(let object of listSTIXObject){
-                    let index = prevState.findIndex((elem) => elem.id === object.id);
-                    //console.log("func 'setListNewOrModifySTIXObject', 001 INDEX:", index);
-
-                    if(index === -1){
-                        prevState.push(object);
-                    } else {
-                    //setListNewOrModifySTIXObject[index] = object;
-                        prevState[index] = object;
-                    }
-                }
-
-                //console.log("func 'setListNewOrModifySTIXObject', 111 setListNewOrModifySTIXObject (prevState):", prevState);
-
-                for(let i = 0; i < prevState.length; i++){
-                    if(parentSTIXObject.id !== prevState[i].id){
-                        //console.log("func 'setListNewOrModifySTIXObject', parentSTIXObject.id:", parentSTIXObject.id, prevState[i].id, ":prevState[i].id 111 ERROR");
-
-                        continue;
-                    }                    
-
-                    for(let fn of fieldName){
-                        if(typeof prevState[i][fn] === "undefined"){
-                            //console.log("func 'setListNewOrModifySTIXObject', 222 ERROR");
-
-                            continue;
-                        }                    
-
-                        if(Array.isArray(prevState[i][fn])){
-                            //console.log("func 'setListNewOrModifySTIXObject', 222-111");
-
-                            for(let obj of listSTIXObject){
-                                if(!prevState[i][fn].find((value) => value === obj.id)){
-                                    prevState[i][fn].push(obj.id);
-                                }
-                            }
-                        } else {
-                            //console.log("func 'setListNewOrModifySTIXObject', 222-222");
-
-                            prevState[i][fn] = listSTIXObject[0];
-                        }
-                    }
-                }
-
-                return prevState;
-            });*/
-
-            console.log("func '===== HANDLERDialogSaveNewSTIXObject =====', listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
+            console.log("func '===== HANDLERDialogSaveNewSTIXObject ====='");
         },
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs = (parentId, deleteId) => {
             setShowModalWindowConfirmDeleteLinkFromObjRefs(true);
@@ -311,9 +202,8 @@ export default function CreatePageReport(props) {
             groupList={receivedData.groupList}
             showReportId={currentReportId}
             userPermissions={receivedData.userPermissions}
-            parentSTIXObject={parentSTIXObject}
             confirmDeleteLink={buttonDelModalWindowConfirmDeleteLinkFromObjRefs}fieldNameForChange
-            listNewOrModifySTIXObject={listNewOrModifySTIXObject}
+            idForCreateListObjectRefs={idForCreateListObjectRefs}
             handlerButtonSave={handlerButtonSaveModalWindowReportSTIX}
             handlerDialogConfirm={handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
@@ -326,7 +216,6 @@ export default function CreatePageReport(props) {
             isNotDisabled={receivedData.userPermissions.editing_information.status} 
             showModalWindow={showModalWindowSTIXObject}
             parentIdSTIXObject={currentObjectId}
-            listNewOrModifySTIXObject={listNewOrModifySTIXObject}
             currentAdditionalIdSTIXObject={currentAdditionalIdSTIXObject}
             handlerDialogClose={handlerDialogCloseModalWindowSTIXObject}
         />}

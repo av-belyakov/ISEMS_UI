@@ -204,6 +204,22 @@ const loreducer = (state, action) => {
         return forEachListId(parentObj, listTmp, stateTmp);
     };
 
+    let addListId = (addList, currentList) => {
+        for(let i = 0; i < currentList.length; i++){
+            if(currentList[i].currentId === addList.parentId){
+                currentList[i].childId = currentList[i].childId.concat(addList.addId.map((item) => { return { currentId: item.obj.id, childId: [] };}));
+
+                break;
+            }
+
+            if(currentList[i].childId.length > 0){
+                currentList[i].childId = addListId(addList, currentList[i].childId);
+            }
+        }
+
+        return currentList;
+    };
+
     let newList = [];
 
     switch(action.type){
@@ -222,15 +238,43 @@ const loreducer = (state, action) => {
             state.list[searchIndex] = item;
         }
 
-        //console.log("func 'loreducer' action.type = ", action.type, " state.list = ", state.list);
-
         return {...state, list: state.list};
+    case "addList":
+        console.log("**************============== func 'loreducer' action.type = ", action.type, " action.data = ", action.data);
+
+        for(let item of action.data.addId){
+            for(let i = 0; i < state.list.length; i++){
+                if(state.list[i].id !== action.data.parentId){
+                    continue;
+                }
+
+                if(typeof state.list[i][item.ref] === "undefined" && item.ref.includes("refs")){
+                    state.list[i][item.ref] = [];
+                }
+
+                if(Array.isArray(state.list[i][item.ref])){
+                    state.list[i][item.ref].push(item.obj.id);
+                } else {
+                    state.list[i][item.ref] = item.obj.id;
+                }
+            }
+
+            state.list.push(item.obj);
+        }
+
+        return {...state};
+    case "addListId":
+        if(action.data.parentId.includes("report")){
+            for(let item of action.data.addId){
+                state.listId.push({ currentId: item.obj.id, childId: [] });
+            }
+        } else {
+            state.listId = addListId(action.data, state.listId);
+        }
+
+        return {...state};
     case "updateListId":
-        changeListIdResult = updateState(action.data.listObject, state.listId, 0);
-
-        console.log("@@@@=- func 'loreducer' action.type = ", action.type, " changeListIdResult = ", changeListIdResult, " -=@@@@");
-
-        return {...state, listId: changeListIdResult};
+        return {...state, listId: updateState(action.data.listObject, state.listId, 0)};
     case "changeListId":
         changeListIdResult = changeListId(action.data.parentSTIXObject, action.data.listModifySTIXObject, state.listId);
 
@@ -258,7 +302,7 @@ export default function CreateListObjectRefsReport(props){
         stateReport,
         majorParentId,
         confirmDeleteLink,
-        listNewOrModifySTIXObject,
+        idForCreateListObjectRefs,
         handlerDialogConfirm,
         handlerDeleteObjectRef,
         handlerReportUpdateObjectRefs,
@@ -269,29 +313,20 @@ export default function CreateListObjectRefsReport(props){
     let objListBegin = stateReport.object_refs.map((item) => {
         return { currentId: item, childId: [] };
     });
-    
-    console.log("()()()()( func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", stateReport:", stateReport, ", listNewOrModifySTIXObject:", listNewOrModifySTIXObject);
 
-    const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: []/*listNewOrModifySTIXObject*/, listId: objListBegin});
+    const [ listObjReducer, setListObjReducer ] = useReducer(loreducer, { list: [], listId: objListBegin});
     const [ currentParentId, setCurrentParentId ] = useState("");
     const [ currentDeleteId, setCurrentDeleteId ] = useState("");
     const [ deleteIdDepthAndKey, setDeleteIdDepthAndKey ] = useState([]);
     const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
 
-    //console.log("func 'CreateListObjectRefsReport', listActivatedObjectNumbers ======= ", listActivatedObjectNumbers);
+    console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", stateReport:", stateReport, " listObjReducer ======= ", listObjReducer, " (*)(*)");
 
     useEffect(() => {
-        console.log("func 'CreateListObjectRefsReport', useEffect START LOADING ----------------------------------------------------");
-
         let listener = (data) => {
-
-            console.log("1111 - socketIo.on 'isems-mrsi ui request: send search request, get STIX object for list id', data:", data);
-
             let listObj = data.information.additional_parameters.transmitted_data.filter((item) => {
                 return item.type !== "relationship" && item.type !== "sighting"; 
             });
-        
-            console.log("2222 - socketIo.on 'isems-mrsi ui request: send search request, get STIX object for list id', listObj:", listObj);
 
             setListObjReducer({ type: "updateListId", data: { listObject: listObj }});
             setListObjReducer({ type: "updateList", data: { current: listObj /*data.information.additional_parameters.transmitted_data*/, parent: stateReport }});
@@ -372,28 +407,16 @@ export default function CreateListObjectRefsReport(props){
         handlerDialogConfirm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ confirmDeleteLink ]),
-    /*useEffect(() => {
-
-        console.log("+++++++ useEffect 11111 +++++++");
-
-        setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
-    }, [ stateReport.object_refs ]);*/
-
-
     useEffect(() => {
+        //для изменения содержимого списка listObjReducer.listId типа { currentId: item, childId: [] }
+        setListObjReducer({ type: "addListId", data: idForCreateListObjectRefs });
 
-        console.log("+++++++ useEffect 22222 +++++++");
-        console.log("++++++ отслеживается обновление majorParentId, listNewOrModifySTIXObject при добавлении ссылки на новый объект +++ listActivatedObjectNumbers:", listActivatedObjectNumbers, " ++++++++");
-
-        /**
-         * 
-         * не отслеживается обновление stateReport.object_refs при добавлении ссылки на новый объект
-         * 
-         */
-
-        setListObjReducer({ type: "changeListId", data: { parentSTIXObject: majorParentId, listModifySTIXObject: listNewOrModifySTIXObject }});
-    }, [ majorParentId, listNewOrModifySTIXObject ]);
-
+        //для изменения списка listObjReducer.list, при этом надо добавить не только новые объекты в список но и ссылки на эти новые объекты
+        // в родительском объекте
+        setListObjReducer({ type: "addList", data: idForCreateListObjectRefs });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ idForCreateListObjectRefs.parentId ]);
+    
     const findObjectId = (list, id) => {
             let listTmp = new Set([]);
 
@@ -451,8 +474,6 @@ export default function CreateListObjectRefsReport(props){
                     return;
                 }
 
-                console.log("______jjj+++++*********jjjjj------");
-
                 socketIo.emit("isems-mrsi ui request: send search request, get STIX object for list id", { 
                     arguments: { 
                         searchListObjectId: listSearchId,
@@ -468,6 +489,18 @@ export default function CreateListObjectRefsReport(props){
             handlerDeleteObjectRef(parentId, currentId);                
         };
 
+    let getObjectRefs = (objectId) => {
+        for(let item of listObjReducer.list){
+            if(item.id !== objectId){
+                continue;
+            }
+
+            return item.object_refs;
+        }
+
+        return [];
+    };
+
     let getListId = (list, parentId, depth) => {
         return list.map((item, key) => {
             let isAddAlarmProblems = false;
@@ -479,10 +512,10 @@ export default function CreateListObjectRefsReport(props){
             }
 
             if(type[0] === "grouping" || type[0] === "note" || type[0] === "opinion"){
-                for(let v of listNewOrModifySTIXObject){
-                    if((v.id === item.currentId) && ((typeof v.object_refs === "undefined") || (v.object_refs.length === 0))){
-                        isAddAlarmProblems = true;
-                    }
+                let objRefs = getObjectRefs(item.currentId);
+
+                if((typeof objRefs === "undefined") || (objRefs.length === 0)){
+                    isAddAlarmProblems = true;
                 }
             }
 
@@ -596,7 +629,7 @@ CreateListObjectRefsReport.propTypes = {
     stateReport: PropTypes.object.isRequired,
     majorParentId: PropTypes.string.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
-    listNewOrModifySTIXObject: PropTypes.array.isRequired,
+    idForCreateListObjectRefs: PropTypes.object.isRequired,
     handlerDialogConfirm: PropTypes.func.isRequired,
     handlerDeleteObjectRef: PropTypes.func.isRequired,
     handlerReportUpdateObjectRefs: PropTypes.func.isRequired, 

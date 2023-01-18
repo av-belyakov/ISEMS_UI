@@ -156,10 +156,12 @@ function CreateMajorElements(props){
             </Grid>
             <CreateNotePatternElements 
                 isDisabled={false}
+                showRefElement={{}}
                 campaignPatterElement={state}
                 handlerAuthors={(value) => { dispatch({ type: "updateAuthors", data: value }); handlerButtonIsDisabled(); }}
                 handlerContent={(e) => { dispatch({ type: "updateContent", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
                 handlerAbstract={(e) => { dispatch({ type: "updateAbstract", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerButtonShowLink={() => {}}
             />
             <CreateElementAdditionalTechnicalInformationDO
                 objectId={currentObjectId}

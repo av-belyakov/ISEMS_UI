@@ -22,7 +22,6 @@ export default function CreateDialogContentDirectorySTIXObject(props){
         socketIo,
         isNotDisabled,
         parentIdSTIXObject,
-        listNewOrModifySTIXObject,
         currentAdditionalIdSTIXObject,
         handlerDialogClose,
     } = props;
@@ -44,7 +43,6 @@ export default function CreateDialogContentDirectorySTIXObject(props){
                     socketIo={socketIo}
                     parentIdSTIXObject={parentIdSTIXObject}
                     currentIdSTIXObject={currentAdditionalIdSTIXObject}
-                    listNewOrModifySTIXObject={listNewOrModifySTIXObject}
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
                     isNotDisabled={isNotDisabled}
                     handlerDialogClose={handlerDialogClose}
@@ -73,7 +71,6 @@ CreateDialogContentDirectorySTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
-    listNewOrModifySTIXObject: PropTypes.array.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handlerDialogClose: PropTypes.func.isRequired,
 };
@@ -83,20 +80,12 @@ function CreateMajorContent(props){
         socketIo,
         parentIdSTIXObject,
         currentIdSTIXObject,
-        listNewOrModifySTIXObject,
         buttonSaveChangeTrigger,
         isNotDisabled,
         handlerDialogClose,
         handlerButtonIsDisabled,
         handlerButtonSaveChangeTrigger,
     } = props;
-
-    let beginDataObject = {};
-    for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
-        if(listNewOrModifySTIXObject[i].id === currentIdSTIXObject){
-            beginDataObject = listNewOrModifySTIXObject[i];
-        }
-    }
 
     let isExistTransmittedData = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
@@ -118,7 +107,7 @@ function CreateMajorContent(props){
         return true;
     };
 
-    const [ state, dispatch ] = useReducer(reducerDirectorySTIXObject, { mainObj: beginDataObject });
+    const [ state, dispatch ] = useReducer(reducerDirectorySTIXObject, { mainObj: {} });
     const listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
             return;
@@ -240,7 +229,6 @@ CreateMajorContent.propTypes = {
     socketIo: PropTypes.object.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
-    listNewOrModifySTIXObject: PropTypes.array.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
     handlerDialogClose: PropTypes.func.isRequired,

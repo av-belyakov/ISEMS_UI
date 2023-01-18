@@ -1,5 +1,3 @@
-"use strict";
-
 import React, { useState, useEffect, useReducer } from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
@@ -103,7 +101,12 @@ const reducer = (state, action) => {
 
         return {...state};
     case "updateObjectRefs": 
-        return {...state, object_refs: action.data};
+
+        console.log("func 'reducer', ------- action.type:", action.type, " -------- action.data:", action.data);
+
+        state.object_refs = state.object_refs.concat(action.data);
+
+        return {...state};
     case "deleteObjectRefs":
         if(state.object_refs.length === 0){
             return {...state};
@@ -193,20 +196,31 @@ function ModalWindowShowInformationReport({
     groupList,
     showReportId,
     userPermissions,
-    parentSTIXObject,
     confirmDeleteLink,
-    //fieldNameForChange,
-    listNewOrModifySTIXObject,
+    idForCreateListObjectRefs,
     handlerButtonSave,
     handlerDialogConfirm, 
     handlerShowObjectRefSTIXObject,
     handlerShowModalWindowCreateNewSTIXObject,
     handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
 }) {
+
     const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
     const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = useState(false);
 
     console.log("func 'ModalWindowShowInformationReport', START...");
+    //console.log("------ parentSTIXObject: ", parentSTIXObject, " -------");
+    //console.log("------ changeDataSTIXObject: ", changeDataSTIXObject, " --------");
+    //console.log("------ =============================== -------");
+
+    /*useEffect(() => {
+        console.log("|||||||||| func ModalWindowShowInformationReport, React.useEffect for parentSTIXObject &&&: ", parentSTIXObject.object_refs, " changeDataSTIXObject: ", changeDataSTIXObject);
+
+        if(typeof parentSTIXObject.object_refs !== "undefined" && buttonSaveIsDisabled){
+            setButtonSaveIsDisabled(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ changeDataSTIXObject ]);*/
 
     let handlerButtonSaveIsNotDisabled = () => {
             if(buttonSaveIsDisabled){
@@ -218,7 +232,7 @@ function ModalWindowShowInformationReport({
             if(!buttonSaveIsDisabled){
                 setButtonSaveIsDisabled(true);
             }
-            
+
             handlerButtonSave(state);
         };
 
@@ -239,11 +253,9 @@ function ModalWindowShowInformationReport({
             groupList={groupList}
             showReportId={showReportId}
             userPermissions={userPermissions.editing_information.status}
-            parentSTIXObject={parentSTIXObject}
             confirmDeleteLink={confirmDeleteLink}
-            //fieldNameForChange={fieldNameForChange}
             buttonSaveChangeTrigger={buttonSaveChangeTrigger}
-            listNewOrModifySTIXObject={listNewOrModifySTIXObject}
+            idForCreateListObjectRefs={idForCreateListObjectRefs}
             handlerDialogConfirm={handlerDialogConfirm}
             handlerPressButtonSave={handlerPressButtonSave}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
@@ -261,10 +273,8 @@ ModalWindowShowInformationReport.propTypes = {
     groupList: PropTypes.array.isRequired,
     showReportId: PropTypes.string.isRequired,
     userPermissions: PropTypes.object.isRequired,
-    parentSTIXObject: PropTypes.object.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
-    //fieldNameForChange: PropTypes.array.isRequired,
-    listNewOrModifySTIXObject: PropTypes.array.isRequired,
+    idForCreateListObjectRefs: PropTypes.object.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
     handlerDialogConfirm: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
@@ -315,11 +325,9 @@ function CreateAppBody(props){
         groupList,
         showReportId,
         userPermissions,
-        parentSTIXObject,
         confirmDeleteLink,
-        //fieldNameForChange,
         buttonSaveChangeTrigger,
-        listNewOrModifySTIXObject,
+        idForCreateListObjectRefs,
         handlerDialogConfirm,
         handlerPressButtonSave,
         handlerShowObjectRefSTIXObject,
@@ -335,12 +343,10 @@ function CreateAppBody(props){
                     socketIo={socketIo}
                     showReportId={showReportId}
                     userPermissions={userPermissions}
-                    parentSTIXObject={parentSTIXObject}
                     confirmDeleteLink={confirmDeleteLink}
                     handlerDialogConfirm={handlerDialogConfirm}
-                    //fieldNameForChange={fieldNameForChange}
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
-                    listNewOrModifySTIXObject={listNewOrModifySTIXObject}
+                    idForCreateListObjectRefs={idForCreateListObjectRefs}
                     handlerPressButtonSave={handlerPressButtonSave}
                     handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
                     handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
@@ -370,11 +376,9 @@ CreateAppBody.propTypes = {
     groupList: PropTypes.array.isRequired,
     showReportId: PropTypes.string.isRequired,
     userPermissions: PropTypes.bool.isRequired,
-    parentSTIXObject: PropTypes.object.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
-    //fieldNameForChange: PropTypes.array.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
-    listNewOrModifySTIXObject: PropTypes.array.isRequired,
+    idForCreateListObjectRefs: PropTypes.object.isRequired,
     handlerDialogConfirm: PropTypes.func.isRequired,
     handlerPressButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
@@ -388,11 +392,9 @@ function CreateReportInformation(props){
         socketIo,
         showReportId,
         userPermissions,
-        parentSTIXObject,
         confirmDeleteLink,
-        //fieldNameForChange,
         buttonSaveChangeTrigger,
-        listNewOrModifySTIXObject,
+        idForCreateListObjectRefs,
         handlerDialogConfirm,
         handlerPressButtonSave,
         handlerShowObjectRefSTIXObject,
@@ -401,7 +403,7 @@ function CreateReportInformation(props){
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
-    console.log("func 'CreateReportInformation', START... showReportId = ", showReportId, " parentSTIXObject = ", parentSTIXObject, " listNewOrModifySTIXObject = ", listNewOrModifySTIXObject);
+    console.log("func 'CreateReportInformation', START... showReportId = ", showReportId, " idForCreateListObjectRefs:", idForCreateListObjectRefs);
 
     const [state, dispatch] = useReducer(reducer, {});
     useEffect(() => {
@@ -438,50 +440,20 @@ function CreateReportInformation(props){
             socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
             socketIo.emit("isems-mrsi ui request: get a list of groups to which the report is available", { arguments: showReportId });
         }
-    }, [ socketIo, showReportId ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ showReportId ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
             handlerPressButtonSave(state);
         }
-    }, [ buttonSaveChangeTrigger, state, handlerPressButtonSave ]),
+    }, [ buttonSaveChangeTrigger, state, handlerPressButtonSave ]);
     useEffect(() => {
-        console.log("func 'CreateReportInformation', useEffect, parentSTIXObject: ", parentSTIXObject, " fieldNameForChange: "/*, fieldNameForChange*/, " listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
-
-        if(parentSTIXObject.type !== "report"){
-            console.log("func 'CreateReportInformation', parentSTIXObject.type !== 'report', listNewOrModifySTIXObject = ", listNewOrModifySTIXObject);
-            /**
- * здесь надо сделать изменение ссылок в объектах не являющихся репортами
- */
-
-            return;
+        if(idForCreateListObjectRefs.parentId.includes("report")){
+            dispatch({ type: "updateObjectRefs", data: idForCreateListObjectRefs.addId.map((item) => item.obj.id) });
         }
-
-        let objectRefs = state.object_refs.slice();      
-        
-        /**
-         * 
-         * опять какие то проблеммы со списком, я что то сделал и теперь не добавляется ссылки на новые объекты в 
-         * объекты отличные от репорт (с репортом тоже правда не очень работает)
-         * 
-         */
-
-        console.log("func 'CreateReportInformation', BEFORE objectRefs = ", objectRefs);
-
-        for(let stixObject of listNewOrModifySTIXObject){
-            if(!objectRefs.find((item) => item === stixObject.id) && stixObject.id.split("--")[0] !== "report"){
-                console.log("func 'CreateReportInformation', add element to objectRefs");
-
-                objectRefs.push(stixObject.id);
-            }
-        }
-
-        dispatch({ type: "updateObjectRefs", data: objectRefs });
-
-        console.log("func 'CreateReportInformation', AFTER objectRefs = ", objectRefs);
-        //dispatch({ type: "updateObjectRefs", data: listNewOrModifySTIXObject });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ parentSTIXObject, /*fieldNameForChange,*/ listNewOrModifySTIXObject ]);
-
+    }, [ idForCreateListObjectRefs.parentId ]);
+    
     const handlerPublished = () => {
         let requestId = uuidv4();
 
@@ -601,7 +573,7 @@ function CreateReportInformation(props){
             stateReport={state}
             majorParentId={showReportId}
             confirmDeleteLink={confirmDeleteLink}
-            listNewOrModifySTIXObject={listNewOrModifySTIXObject}
+            idForCreateListObjectRefs={idForCreateListObjectRefs}
             handlerDialogConfirm={handlerDialogConfirm}
             handlerDeleteObjectRef={(parentId, deleteId) => handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs.call(null, parentId, deleteId)} 
             handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
@@ -706,11 +678,9 @@ CreateReportInformation.propTypes = {
     socketIo: PropTypes.object.isRequired,
     showReportId: PropTypes.string.isRequired,
     userPermissions: PropTypes.bool.isRequired,
-    parentSTIXObject: PropTypes.object.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
-    //fieldNameForChange: PropTypes.array.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
-    listNewOrModifySTIXObject: PropTypes.array.isRequired,
+    idForCreateListObjectRefs: PropTypes.object.isRequired,
     handlerDialogConfirm: PropTypes.func.isRequired,
     handlerPressButtonSave: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,

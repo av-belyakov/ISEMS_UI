@@ -37,7 +37,6 @@ export default function CreateDialogContentIPv4AddrSTIXObject(props){
         socketIo,
         isNotDisabled,
         parentIdSTIXObject,
-        listNewOrModifySTIXObject,
         currentAdditionalIdSTIXObject,
         handlerDialogClose,
     } = props;
@@ -59,7 +58,6 @@ export default function CreateDialogContentIPv4AddrSTIXObject(props){
                     socketIo={socketIo}
                     parentIdSTIXObject={parentIdSTIXObject}
                     currentIdSTIXObject={currentAdditionalIdSTIXObject}
-                    listNewOrModifySTIXObject={listNewOrModifySTIXObject}
                     buttonSaveChangeTrigger={buttonSaveChangeTrigger}
                     isNotDisabled={isNotDisabled}
                     handlerDialogClose={handlerDialogClose}
@@ -88,7 +86,6 @@ CreateDialogContentIPv4AddrSTIXObject.propTypes = {
     socketIo: PropTypes.object.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
-    listNewOrModifySTIXObject: PropTypes.array.isRequired,
     currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
     handlerDialogClose: PropTypes.func.isRequired,
 };
@@ -98,7 +95,6 @@ function CreateMajorContent(props){
         socketIo,
         parentIdSTIXObject,
         currentIdSTIXObject,
-        listNewOrModifySTIXObject,
         buttonSaveChangeTrigger,
         isNotDisabled,
         handlerDialogClose,
@@ -106,14 +102,7 @@ function CreateMajorContent(props){
         handlerButtonSaveChangeTrigger,
     } = props;
 
-    let beginDataObject = {};
-    for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
-        if(listNewOrModifySTIXObject[i].id === currentIdSTIXObject){
-            beginDataObject = listNewOrModifySTIXObject[i];
-        }
-    }
-
-    const [ state, dispatch ] = useReducer(reducerMutexSTIXObject, beginDataObject);
+    const [ state, dispatch ] = useReducer(reducerMutexSTIXObject, {});
 
     useEffect(() => {
         let listener = (data) => {
@@ -206,7 +195,6 @@ CreateMajorContent.propTypes = {
     socketIo: PropTypes.object.isRequired,
     parentIdSTIXObject: PropTypes.string.isRequired,
     currentIdSTIXObject: PropTypes.string.isRequired,
-    listNewOrModifySTIXObject: PropTypes.array.isRequired,
     buttonSaveChangeTrigger: PropTypes.bool.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
     handlerDialogClose: PropTypes.func.isRequired,

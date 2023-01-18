@@ -220,6 +220,8 @@ export default function CreateDialogContentNewSTIXObject(props){
         }
     }
 
+    console.log("^^^^^^ func 'CreateDialogContentNewSTIXObject' currentIdSTIXObject: ", currentIdSTIXObject, ", parentSTIXObject.type: ", parentSTIXObject.type);
+
     if(typeof typesRelationshipsBetweenObjects[parentSTIXObject.type] !== "undefined"){
         for(let value of listObjectTypeTmp){
             if(typesRelationshipsBetweenObjects[parentSTIXObject.type].find((item) => item === value)){
@@ -229,8 +231,6 @@ export default function CreateDialogContentNewSTIXObject(props){
             listObjectTypeTmp.delete(value);
         }
     }
-
-    //console.log("******** func 'CreateDialogContentNewSTIXObject' ********* listNewOrModifySTIXObject: ", listNewOrModifySTIXObject);
 
     let listLinkImageSTIXObjectTmp = Object.keys(helpers.getListLinkImageSTIXObject());
     let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) => listObjectTypeTmp.has(item));
