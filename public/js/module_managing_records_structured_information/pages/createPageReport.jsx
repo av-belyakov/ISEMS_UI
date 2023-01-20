@@ -8,6 +8,7 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import PropTypes from "prop-types";
 
+import listExtendedObject from "../../common_helpers/listExtendedObject.js";
 import CreateWidgetsPageReport from "../widgets/createWidgetsPageReport.jsx";
 import ContentCreateNewSTIXObject from "../../module_managing_records_structured_information/any_elements/dialog_contents/contentCreateNewSTIXObject.jsx";
 import CreateSearchAreaOutputReports from "../any_elements/createSearchAreaOutputReports.jsx";
@@ -89,21 +90,15 @@ export default function CreatePageReport(props) {
             setCurrentObjectId("");
             setShowModalWindowCreateNewSTIXObject(false);
         },
+        // срабатывает при нажатии кнопки "добавить ссылки" в окне создания новых или поиска уже существующих STIX объектов
         handlerDialogSaveNewSTIXObject = (currentIdSTIXObject, listSTIXObject) => { 
-            // срабатывает при нажатии кнопки "добавить ссылки" в окне создания новых или поиска уже существующих STIX объектов
-            
-            console.log("func '===== HANDLERDialogSaveNewSTIXObject =====', currentIdSTIXObject: ", currentIdSTIXObject, ", listSTIXObject: ", listSTIXObject);
-
             setShowModalWindowCreateNewSTIXObject(false);
             setIdForCreateListObjectRefs({ "parentId": currentIdSTIXObject, "addId": listSTIXObject });
 
             //здесь запрашиваем родительский объект в котором модифицируем свойство со сылками на другие объекты
             // и выполняем модификацию этих свойств, затем отправляем модифицированный родительский объект и 
             // объект который мы добавили или модифицировали
-            socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-                console.log("------------------------------------");
-                console.log("func '===== HANDLERDialogSaveNewSTIXObject =====', recived 'isems-mrsi response ui: send search request, get STIX object for id' DATA:", data);
-            
+            socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {           
                 if((data.information === null) || (typeof data.information === "undefined")){
                     return;
                 }
@@ -133,21 +128,26 @@ export default function CreatePageReport(props) {
                             obj[item.ref] = item.obj.id;
                         }
 
+                        //добавляем созданные объекты
                         listObjectUpdate.push(item.obj);
                     }
 
+                    //добавляем модифицированный родительский объект
                     listObjectUpdate.push(obj);
                 }
 
-                console.log("==== listSTIXObject: listObjectUpdate:", listObjectUpdate);
+                console.log("func 'handlerDialogSaveNewSTIXObject' ---------------------- listObjectUpdate ===== ", listObjectUpdate);
+
+                socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: listObjectUpdate });
 
                 /**
-                 * 
-                 * Теперь нужно сделать отправку модифицированного объекта и вновь добавленных объектов в MRSICT
-                 * socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: listObjectUpdate });
-                 * 
-                 * Кроме того нужно переделать удаление ссылки на объекты
-                 * 
+
+                Надо проверить ДОБАВЛЕНИЕ в MRSICT ВСЕХ уже реализованных объектов, что ты небыло ошибок
+                АРТЕФАКТ (ARTIFACT СO STIX) проверил но не полностью
+
+                Нужно сделать (с использованием хуков возможно useRef) сохранение сгенерированного впервые UUID объекта
+                а то он при изменении в полях ввода постоянно генерируется вновь
+
                  */
             });
 
@@ -155,8 +155,6 @@ export default function CreatePageReport(props) {
                 searchObjectId: currentIdSTIXObject,
                 parentObjectId: currentObjectId,
             }});
-
-            console.log("func '===== HANDLERDialogSaveNewSTIXObject ====='");
         },
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs = (parentId, deleteId) => {
             setShowModalWindowConfirmDeleteLinkFromObjRefs(true);
@@ -165,11 +163,82 @@ export default function CreatePageReport(props) {
         handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs = () => {
             setShowModalWindowConfirmDeleteLinkFromObjRefs(false);
             setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([]);
-            //setButtonDelModalWindowConfirmDeleteLinkFromObjRefs(false);
         },
-        handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs = () => {
+        handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs = (currentParentId, currentDeleteId) => {
+            let getListRefsForObject = (objType) => {
+                for(let item of listExtendedObject){
+                    if(objType === item.name){
+                        return item.listProperties;
+                    }
+                }
+
+                return [];
+            };
+
+            console.log("--------------- func 'handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs' currentParentId:", currentParentId, " currentDeleteId:", currentDeleteId, " -----------");
+
+            socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                console.log("func ||||'===== handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs ====='|||||, recived 'isems-mrsi response ui: send search request, get STIX object for id' DATA:", data, " =====");
+
+                if((data.information === null) || (typeof data.information === "undefined")){
+                    return;
+                }
+        
+                if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+                    return;
+                }
+        
+                if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+                    return;
+                }
+        
+                if(data.information.additional_parameters.transmitted_data.length === 0){
+                    return;
+                }
+        
+                let isUpdate = false;
+                let listObjectUpdate = [];
+                for(let obj of data.information.additional_parameters.transmitted_data){   
+                    let listElementRef = getListRefsForObject(obj.type);
+
+                    console.log("listExtendedObject = ", listExtendedObject, " obj:", obj, " GET LIST REFS from listExtendedObject: ", listElementRef);
+
+                    for(let item of listElementRef){
+                        if(typeof obj[item] === "undefined"){
+                            continue;
+                        }
+
+                        isUpdate = true;
+                        if(Array.isArray(obj[item])){
+                            obj[item].splice(obj[item].findIndex((id) => id === currentDeleteId), 1);
+                        } else {
+                            if(currentDeleteId === obj[item]){
+                                obj[item] = "";
+                            }
+                        }
+                    }
+
+                    listObjectUpdate.push(obj);
+                }
+
+                console.log("==== listSTIXObject: listObjectUpdate:", listObjectUpdate);
+
+                if(isUpdate){
+                    socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: listObjectUpdate });
+                }
+            });
+
             setButtonDelModalWindowConfirmDeleteLinkFromObjRefs((prevState) => !prevState);
             handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs();
+
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentParentId,
+                parentObjectId: "",
+            }});
+            /*socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentDeleteId,
+                parentObjectId: currentParentId,
+            }});*/
         };
  
     return (<React.Fragment>
@@ -202,7 +271,7 @@ export default function CreatePageReport(props) {
             groupList={receivedData.groupList}
             showReportId={currentReportId}
             userPermissions={receivedData.userPermissions}
-            confirmDeleteLink={buttonDelModalWindowConfirmDeleteLinkFromObjRefs}fieldNameForChange
+            confirmDeleteLink={buttonDelModalWindowConfirmDeleteLinkFromObjRefs}
             idForCreateListObjectRefs={idForCreateListObjectRefs}
             handlerButtonSave={handlerButtonSaveModalWindowReportSTIX}
             handlerDialogConfirm={handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs}
@@ -225,7 +294,10 @@ export default function CreatePageReport(props) {
             objectsId={objectsIdModalWindowConfirmDeleteLinkFromObjRefs}
             showModalWindow={showModalWindowConfirmDeleteLinkFromObjRefs}
             handlerDialogClose={handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs}
-            handlerDialogConfirm={handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs}
+            handlerDialogConfirm={() => {
+                setButtonDelModalWindowConfirmDeleteLinkFromObjRefs((prevState) => !prevState);
+                handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs();
+            }}
         />}
 
         {/** показать модальное окно в котором будут создаваться любые виды STIX объектов кроме Отчетов */}

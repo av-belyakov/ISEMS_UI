@@ -7,6 +7,7 @@ import {
 } from "@material-ui/core";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
+import validatorjs from "validatorjs";
 
 import { helpers } from "../../../common_helpers/helpers.js";
 import reducerArtifactPatternSTIXObjects from "../reducer_handlers/reducerArtifactSTIXObject.js";
@@ -93,42 +94,59 @@ function CreateMajorElements(props){
             switch(obj.actionType){
             case "hashes_update":
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
+                handlerCheckStateButtonIsDisabled();
     
                 break;
             case "hashes_delete":
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
+                handlerCheckStateButtonIsDisabled();
     
                 break;
             default:
                 dispatch({ type: "updateExternalReferences", data: obj.data });
-                handlerButtonIsDisabled();
+                handlerCheckStateButtonIsDisabled();
             }
         }
         
         if(obj.modalType === "granular_markings") {
             dispatch({ type: "updateGranularMarkings", data: obj.data });
-            handlerButtonIsDisabled();
+            handlerCheckStateButtonIsDisabled();
         }
         
         if(obj.modalType === "extensions") {
             dispatch({ type: "updateExtensions", data: obj.data });
-            handlerButtonIsDisabled();
+            handlerCheckStateButtonIsDisabled();
         }
     };
 
-    const handlerButtonIsDisabled = (name) => {
-        if(name === "" || (!state.name || state.name === "")){
-            handlerChangeButtonAdd(true);
-            return;
-        }
-        
-        if(!buttonAddIsDisabled){
-            return;
-        }
+    const handlerCheckStateButtonIsDisabled = (typeElem, value) => {
+        if(typeElem === "url"){
+            console.log("func handlerCheckStateButtonIsDisabled validatorjs.isURL(value):", validatorjs.isURL(value));
 
-        handlerChangeButtonAdd(false);
+            if(validatorjs.isURL(value)){
+                return handlerChangeButtonAdd(false);
+            }
+
+            return handlerChangeButtonAdd(true);
+        } else if(typeElem === "payload_bin"){
+            console.log("func handlerCheckStateButtonIsDisabled validatorjs.isBase64(value):", validatorjs.isBase64(value));
+
+            if(validatorjs.isBase64(value)){
+                return handlerChangeButtonAdd(false);  
+            }
+
+            return handlerChangeButtonAdd(true);
+        } else {
+            //console.log("func handlerCheckStateButtonIsDisabled validatorjs.isBase64(value):", validatorjs.isBase64(state.payload_bin), " validatorjs.isURL(state.url):", validatorjs.isURL(state.url));
+
+            if((state.url && state.url !== "" && !validatorjs.isURL(state.url)) || (state.payload_bin && state.payload_bin !== "" && !validatorjs.isBase64(state.payload_bin))){
+                console.log("func handlerCheckStateButtonIsDisabled ||||||||||||");               
+                
+                return handlerChangeButtonAdd(true);  
+            }
+
+            handlerChangeButtonAdd(false);
+        }
     };
 
     return (<Paper elevation={3} style={{ width: "100%" }}>
@@ -149,22 +167,21 @@ function CreateMajorElements(props){
             <CreateArtifactPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}
-                handlerURL={(e) => { dispatch({ type: "updateURL", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerAddHashes={(e) => { dispatch({ type: "updateAddHashes", data: e }); handlerButtonIsDisabled(); }}
-                handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerDeleteHashe={(e) => { dispatch({ type: "updateDeleteHashes", data: e }); handlerButtonIsDisabled(); }}
-                handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerURL={(e) => { dispatch({ type: "updateURL", data: e.target.value }); handlerCheckStateButtonIsDisabled("url", e.target.value); }}
+                handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAddHashes={(e) => { dispatch({ type: "updateAddHashes", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e.target.value }); handlerCheckStateButtonIsDisabled("payload_bin", e.target.value); }}
+                handlerDeleteHashe={(e) => { dispatch({ type: "updateDeleteHashes", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 
                 objectId={currentObjectId}
                 reportInfo={state}
                 isNotDisabled={isNotDisabled}
-                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
             />
         </Box>

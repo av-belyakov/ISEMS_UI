@@ -356,55 +356,19 @@ export default function CreateListObjectRefsReport(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-        let deleteIdFromSTIXObject = () => {
-            let parrentObject = lodash.cloneDeep(listObjReducer.list[currentParentId]);
-    
-            if(!parrentObject){
-                return;
-            }
-    
-            let id = currentParentId.split("--")[0];
-            let listSaveRefs = [];
-    
-            for(let value of listExtendedObject){
-                if(value.name === id){
-                    listSaveRefs = value.listProperties;
-    
-                    break;
-                }
-            }
-    
-            for(let value of listSaveRefs){
-                if(Array.isArray(parrentObject[value])){
-                    let tmp = parrentObject[value].filter((item) => item !== currentDeleteId);
-    
-                    parrentObject[value] = tmp;
-                } else {
-                    if(parrentObject[value] === currentDeleteId){
-                        parrentObject[value] = "";
-                    }
-                }
-            }
-    
-            if(parrentObject.type === "report"){
-                handlerReportUpdateObjectRefs(parrentObject.object_refs);  
-            }
-            
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ parrentObject ] });
-        };
-
         if(!confirmDeleteLink){
             return;
         }        
-
-        deleteIdFromSTIXObject();
+        
         setListObjReducer({ type: "deleteIdFromListId", data: { 
             currentParentId: currentParentId, 
             currentDeleteId: currentDeleteId,
             deleteIdDepthAndKey: deleteIdDepthAndKey, 
         }});
         setListActivatedObjectNumbers([]);
-        handlerDialogConfirm();
+
+        //фактически закрывает окно
+        handlerDialogConfirm(currentParentId, currentDeleteId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ confirmDeleteLink ]),
     useEffect(() => {
@@ -415,7 +379,7 @@ export default function CreateListObjectRefsReport(props){
         // в родительском объекте
         setListObjReducer({ type: "addList", data: idForCreateListObjectRefs });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ idForCreateListObjectRefs.parentId ]);
+    }, [ idForCreateListObjectRefs.parentId, idForCreateListObjectRefs.addId.length ]);
     
     const findObjectId = (list, id) => {
             let listTmp = new Set([]);

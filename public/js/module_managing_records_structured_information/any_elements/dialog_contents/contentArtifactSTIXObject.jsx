@@ -7,6 +7,7 @@ import {
 } from "@material-ui/core";
 import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
+import validatorjs from "validatorjs";
 
 import reducerArtifactPatternSTIXObjects from "../reducer_handlers/reducerArtifactSTIXObject.js";
 import CreateArtifactPatternElements from "../type_elements_stix/artifactPatternElements.jsx";
@@ -24,12 +25,8 @@ export default function CreateDialogContentArtifactSTIXObject(props){
     let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
     let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
 
-    const handlerButtonIsDisabled = () => {
-            if(!buttonIsDisabled){
-                return;
-            }
-
-            setButtonIsDisabled();
+    const handlerButtonIsDisabled = (status) => {
+            setButtonIsDisabled(status);
         },
         handlerButtonSaveChangeTrigger = () => {
             setButtonSaveChangeTrigger((prevState) => !prevState);
@@ -93,13 +90,6 @@ function CreateMajorContent(props){
         handlerButtonSaveChangeTrigger,
     } = props;
 
-    /*let beginDataObject = {};
-    for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
-        if(listNewOrModifySTIXObject[i].id === currentIdSTIXObject){
-            beginDataObject = listNewOrModifySTIXObject[i];
-        }
-    }*/
-
     const [ state, dispatch ] = useReducer(reducerArtifactPatternSTIXObjects, {});
     useEffect(() => {
         let listener = (data) => {
@@ -153,28 +143,56 @@ function CreateMajorContent(props){
             switch(obj.actionType){
             case "hashes_update":
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
+                handlerCheckStateButtonIsDisabled();
 
                 break;
             case "hashes_delete":
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
-                handlerButtonIsDisabled();
+                handlerCheckStateButtonIsDisabled();
 
                 break;
             default:
                 dispatch({ type: "updateExternalReferences", data: obj.data });
-                handlerButtonIsDisabled();
+                handlerCheckStateButtonIsDisabled();
             }
         }
     
         if(obj.modalType === "granular_markings") {
             dispatch({ type: "updateGranularMarkings", data: obj.data });
-            handlerButtonIsDisabled();
+            handlerCheckStateButtonIsDisabled();
         }
     
         if(obj.modalType === "extensions") {
             dispatch({ type: "updateExtensions", data: obj.data });
-            handlerButtonIsDisabled();
+            handlerCheckStateButtonIsDisabled();
+        }
+    };
+
+    const handlerCheckStateButtonIsDisabled = (typeElem, value) => {
+        if(typeElem === "url"){
+            //console.log("func handlerCheckStateButtonIsDisabled validatorjs.isURL(value):", validatorjs.isURL(value));
+
+            if(validatorjs.isURL(value)){
+                return handlerButtonIsDisabled(false);
+            }
+
+            return handlerButtonIsDisabled(true);
+        } else if(typeElem === "payload_bin"){
+            //console.log("func handlerCheckStateButtonIsDisabled validatorjs.isBase64(value):", validatorjs.isBase64(value));
+
+            if(validatorjs.isBase64(value)){
+                return handlerButtonIsDisabled(false);  
+            }
+
+            return handlerButtonIsDisabled(true);
+        } else {
+            //console.log("func handlerCheckStateButtonIsDisabled validatorjs.isBase64(value):", validatorjs.isBase64(state.payload_bin), " validatorjs.isURL(state.url):", validatorjs.isURL(state.url));
+
+            if((state.url && state.url !== "" && !validatorjs.isURL(state.url)) || (state.payload_bin && state.payload_bin !== "" && !validatorjs.isBase64(state.payload_bin))){                
+                return handlerButtonIsDisabled(true);  
+            }
+
+            handlerButtonIsDisabled(false);
         }
     };
 
@@ -184,14 +202,13 @@ function CreateMajorContent(props){
                 <CreateArtifactPatternElements 
                     isDisabled={false}
                     campaignPatterElement={state}
-                    handlerURL={(e) => { dispatch({ type: "updateURL", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    handlerName={(e) => {}}                    
-                    handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    handlerAddHashes={(e) => { dispatch({ type: "updateAddHashes", data: e }); handlerButtonIsDisabled(); }}
-                    handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    handlerDeleteHashe={(e) => { dispatch({ type: "updateDeleteHashes", data: e }); handlerButtonIsDisabled(); }}
-                    handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerURL={(e) => { dispatch({ type: "updateURL", data: e.target.value }); handlerCheckStateButtonIsDisabled("url", e.target.value); }}
+                    handlerMimeType={(e) => { dispatch({ type: "updateMimeType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                    handlerAddHashes={(e) => { dispatch({ type: "updateAddHashes", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                    handlerPayloadBin={(e) => { dispatch({ type: "updatePayloadBin", data: e.target.value }); handlerCheckStateButtonIsDisabled("payload_bin", e.target.value); }}
+                    handlerDeleteHashe={(e) => { dispatch({ type: "updateDeleteHashes", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                    handlerDecryptionKey={(e) => { dispatch({ type: "updateDecryptionKey", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                    handlerEncryptionAlgorithm={(e) => { dispatch({ type: "updateEncryptionAlgorithm", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 />
             </Grid> 
             
@@ -199,8 +216,8 @@ function CreateMajorContent(props){
                 objectId={currentIdSTIXObject}
                 reportInfo={state}
                 isNotDisabled={isNotDisabled}
-                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
+                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
             />
         </Grid>
