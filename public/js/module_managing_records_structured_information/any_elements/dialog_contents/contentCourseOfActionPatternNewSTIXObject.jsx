@@ -55,7 +55,6 @@ function CreateMajorElements(props){
     let { 
         isNotDisabled,
         buttonAddClick,
-        currentObjectId,
         buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
@@ -63,6 +62,11 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd,
         handlerChangeNewSTIXObject,
     } = props;
+
+    let currentObjectId = React.useMemo(() => {
+        return `course-of-action--${uuidv4()}`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonAddClick ]);
 
     const [ state, dispatch ] = useReducer(reducerCourseOfActionSTIXObjects, {});
     if(!state.created){
@@ -179,7 +183,6 @@ function CreateMajorElements(props){
 CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
-    currentObjectId: PropTypes.string.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,

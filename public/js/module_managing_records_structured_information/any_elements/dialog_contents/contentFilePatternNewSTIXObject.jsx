@@ -31,7 +31,6 @@ export default function CreateFilePatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`file--${uuidv4()}`}
         buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -56,7 +55,6 @@ function CreateMajorElements(props){
     let { 
         isNotDisabled,
         buttonAddClick,
-        currentObjectId,
         buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
@@ -65,10 +63,12 @@ function CreateMajorElements(props){
         handlerChangeNewSTIXObject,
     } = props;
 
+    let currentObjectId = React.useMemo(() => {
+        return `file--${uuidv4()}`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonAddClick ]);
+
     const [ state, dispatch ] = useReducer(reducerFilePatternSTIXObjects, {});
-
-    console.log("func 'CreateFilePatternNewSTIXObject', state:", state);
-
     if(!state.ctime){
         dispatch({ type: "updateCTime", data: currentTime });
     }
@@ -204,7 +204,6 @@ function CreateMajorElements(props){
 CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
-    currentObjectId: PropTypes.string.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,

@@ -30,7 +30,6 @@ export default function CreateThreatActorPatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`threat-actor--${uuidv4()}`}
         buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -55,7 +54,6 @@ function CreateMajorElements(props){
     let { 
         isNotDisabled,
         buttonAddClick,
-        currentObjectId,
         buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
@@ -63,6 +61,11 @@ function CreateMajorElements(props){
         handlerChangeButtonAdd,
         handlerChangeNewSTIXObject,
     } = props;
+
+    let currentObjectId = React.useMemo(() => {
+        return `threat-actor--${uuidv4()}`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonAddClick ]);
 
     const [ state, dispatch ] = useReducer(reducerThreatActorsSTIXObject, {});
     if(state && !state.created){
@@ -160,7 +163,7 @@ function CreateMajorElements(props){
             </Grid>
             <Grid container direction="row" spacing={3}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Уникальный идентификатор (ID):</span></Grid>
-                <Grid item container md={8}>{currentObjectId}</Grid>
+                <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
 
             <CreateThreatActorElements 
@@ -211,7 +214,6 @@ function CreateMajorElements(props){
 CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
-    currentObjectId: PropTypes.string.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,

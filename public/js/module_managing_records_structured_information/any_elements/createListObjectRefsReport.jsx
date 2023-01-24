@@ -16,7 +16,6 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined";
 import { green, red, orange } from "@material-ui/core/colors";
-import lodash from "lodash";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
@@ -321,6 +320,7 @@ export default function CreateListObjectRefsReport(props){
     const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
 
     console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", stateReport:", stateReport, " listObjReducer ======= ", listObjReducer, " (*)(*)");
+    console.log("** func 'CreateListObjectRefsReport' ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId.length:", idForCreateListObjectRefs.addId.length);
 
     useEffect(() => {
         let listener = (data) => {
@@ -372,6 +372,9 @@ export default function CreateListObjectRefsReport(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ confirmDeleteLink ]),
     useEffect(() => {
+
+        console.log("**) ____ func 'CreateListObjectRefsReport', useEffect ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId.length:", idForCreateListObjectRefs.addId.length);
+
         //для изменения содержимого списка listObjReducer.listId типа { currentId: item, childId: [] }
         setListObjReducer({ type: "addListId", data: idForCreateListObjectRefs });
 

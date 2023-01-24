@@ -29,7 +29,6 @@ export default function CreateSoftwarePatternNewSTIXObject(props){
     return <CreateMajorElements
         isNotDisabled={isNotDisabled}
         buttonAddClick={buttonAddClick}
-        currentObjectId={`software--${uuidv4()}`}
         buttonChangeClick={buttonChangeClick}
         buttonAddIsDisabled={buttonAddIsDisabled}
         projectPatterElement={projectPatterElement}
@@ -54,7 +53,6 @@ function CreateMajorElements(props){
     let { 
         isNotDisabled,
         buttonAddClick,
-        currentObjectId,
         buttonChangeClick,
         buttonAddIsDisabled,
         projectPatterElement,
@@ -63,12 +61,10 @@ function CreateMajorElements(props){
         handlerChangeNewSTIXObject,
     } = props;
 
-    /**
- * 
- * Надо потестировать, так то все работает вроде
- * 
- */
-
+    let currentObjectId = React.useMemo(() => {
+        return `software--${uuidv4()}`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonAddClick ]);
 
     const [ state, dispatch ] = useReducer(reducerSoftwarePatternSTIXObjects, {});
     useEffect(() => {
@@ -169,7 +165,6 @@ function CreateMajorElements(props){
 CreateMajorElements.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
-    currentObjectId: PropTypes.string.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
     buttonAddIsDisabled: PropTypes.bool.isRequired,
     projectPatterElement: PropTypes.object.isRequired,
