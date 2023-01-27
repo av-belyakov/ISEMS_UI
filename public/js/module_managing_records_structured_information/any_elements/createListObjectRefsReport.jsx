@@ -480,10 +480,12 @@ export default function CreateListObjectRefsReport(props){
                 return "";
             }
 
-            if(type[0] === "grouping" || type[0] === "note" || type[0] === "opinion"){
+            if(type[0] === "grouping" || type[0] === "note" || type[0] === "observed-data" || type[0] === "opinion"){
                 let objRefs = getObjectRefs(item.currentId);
 
-                if((typeof objRefs === "undefined") || (objRefs.length === 0)){
+                console.log("func getListId, objRefs ------ type[0]:", type[0], " ----------- ", objRefs, " item.currentId = ", item.currentId);
+
+                if((typeof objRefs === "undefined") || (objRefs === null) || (objRefs.length === 0)){
                     isAddAlarmProblems = true;
                 }
             }

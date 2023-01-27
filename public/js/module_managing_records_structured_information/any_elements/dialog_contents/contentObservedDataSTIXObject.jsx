@@ -24,6 +24,13 @@ export default function CreateDialogContentObservedDataSTIXObject(props){
 
     //"indicator": "",зависит от "observed-data"
 
+    /**
+     * 
+     * Какие то проблеммы с изменением даты и времени в этом объекте
+     * и при изменении "количества фиксации наблюдаемого кибер объекта" кнопка сохранить не становится активной
+     * 
+     */
+
     let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
     let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
     
@@ -186,8 +193,8 @@ function CreateMajorContent(props){
                 <CreateObservedDataPatternElements 
                     isDisabled={false}
                     campaignPatterElement={state}
-                    handlerLastObserved={(e) => { dispatch({ type: "updateLastObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    handlerFirstObserved={(e) => { dispatch({ type: "updateFirstObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
+                    handlerLastObserved={(e) => { dispatch({ type: "updateLastObserved", data: e }); handlerButtonIsDisabled(); }}
+                    handlerFirstObserved={(e) => { dispatch({ type: "updateFirstObserved", data: e }); handlerButtonIsDisabled(); }}
                     handlerNumberObserved={(e) => { dispatch({ type: "updateNumberObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerClickButtonObjectRef={(id) => {
                         socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
