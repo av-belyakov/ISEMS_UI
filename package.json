@@ -1,6 +1,6 @@
 {
     "name": "isems-ui",
-    "version": "1.5.3",
+    "version": "1.5.4",
     "private": true,
     "scripts": {
         "start": "node ./app",
