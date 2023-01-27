@@ -95,6 +95,8 @@ export default function CreatePageReport(props) {
             setShowModalWindowCreateNewSTIXObject(false);
             setIdForCreateListObjectRefs({ "parentId": currentIdSTIXObject, "addId": listSTIXObject });
 
+            console.log("func 'handlerDialogSaveNewSTIXObject', parentId:", currentIdSTIXObject, " addId:", listSTIXObject);
+
             //здесь запрашиваем родительский объект в котором модифицируем свойство со сылками на другие объекты
             // и выполняем модификацию этих свойств, затем отправляем модифицированный родительский объект и 
             // объект который мы добавили или модифицировали

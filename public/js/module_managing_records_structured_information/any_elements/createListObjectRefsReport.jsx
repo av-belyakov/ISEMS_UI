@@ -319,8 +319,10 @@ export default function CreateListObjectRefsReport(props){
     const [ deleteIdDepthAndKey, setDeleteIdDepthAndKey ] = useState([]);
     const [ listActivatedObjectNumbers, setListActivatedObjectNumbers ] = React.useState([]);
 
+    let addId = (idForCreateListObjectRefs.addId.length === 0)? 0: idForCreateListObjectRefs.addId[0].obj.id;
+
     console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", stateReport:", stateReport, " listObjReducer ======= ", listObjReducer, " (*)(*)");
-    console.log("** func 'CreateListObjectRefsReport' ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId.length:", idForCreateListObjectRefs.addId.length);
+    console.log("** func 'CreateListObjectRefsReport' ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId.length:", idForCreateListObjectRefs.addId.length, " addId:", addId);
 
     useEffect(() => {
         let listener = (data) => {
@@ -382,7 +384,7 @@ export default function CreateListObjectRefsReport(props){
         // в родительском объекте
         setListObjReducer({ type: "addList", data: idForCreateListObjectRefs });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ idForCreateListObjectRefs.parentId, idForCreateListObjectRefs.addId.length ]);
+    }, [ idForCreateListObjectRefs.parentId, /*idForCreateListObjectRefs.addId.length*/ addId ]);
     
     const findObjectId = (list, id) => {
             let listTmp = new Set([]);

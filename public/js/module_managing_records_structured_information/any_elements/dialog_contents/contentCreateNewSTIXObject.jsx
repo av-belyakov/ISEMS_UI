@@ -233,7 +233,7 @@ export default function CreateDialogContentNewSTIXObject(props){
     }
 
     let listLinkImageSTIXObjectTmp = Object.keys(helpers.getListLinkImageSTIXObject());
-    let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) => listObjectTypeTmp.has(item));
+    let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) => item !== "sighting" && item !== "relationship" && item !== "report" && listObjectTypeTmp.has(item));
     listLinkImageSTIXObject.sort();
 
     //console.log("******** func 'CreateDialogContentNewSTIXObject' ********* listLinkImageSTIXObject = ", listLinkImageSTIXObject);

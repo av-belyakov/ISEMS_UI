@@ -79,8 +79,16 @@ function CreateMajorElements(props){
             stateTmp.type = "grouping";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
+            
+            if(!stateTmp.context){
+                stateTmp.context = "unspecified";
+            }
 
             dispatch({ type: "cleanAll", data: {} });
+
+            //без этого неработает, не проходит валидацию в MRSIC
+            stateTmp.object_refs = ["campaign--0bd1475b-02df-4f51-99db-e061b16a6956"];
+            console.log("{{{{{{{{{{ func 'CreateGroupingPatternNewSTIXObject', stateTmp:", stateTmp, " }}}}}}}}}}}}}");
 
             handlerAddSTIXObject(stateTmp);
         }

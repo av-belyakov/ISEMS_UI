@@ -33,9 +33,6 @@ export default function CreateGroupingPatternElements(props){
     let [ refId, setRefId ] = React.useState("");
 
     let handleExpandClick = (id) => {
-
-        console.log("func 'handleExpandClick', ID:", id);
-
         if(id !== refId){
             setExpanded(true); 
             setRefId(id);
@@ -48,15 +45,7 @@ export default function CreateGroupingPatternElements(props){
         }
 
         handlerButtonShowLink(id);
-        /*socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-            searchObjectId: id,
-            parentObjectId: campaignPatterElement.id,
-        }});*/
     };
-
-    /*let handlerClick = (id) => {
-        console.log("func 'handlerClick', TEST TEST TEST id:", id);
-    };*/
 
     let currentTime = helpers.getToISODatetime();
     

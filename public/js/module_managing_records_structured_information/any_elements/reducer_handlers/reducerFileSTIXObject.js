@@ -20,7 +20,7 @@ export default function reducerFilePatternSTIXObjects(state, action){
     case "updateName":
         return {...state, name: action.data};
     case "updateSize":
-        return {...state, size: action.data};
+        return {...state, size: +action.data};
     case "updateCTime":
         return {...state, ctime: action.data};
     case "updateNameEnc":

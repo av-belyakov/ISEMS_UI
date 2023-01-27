@@ -1,17 +1,13 @@
-"use strict";
-
 import React from "react";
 import { 
-    Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    IconButton,
-    Grid,
+    DialogContentText,
 } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 export default function ModalWindowConfirmDeleteLinkFromObjRefs(props){    
@@ -25,28 +21,25 @@ export default function ModalWindowConfirmDeleteLinkFromObjRefs(props){
     return (<Dialog 
         fullWidth
         maxWidth="xl"
-        open={showModalWindow} >
-        <DialogTitle>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={11}><span className="pt-2">Удаление ссылки с ID:&nbsp;<strong>{objectsId[1]}</strong></span></Grid>
-                <Grid item container md={1} justifyContent="flex-end">
-                    <IconButton edge="start" color="inherit" onClick={handlerDialogClose} aria-label="close">
-                        <CloseIcon />
-                    </IconButton>
-                </Grid>
-            </Grid> 
-        </DialogTitle>
+        open={showModalWindow} 
+        aria-describedby="alert-dialog-description"
+    >
+        <DialogTitle>Удаление ссылки с ID:&nbsp;<strong>{objectsId[1]}</strong></DialogTitle>
         <DialogContent>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={12} style={{ display: "block" }}>
-                    Вы действительно хотите удалить ссылку с ID:&nbsp;<strong>{objectsId[1]}</strong> из объекта с ID:&nbsp;<strong>{objectsId[0]}</strong>?
-                </Grid>
-            </Grid>            
+            <DialogContentText id="alert-dialog-description">
+                Вы действительно хотите удалить ссылку с ID:&nbsp;<strong>{objectsId[1]}</strong> из объекта с ID:&nbsp;<strong>{objectsId[0]}</strong>?
+            </DialogContentText>
         </DialogContent>
         <DialogActions>
-            <Button onClick={handlerDialogClose} color="primary">закрыть</Button>            
+            <Button 
+                onClick={handlerDialogClose} 
+                style={{ color: blue[500] }} 
+                color="primary">
+                закрыть
+            </Button>            
             <Button
                 onClick={handlerDialogConfirm}
+                style={{ color: blue[500] }}
                 color="primary">
                 удалить
             </Button>

@@ -13,7 +13,7 @@ export default function reducerAutonomousSystemPatternSTIXObjects(state, action)
     
         return {...state, name: action.data};
     case "updateNumber":
-        return {...state, number: action.data};
+        return {...state, number: +action.data};
     case "updateRIR":
         return {...state, rir: action.data};
     case "updateConfidence":
