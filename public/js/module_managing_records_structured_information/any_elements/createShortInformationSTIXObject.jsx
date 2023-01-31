@@ -190,8 +190,6 @@ let autonomousSystemFunc = (obj) => {
 
 let artifactFunc = (obj) => {
     return (<React.Fragment>
-        {patternName(obj.name)}
-
         <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Тип файлов IANA:</span></Grid>
             <Grid item container md={7} >
@@ -945,7 +943,7 @@ let opinionFunc = (obj) => {
     return (<React.Fragment>
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted">Объяснение обработчика почему он оставил это мнение:</span>
+                <span className="text-muted mt-2">Объяснение обработчика почему он оставил это мнение:</span>
             </Grid>
             <Grid item container md={7}>
                 <TextField
@@ -962,7 +960,7 @@ let opinionFunc = (obj) => {
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted">Мнение обо всех STIX объектах на которые ссылается данный объект:</span>
+                <span className="text-muted mt-2">Мнение обо всех STIX объектах на которые ссылается данный объект:</span>
             </Grid>
             <Grid item container md={7}>
                 <TextField
@@ -978,7 +976,7 @@ let opinionFunc = (obj) => {
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={5} justifyContent="flex-end mt-2">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted">Список авторов этого мнения:</span>
             </Grid>
             <Grid item md={7}>

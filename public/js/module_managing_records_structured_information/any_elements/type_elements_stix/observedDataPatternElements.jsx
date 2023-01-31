@@ -1,6 +1,10 @@
 import React from "react";
 import {
     Button,
+    Card,
+    CardActions,
+    CardContent,
+    Collapse,
     Grid,
     TextField,
     Typography,
@@ -11,10 +15,12 @@ import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
+import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 const defaultData = "0001-01-01T00:00:00.000Z";
 const minDefaultData = new Date();
 
+/*
 let getLinkImage = (elem) => {
     let tmp = [""];
     if(typeof elem !== "undefined" && elem.includes("--")){
@@ -23,16 +29,23 @@ let getLinkImage = (elem) => {
 
     return helpers.getLinkImageSTIXObject(tmp[0]);
 };
+*/
 
 export default function CreateObservedDataPatternElements(props){
     let { 
         isDisabled,
+        showRefId,
+        showRefObj,
         campaignPatterElement,
+        handlerClick,
         handlerLastObserved,
         handlerFirstObserved,
         handlerNumberObserved,
         handlerClickButtonObjectRef,
     } = props;
+
+    let [ expanded, setExpanded ] = React.useState(false);
+    let [ refId, setRefId ] = React.useState("");
 
     let firstObserved = minDefaultData;
     let lastObserved = minDefaultData;
@@ -56,6 +69,22 @@ export default function CreateObservedDataPatternElements(props){
             lastObserved = new Date(Date.parse(campaignPatterElement.last_observed) - (ms * -1));
         }
     }
+
+    let handleExpandClick = (id) => {
+        if(id !== refId){
+            setExpanded(true); 
+            setRefId(id);
+        } else {
+            if(expanded){
+                setExpanded(false);
+            } else {
+                setExpanded(true); 
+            }    
+        }
+
+        handlerClickButtonObjectRef(id);
+    };
+
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -144,44 +173,64 @@ export default function CreateObservedDataPatternElements(props){
             </Grid>
         </Grid>
 
-        {campaignPatterElement.object_refs && (() => {
-            return (campaignPatterElement.object_refs.length === 0)? 
-                <Typography variant="caption">
-                    <span  style={{ color: red[800] }}>
-                        * необходимо добавить хотя бы один идентификатор любого кибер-наблюдаемого STIX объекта
-                    </span>
-                </Typography>:
-                <Grid container direction="row" spacing={3}>
-                    <Grid item container md={12}>
-                        <ol>
-                            {campaignPatterElement.object_refs.map((item, key) => {
-                                return (<ul key={`key_observed_data_object_ref_${key}`}>
-                                    {(typeof getLinkImage(item) !== "undefined")?
-                                        <Button onClick={() => {                                        
-                                            handlerClickButtonObjectRef(item);
-                                        }}>
-                                            <img src={`/images/stix_object/${getLinkImage(item).link}`} width="25" height="25" />
-                                            &nbsp;{item}
-                                        </Button>:
-                                        <TextField
-                                            fullWidth
-                                            disabled
-                                            InputLabelProps={{ shrink: true }}
-                                            onChange={() => {}}
-                                            value={item}
-                                        />}
-                                </ul>);
-                            })}
-                        </ol>
-                    </Grid>
-                </Grid>;
-        })()}
+        <Grid container direction="row" style={{ marginTop: 4 }}>
+            <Grid item container md={12} justifyContent="flex-start">
+                {campaignPatterElement.object_refs && (() => {
+                    return (campaignPatterElement.object_refs.length === 0)? 
+                        <Typography variant="caption">
+                            <span  style={{ color: red[800] }}>
+                                * необходимо добавить хотя бы один идентификатор любого STIX объекта, связанного с данным Отчётом
+                            </span>
+                        </Typography>:
+                        campaignPatterElement.object_refs.map((item, key) => {
+                            let type = item.split("--");
+                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+    
+                            if(typeof objectElem === "undefined" || type[0] === "relationship"){
+                                return "";
+                            }
+
+                            let disabled = false;
+                            if(type[0] === "report"){                    
+                                disabled = true;
+                            }        
+
+                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_object_ref_${key}`}>
+                                <CardActions>
+                                    <Button onClick={() => {                                        
+                                        handleExpandClick(item);
+                                    }}
+                                    disabled={disabled} >
+                                        <img 
+                                            src={`/images/stix_object/${objectElem.link}`} 
+                                            width="25" 
+                                            height="25" />
+                                        &nbsp;{item}
+                                    </Button>
+                                </CardActions>
+                                <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
+                                    <CardContent>
+                                        {(showRefId !== "" && showRefId === item)?  
+                                            <CreateShortInformationSTIXObject  
+                                                obj={showRefObj}
+                                                handlerClick={handlerClick} />: 
+                                            ""}
+                                    </CardContent>
+                                </Collapse>
+                            </Card>);
+                        });
+                })()}
+            </Grid>
+        </Grid>
     </React.Fragment>);
 }
 
 CreateObservedDataPatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
+    showRefId: PropTypes.string.isRequired,
+    showRefObj: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
+    handlerClick: PropTypes.func.isRequired,
     handlerFirstObserved: PropTypes.func.isRequired,
     handlerLastObserved: PropTypes.func.isRequired,
     handlerNumberObserved: PropTypes.func.isRequired,

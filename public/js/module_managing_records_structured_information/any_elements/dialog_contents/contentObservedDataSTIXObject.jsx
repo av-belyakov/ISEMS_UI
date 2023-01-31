@@ -13,6 +13,14 @@ import CreateListPreviousStateSTIX from "../createListPreviousStateSTIX.jsx";
 import CreateObservedDataPatternElements from "../type_elements_stix/observedDataPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../createElementAdditionalTechnicalInformationDO.jsx";
 
+const listFieldSTIXObjectRefs = {
+    "email-message": "updateRefObjEmailMessageRef",    
+    "network-traffic": "updateRefObjNetworkTrafficRef",
+    "file": "updateRefObjFileRef",
+    "domain-name": "updateResolvesToRefs",
+    "directory": "addRefObj",
+};
+
 export default function CreateDialogContentObservedDataSTIXObject(props){
     let { 
         socketIo,
@@ -23,13 +31,6 @@ export default function CreateDialogContentObservedDataSTIXObject(props){
     } = props;
 
     //"indicator": "",зависит от "observed-data"
-
-    /**
-     * 
-     * Какие то проблеммы с изменением даты и времени в этом объекте
-     * и при изменении "количества фиксации наблюдаемого кибер объекта" кнопка сохранить не становится активной
-     * 
-     */
 
     let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
     let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
@@ -73,7 +74,7 @@ export default function CreateDialogContentObservedDataSTIXObject(props){
                 onClick={() => setButtonSaveChangeTrigger(true)}
                 style={{ color: blue[500] }} 
                 color="primary">
-                сохранить
+                    сохранить
             </Button>}
         </DialogActions>
     </React.Fragment>);
@@ -99,9 +100,63 @@ function CreateMajorContent(props){
         handlerButtonSaveChangeTrigger,
     } = props;
 
-    const [ state, dispatch ] = useReducer(reducerObservedDataSTIXObjects, {});
+    const [ state, dispatch ] = useReducer(reducerObservedDataSTIXObjects, { mainObj: {}, refObj: {}, refId: "" });
+
+    let isExistTransmittedData = (data) => {
+        if((data.information === null) || (typeof data.information === "undefined")){
+            return false;
+        }
+
+        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+            return false;
+        }
+
+        if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+            return false;
+        }
+
+        if(data.information.additional_parameters.transmitted_data.length === 0){
+            return false;
+        }
+
+        return true;
+    };
+
+    const updateRefObj = (parentId, data) => {
+        for(let value in listFieldSTIXObjectRefs){
+            if(parentId.includes(value)){
+                dispatch({ type: listFieldSTIXObjectRefs[value], data: data });
+            }
+        }
+    };
+
+    const handlerButtonShowLink = (refId) => {
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+            if(!isExistTransmittedData(data)){
+                return;
+            }
+    
+            for(let obj of data.information.additional_parameters.transmitted_data){
+
+                dispatch({ type: "updateRefObj", data: obj });
+            }
+        });
+       
+        dispatch({ type: "updateRefId", data: refId });
+        dispatch({ type: "updateRefObj", data: {} });
+ 
+        if(state.refId === refId){  
+            return;
+        }
+
+        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+            searchObjectId: refId,
+            parentObjectId: state.mainObj.id,
+        }});
+    };
+
     const handlerButtonIsDisabled = () => {
-        if(!state.object_refs || state.object_refs.length === 0){
+        if(!state.mainObj.object_refs || state.mainObj.object_refs.length === 0){
             handlerChangeButtonAdd(true);
             return;
         }
@@ -111,19 +166,7 @@ function CreateMajorContent(props){
     
     useEffect(() => {
         let listener = (data) => {
-            if((data.information === null) || (typeof data.information === "undefined")){
-                return;
-            }
-    
-            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-                return;
-            }
-    
-            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-                return;
-            }
-    
-            if(data.information.additional_parameters.transmitted_data.length === 0){
+            if(!isExistTransmittedData(data)){
                 return;
             }
     
@@ -150,7 +193,7 @@ function CreateMajorContent(props){
     }, [ currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state.mainObj ] });
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
@@ -187,60 +230,47 @@ function CreateMajorContent(props){
         }
     };
 
-    return (
-        <Grid item container md={8} style={{ display: "block" }}>
-            <Grid container direction="row" className="pt-3">
-                <CreateObservedDataPatternElements 
-                    isDisabled={false}
-                    campaignPatterElement={state}
-                    handlerLastObserved={(e) => { dispatch({ type: "updateLastObserved", data: e }); handlerButtonIsDisabled(); }}
-                    handlerFirstObserved={(e) => { dispatch({ type: "updateFirstObserved", data: e }); handlerButtonIsDisabled(); }}
-                    handlerNumberObserved={(e) => { dispatch({ type: "updateNumberObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
-                    handlerClickButtonObjectRef={(id) => {
-                        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-                            if((data.information === null) || (typeof data.information === "undefined")){
-                                return false;
-                            }
-                    
-                            if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-                                return false;
-                            }
-                    
-                            if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
-                                return false;
-                            }
-                    
-                            if(data.information.additional_parameters.transmitted_data.length === 0){
-                                return false;
-                            }
-    
-                            for(let obj of data.information.additional_parameters.transmitted_data){    
-                                if(obj.type === "ipv4-addr" || obj.type === "domain-name"){
-                                    dispatch({ type: "updateObjectRefs", data: obj });
-                                }
-                            }
-                        });
+    return (<Grid item container md={8} style={{ display: "block" }}>
+        <Grid container direction="row" className="pt-3">
+            <CreateObservedDataPatternElements 
+                isDisabled={false}
+                showRefId={state.refId}
+                showRefObj={state.refObj}
+                campaignPatterElement={state.mainObj}
+                handlerClick={(parentId, refId) => {
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
 
-                        socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-                            searchObjectId: id,
-                            parentObjectId: parentIdSTIXObject,
-                        }});
-                    }}
-                />
-            </Grid> 
+                        for(let obj of data.information.additional_parameters.transmitted_data){
+                            updateRefObj(parentId, obj);                           
+                        }
+                    });
 
-            <CreateElementAdditionalTechnicalInformationDO
-                objectId={currentIdSTIXObject}
-                reportInfo={state}
-                isNotDisabled={isNotDisabled}
-                handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
-                handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
-                handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: parentId,
+                    }});
+                }}
+                handlerLastObserved={(e) => { console.log("00000 handlerLastObserved, e = ", e); dispatch({ type: "updateLastObservedTime", data: e }); handlerButtonIsDisabled(); }}
+                handlerFirstObserved={(e) => { console.log("00000 handlerFirstObserved, e = ", e); dispatch({ type: "updateFirstObservedTime", data: e }); handlerButtonIsDisabled(); }}
+                handlerNumberObserved={(e) => { dispatch({ type: "updateNumberObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
+                handlerClickButtonObjectRef={handlerButtonShowLink}
             />
-        </Grid>
-    );
+        </Grid> 
+
+        <CreateElementAdditionalTechnicalInformationDO
+            objectId={currentIdSTIXObject}
+            reportInfo={state.mainObj}
+            isNotDisabled={isNotDisabled}
+            handlerElementConfidence={(e) => { dispatch({ type: "updateConfidence", data: e }); handlerButtonIsDisabled(); }}
+            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerButtonIsDisabled(); }}
+            handlerElementLabels={(e) => { dispatch({ type: "updateLabels", data: e }); handlerButtonIsDisabled(); }}
+            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerButtonIsDisabled(); }}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+        />
+    </Grid>);
 }
 
 CreateMajorContent.propTypes = {

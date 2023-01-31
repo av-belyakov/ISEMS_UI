@@ -122,6 +122,7 @@ const listRefPropertyObject = {
     "operating_system_refs": [ "software" ],
     "installed_software_refs": [ "software" ],
     "resolves_to_refs": [ "ipv4-addr", "ipv6-addr", "mac-addr", "domain-name" ],
+    "content_ref": [ "artifact" ],
     "contain_ref": [ "artifact" ],
     "contains_refs": [ "file", "directory" ], 
     "src_ref": [ "ipv4-addr", "ipv6-addr", "mac-addr", "domain-name" ], 
@@ -162,9 +163,6 @@ let reducer = (state, action) => {
 
     switch(action.type){
     case "newAll":
-
-        console.log("func 'reducer' action.type = ", action.type, " action.data = ", action.data, " !!!!!!!!!");
-
         return action.data;
     case "cleanAll":
         return {};
@@ -202,6 +200,16 @@ export default function CreateDialogContentNewSTIXObject(props){
     }, [ listNewOrModifySTIXObject ]);
 
     let listObjectTypeTmp = new Set();
+
+
+    /**
+     * 
+     * для типов file, "observed-data", "malware-analysis" нужен расширеный набор объектов
+     * поэтому думаю стоит сделать проверку наличия их typesRelationshipsBetweenObjects[currentIdSTIXObject]
+     * и создавать let listObjectTypeTmp = new Set(); уже заполненными по умолчанию
+     * 
+     */
+
     for(let value of listRefsForObjectSTIX){      
         if(listRefPropertyObject[value]){
             listRefPropertyObject[value].forEach((item) => {
@@ -220,11 +228,17 @@ export default function CreateDialogContentNewSTIXObject(props){
         }
     }
 
-    console.log("^^^^^^ func 'CreateDialogContentNewSTIXObject' currentIdSTIXObject: ", currentIdSTIXObject, ", parentSTIXObject.type: ", parentSTIXObject.type);
+    let parentType = currentIdSTIXObject.split("--")[0];
 
-    if(typeof typesRelationshipsBetweenObjects[parentSTIXObject.type] !== "undefined"){
+    console.log("func 'CreateDialogContentNewSTIXObject' !!!!!!!!! parentType !!!!!! = ", parentType, " listRefsForObjectSTIX == ", listRefsForObjectSTIX);
+
+    //if(currentIdSTIXObject.includes("file")
+    if(typeof typesRelationshipsBetweenObjects[parentType] !== "undefined"){
         for(let value of listObjectTypeTmp){
-            if(typesRelationshipsBetweenObjects[parentSTIXObject.type].find((item) => item === value)){
+
+            console.log("func 'CreateDialogContentNewSTIXObject' !!!!!!!!! value !!!!!! = ", value);
+
+            if(typesRelationshipsBetweenObjects[parentType].find((item) => item === value)){
                 continue;
             }
 
@@ -236,7 +250,7 @@ export default function CreateDialogContentNewSTIXObject(props){
     let listLinkImageSTIXObject = listLinkImageSTIXObjectTmp.filter((item) => item !== "sighting" && item !== "relationship" && item !== "report" && listObjectTypeTmp.has(item));
     listLinkImageSTIXObject.sort();
 
-    //console.log("******** func 'CreateDialogContentNewSTIXObject' ********* listLinkImageSTIXObject = ", listLinkImageSTIXObject);
+    console.log("func 'CreateDialogContentNewSTIXObject' currentIdSTIXObject = ", currentIdSTIXObject, " --- listRefsForObjectSTIX:", listRefsForObjectSTIX, " ---  listLinkImageSTIXObject = ", listLinkImageSTIXObject);
 
     React.useEffect(() => {
         for(let item of listRefsForObjectSTIX){

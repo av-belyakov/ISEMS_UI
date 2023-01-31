@@ -166,6 +166,8 @@ function CreateMajorElements(props){
             
             <CreateObservedDataPatternElements 
                 isDisabled={false}
+                showRefId={""}
+                showRefObj={{}}
                 campaignPatterElement={state}
                 handlerLastObserved={(e) => { dispatch({ type: "updateDateTimeLastObserved", data: e }); handlerButtonIsDisabled(); }}
                 handlerFirstObserved={(e) => { dispatch({ type: "updateDateTimeFirstObserved", data: e }); handlerButtonIsDisabled(); }}

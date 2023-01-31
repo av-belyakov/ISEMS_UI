@@ -172,7 +172,7 @@ function CreateMajorContent(props){
                 campaignPatterElement={state}
                 handlerBody={(e) => { dispatch({ type: "updateBody", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerSubject={(e) => { dispatch({ type: "updateSubject", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDateSend={(e) => { dispatch({ type: "updateDateSend", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDateSend={(e) => { dispatch({ type: "updateDateSend", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerMessageId={(e) => { dispatch({ type: "updateMessageId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerContentType={(e) => { dispatch({ type: "updateContentType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerIsMultipart={(e) => { dispatch({ type: "updateIsMultipart", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}

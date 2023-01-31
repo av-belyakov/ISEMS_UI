@@ -26,7 +26,7 @@ export default function reducerCampaignSTIXObjects(state, action){
         return {...state, last_seen: action.data};
     case "addId":
         return {...state, id: action.data};
-    case "updateName":
+    case "updateName": 
         if(state.name === action.data){
             return {...state};
         }

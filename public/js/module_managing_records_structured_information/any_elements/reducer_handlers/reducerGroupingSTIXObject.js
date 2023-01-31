@@ -42,7 +42,7 @@ export default function reducerGroupingSTIXObject(state, action){
         state.refId = action.data;
 
         return {...state};
-    case "updateRefObj":
+    case "updateRefObj": 
         state.refObj = action.data;
         if(action.data.type === "directory" && typeof action.data.contains_refs !== "undefined"){
             state.refObj.refs = action.data.contains_refs.map((item) => {

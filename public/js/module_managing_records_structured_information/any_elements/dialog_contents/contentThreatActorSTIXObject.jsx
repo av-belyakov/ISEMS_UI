@@ -186,9 +186,9 @@ function CreateMajorContent(props){
                     // Goals - высокоуровневые цели субъекта угроз.
                     handlerAliases={(e) => { dispatch({ type: "updateAliases", data: e }); handlerButtonIsDisabled(); }}
                     // Aliases - альтернативные имена используемые для этого субъекта угроз
-                    handlerLastSeen={(e) => { dispatch({ type: "updateLastSeen", data: e }); handlerButtonIsDisabled(); }}
+                    handlerLastSeen={(e) => { dispatch({ type: "updateLastSeenTime", data: e }); handlerButtonIsDisabled(); }}
                     // LastSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был зафиксирован в последний раз
-                    handlerFirstSeen={(e) => { dispatch({ type: "updateFirstSeen", data: e }); handlerButtonIsDisabled(); }}
+                    handlerFirstSeen={(e) => { dispatch({ type: "updateFirstSeenTime", data: e }); handlerButtonIsDisabled(); }}
                     // FirstSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был впервые зафиксирован
                     handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
                     handlerResourceLevel={(e) => { dispatch({ type: "updateResourceLevel", data: e.target.value }); handlerButtonIsDisabled(); }}

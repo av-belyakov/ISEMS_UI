@@ -21,9 +21,25 @@ export default function reducerThreatActorSTIXObjects(state, action){
     case "updateModifiedTime":
         return {...state, modified: action.data};
     case "updateFirstSeenTime":
-        return {...state, first_seen: action.data};
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            firstSeen = new Date(tmp + (ms * -1));
+        } else {
+            firstSeen = new Date(tmp - (ms * -1));
+        }
+
+        return {...state, first_seen: new Date(Date.parse(firstSeen)).toISOString()};
     case "updateLastSeenTime":
-        return {...state, last_seen: action.data};
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            lastSeen = new Date(tmp + (ms * -1));
+        } else {
+            lastSeen = new Date(tmp - (ms * -1));
+        }
+
+        return {...state, last_seen: new Date(Date.parse(lastSeen)).toISOString()};
     case "updateName":
         if(state.name === action.data){
             return {...state};

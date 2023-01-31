@@ -48,6 +48,7 @@ const listExtendedObject = [
         "contains_refs" 
     ]}, //contains_refs (directory, file)
     {name: "file", listProperties: [ 
+        "content_ref",
         "contains_refs" 
     ]}, //contains_refs (any STIX object)
     {name: "ipv4-addr", listProperties: [ 
