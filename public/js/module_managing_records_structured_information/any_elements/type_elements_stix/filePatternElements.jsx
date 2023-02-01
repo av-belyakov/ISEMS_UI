@@ -51,10 +51,9 @@ export default function CreateFilePatternElements(props){
     let [ valueTmpHashSum, setValueTmpHashSum ] = useState({ type: "", description: "" });
     let [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true);
 
-    //console.log("func 'CreateFilePatternElements', isInvalidSizeValue = '", isInvalidSizeValue, "', campaignPatterElement.size === '':", campaignPatterElement.size === "", " typeof campaignPatterElement.size === 'undefined':", typeof campaignPatterElement.size === "undefined");
-    console.log("((typeof campaignPatterElement.size === 'undefined') || (campaignPatterElement.size === 0)) : ", ((typeof campaignPatterElement.size === "undefined") || (campaignPatterElement.size === 0)));
-    console.log("campaignPatterElement: ", campaignPatterElement);
-    //console.log("func 'CreateFilePatternElements', campaignPatterElement:", campaignPatterElement, " showRefElement:", showRefElement);
+    console.log("func 'CreateFilePatternElements' ====================================================== ");
+    console.log("func 'CreateFilePatternElements' campaignPatterElement = ", campaignPatterElement);
+    console.log("func 'CreateFilePatternElements' ====================================================== ");
 
     React.useEffect(() => {
         if((typeof campaignPatterElement.size !== "undefined") && new RegExp("^[0-9]{1,}$").test(campaignPatterElement.size) && campaignPatterElement.size[0] !== "0"){

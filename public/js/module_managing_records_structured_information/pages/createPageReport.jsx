@@ -95,7 +95,7 @@ export default function CreatePageReport(props) {
             setShowModalWindowCreateNewSTIXObject(false);
             setIdForCreateListObjectRefs({ "parentId": currentIdSTIXObject, "addId": listSTIXObject });
 
-            console.log("func 'handlerDialogSaveNewSTIXObject', parentId:", currentIdSTIXObject, " addId:", listSTIXObject);
+            console.log("@@@@@@@@@ func 'handlerDialogSaveNewSTIXObject', parentId:", currentIdSTIXObject, " addId:", listSTIXObject);
 
             //здесь запрашиваем родительский объект в котором модифицируем свойство со сылками на другие объекты
             // и выполняем модификацию этих свойств, затем отправляем модифицированный родительский объект и 
@@ -120,13 +120,24 @@ export default function CreatePageReport(props) {
                 let listObjectUpdate = [];
                 for(let obj of data.information.additional_parameters.transmitted_data){   
                     for(let item of listSTIXObject){
+
+                        console.log("@@@@----@@@@ func 'handlerDialogSaveNewSTIXObject', item:", item, " obj:", obj);
+
                         if(item.ref.includes("refs")){
+                            console.log("@@@@@@@@@ func 'handlerDialogSaveNewSTIXObject', 1111111: item.ref = ", item.ref," obj[item.ref] = ", obj[item.ref]);
+
                             if(Array.isArray(obj[item.ref])){
+                                console.log("@@@@@@@@@ func 'handlerDialogSaveNewSTIXObject', 2222222:");
+
                                 obj[item.ref].push(item.obj.id);
                             } else {
+                                console.log("@@@@@@@@@ func 'handlerDialogSaveNewSTIXObject', 3333333:");
+
                                 obj[item.ref] = [item.obj.id];
                             }
                         } else {
+                            console.log("@@@@@@@@@ func 'handlerDialogSaveNewSTIXObject', 4444444:");
+
                             obj[item.ref] = item.obj.id;
                         }
 
@@ -140,7 +151,7 @@ export default function CreatePageReport(props) {
 
                 console.log("func 'handlerDialogSaveNewSTIXObject' ---------------------- listObjectUpdate ===== ", listObjectUpdate);
 
-                socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: listObjectUpdate });
+                //socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: listObjectUpdate });
 
                 /**
 

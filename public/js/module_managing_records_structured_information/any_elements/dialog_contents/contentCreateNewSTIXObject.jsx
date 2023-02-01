@@ -185,7 +185,6 @@ export default function CreateDialogContentNewSTIXObject(props){
     let [ currentRefObjectSTIX, setCurrentRefObjectSTIX ] = React.useState(listRefsForObjectSTIX.find((item) => item === "object_refs")? "object_refs": listRefsForObjectSTIX[0]);
     let [ projectPatterElement, dispatchProjectPatterElement ] = React.useReducer(reducer, {});
     let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = React.useState([]);
-    let [ modifySTIXObject, setModifySTIXObject ] = React.useState({});
     let [ buttonAddClick, setButtonAddClick ] = React.useState(false);
     let [ buttonAddIsDisabled, setButtonAddIsDisabled ] = React.useState(true);
     let [ buttonChangeClick, setButtonChangeClick ] = React.useState(false);
@@ -200,15 +199,13 @@ export default function CreateDialogContentNewSTIXObject(props){
     }, [ listNewOrModifySTIXObject ]);
 
     let listObjectTypeTmp = new Set();
+    let parentType = currentIdSTIXObject.split("--")[0];
 
+    if(parentType === "file"){
+        listRefPropertyObject["contains_refs"] = sco;
+    }
 
-    /**
-     * 
-     * для типов file, "observed-data", "malware-analysis" нужен расширеный набор объектов
-     * поэтому думаю стоит сделать проверку наличия их typesRelationshipsBetweenObjects[currentIdSTIXObject]
-     * и создавать let listObjectTypeTmp = new Set(); уже заполненными по умолчанию
-     * 
-     */
+    console.log("func 'CreateDialogContentNewSTIXObject' !!!!!!!!! parentType !!!!!! = ", parentType, " listRefsForObjectSTIX == ", listRefsForObjectSTIX, " listObjectTypeTmp:", listObjectTypeTmp);
 
     for(let value of listRefsForObjectSTIX){      
         if(listRefPropertyObject[value]){
@@ -227,10 +224,6 @@ export default function CreateDialogContentNewSTIXObject(props){
             });
         }
     }
-
-    let parentType = currentIdSTIXObject.split("--")[0];
-
-    console.log("func 'CreateDialogContentNewSTIXObject' !!!!!!!!! parentType !!!!!! = ", parentType, " listRefsForObjectSTIX == ", listRefsForObjectSTIX);
 
     //if(currentIdSTIXObject.includes("file")
     if(typeof typesRelationshipsBetweenObjects[parentType] !== "undefined"){
@@ -453,6 +446,9 @@ export default function CreateDialogContentNewSTIXObject(props){
                                 <Grid item container md={12} justifyContent="flex-start">
                                     <RadioGroup row aria-label="quiz" name="quiz" value={currentRefObjectSTIX} onChange={handleRadioChange}>
                                         {listRefsForObjectSTIX.map((item) => {
+
+                                            console.log("func 'listRefsForObjectSTIX', ITEM:", item);
+
                                             let isDisabled = false;
                                             if(typeObjectSTIX === ""){
                                                 isDisabled = true;
