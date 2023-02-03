@@ -120,7 +120,7 @@ export function CreateListObjectRefs(props){
 
     return (<React.Fragment>
         <Row className="mt-4">
-            <Col md={12}><span className="text-muted"> 2.22 Идентификаторы объектов связанных с данным Отчётом</span></Col>
+            <Col md={12}><span className="text-muted">    2.22 Идентификаторы объектов связанных с данным Отчётом</span></Col>
         </Row>
         <Row>
             <Col md={12}>
