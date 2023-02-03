@@ -239,7 +239,7 @@ const loreducer = (state, action) => {
 
         return {...state, list: state.list};
     case "addList":
-        console.log("**************============== func 'loreducer' action.type = ", action.type, " action.data = ", action.data);
+        //console.log("**************============== func 'loreducer' action.type = ", action.type, " action.data = ", action.data);
 
         for(let item of action.data.addId){
             for(let i = 0; i < state.list.length; i++){
@@ -304,7 +304,7 @@ export default function CreateListObjectRefsReport(props){
         idForCreateListObjectRefs,
         handlerDialogConfirm,
         handlerDeleteObjectRef,
-        handlerReportUpdateObjectRefs,
+        //handlerReportUpdateObjectRefs,
         handlerShowObjectRefSTIXObject,
         handlerShowModalWindowCreateNewSTIXObject,
     } = props;
@@ -321,11 +321,14 @@ export default function CreateListObjectRefsReport(props){
 
     let addId = (idForCreateListObjectRefs.addId.length === 0)? 0: idForCreateListObjectRefs.addId[0].obj.id;
 
-    console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", stateReport:", stateReport, " listObjReducer ======= ", listObjReducer, " (*)(*)");
-    console.log("** func 'CreateListObjectRefsReport' ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId.length:", idForCreateListObjectRefs.addId.length, " addId:", addId);
+    //console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", stateReport:", stateReport, " listObjReducer ======= ", listObjReducer, " (*)(*)");
+    //console.log("** func 'CreateListObjectRefsReport' ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId.length:", idForCreateListObjectRefs.addId.length, " addId:", addId);
 
     useEffect(() => {
         let listener = (data) => {
+
+            console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", useEffect(():", data, " (*)(*)");
+
             let listObj = data.information.additional_parameters.transmitted_data.filter((item) => {
                 return item.type !== "relationship" && item.type !== "sighting"; 
             });
@@ -375,7 +378,7 @@ export default function CreateListObjectRefsReport(props){
     }, [ confirmDeleteLink ]),
     useEffect(() => {
 
-        console.log("**) ____ func 'CreateListObjectRefsReport', useEffect ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId.length:", idForCreateListObjectRefs.addId.length);
+        console.log("**) ____ func 'CreateListObjectRefsReport', useEffect ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId:", idForCreateListObjectRefs.addId);
 
         //для изменения содержимого списка listObjReducer.listId типа { currentId: item, childId: [] }
         setListObjReducer({ type: "addListId", data: idForCreateListObjectRefs });
@@ -410,7 +413,7 @@ export default function CreateListObjectRefsReport(props){
         },
         handleClick = (num, currentId, depth) => {  
             
-            console.log("func 'handleClick' __________ num: '", num, "' currentId: '", currentId, "' depth: '", depth, "'");
+            //console.log("func 'handleClick' __________ num: '", num, "' currentId: '", currentId, "' depth: '", depth, "'");
 
             let tmp = listActivatedObjectNumbers.slice();
             if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] === num){        
@@ -483,7 +486,7 @@ export default function CreateListObjectRefsReport(props){
             if(type[0] === "grouping" || type[0] === "note" || type[0] === "observed-data" || type[0] === "opinion"){
                 let objRefs = getObjectRefs(item.currentId);
 
-                console.log("func getListId, objRefs ------ type[0]:", type[0], " ----------- ", objRefs, " item.currentId = ", item.currentId);
+                //console.log("func getListId, objRefs ------ type[0]:", type[0], " ----------- ", objRefs, " item.currentId = ", item.currentId);
 
                 if((typeof objRefs === "undefined") || (objRefs === null) || (objRefs.length === 0)){
                     isAddAlarmProblems = true;
@@ -496,7 +499,7 @@ export default function CreateListObjectRefsReport(props){
             let listProperties = getListPropertiesExtendedObject(type[0]);
 
             let titleWarning = "Не заполнено ключевое поле, являющееся обязательным для данного объекта. Вероятнее всего отсутствуют ссылки на другой STIX объект, например в поле object_refs.";
-            titleWarning += " При сохранении Отчета даны объект не будет добавлен в базу данных. Для того чтобы исправить это необходимо добавить в текущий объект ссылку на какой либо другой объект STIX.";
+            //titleWarning += " При сохранении Отчета даны объект не будет добавлен в базу данных. Для того чтобы исправить это необходимо добавить в текущий объект ссылку на какой либо другой объект STIX.";
 
             return (<React.Fragment key={`rf_${key}`}>
                 <ListItem 
@@ -603,7 +606,7 @@ CreateListObjectRefsReport.propTypes = {
     idForCreateListObjectRefs: PropTypes.object.isRequired,
     handlerDialogConfirm: PropTypes.func.isRequired,
     handlerDeleteObjectRef: PropTypes.func.isRequired,
-    handlerReportUpdateObjectRefs: PropTypes.func.isRequired, 
+    //handlerReportUpdateObjectRefs: PropTypes.func.isRequired, 
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
 };

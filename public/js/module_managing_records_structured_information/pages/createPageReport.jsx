@@ -48,9 +48,9 @@ export default function CreatePageReport(props) {
             setShowModalWindowInformationReport(true);
         },
         handlerCloseModalWindowInformationReport = () => {
-            //setCurrentObjectId("");
             setCurrentReportId("");
             setShowModalWindowInformationReport(false);
+            setIdForCreateListObjectRefs({ "parentId": "", "addId": [] });
         },
         handlerChangeAddedNewReport = () => {
             setAddedNewReport((prevStatus) => !prevStatus);
@@ -95,7 +95,7 @@ export default function CreatePageReport(props) {
             setShowModalWindowCreateNewSTIXObject(false);
             setIdForCreateListObjectRefs({ "parentId": currentIdSTIXObject, "addId": listSTIXObject });
 
-            //console.log("@@@@@@@@@ func 'handlerDialogSaveNewSTIXObject', parentId:", currentIdSTIXObject, " addId:", listSTIXObject);
+            console.log("@@@@@@@@@ func 'handlerDialogSaveNewSTIXObject', parentId:", currentIdSTIXObject, " addId:", listSTIXObject);
 
             //здесь запрашиваем родительский объект в котором модифицируем свойство со сылками на другие объекты
             // и выполняем модификацию этих свойств, затем отправляем модифицированный родительский объект и 
@@ -245,9 +245,13 @@ export default function CreatePageReport(props) {
             onHide={handlerCloseModalWindowAddReport}
             socketIo={socketIo}
             userPermissions={receivedData.userPermissions}
+            confirmDeleteLink={buttonDelModalWindowConfirmDeleteLinkFromObjRefs}
+            idForCreateListObjectRefs={idForCreateListObjectRefs}
             handlerButtonSave={handlerButtonSaveModalWindowReportSTIX} 
+            handlerDialogConfirm={handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
+            handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
         />}
 
         {showModalWindowInformationReport && <ModalWindowShowInformationReport

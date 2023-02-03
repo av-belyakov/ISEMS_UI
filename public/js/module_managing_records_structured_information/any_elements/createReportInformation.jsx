@@ -1,29 +1,25 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
-    Box,
-    Container,
-    Dialog,
     Typography,
-    Grid,
     Link,
     TextField,
-    Paper,
 } from "@material-ui/core";
-import { purple, orange } from "@material-ui/core/colors";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import { helpers } from "../common_helpers/helpers";
-import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
-import CreateChipList from "../module_managing_records_structured_information/any_elements/createChipList.jsx";
-import CreateReportAppBar from "../module_managing_records_structured_information/any_elements/createReportAppBar.jsx";
-import CreateListObjectRefsReport from "../module_managing_records_structured_information/any_elements/createListObjectRefsReport.jsx";
-import CreateListPreviousStateSTIX from "../module_managing_records_structured_information/any_elements/createListPreviousStateSTIX.jsx";
-import CreateListUnprivilegedGroups from "../module_managing_records_structured_information/any_elements/createListUnprivilegedGroups.jsx";
-import CreateListTypesComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesComputerThreat.jsx";
-import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
-import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
+//import { helpers } from "../common_helpers/helpers";
+import { helpers } from "../../common_helpers/helpers.js";
+//import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
+import { MainTextField } from "./anyElements.jsx";
+import CreateListObjectRefsReport from "./createListObjectRefsReport.jsx";
+//import CreateListObjectRefsReport from "../module_managing_records_structured_information/any_elements/createListObjectRefsReport.jsx";
+import CreateListTypesComputerThreat from "./createListTypesComputerThreat.jsx";
+//import CreateListTypesComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesComputerThreat.jsx";
+import CreateListTypesDecisionsMadeComputerThreat from "./createListTypesDecisionsMadeComputerThreat.jsx";
+//import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
+import CreateElementAdditionalTechnicalInformationDO from "./createElementAdditionalTechnicalInformationDO.jsx";
+//import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
 
 const reducer = (state, action) => {
     let elemTmp = "";
@@ -157,229 +153,7 @@ const reducer = (state, action) => {
     }
 };
 
-function ModalWindowShowInformationReport({
-    show,
-    onHide,
-    socketIo,
-    groupList,
-    showReportId,
-    userPermissions,
-    confirmDeleteLink,
-    idForCreateListObjectRefs,
-    handlerButtonSave,
-    handlerDialogConfirm, 
-    handlerShowObjectRefSTIXObject,
-    handlerShowModalWindowCreateNewSTIXObject,
-    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
-}) {
-
-    const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
-    const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = useState(false);
-
-    //console.log("func 'ModalWindowShowInformationReport', START...");
-
-    let handlerButtonSaveIsNotDisabled = () => {
-            if(buttonSaveIsDisabled){
-                setButtonSaveIsDisabled(false);
-            }
-        },
-        handlerPressButtonSave = (state) => {
-            setButtonSaveChangeTrigger((prevState) => !prevState);
-            if(!buttonSaveIsDisabled){
-                setButtonSaveIsDisabled(true);
-            }
-
-            handlerButtonSave(state);
-        };
-
-    return (<Dialog 
-        fullScreen 
-        open={show} 
-        onClose={() => onHide()}>
-        <CreateReportAppBar 
-            title={showReportId}
-            nameDialogButton="сохранить"
-            buttonSaveIsDisabled={buttonSaveIsDisabled}
-            handlerDialogClose={onHide}
-            handlerDialogButton={() => setButtonSaveChangeTrigger(true)} />           
-        <CreateAppBody
-            socketIo={socketIo} 
-            groupList={groupList}
-            showReportId={showReportId}
-            userPermissions={userPermissions.editing_information.status}
-            confirmDeleteLink={confirmDeleteLink}
-            buttonSaveChangeTrigger={buttonSaveChangeTrigger}
-            idForCreateListObjectRefs={idForCreateListObjectRefs}
-            handlerDialogConfirm={handlerDialogConfirm}
-            handlerPressButtonSave={handlerPressButtonSave}
-            handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
-            handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
-            handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
-            handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
-        />
-    </Dialog>); 
-}
-
-ModalWindowShowInformationReport.propTypes = {
-    show: PropTypes.bool,
-    onHide: PropTypes.func.isRequired,
-    socketIo: PropTypes.object.isRequired,
-    groupList: PropTypes.array.isRequired,
-    showReportId: PropTypes.string.isRequired,
-    userPermissions: PropTypes.object.isRequired,
-    confirmDeleteLink: PropTypes.bool.isRequired,
-    idForCreateListObjectRefs: PropTypes.object.isRequired,
-    handlerButtonSave: PropTypes.func.isRequired,
-    handlerDialogConfirm: PropTypes.func.isRequired,
-    handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
-    handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
-    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.func.isRequired,
-};
-
-export default React.memo(ModalWindowShowInformationReport);
-
-/*
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: "fixed",
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    appBreadcrumbs: {
-        position: "fixed",
-        top: "60px",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        paddingLeft: theme.spacing(4),
-    },
-    buttonSave: {
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    title: {
-        marginLeft: theme.spacing(2),
-        flex: 1,
-    },
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-}));
-
-<CreateAppBar 
-            title={showReportId}
-            nameDialogButton="сохранить"
-            buttonSaveIsDisabled={buttonSaveIsDisabled}
-            handlerDialogClose={onHide}
-    handlerDialogButton={() => setButtonSaveChangeTrigger(true)} />
-
-function CreateAppBar(props){
-    const classes = useStyles();
-    const { 
-        title, 
-        nameDialogButton,
-        buttonSaveIsDisabled, 
-        handlerDialogClose, 
-        handlerDialogButton 
-    } = props;
-
-    return (<AppBar className={classes.appBar}>
-        <Toolbar>
-            <IconButton edge="start" color="inherit" onClick={handlerDialogClose} aria-label="close">
-                <CloseIcon />
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>{title}</Typography>
-            <Button 
-                size="small"
-                disabled={buttonSaveIsDisabled}
-                className={classes.buttonSave} 
-                onClick={handlerDialogButton}>
-                {nameDialogButton}
-            </Button>
-        </Toolbar>
-    </AppBar>);
-}
-
-CreateAppBar.propTypes = {
-    title: PropTypes.string.isRequired,
-    nameDialogButton: PropTypes.string.isRequired,
-    buttonSaveIsDisabled: PropTypes.bool.isRequired,
-    handlerDialogClose: PropTypes.func.isRequired,
-    handlerDialogButton: PropTypes.func.isRequired,
-};*/
-
-function CreateAppBody(props){
-    let {
-        socketIo,
-        groupList,
-        showReportId,
-        userPermissions,
-        confirmDeleteLink,
-        buttonSaveChangeTrigger,
-        idForCreateListObjectRefs,
-        handlerDialogConfirm,
-        handlerPressButtonSave,
-        handlerShowObjectRefSTIXObject,
-        handlerButtonSaveIsNotDisabled,
-        handlerShowModalWindowCreateNewSTIXObject,
-        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
-    } = props;
-
-    return (<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
-        <Row>
-            <Col md={7}>
-                <CreateReportInformation 
-                    socketIo={socketIo}
-                    showReportId={showReportId}
-                    userPermissions={userPermissions}
-                    confirmDeleteLink={confirmDeleteLink}
-                    handlerDialogConfirm={handlerDialogConfirm}
-                    buttonSaveChangeTrigger={buttonSaveChangeTrigger}
-                    idForCreateListObjectRefs={idForCreateListObjectRefs}
-                    handlerPressButtonSave={handlerPressButtonSave}
-                    handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
-                    handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
-                    handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
-                    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
-                />
-            </Col>
-            <Col md={5}>
-                <GroupsViewingAvailable 
-                    socketIo={socketIo}
-                    groupList={groupList} 
-                    showReportId={showReportId}
-                    userPermissions={userPermissions}
-                />
-                <br/>
-                <CreateListPreviousStateSTIX 
-                    socketIo={socketIo} 
-                    searchObjectId={showReportId} 
-                />
-            </Col>
-        </Row>
-    </Container>);
-}
-
-CreateAppBody.propTypes = {
-    socketIo: PropTypes.object.isRequired,
-    groupList: PropTypes.array.isRequired,
-    showReportId: PropTypes.string.isRequired,
-    userPermissions: PropTypes.bool.isRequired,
-    confirmDeleteLink: PropTypes.bool.isRequired,
-    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
-    idForCreateListObjectRefs: PropTypes.object.isRequired,
-    handlerDialogConfirm: PropTypes.func.isRequired,
-    handlerPressButtonSave: PropTypes.func.isRequired,
-    handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
-    handlerButtonSaveIsNotDisabled: PropTypes.func.isRequired,
-    handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
-    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.func.isRequired,
-};
-
-function CreateReportInformation(props){
+export default function CreateReportInformation(props){
     let {
         socketIo,
         showReportId,
@@ -571,7 +345,7 @@ function CreateReportInformation(props){
             idForCreateListObjectRefs={idForCreateListObjectRefs}
             handlerDialogConfirm={handlerDialogConfirm}
             handlerDeleteObjectRef={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs} 
-            //handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
+            handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
         />}
@@ -711,152 +485,4 @@ function MadePublished(props){
 MadePublished.propTypes = {
     reportInformation: PropTypes.object.isRequired,
     handlerPublished: PropTypes.func.isRequired,
-};
-
-function GroupsViewingAvailable(props){
-    let { 
-        socketIo,
-        groupList,
-        showReportId,
-        userPermissions,
-    } = props;
-
-    const [ listGroupAccessToReport, setListGroupAccessToReport ] = useState([]);
-    const listener = (data) => {
-        if((data.information === null) || (typeof data.information === "undefined")){
-            return;
-        }
-
-        if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
-            return;
-        }
-
-        if(!Array.isArray(data.information.additional_parameters.list_groups_which_report_available)){
-            return;
-        }
-
-        setListGroupAccessToReport(data.information.additional_parameters.list_groups_which_report_available.map((item) => { 
-            return { group: item.group_name,
-                time: helpers.getDate(item.date_time),
-                userName: item.user_name,
-                title: `Пользователь: ${item.user_name}, Время: ${helpers.getDate(item.date_time)}`};
-        }));
-    };
-    React.useEffect(() => {
-        socketIo.on("isems-mrsi response ui: list of groups to which the report is available", listener);
-    
-        return () => {
-            socketIo.off("isems-mrsi response ui: list of groups to which the report is available", listener);
-        };
-    }, []);
-
-    const handlerOnChangeAccessGroupToReport = (data) => {
-        let list = listGroupAccessToReport.slice(),
-            groupName = data.target.value;
-
-        for(let item of list){
-            if((groupName === item.group) || (groupName === "select_group")){
-                return;
-            }
-        }
-
-        list.push({ 
-            time: helpers.getDate(+new Date),
-            userName: "текущий пользователь",
-            group: groupName, 
-            title: `Пользователь: текущий, Время: ${helpers.getDate(+new Date)}` 
-        });
-
-        setListGroupAccessToReport(list);
-        
-        socketIo.emit("isems-mrsi ui request: allow the group to access the report", { arguments: {
-            reportId: showReportId,
-            unprivilegedGroup: groupName,
-        }});
-    };
-
-    const handlerDeleteChipFromListGroupAccessToReport = (groupName) => {
-        let newListGroup = listGroupAccessToReport.filter((item) => {
-            return groupName !== item.group;
-        });
-        setListGroupAccessToReport(newListGroup);
-
-        socketIo.emit("isems-mrsi ui request: forbid the group to access the report", { arguments: {
-            reportId: showReportId,
-            unprivilegedGroup: groupName,
-        }});
-    };
-
-    return (<Paper elevation={3}>
-        <Box m={2} pb={2}>
-            <Grid container direction="row" className="pt-3">
-                <Grid item container md={12} justifyContent="center">
-                    <strong>Отчет доступен для просмотра следующих групп</strong>
-                </Grid>
-            </Grid>
-
-            <br/>
-            {listGroupAccessToReport.map((item, num) => {
-                return (<Grid container direction="row" className="pb-3" key={`key_list_group_access_report_${num}`}>
-                    <Grid item container md={12} justifyContent="flex-end">
-                        <Grid container direction="row" className="pl-3 pr-3" spacing={3}>
-                            <Grid item container md={6} justifyContent="flex-end" className="text-end text-muted">
-                                <Typography variant="caption">группа:</Typography>
-                            </Grid>
-                            <Grid item container md={6} justifyContent="flex-start" className="text-end text-muted">
-                                <Typography variant="caption">{item.group}</Typography>
-                            </Grid>
-                        </Grid>
-
-                        <Grid container direction="row" className="pl-3 pr-3" spacing={3}>
-                            <Grid item container md={6} justifyContent="flex-end" className="text-end text-muted">
-                                <Typography variant="caption">добавлена:</Typography>
-                            </Grid>
-                            <Grid item container md={6} justifyContent="flex-start" className="text-end text-muted">
-                                <Typography variant="caption">
-                                    <span style={{ color: orange[800] }}>
-                                        {helpers.convertDateFromString(item.time, { monthDescription: "long", dayDescription: "numeric" })}
-                                    </span>
-                                </Typography>
-                            </Grid>
-                        </Grid>
-
-                        <Grid container direction="row" className="pl-3 pr-3" spacing={3}>
-                            <Grid item container md={6} justifyContent="flex-end" className="text-end text-muted">
-                                <Typography variant="caption">пользователем:</Typography> 
-                            </Grid>
-                            <Grid item container md={6} justifyContent="flex-start" className="text-end text-muted">
-                                <Typography variant="caption">{item.userName}</Typography>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>);
-            })}
-
-            <Grid container direction="row" spacing={1}>
-                <Grid item container md={9} justifyContent="flex-start">
-                    <CreateChipList
-                        variant="outlined"
-                        style={{ color: purple[400], margin: "2px" }}
-                        chipData={listGroupAccessToReport}
-                        handleDelete={handlerDeleteChipFromListGroupAccessToReport}
-                    />
-                </Grid>
-                <Grid item container md={3} justifyContent="flex-end">
-                    <CreateListUnprivilegedGroups 
-                        groupList={groupList}
-                        handlerChosen={handlerOnChangeAccessGroupToReport}
-                        isNotDisabled={userPermissions}
-                    />
-                </Grid>
-            </Grid>
-        </Box>
-    </Paper>);
-}
-
-GroupsViewingAvailable.propTypes = {
-    socketIo: PropTypes.object.isRequired,
-    groupList: PropTypes.array.isRequired,
-    showReportId: PropTypes.string.isRequired,
-    userPermissions: PropTypes.bool.isRequired,
 };

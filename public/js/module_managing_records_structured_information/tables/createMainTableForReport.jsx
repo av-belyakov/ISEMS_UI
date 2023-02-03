@@ -127,40 +127,17 @@ export default function CreateMainTableForReport(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    console.log("func 'CreateMainTableForReport' MOUNT === TABLE ===");
-
     let handlerOnRowsPerPageChange = (rowsPerPage) => {
             setCountShowReportsPerPage(rowsPerPage);        
         },
         handlerOnPageChange = (num) => {
             setNumCurrentPagePagination(num);
 
-            //console.log("(30 * num) - ", (maxPartSize * num), " < ", countSearchReports, " - countSearchReports");
-            //console.log("listReports.length - ", listReports.length, " < ", countSearchReports, " - countSearchReports");
-            //console.log("num = ", num, ", countShowReportsPerPage = ", countShowReportsPerPage, " maxPartSize / countShowReportsPerPage = ", (maxPartSize / countShowReportsPerPage));
-
             if(maxPartSize === 0){
                 return;
             }
 
-            //console.log("num: ", num, " >= ", (maxPartSize / countShowReportsPerPage) - 1, " :(maxPartSize / countShowReportsPerPage) - 1");
-
-            /*let equalityOne = countSearchReports > 10 && countSearchReports < 20;
-            let equalityTwo = countSearchReports > 20 && countSearchReports < 30;
-            let equalityThree = countSearchReports > 30 && countSearchReports < 40;
-            if(equalityOne || equalityTwo || equalityThree){
-
-                console.log("SEND new reguest for search data 1111 --->");
-
-                handlerRequestNextPageOfTable();
-
-                return;
-            }*/
-
             if(num >= ((maxPartSize * currentPartNumber) / countShowReportsPerPage) - 1){
-                
-                console.log("SEND new reguest for search data 2222 --->");
-
                 handlerRequestNextPageOfTable();
             }
         },
@@ -176,8 +153,6 @@ export default function CreateMainTableForReport(props) {
         },
         handlerRequestNextPageOfTable = () => {
             ++currentPartNumber;
-
-            console.log("func 'handlerRequestNextPageOfTable', START..., CurrentPartNumber = ", currentPartNumber);
 
             setCurrentPartNumber((prevState) => prevState + 1);
             socketIo.emit("isems-mrsi ui request: send search request, table page report", { arguments: {
@@ -375,9 +350,16 @@ function CreateTable(props){
                     </TableHead>
                     <TableBody>
                         {listReports.map((item, num) => {
-                            let imgTypeSTIX = "",
+                            let imgTypeSTIX = "",    
+                                listRefTypeTmp = new Set(),
                                 timePublished = <span className="text-secondary">не опубликован</span>;
-                        
+
+                            item.object_refs.forEach((element) => {
+                                listRefTypeTmp.add(element.split("--")[0]);
+                            });
+
+                            let listRefType = [...listRefTypeTmp];
+
                             if(Date.parse(item.published) > 0){
                                 timePublished = helpers.convertDateFromString(item.published, {});
                             }
@@ -401,16 +383,16 @@ function CreateTable(props){
                                     <TableCell>{helpers.convertDateFromString(item.modified, {})}</TableCell>
                                     <TableCell>{timePublished}</TableCell>
                                     <TableCell>{item.name}</TableCell>
-                                    <TableCell align="right">{item.report_types.map((elem) => {
+                                    <TableCell align="right">{listRefType.map((elem, num) => {
                                         let linkImage = helpers.getLinkImageSTIXObject(elem);
     
                                         if(typeof linkImage === "undefined"){
                                             return;
                                         }
     
-                                        return (<Tooltip title={linkImage.description} key={`key_tooltip_report_type_${elem}`}>
+                                        return (<Tooltip title={linkImage.description} key={`key_tooltip_report_type_${elem}_${num}`}>
                                             <img 
-                                                key={`key_report_type_${elem}`} 
+                                                key={`key_report_type_${elem}_${num}`} 
                                                 src={`/images/stix_object/${linkImage.link}`} 
                                                 width="35" 
                                                 height="35" />

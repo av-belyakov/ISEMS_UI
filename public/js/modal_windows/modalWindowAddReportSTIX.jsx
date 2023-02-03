@@ -1,5 +1,3 @@
-"use strict";
-
 import React, { useReducer } from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
@@ -19,10 +17,13 @@ import { MainTextField } from "../module_managing_records_structured_information
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-import { CreateListObjectRefs } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
-import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
-import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
+//import { CreateListObjectRefs } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
+import CreateReportAppBar from "../module_managing_records_structured_information/any_elements/createReportAppBar.jsx";
+import CreateReportInformation from "../module_managing_records_structured_information/any_elements/createReportInformation.jsx";
+import CreateListObjectRefsReport from "../module_managing_records_structured_information/any_elements/createListObjectRefsReport.jsx";
 import CreateListTypesComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesComputerThreat.jsx";
+import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
+import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
 
 const tzoffset = (new Date()).getTimezoneOffset() * 60000;
 const myDate = (new Date(Date.now() - tzoffset)).toISOString();
@@ -33,7 +34,8 @@ const dataInformationObject = {
     spec_version: "2.1",
     created: myDate,
     modified: myDate,
-    created_by_ref: "identity-isems-ui--a463ffb3-1bd9-4d94-b02d-74e4f1658283",
+    //created_by_ref: "identity-isems-ui--a463ffb3-1bd9-4d94-b02d-74e4f1658283",
+    created_by_ref: "",
     revoked: false,
     labels: [],
     confidence: 0,
@@ -45,9 +47,11 @@ const dataInformationObject = {
     extensions: {},
     name: "",
     description: "",
-    report_types: [ "campaign" ],
+    //report_types: [ "campaign" ],
+    report_types: [],
     //published: "0001-01-01T00:00:00.000Z",
-    object_refs: [ "campaign--0bd1475b-02df-4f51-99db-e061b16a6956" ], //НЕ ПУСТОЙ только для ТЕСТА так как пустое значение object_refs не пройдет валидацию
+    //object_refs: [ "campaign--0bd1475b-02df-4f51-99db-e061b16a6956" ], //НЕ ПУСТОЙ только для ТЕСТА так как пустое значение object_refs не пройдет валидацию
+    object_refs: [],
     /*
     "2021-12-29T07:08:49.753Z"
         ЭТО ТОЛЬКО ДЛЯ ТЕСТА
@@ -179,6 +183,16 @@ const reducer = (state, action) => {
         state.extensions[action.data.name] = action.data.description;
 
         return {...state};
+    case "updateObjectRefs": 
+
+        //console.log("func 'reducer', state:", state, "  ------- action.type:", action.type, " -------- action.data:", action.data);
+
+        //если это убрать то вываливается ошибка, а с этим происходит то что описано выше
+        if(typeof state.object_refs !== "undefined"){
+            state.object_refs = state.object_refs.concat(action.data);
+        }
+
+        return {...state};
     case "deleteObjectRefs":
         if(state.object_refs.length === 0){
             return {...state};
@@ -214,17 +228,24 @@ export default function ModalWindowAddReportSTIX(props) {
         onHide, 
         socketIo,
         userPermissions,
+        confirmDeleteLink,
+        idForCreateListObjectRefs,
         handlerButtonSave,
+        handlerDialogConfirm,
         handlerShowObjectRefSTIXObject,
         handlerShowModalWindowCreateNewSTIXObject,
+        handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
-    const classes = useStyles();
+    //const classes = useStyles();
 
     console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT )))))))");
 
-    let [ buttonReportSave, setButtonReportSave ] = React.useState(true);
-    let [ valuesIsInvalideReportName, setValuesIsInvalideReportName ] = React.useState(true);
+    const [ buttonReportSave, setButtonReportSave ] = React.useState(true);
+    //const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
+    const [ valuesIsInvalideReportName, setValuesIsInvalideReportName ] = React.useState(true);
+    const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
+    const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = React.useState(true);
 
     //____ здесь будет хранится информация о любом STIX объекте ссылка на которую есть в object_refs
     let [ listObjectInfo, setListObjectInfo ] = React.useState({});
@@ -240,6 +261,8 @@ export default function ModalWindowAddReportSTIX(props) {
 
     const [state, dispatch] = useReducer(reducer, dataInformationObject);
     let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
+
+    console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT ))))))) STATE = ", state);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -355,7 +378,22 @@ export default function ModalWindowAddReportSTIX(props) {
         return () => {
             socketIo.off("isems-mrsi response ui", listener);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    /*let handlerButtonSaveIsNotDisabled = () => {
+            if(buttonSaveIsDisabled){
+                setButtonSaveIsDisabled(false);
+            }
+        },
+        handlerPressButtonSave = (state) => {
+            setButtonSaveChangeTrigger((prevState) => !prevState);
+            if(!buttonSaveIsDisabled){
+                setButtonSaveIsDisabled(true);
+            }
+
+            handlerButtonSave(state);
+        };*/
 
     return (<React.Fragment>
         <Dialog 
@@ -363,7 +401,7 @@ export default function ModalWindowAddReportSTIX(props) {
             scroll="paper"
             open={show}>
 
-            <AppBar className={classes.appBar}>
+            {/*<AppBar className={classes.appBar}>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" onClick={() => { 
                         onHide(); 
@@ -384,7 +422,26 @@ export default function ModalWindowAddReportSTIX(props) {
                             сохранить
                     </Button>
                 </Toolbar>
-            </AppBar>
+                    </AppBar>*/}
+
+            {/**
+                         * 
+                         * Доделать портирование CreateReportAppBar и CreateListObjectRefsReport
+                         * из modalWindowShowInfoemationReport и что бы кнопка "сохранить" реагировала
+                         * на ОБЯЗАТЕЛЬНОЕ добавление ссылки на объект в object_refs
+                         * 
+                         */}
+
+            <CreateReportAppBar 
+                title={`Новый отчёт (${newReportId})`}
+                nameDialogButton="сохранить"
+                //buttonSaveIsDisabled={buttonSaveIsDisabled}
+                buttonSaveIsDisabled={buttonReportSave}
+                handlerDialogClose={onHide}
+                handlerDialogButton={() => {
+                    //setButtonSaveChangeTrigger(true);
+                    handlerButtonSave(state);
+                }} />
 
             <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
                 <Row className="mt-4">
@@ -432,20 +489,35 @@ export default function ModalWindowAddReportSTIX(props) {
                     </Col>  
                 </Row>
 
-                {state.object_refs && <CreateListObjectRefs
-                    objectRefs={state.object_refs} 
-                    handlerDeleteObjectRef={(key) => {
-                        if(state.object_refs.length > 0){
-                            setButtonReportSave(true);
-                        } else {
+                
+
+                {state.object_refs && <CreateListObjectRefsReport
+                    socketIo={socketIo}
+                    stateReport={state}
+                    majorParentId={newReportId}
+                    confirmDeleteLink={confirmDeleteLink}
+                    idForCreateListObjectRefs={idForCreateListObjectRefs}
+                    handlerDialogConfirm={handlerDialogConfirm}
+                    handlerDeleteObjectRef={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs} 
+                    /*handlerReportUpdateObjectRefs={(newObjectRefs) => {
+                        console.log("func 'handlerReportUpdateObjectRefs' newObjectRefs: '", newObjectRefs, "'");
+
+                        if(state.name !== ""){
+
+                            console.log("func 'handlerReportUpdateObjectRefs' state.name: '", state.name, "' FALSE");
+
                             setButtonReportSave(false);
+                        } else {
+
+                            console.log("func 'handlerReportUpdateObjectRefs' state.name: '", state.name, "' TRUE");
+
+                            setButtonReportSave(true);
                         }
-                        dispatch({ type: "deleteObjectRefs", data: key });
-                    }} 
+
+                        dispatch({ type: "updateObjectRefs", data: newObjectRefs });
+                    }}*/
                     handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
-                    handlerChangeCurrentSTIXObject={() => {
-                        handlerShowModalWindowCreateNewSTIXObject(newReportId);
-                    }}
+                    handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
                 />}
 
                 <Row className="mt-1">
@@ -534,6 +606,27 @@ export default function ModalWindowAddReportSTIX(props) {
                     handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
                 />
             </Container>
+
+            {/*<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
+                <Row>
+                    <Col md={12}>
+                        <CreateReportInformation 
+                            socketIo={socketIo}
+                            showReportId={newReportId}
+                            userPermissions={userPermissions.editing_information.status}
+                            confirmDeleteLink={confirmDeleteLink}
+                            handlerDialogConfirm={handlerDialogConfirm}
+                            buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+                            idForCreateListObjectRefs={idForCreateListObjectRefs}
+                            handlerPressButtonSave={handlerPressButtonSave}
+                            handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+                            handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
+                            handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
+                            handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
+                        />
+                    </Col>
+                </Row>
+                        </Container>*/}
         </Dialog>
     </React.Fragment>);
 }
@@ -543,7 +636,175 @@ ModalWindowAddReportSTIX.propTypes = {
     onHide: PropTypes.func.isRequired,
     socketIo: PropTypes.object.isRequired,
     userPermissions: PropTypes.object.isRequired,
+    confirmDeleteLink: PropTypes.bool.isRequired,
+    idForCreateListObjectRefs: PropTypes.object.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
+    handlerDialogConfirm: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
+    handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.func.isRequired,
 };
+
+/**
+<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
+                <Row className="mt-4">
+                    <Col md={12}>
+                        <TextField
+                            id="name-new-report"
+                            label="наименование"
+                            value={state.name}
+                            error={valuesIsInvalideReportName}
+                            fullWidth={true}
+                            helperText="обязательное для заполнения поле"
+                            onChange={(e) => {
+                                let elem = e.target.value;
+                                if(elem.length > 0){
+                                    setValuesIsInvalideReportName(false);
+
+                                    if(state.object_refs.length > 0){
+                                        setButtonReportSave(false);
+                                    } else {
+                                        setButtonReportSave(true);
+                                    }
+                                } else {
+                                    setButtonReportSave(true);
+                                    setValuesIsInvalideReportName(true);
+                                }
+
+                                dispatch({ type: "updateName", data: elem });
+                            }}
+                        />
+                    </Col>
+                </Row>
+                                    
+                <Row>
+                    <Col md={12} className="mt-3">
+                        <TextField
+                            id="outlined-multiline-static"
+                            label={"подробное описание"}
+                            multiline
+                            minRows={3}
+                            maxRows={8}
+                            fullWidth
+                            onChange={(e) => dispatch({ type: "updateDescription", data: e.target.value })}
+                            defaultValue={state.description}
+                            variant="outlined"/>
+                    </Col>  
+                </Row>
+
+                {//state.object_refs && <CreateListObjectRefs
+                 //   objectRefs={state.object_refs} 
+                 //   handlerDeleteObjectRef={(key) => {
+                 //       if(state.object_refs.length > 0){
+                 //           setButtonReportSave(true);
+                 //       } else {
+                 //           setButtonReportSave(false);
+                 //       }
+                 //       dispatch({ type: "deleteObjectRefs", data: key });
+                 //   }} 
+                 //   handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+                 //   handlerChangeCurrentSTIXObject={() => {
+                 //       handlerShowModalWindowCreateNewSTIXObject(newReportId);
+                 //   }}
+                 // />}
+
+                {state.object_refs && <CreateListObjectRefsReport
+                    socketIo={socketIo}
+                    stateReport={state}
+                    majorParentId={newReportId}
+                    confirmDeleteLink={confirmDeleteLink}
+                    idForCreateListObjectRefs={idForCreateListObjectRefs}
+                    handlerDialogConfirm={handlerDialogConfirm}
+                    handlerDeleteObjectRef={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs} 
+                    handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
+                    handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
+                    handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
+                />}
+
+                <Row className="mt-1">
+                    <Col md={12}>
+                        <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
+                    </Col>
+                </Row>
+
+                <Row className="mt-3">
+                    <Col md={12}>
+                        <span className="pl-4">
+                            <MainTextField
+                                uniqName={"additional_name_not_stix_specifications"}
+                                variant={"standard"}
+                                label={"дополнительное наименование"}
+                                value={(() => {
+                                    if(outsideSpecificationIsNotExist){
+                                        return "";
+                                    }
+        
+                                    if((state.outside_specification.additional_name === null) || (typeof state.outside_specification.additional_name === "undefined")){
+                                        return "";
+                                    }
+        
+                                    return state.outside_specification.additional_name;
+                                })()}
+                                fullWidth={true}
+                                onChange={(e) => dispatch({ type: "updateAdditionalName", data: e.target.value })}
+                            />
+                        </span>
+                    </Col>
+                </Row>
+
+                <Row className="mt-3">
+                    <Col md={12}>
+                        <span className="pl-4">
+                            <CreateListTypesDecisionsMadeComputerThreat
+                                socketIo={socketIo}
+                                defaultValue={() => {
+                                    if(outsideSpecificationIsNotExist){
+                                        return "";
+                                    }
+    
+                                    if((state.outside_specification.decisions_made_computer_threat === null) || (typeof state.outside_specification.decisions_made_computer_threat === "undefined")){
+                                        return "";
+                                    }
+    
+                                    return state.outside_specification.decisions_made_computer_threat;
+                                }}
+                                handlerDecisionsMadeComputerThreat={(e) => dispatch({ type: "updateDecisionsMadeComputerThreat", data: e })}
+                            />
+                        </span>
+                    </Col>
+                </Row>
+
+                <Row className="mt-3">
+                    <Col md={12}>
+                        <span className="pl-4">
+                            <CreateListTypesComputerThreat
+                                socketIo={socketIo}
+                                defaultValue={() => {
+                                    if(outsideSpecificationIsNotExist){
+                                        return "";
+                                    }
+    
+                                    if((state.outside_specification.computer_threat_type === null) || (typeof state.outside_specification.computer_threat_type === "undefined")){
+                                        return "";
+                                    }
+
+                                    return state.outside_specification.computer_threat_type;
+                                }}
+                                handlerTypesComputerThreat={(e) => dispatch({ type: "updateComputerThreatType", data: e })}
+                            />
+                        </span>
+                    </Col>
+                </Row>
+
+                <CreateElementAdditionalTechnicalInformationDO
+                    objectId={newReportId}
+                    reportInfo={state}
+                    isNotDisabled={userPermissions.create.status}
+                    handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
+                    handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
+                    handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
+                    handlerElementDelete={(e) => dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e })}
+                    handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
+                />
+            </Container>
+ */
