@@ -1,92 +1,23 @@
 import React, { useReducer } from "react";
 import { Col, Row } from "react-bootstrap";
 import { 
-    AppBar,
-    Button,
     Container,
     Dialog,
     TextField,
-    Toolbar,
-    Typography,
-    IconButton,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { teal } from "@material-ui/core/colors";
-import CloseIcon from "@material-ui/icons/Close";
 import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import { v4 as uuidv4 } from "uuid";
+//import _ from "lodash"
+import { cloneDeep as lodashCloneDeep } from "lodash";
 import PropTypes from "prop-types";
 
-//import { CreateListObjectRefs } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import CreateReportAppBar from "../module_managing_records_structured_information/any_elements/createReportAppBar.jsx";
-import CreateReportInformation from "../module_managing_records_structured_information/any_elements/createReportInformation.jsx";
 import CreateListObjectRefsReport from "../module_managing_records_structured_information/any_elements/createListObjectRefsReport.jsx";
 import CreateListTypesComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesComputerThreat.jsx";
 import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
 
-const tzoffset = (new Date()).getTimezoneOffset() * 60000;
-const myDate = (new Date(Date.now() - tzoffset)).toISOString();
-const newReportId = `report--${uuidv4()}`;
-const dataInformationObject = {
-    id: newReportId,
-    type: "report",
-    spec_version: "2.1",
-    created: myDate,
-    modified: myDate,
-    //created_by_ref: "identity-isems-ui--a463ffb3-1bd9-4d94-b02d-74e4f1658283",
-    created_by_ref: "",
-    revoked: false,
-    labels: [],
-    confidence: 0,
-    lang: "RU",
-    external_references: [],
-    object_marking_refs: [],
-    granular_markings: [],
-    defanged: false,
-    extensions: {},
-    name: "",
-    description: "",
-    //report_types: [ "campaign" ],
-    report_types: [],
-    //published: "0001-01-01T00:00:00.000Z",
-    //object_refs: [ "campaign--0bd1475b-02df-4f51-99db-e061b16a6956" ], //НЕ ПУСТОЙ только для ТЕСТА так как пустое значение object_refs не пройдет валидацию
-    object_refs: [],
-    /*
-    "2021-12-29T07:08:49.753Z"
-        ЭТО ТОЛЬКО ДЛЯ ТЕСТА
-    object_refs: [
-        "campaign--0bd1475b-02df-4f51-99db-e061b16a6956",
-        "infrastructure--fc340924-8b03-4d92-a450-cd8e01965a12",
-        "course-of-action--2a8aa9ff-d7dd-4768-9877-cf571ae2226b",
-        "malware--d25f4428-5b5d-4f25-924a-a84d733f4142",
-    ],*/
-    outside_specification: {
-        additional_name: `report-user-name--${+new Date}`,
-        decisions_made_computer_threat: "",
-        computer_threat_type: "",
-    },
-};
-
 const SizePart = 15;
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: "fixed",
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    buttonSave: {
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    title: {
-        marginLeft: theme.spacing(2),
-        flex: 1,
-    },
-    root: {
-        width: "100%",
-    },
-}));
 const reducer = (state, action) => {
     let elemTmp = "";
 
@@ -185,7 +116,7 @@ const reducer = (state, action) => {
         return {...state};
     case "updateObjectRefs": 
 
-        //console.log("func 'reducer', state:", state, "  ------- action.type:", action.type, " -------- action.data:", action.data);
+        //console.log("*************************** func 'reducer', state:", state, "  ------- action.type:", action.type, " -------- action.data:", action.data);
 
         //если это убрать то вываливается ошибка, а с этим происходит то что описано выше
         if(typeof state.object_refs !== "undefined"){
@@ -194,6 +125,9 @@ const reducer = (state, action) => {
 
         return {...state};
     case "deleteObjectRefs":
+
+        //console.log("***********!!!!!!!!************* func 'reducer', state:", state, "  ------- action.type:", action.type, " -------- action.data:", action.data);
+
         if(state.object_refs.length === 0){
             return {...state};
         }
@@ -230,6 +164,7 @@ export default function ModalWindowAddReportSTIX(props) {
         userPermissions,
         confirmDeleteLink,
         idForCreateListObjectRefs,
+        objectsIdModalWindowConfirmDeleteLinkFromObjRefs,
         handlerButtonSave,
         handlerDialogConfirm,
         handlerShowObjectRefSTIXObject,
@@ -237,15 +172,37 @@ export default function ModalWindowAddReportSTIX(props) {
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
-    //const classes = useStyles();
+    console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT ))))))) idForCreateListObjectRefs = ", idForCreateListObjectRefs);
 
-    console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT )))))))");
-
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+    const [state, dispatch] = useReducer(reducer, {
+        id: `report--${uuidv4()}`,
+        type: "report",
+        spec_version: "2.1",
+        created: (new Date(Date.now() - tzoffset)).toISOString(),
+        modified: (new Date(Date.now() - tzoffset)).toISOString(),
+        created_by_ref: "",
+        revoked: false,
+        labels: [],
+        confidence: 0,
+        lang: "RU",
+        external_references: [],
+        object_marking_refs: [],
+        granular_markings: [],
+        defanged: false,
+        extensions: {},
+        name: "",
+        description: "",
+        report_types: [],
+        object_refs: [],
+        outside_specification: {
+            additional_name: `report-user-name--${+new Date}`,
+            decisions_made_computer_threat: "",
+            computer_threat_type: "",
+        },
+    });
     const [ buttonReportSave, setButtonReportSave ] = React.useState(true);
-    //const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
     const [ valuesIsInvalideReportName, setValuesIsInvalideReportName ] = React.useState(true);
-    const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
-    const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = React.useState(true);
 
     //____ здесь будет хранится информация о любом STIX объекте ссылка на которую есть в object_refs
     let [ listObjectInfo, setListObjectInfo ] = React.useState({});
@@ -259,10 +216,11 @@ export default function ModalWindowAddReportSTIX(props) {
         currentPartNumber: 1,
     });
 
-    const [state, dispatch] = useReducer(reducer, dataInformationObject);
     let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
 
-    console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT ))))))) STATE = ", state);
+    console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT ))))))) STATE = ", state, " buttonReportSave = ", buttonReportSave, " idForCreateListObjectRefs.addId.length === 0 (", idForCreateListObjectRefs.addId.length === 0, ") state.name === '' (", state.name === "", ")");
+    console.log("func 'ModalWindowAddReportSTIX', MOUNT state.object_refs: ", state.object_refs);
+    console.log("func 'ModalWindowAddReportSTIX', MOUNT objectsIdModalWindowConfirmDeleteLinkFromObjRefs: ", objectsIdModalWindowConfirmDeleteLinkFromObjRefs);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -313,7 +271,8 @@ export default function ModalWindowAddReportSTIX(props) {
                 break;
             }
 
-            listObjectInfoTmp = _.cloneDeep(listObjectInfo);
+            //listObjectInfoTmp = _.cloneDeep(listObjectInfo);
+            listObjectInfoTmp = lodashCloneDeep(listObjectInfo);
             for(let obj of data.information.additional_parameters.transmitted_data){
                 listObjectInfoTmp[obj.id] = obj;
             }
@@ -354,7 +313,8 @@ export default function ModalWindowAddReportSTIX(props) {
 
             setListPreviousState(listPreviousStateTmp);
 
-            optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
+            //optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
+            optionsPreviousStateTmp = lodashCloneDeep(optionsPreviousState);
             optionsPreviousStateTmp.objectId = objectId;
             optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part + optionsPreviousStateTmp.currentPartNumber;
 
@@ -363,7 +323,8 @@ export default function ModalWindowAddReportSTIX(props) {
             break;
 
         case "isems-mrsi ui request: send search request, count list different objects STIX object for id":
-            optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
+            //optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
+            optionsPreviousStateTmp = lodashCloneDeep(optionsPreviousState);
             optionsPreviousStateTmp.objectId = data.information.additional_parameters.document_id;
             optionsPreviousStateTmp.countFoundDocuments = data.information.additional_parameters.number_documents_found;
 
@@ -373,6 +334,9 @@ export default function ModalWindowAddReportSTIX(props) {
         }
     };
     React.useEffect(() => {
+
+        console.log("func 'ModalWindowAddReportSTIX', React.useEffect MAJOR ");
+
         socketIo.on("isems-mrsi response ui", listener);
         
         return () => {
@@ -380,6 +344,25 @@ export default function ModalWindowAddReportSTIX(props) {
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    React.useEffect(() => {
+
+        console.log("func 'ModalWindowAddReportSTIX', React.useEffect idForCreateListObjectRefs.addId.length: ", idForCreateListObjectRefs.addId, ", state = ", state);
+
+        if(idForCreateListObjectRefs.addId.length > 0 && state.name !== ""){
+            setButtonReportSave(false);
+        } else {
+            setButtonReportSave(true);
+        }
+
+        console.log("_______ func 'ModalWindowAddReportSTIX', React.useEffect objectsIdModalWindowConfirmDeleteLinkFromObjRefs: ", objectsIdModalWindowConfirmDeleteLinkFromObjRefs);
+
+        if(objectsIdModalWindowConfirmDeleteLinkFromObjRefs[0] === state.id){
+            dispatch({ type: "deleteObjectRefs", data: objectsIdModalWindowConfirmDeleteLinkFromObjRefs[1] });
+        }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ idForCreateListObjectRefs.addId.length ]);
 
     /*let handlerButtonSaveIsNotDisabled = () => {
             if(buttonSaveIsDisabled){
@@ -400,48 +383,19 @@ export default function ModalWindowAddReportSTIX(props) {
             fullScreen
             scroll="paper"
             open={show}>
-
-            {/*<AppBar className={classes.appBar}>
-                <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={() => { 
-                        onHide(); 
-                        setButtonReportSave(true);
-                        setValuesIsInvalideReportName(true);
-                    }} aria-label="close">
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>{`Новый отчёт (${newReportId})`}</Typography>
-                    <Button 
-                        size="small"
-                        disabled={buttonReportSave} 
-                        className={classes.buttonSave} 
-                        onClick={() => { 
-                            onHide();
-                            handlerButtonSave(state);
-                        }}>
-                            сохранить
-                    </Button>
-                </Toolbar>
-                    </AppBar>*/}
-
-            {/**
-                         * 
-                         * Доделать портирование CreateReportAppBar и CreateListObjectRefsReport
-                         * из modalWindowShowInfoemationReport и что бы кнопка "сохранить" реагировала
-                         * на ОБЯЗАТЕЛЬНОЕ добавление ссылки на объект в object_refs
-                         * 
-                         */}
-
             <CreateReportAppBar 
-                title={`Новый отчёт (${newReportId})`}
+                title={`новый Отчёт (${state.id})`}
                 nameDialogButton="сохранить"
                 //buttonSaveIsDisabled={buttonSaveIsDisabled}
                 buttonSaveIsDisabled={buttonReportSave}
                 handlerDialogClose={onHide}
                 handlerDialogButton={() => {
-                    //setButtonSaveChangeTrigger(true);
-                    handlerButtonSave(state);
-                }} />
+                    let list = idForCreateListObjectRefs.addId.map((item) => item.obj);
+                    list.push(state);
+
+                    handlerButtonSave(list);
+                }} 
+            />
 
             <Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
                 <Row className="mt-4">
@@ -485,16 +439,15 @@ export default function ModalWindowAddReportSTIX(props) {
                             fullWidth
                             onChange={(e) => dispatch({ type: "updateDescription", data: e.target.value })}
                             defaultValue={state.description}
-                            variant="outlined"/>
+                            variant="outlined"
+                        />
                     </Col>  
                 </Row>
-
-                
 
                 {state.object_refs && <CreateListObjectRefsReport
                     socketIo={socketIo}
                     stateReport={state}
-                    majorParentId={newReportId}
+                    majorParentId={state.id}
                     confirmDeleteLink={confirmDeleteLink}
                     idForCreateListObjectRefs={idForCreateListObjectRefs}
                     handlerDialogConfirm={handlerDialogConfirm}
@@ -596,7 +549,7 @@ export default function ModalWindowAddReportSTIX(props) {
                 </Row>
 
                 <CreateElementAdditionalTechnicalInformationDO
-                    objectId={newReportId}
+                    objectId={state.id}
                     reportInfo={state}
                     isNotDisabled={userPermissions.create.status}
                     handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
@@ -638,6 +591,7 @@ ModalWindowAddReportSTIX.propTypes = {
     userPermissions: PropTypes.object.isRequired,
     confirmDeleteLink: PropTypes.bool.isRequired,
     idForCreateListObjectRefs: PropTypes.object.isRequired,
+    objectsIdModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.array.isRequired,
     handlerButtonSave: PropTypes.func.isRequired,
     handlerDialogConfirm: PropTypes.func.isRequired,
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,

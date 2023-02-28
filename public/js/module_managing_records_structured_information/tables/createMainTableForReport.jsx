@@ -234,6 +234,7 @@ function ShowDocumentCount(props){
         </Grid>
         <Grid item container md={4} justifyContent="flex-end">
             <CreateButtonNewReport 
+                message="создать новый Отчёт"
                 buttonIsDisabled={buttonAddNewReportIsDisabled}
                 handlerShowModalWindow={handlerShowModalWindowAddNewReport}/>
         </Grid>

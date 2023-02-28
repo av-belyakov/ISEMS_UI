@@ -39,7 +39,17 @@ export default function CreatePageReport(props) {
     let handlerShowModalWindowAddNewReport = () => {
             setShowModalWindowAddNewReport(true);
         },
+        //функция выполняемая при закрытии окна просмотра информации об Отчете
         handlerCloseModalWindowAddReport = () => {
+
+            console.log("func 'CreatePageReport', func 'handlerCloseModalWindowAddReport', ____");
+
+            setCurrentReportId("");
+            setCurrentObjectId("");
+            setParentSTIXObject({});
+            setIdForCreateListObjectRefs({ "parentId": "", "addId": [] });
+            setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([]);
+
             setShowModalWindowAddNewReport(false);
         },
         handlerShowModalWindowInformationReport = (elemId) => {
@@ -48,6 +58,9 @@ export default function CreatePageReport(props) {
             setShowModalWindowInformationReport(true);
         },
         handlerCloseModalWindowInformationReport = () => {
+
+            console.log("func 'CreatePageReport', func 'handlerCloseModalWindowInformationReport', ____");
+
             setCurrentReportId("");
             setShowModalWindowInformationReport(false);
             setIdForCreateListObjectRefs({ "parentId": "", "addId": [] });
@@ -59,11 +72,25 @@ export default function CreatePageReport(props) {
             setCurrentAdditionalIdSTIXObject(objectId);
             setShowModalWindowSTIXObject(true);
         },
-        handlerButtonSaveModalWindowReportSTIX = (obj) => {            
-            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [obj] });
+        //функция выполняемая при нажатии кнопки сохранить модального окна
+        handlerButtonSaveModalWindowReportSTIX = (list) => {      
+        
+            console.log("func 'handlerButtonSaveModalWindowReportSTIX' _____________ list:", list);
+        
+            socketIo.emit("isems-mrsi ui request: insert STIX object", {arguments: list});
 
-            setAddedNewReport(true);
+            //setAddedNewReport(true);
             handlerCloseModalWindowInformationReport();
+
+            /**
+            setCurrentReportId("");
+            setCurrentObjectId("");
+            setParentSTIXObject({});
+            setIdForCreateListObjectRefs({ "parentId": "", "addId": [] });
+            setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([]);
+
+            setShowModalWindowAddNewReport(false);
+             */
         },
         handlerDialogCloseModalWindowSTIXObject = () => {
             setCurrentAdditionalIdSTIXObject("");
@@ -97,10 +124,13 @@ export default function CreatePageReport(props) {
 
             console.log("@@@@@@@@@ func 'handlerDialogSaveNewSTIXObject', parentId:", currentIdSTIXObject, " addId:", listSTIXObject);
 
-            //здесь запрашиваем родительский объект в котором модифицируем свойство со сылками на другие объекты
-            // и выполняем модификацию этих свойств, затем отправляем модифицированный родительский объект и 
+            //здесь запрашиваем родительский объект в котором изменяем свойство со сылками на другие объекты
+            // и выполняем модификацию этих свойств, затем отправляем данный родительский объект и 
             // объект который мы добавили или модифицировали
             socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {           
+
+                console.log("@@@@@@@@@ func 'handlerDialogSaveNewSTIXObject', 'isems-mrsi response ui: send search request, get STIX object for id', data:", data);
+
                 if((data.information === null) || (typeof data.information === "undefined")){
                     return;
                 }
@@ -147,12 +177,34 @@ export default function CreatePageReport(props) {
             }});
         },
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs = (parentId, deleteId) => {
+
+            console.log("func 'handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs', ------++++++++------");
+
             setShowModalWindowConfirmDeleteLinkFromObjRefs(true);
             setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([ parentId, deleteId ]);
         },
         handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs = () => {
+
+            console.log("func 'handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs', ------+++++++++------ objectsIdModalWindowConfirmDeleteLinkFromObjRefs: ", objectsIdModalWindowConfirmDeleteLinkFromObjRefs, " ++++++++++ idForCreateListObjectRefs:", idForCreateListObjectRefs);
+
+            if(idForCreateListObjectRefs.parentId === objectsIdModalWindowConfirmDeleteLinkFromObjRefs[0]){
+                console.log(" !!!!!!!! func 'handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs', ------+++++++++------ !!!!!!!!!");
+
+                let index = idForCreateListObjectRefs.addId.findIndex((item) => item.obj.id === objectsIdModalWindowConfirmDeleteLinkFromObjRefs[1]);
+
+                if(index !== -1){
+                    setIdForCreateListObjectRefs((prevState) => {
+                        prevState.addId.splice(index, 1);
+
+                        return prevState;
+                    });
+                }
+            }
+
+            console.log(" !!!!!!!! func 'handlerDialogCloseModalWindowConfirmDeleteLinkFromObjRefs', ------++++++!!!!!!!!! idForCreateListObjectRefs: ", idForCreateListObjectRefs);
+
             setShowModalWindowConfirmDeleteLinkFromObjRefs(false);
-            setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([]);
+            //setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([]);
         },
         handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs = (currentParentId, currentDeleteId) => {
             let getListRefsForObject = (objType) => {
@@ -247,6 +299,7 @@ export default function CreatePageReport(props) {
             userPermissions={receivedData.userPermissions}
             confirmDeleteLink={buttonDelModalWindowConfirmDeleteLinkFromObjRefs}
             idForCreateListObjectRefs={idForCreateListObjectRefs}
+            objectsIdModalWindowConfirmDeleteLinkFromObjRefs={objectsIdModalWindowConfirmDeleteLinkFromObjRefs}
             handlerButtonSave={handlerButtonSaveModalWindowReportSTIX} 
             handlerDialogConfirm={handlerDialogConfirmModalWindowConfirmDeleteLinkFromObjRefs}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}

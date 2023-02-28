@@ -67,7 +67,7 @@ const reducer = (state, action) => {
         return {...state};
     case "updateObjectRefs": 
 
-        //console.log("func 'reducer', state:", state, "  ------- action.type:", action.type, " -------- action.data:", action.data);
+        console.log("func 'reducer', state:", state, "  ------- action.type:", action.type, " -------- action.data:", action.data);
 
         //если это убрать то вываливается ошибка, а с этим происходит то что описано выше
         if(typeof state.object_refs !== "undefined"){
@@ -176,8 +176,6 @@ function ModalWindowShowInformationReport({
     const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
     const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = useState(false);
 
-    //console.log("func 'ModalWindowShowInformationReport', START...");
-
     let handlerButtonSaveIsNotDisabled = () => {
             if(buttonSaveIsDisabled){
                 setButtonSaveIsDisabled(false);
@@ -189,19 +187,21 @@ function ModalWindowShowInformationReport({
                 setButtonSaveIsDisabled(true);
             }
 
-            handlerButtonSave(state);
+            handlerButtonSave([state]);
         };
 
     return (<Dialog 
         fullScreen 
         open={show} 
-        onClose={() => onHide()}>
+        onClose={() => onHide()}
+    >
         <CreateReportAppBar 
             title={showReportId}
             nameDialogButton="сохранить"
             buttonSaveIsDisabled={buttonSaveIsDisabled}
             handlerDialogClose={onHide}
-            handlerDialogButton={() => setButtonSaveChangeTrigger(true)} />           
+            handlerDialogButton={() => setButtonSaveChangeTrigger(true)} 
+        />           
         <CreateAppBody
             socketIo={socketIo} 
             groupList={groupList}
@@ -237,79 +237,6 @@ ModalWindowShowInformationReport.propTypes = {
 };
 
 export default React.memo(ModalWindowShowInformationReport);
-
-/*
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: "fixed",
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    appBreadcrumbs: {
-        position: "fixed",
-        top: "60px",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        paddingLeft: theme.spacing(4),
-    },
-    buttonSave: {
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    title: {
-        marginLeft: theme.spacing(2),
-        flex: 1,
-    },
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-}));
-
-<CreateAppBar 
-            title={showReportId}
-            nameDialogButton="сохранить"
-            buttonSaveIsDisabled={buttonSaveIsDisabled}
-            handlerDialogClose={onHide}
-    handlerDialogButton={() => setButtonSaveChangeTrigger(true)} />
-
-function CreateAppBar(props){
-    const classes = useStyles();
-    const { 
-        title, 
-        nameDialogButton,
-        buttonSaveIsDisabled, 
-        handlerDialogClose, 
-        handlerDialogButton 
-    } = props;
-
-    return (<AppBar className={classes.appBar}>
-        <Toolbar>
-            <IconButton edge="start" color="inherit" onClick={handlerDialogClose} aria-label="close">
-                <CloseIcon />
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>{title}</Typography>
-            <Button 
-                size="small"
-                disabled={buttonSaveIsDisabled}
-                className={classes.buttonSave} 
-                onClick={handlerDialogButton}>
-                {nameDialogButton}
-            </Button>
-        </Toolbar>
-    </AppBar>);
-}
-
-CreateAppBar.propTypes = {
-    title: PropTypes.string.isRequired,
-    nameDialogButton: PropTypes.string.isRequired,
-    buttonSaveIsDisabled: PropTypes.bool.isRequired,
-    handlerDialogClose: PropTypes.func.isRequired,
-    handlerDialogButton: PropTypes.func.isRequired,
-};*/
 
 function CreateAppBody(props){
     let {
@@ -427,9 +354,6 @@ function CreateReportInformation(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-
-        console.log("\\\\\\ func 'CreateReportInformation', showReportId:", showReportId, " //////");
-
         if(showReportId !== ""){
             //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
             socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
@@ -442,12 +366,12 @@ function CreateReportInformation(props){
             handlerPressButtonSave(state);
         }
     }, [ buttonSaveChangeTrigger, state, handlerPressButtonSave ]);
-    useEffect(() => {
+    /*useEffect(() => {
         if(idForCreateListObjectRefs.parentId.includes("report")){
             dispatch({ type: "updateObjectRefs", data: idForCreateListObjectRefs.addId.map((item) => item.obj.id) });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ idForCreateListObjectRefs.parentId ]);
+    }, [ idForCreateListObjectRefs.parentId ]);*/
     
     const handlerPublished = () => {
         let requestId = uuidv4();
@@ -571,7 +495,6 @@ function CreateReportInformation(props){
             idForCreateListObjectRefs={idForCreateListObjectRefs}
             handlerDialogConfirm={handlerDialogConfirm}
             handlerDeleteObjectRef={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs} 
-            //handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
             handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
             handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
         />}

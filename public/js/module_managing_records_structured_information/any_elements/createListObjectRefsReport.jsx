@@ -15,11 +15,20 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined";
-import { green, red, orange } from "@material-ui/core/colors";
+import { green, red, orange, grey } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../common_helpers/helpers.js";
+import { CreateButtonNewReport } from "../buttons/createButtonNewReport.jsx";
 import listExtendedObject from "../../common_helpers/listExtendedObject";
+
+const listObjectRequiredLinks = new Set([
+    "report",
+    "grouping",
+    "note",
+    "observed-data",
+    "opinion",
+]);
 
 const getListPropertiesExtendedObject = (objName) => {
     for(let elem of listExtendedObject){
@@ -304,7 +313,6 @@ export default function CreateListObjectRefsReport(props){
         idForCreateListObjectRefs,
         handlerDialogConfirm,
         handlerDeleteObjectRef,
-        //handlerReportUpdateObjectRefs,
         handlerShowObjectRefSTIXObject,
         handlerShowModalWindowCreateNewSTIXObject,
     } = props;
@@ -322,12 +330,11 @@ export default function CreateListObjectRefsReport(props){
     let addId = (idForCreateListObjectRefs.addId.length === 0)? 0: idForCreateListObjectRefs.addId[0].obj.id;
 
     //console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", stateReport:", stateReport, " listObjReducer ======= ", listObjReducer, " (*)(*)");
-    //console.log("** func 'CreateListObjectRefsReport' ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId.length:", idForCreateListObjectRefs.addId.length, " addId:", addId);
 
     useEffect(() => {
         let listener = (data) => {
 
-            console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", useEffect(():", data, " (*)(*)");
+            //console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", useEffect(():", data, " (*)(*)");
 
             let listObj = data.information.additional_parameters.transmitted_data.filter((item) => {
                 return item.type !== "relationship" && item.type !== "sighting"; 
@@ -378,7 +385,7 @@ export default function CreateListObjectRefsReport(props){
     }, [ confirmDeleteLink ]),
     useEffect(() => {
 
-        console.log("**) ____ func 'CreateListObjectRefsReport', useEffect ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId:", idForCreateListObjectRefs.addId);
+        //console.log("**) ____ func 'CreateListObjectRefsReport', useEffect ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId:", idForCreateListObjectRefs.addId);
 
         //для изменения содержимого списка listObjReducer.listId типа { currentId: item, childId: [] }
         setListObjReducer({ type: "addListId", data: idForCreateListObjectRefs });
@@ -387,7 +394,7 @@ export default function CreateListObjectRefsReport(props){
         // в родительском объекте
         setListObjReducer({ type: "addList", data: idForCreateListObjectRefs });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ idForCreateListObjectRefs.parentId, /*idForCreateListObjectRefs.addId.length*/ addId ]);
+    }, [ idForCreateListObjectRefs.parentId, addId ]);
     
     const findObjectId = (list, id) => {
             let listTmp = new Set([]);
@@ -413,17 +420,18 @@ export default function CreateListObjectRefsReport(props){
         },
         handleClick = (num, currentId, depth) => {  
             
-            //console.log("func 'handleClick' __________ num: '", num, "' currentId: '", currentId, "' depth: '", depth, "'");
+            //console.log("func 'handleClick' __________ num: '", num, "' currentId: '", currentId, "' depth: '", depth, "', listActivatedObjectNumbers: ", listActivatedObjectNumbers);
+            //console.log("func 'handleClick' __________ listActivatedObjectNumbers[depth]: '", listActivatedObjectNumbers[depth], " typeof listActivatedObjectNumbers[depth] = ", listActivatedObjectNumbers[depth]);
 
             let tmp = listActivatedObjectNumbers.slice();
-            if(listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] === num){        
+            if(typeof listActivatedObjectNumbers[depth] !== "undefined" && listActivatedObjectNumbers[depth] === num){        
 
                 //console.log("func 'handleClick' __________ 111");
 
                 tmp.splice(depth, 10);
-            } else if (listActivatedObjectNumbers[depth] && listActivatedObjectNumbers[depth] !== num) {
+            } else if (typeof listActivatedObjectNumbers[depth] !== "undefined" && listActivatedObjectNumbers[depth] !== num) {
 
-                //console.log("func 'handleClick' __________ 222");
+                //console.log("func 'handleClick' __________ 222 num = ", num, " listActivatedObjectNumbers[depth] = ", listActivatedObjectNumbers[depth], " listActivatedObjectNumbers[depth] !== num:", listActivatedObjectNumbers[depth] !== num);
 
                 tmp[depth] = num;
             } else {        
@@ -474,6 +482,13 @@ export default function CreateListObjectRefsReport(props){
     };
 
     let getListId = (list, parentId, depth) => {
+        let parentName = parentId.split("--")[0];
+        let isRemoveDisabled = false;
+
+        if(listObjectRequiredLinks.has(parentName) && list.length <= 1){
+            isRemoveDisabled = true;
+        }
+
         return list.map((item, key) => {
             let isAddAlarmProblems = false;
             let type = item.currentId.split("--");
@@ -485,8 +500,6 @@ export default function CreateListObjectRefsReport(props){
 
             if(type[0] === "grouping" || type[0] === "note" || type[0] === "observed-data" || type[0] === "opinion"){
                 let objRefs = getObjectRefs(item.currentId);
-
-                //console.log("func getListId, objRefs ------ type[0]:", type[0], " ----------- ", objRefs, " item.currentId = ", item.currentId);
 
                 if((typeof objRefs === "undefined") || (objRefs === null) || (objRefs.length === 0)){
                     isAddAlarmProblems = true;
@@ -500,6 +513,8 @@ export default function CreateListObjectRefsReport(props){
 
             let titleWarning = "Не заполнено ключевое поле, являющееся обязательным для данного объекта. Вероятнее всего отсутствуют ссылки на другой STIX объект, например в поле object_refs.";
             //titleWarning += " При сохранении Отчета даны объект не будет добавлен в базу данных. Для того чтобы исправить это необходимо добавить в текущий объект ссылку на какой либо другой объект STIX.";
+
+            //console.log("*********************** open = ", open, " key = ", key, " listActivatedObjectNumbers[depth] = ", listActivatedObjectNumbers[depth]);
 
             return (<React.Fragment key={`rf_${key}`}>
                 <ListItem 
@@ -517,8 +532,8 @@ export default function CreateListObjectRefsReport(props){
                         <img 
                             key={`key_object_ref_type_${key}`} 
                             src={`/images/stix_object/${objectElem.link}`} 
-                            width="30" 
-                            height="30" />&nbsp;
+                            width="27" 
+                            height="27" />&nbsp;
                         <Tooltip title={objectElem.description} key={`key_tooltip_object_ref_${key}`}>
                             <ListItemText primary={item.currentId}/>
                         </Tooltip>
@@ -541,8 +556,15 @@ export default function CreateListObjectRefsReport(props){
                             <AddCircleOutlineIcon style={{ color: green[400] }} />
                         </IconButton>: 
                         ""}
-                    <IconButton size="small" aria-label="delete" onClick={handlerDeleteObjRef.bind(null, parentId, item.currentId, depth, key)}>
-                        <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
+                    <IconButton 
+                        size="small"  
+                        aria-label="delete" 
+                        disabled={isRemoveDisabled}
+                        onClick={handlerDeleteObjRef.bind(null, parentId, item.currentId, depth, key)}
+                    >
+                        {isRemoveDisabled? 
+                            <RemoveCircleOutlineOutlinedIcon style={{ color: grey[400] }} />:
+                            <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />}
                     </IconButton>
                     {isAddAlarmProblems? 
                         <Tooltip title={titleWarning} key={`key_tooltip_warning_object_ref_${key}`}>
@@ -562,19 +584,23 @@ export default function CreateListObjectRefsReport(props){
         });
     };
 
+    //directory--9b77ec55-ab31-4b54-ac28-13aa8c95cea5
+    //domain-name--0af940f8-35ce-46e7-918b-66078773e48d
+    //directory--8e462c0b-bd93-4e7a-824d-163f9ccc47b4
+    // {"commonpropertiesobjectstix.id": "report--5e251d2d-6967-42e5-a800-1728c56cc9ba"}
+
     return (<React.Fragment>
         <Row className="mt-4">
             <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с данным Отчётом</span></Col>
         </Row>
         <Row>
             <Col md={12} className="text-end">
-                <Button
-                    startIcon={<AddCircleOutlineIcon style={{ color: green[400] }} />}
-                    onClick={() => {
+                <CreateButtonNewReport 
+                    message="прикрепить доп. объект"
+                    buttonIsDisabled={false}
+                    handlerShowModalWindow={() => {
                         handlerShowModalWindowCreateNewSTIXObject(majorParentId, ["object_refs"], stateReport);
-                    }}>
-                    <span style={{ paddingTop: "3px" }}>прикрепить доп. объект</span>
-                </Button>
+                    }}/>
             </Col>
         </Row>
         <Row>
