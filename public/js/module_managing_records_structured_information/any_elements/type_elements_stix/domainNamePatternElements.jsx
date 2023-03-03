@@ -1,10 +1,6 @@
 import React from "react";
 import {
     Button,
-    Card,
-    CardActions,
-    CardContent,
-    Collapse,
     Grid,
     Link,
     TextField,
@@ -13,7 +9,6 @@ import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-//import CreateShortInformationSTIXObject from "../createShortInformationSTIXObject.jsx";
 
 let getLinkImage = (elem) => {
     let tmp = [""];
@@ -27,15 +22,12 @@ let getLinkImage = (elem) => {
 export default function CreateDomainNamePatternElements(props){
     let { 
         isDisabled,
-        //        showRefElement,
         campaignPatterElement, 
         handlerValue,
         handleExpandClick,
     } = props;
 
     let [ isInvalidValue, setIsInvalidValue ] = React.useState(((typeof campaignPatterElement.value === "undefined") || (campaignPatterElement.value === "")));
-    //    let [ expanded, setExpanded ] = React.useState(false);
-    //    let [ refId, setRefId ] = React.useState("");
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -102,48 +94,19 @@ export default function CreateDomainNamePatternElements(props){
 
 CreateDomainNamePatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
-    //    showRefElement: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerValue: PropTypes.func.isRequired,
     handleExpandClick: PropTypes.func.isRequired,
 };
 
-/*
-return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_to_ref_${key}`}>
-                                <CardActions>
-                                    <Button onClick={() => { 
-                                        handleExpandClick(item);
-                                    }}>
-                                        <img 
-                                            src={`/images/stix_object/${objectElem.link}`} 
-                                            width="25" 
-                                            height="25" />
-                                            &nbsp;{item}
-                                    </Button>
-                                </CardActions>
-                                <Collapse in={refId === item && expanded} timeout="auto" unmountOnExit>
-                                    <CardContent>
-                                        {(showRefElement.id !== "" && showRefElement.id === item)? 
-                                            <CreateShortInformationSTIXObject 
-                                                obj={showRefElement.obj}
-                                                handlerClick={() => {}}
-                                            />: 
-                                            "информация не найдена"}
-                                    </CardContent>
-                                </Collapse>
-                            </Card>);
-
-                            domain-name--95bc69b6-385e-40d8-9a15-72b1631ec1b7
-
-                            return (<Grid container direction="row" key={`key_resolves_ref_${key}`}>
-                                <Grid item container md={12} justifyContent="flex-start">
-                                    <Button onClick={() => {}} disabled>
-                                        <img 
-                                            key={`key_resolves_ref_type_${key}`} 
-                                            src={`/images/stix_object/${objectElem.link}`} 
-                                            width="25" 
-                                            height="25" />
-                                        &nbsp;{item}&nbsp;
-                                    </Button>
-                                </Grid>
-                            </Grid>);*/
+/**
+//DomainNameCyberObservableObjectSTIX объект "Domain Name", по терминалогии STIX, содержит сетевое доменное имя
+// Value - сетевое доменное имя (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
+// ResolvesToRefs - список ссылок на один или несколько IP-адресов или доменных имен, на которые разрешается доменное имя
+type DomainNameCyberObservableObjectSTIX struct {
+	CommonPropertiesObjectSTIX
+	OptionalCommonPropertiesCyberObservableObjectSTIX
+	Value          string               `json:"value" bson:"value" required:"true"`
+	ResolvesToRefs []IdentifierTypeSTIX `json:"resolves_to_refs" bson:"resolves_to_refs"`
+}
+ */

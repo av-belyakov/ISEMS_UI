@@ -137,6 +137,8 @@ export default function reducerObservedDataSTIXObjects(state, action){
 
         state.mainObj.last_observed = new Date(Date.parse(lastObserved)).toISOString();
 
+        console.log("func 'reducerObservedDataSTIXObjects', action.type:", action.type, " state.mainObj.last_observed:", state.mainObj.last_observed);
+
         return {...state};
     case "updateDateTimeFirstObserved":
         tmp = Date.parse(action.data);

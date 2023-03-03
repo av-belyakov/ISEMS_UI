@@ -31,7 +31,9 @@ export default function reducerEmailMessagePatternSTIXObjects(state, action){
             dateSend = new Date(tmp - (ms * -1));
         }
 
-        return {...state, date: dateSend};
+        state.date = new Date(Date.parse(dateSend)).toISOString();
+
+        return {...state};
     case "updateMessageId":
         return {...state, message_id: action.data};
     case "updateContentType":

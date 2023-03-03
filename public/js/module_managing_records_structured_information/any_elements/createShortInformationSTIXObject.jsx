@@ -92,6 +92,9 @@ let patternAliases = (aliases) => {
     </Grid>;
 };
 
+const defaultData = "0001-01-01T00:00:00.000Z";
+const minDefaultData = new Date();
+
 //export default function CreateShortInformationSTIXObject(props){
 export function CreateShortInformationSTIXObject(props){
     let { obj, handlerClick } = props;
@@ -1386,19 +1389,27 @@ let userAccountFunc = (obj) => {
 };
 
 let networkTrafficFunc = (obj, handlerClick) => {
-    let startTime = obj.start;
-    let endTime = obj.end;
+    let startTime = minDefaultData;
+    let endTime = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
-    let st = Date.parse(obj.start);
-    let et = Date.parse(obj.end);
     
     if(currentTimeZoneOffsetInHours > 0){
-        startTime = new Date(st + ms);
-        endTime = new Date(et + ms);
+        if(typeof obj.start !== "undefined" && obj.start !== defaultData){           
+            startTime = new Date(Date.parse(obj.start) + ms);
+        }
+
+        if(typeof obj.end !== "undefined" && obj.end !== defaultData){
+            endTime = new Date(Date.parse(obj.end) + ms);
+        }
     } else {
-        startTime = new Date(st - (ms * -1));
-        endTime = new Date(et - (ms * -1));
+        if(typeof obj.start !== "undefined" && obj.start !== defaultData){
+            startTime = new Date(Date.parse(obj.start) - (ms * -1));
+        }
+
+        if(typeof obj.end !== "undefined" && obj.end !== defaultData){
+            endTime = new Date(Date.parse(obj.end) - (ms * -1));
+        }
     }
 
     return (<React.Fragment>
@@ -1420,7 +1431,7 @@ let networkTrafficFunc = (obj, handlerClick) => {
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес или доменное имя источника:</span></Grid>
             <Grid item container md={7}>
                 {(typeof getLinkImage(obj.src_ref) !== "undefined")?
-                    <Button onClick={() => {                                        
+                    <Button onClick={() => {
                         handlerClick(obj.id, obj.src_ref);
                     }}>
                         <img src={`/images/stix_object/${getLinkImage(obj.src_ref).link}`} width="25" height="25" />

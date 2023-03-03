@@ -127,7 +127,7 @@ export default function CreateObservedDataPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end">
                 <span className="text-muted">Окончание временного окна, в течение которого были замечены данные:</span>
             </Grid>
@@ -148,7 +148,7 @@ export default function CreateObservedDataPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3}>
             {
                 //Количество фиксации наблюдаемого кибер объекта SCO, представленный в свойстве ObjectRef (NumberObserved)
             }

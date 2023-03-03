@@ -350,6 +350,7 @@ function CreateTable(props){
                         </TableRow>
                     </TableHead>
                     <TableBody>
+
                         {listReports.map((item, num) => {
                             let imgTypeSTIX = "",    
                                 listRefTypeTmp = new Set(),

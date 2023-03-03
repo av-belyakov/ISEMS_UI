@@ -444,7 +444,7 @@ export default function CreateEmailMessagePatternElements(props){
             }}
             handlerButtonShowLink={handlerButtonShowLink}
         />
-
+ 
         {
             //
             //      поле additional_header_fields, пока не очень хорошо реализованно в ISEMS-MRSICT

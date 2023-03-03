@@ -253,8 +253,8 @@ function CreateMajorContent(props){
                         parentObjectId: parentId,
                     }});
                 }}
-                handlerLastObserved={(e) => { console.log("00000 handlerLastObserved, e = ", e); dispatch({ type: "updateLastObservedTime", data: e }); handlerButtonIsDisabled(); }}
-                handlerFirstObserved={(e) => { console.log("00000 handlerFirstObserved, e = ", e); dispatch({ type: "updateFirstObservedTime", data: e }); handlerButtonIsDisabled(); }}
+                handlerLastObserved={(e) => { dispatch({ type: "updateLastObservedTime", data: e }); handlerButtonIsDisabled(); }}
+                handlerFirstObserved={(e) => { dispatch({ type: "updateFirstObservedTime", data: e }); handlerButtonIsDisabled(); }}
                 handlerNumberObserved={(e) => { dispatch({ type: "updateNumberObserved", data: e.target.value }); handlerButtonIsDisabled(); }}
                 handlerClickButtonObjectRef={handlerButtonShowLink}
             />
