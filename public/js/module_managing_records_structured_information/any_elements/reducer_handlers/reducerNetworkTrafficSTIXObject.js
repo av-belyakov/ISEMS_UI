@@ -1,5 +1,7 @@
 export default function reducerNetworkTrafficPatternSTIXObjects(state, action){
     let dateTime = "";
+    let defaultData = "0001-01-01T00:00:00Z";
+    let minDefaultData = "1970-01-01T00:00:00.000Z";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
@@ -7,40 +9,30 @@ export default function reducerNetworkTrafficPatternSTIXObjects(state, action){
 
     switch(action.type){
     case "newAll":
-        if(action.data.start && action.data.start){
-            action.data.start = new Date(Date.parse(action.data.start)).toISOString();
-        }
+        if(action.data.start && action.data.end){
+            if(action.data.start === defaultData){
+                action.data.start = minDefaultData;
+            } else {
+                action.data.start = new Date(Date.parse(action.data.start)).toISOString();
+            }
 
-        if(action.data.end && action.data.end){
-            action.data.end = new Date(Date.parse(action.data.end)).toISOString();
+            if(action.data.end === defaultData){
+                action.data.end = minDefaultData;
+            } else {
+                action.data.end = new Date(Date.parse(action.data.end)).toISOString();
+            }
         }
-
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
 
         return action.data;
     case "cleanAll":
         return {};
     case "addId":
         return {...state, id: action.data};
-        /*    case "updateBody":
-        return {...state, body: action.data};
-    case "updateSubject":
-        return {...state, subject: action.data};
-    case "updateDate":
-        return {...state, date: action.data};*/
     case "addShortRef":
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
-        /**
-         * что то тут какой то косяк, не добавляется свойсво с именем action.data.propertyName
-         */
-
         state[action.data.propName] = action.data.value;
 
         return {...state};
     case "updateStartDate":
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
@@ -53,8 +45,6 @@ export default function reducerNetworkTrafficPatternSTIXObjects(state, action){
 
         return {...state};
     case "updateEndDate":
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
@@ -67,68 +57,29 @@ export default function reducerNetworkTrafficPatternSTIXObjects(state, action){
 
         return {...state};
     case "updateSrcPort":
-
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         if(action.data < 0 || action.data > 65535){
             return {...state};
         }
 
         return {...state, src_port: +action.data};
     case "updateDstPort":
-
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         if(action.data < 0 || action.data > 65535){
             return {...state};
         }
 
         return {...state, dst_port: +action.data};
     case "updateIsActive":
-
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         return {...state, is_active: (action.data === "true")};
     case "updateSrcPackets":
-
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         return {...state, src_packets: +action.data};
     case "updateDstPackets":
-
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         return {...state, dst_packets: +action.data};
     case "updateSrcByteCount":
-
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         return {...state, src_byte_count: +action.data};
     case "updateDstByteCount":
-
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         return {...state, dst_byte_count: +action.data};
     case "updateProtocols":
-
-        console.log("func 'reducerNetworkTrafficPatternSTIXObjects', TYPE: ", action.type, " DATA: ", action.data);
-
         return {...state, protocols: action.data};
-
-    /*case "updateMessageId":
-        return {...state, message_id: action.data};
-    case "updateContentType":
-        return {...state, content_type: action.data};
-    case "updateIsMultipart":
-        return {...state, is_multipart: action.data};
-    case "updateReceivedLines":
-        if(!state.received_lines){
-            state.received_lines = [];
-        }
-                
-        state.received_lines.push(action.data);
-        
-        return {...state};*/
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

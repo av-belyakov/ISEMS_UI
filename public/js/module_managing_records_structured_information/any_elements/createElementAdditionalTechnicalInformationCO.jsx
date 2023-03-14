@@ -59,6 +59,8 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
         handlerElementDefanged({ data: data.target.value, objectId: objectId }); 
     };
 
+    console.log("func 'CreateElementAdditionalTechnicalInformationCO', reportInfo: ", reportInfo);
+
     return (<React.Fragment>
         <Grid container direction="row" className="mt-4">
             <Grid item md={12}><span className="text-muted"><strong>Дополнительная техническая информация</strong></span></Grid>
@@ -94,6 +96,28 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
             </Grid>
         </Grid>
 
+        {/**
+         *  По поводу extensions. В MRSIC есть декодирование расширений по 12 типам:
+         *  - "archive-ext"
+	     *  - "ntfs-ext"
+	     *  - "pdf-ext"
+    	 *  - "raster-image-ext"
+	     *  - "windows-pebinary-ext"
+	     *  - "http-request-ext"
+	     *  - "icmp-ext"
+	     *  - "socket-ext"
+	     *  - "tcp-ext"
+	     *  - "windows-process-ext"
+	     *  - "windows-service-ext"
+	     *  - "unix-account-ext"
+         * 
+         *  нужно сделать визуализацию создания и редактирования только для SCO типов:
+         *  - file
+         *  - network-traffic
+         *  - process
+         *  - software
+         *  - user-account
+         */}
         <Grid container direction="row" spacing={3}>
             <Grid item md={4} className="text-end mt-2">
                 <span className="text-muted">Дополнительная информация, относящаяся к объекту:</span>

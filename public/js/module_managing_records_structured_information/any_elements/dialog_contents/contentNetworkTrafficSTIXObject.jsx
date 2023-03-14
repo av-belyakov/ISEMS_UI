@@ -38,6 +38,27 @@ function reducerShowRef(state, action){
     switch(action.type){
     case "addObject":
         return {...state, obj: action.data};
+    case "updateNetworkRefObj":
+
+        /**
+         * 
+         * Разобратся с неверной датой при просмотре краткой информации об объекте типа network-traffic
+         * если дата изначально не была добавлена то она не соотвествует 1970.01.01
+         * 
+         * {"commonpropertiesobjectstix.id": "network-traffic--68ead79b-28db-4811-85f6-971f46548343"}
+         */
+
+        console.log("===== func 'reducerShowRef', action.type:", action.type, " action.data:", action.data, " state:", state);
+
+        if(state.obj.src_ref === action.data.id){
+            state.obj.src_ref = action.data.value;
+        }
+
+        if(state.obj.dst_ref === action.data.id){
+            state.obj.dst_ref = action.data.value;
+        }
+
+        return {...state};
     case "addId":
         return {...state, id: action.data};
     case "cleanObj":
@@ -144,16 +165,31 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
+
+            console.log("func 'CreateDialogContentNetworkTrafficSTIXObject', useEffect(), 'isems-mrsi ui request: insert STIX object', STATE: ", state);
+
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
-            
+           
             handlerButtonSaveChangeTrigger();
             handlerDialogClose();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
-    const handlerCheckStateButtonIsDisabled = () => {
-        handlerButtonIsDisabled(false);
+    const handlerCheckStateButtonIsDisabled = (protocols) => {
+        if(typeof protocols !== "undefined" && Array.isArray(protocols)){
+            if(protocols.length === 0){
+                handlerButtonIsDisabled(true);
+            } else {
+                handlerButtonIsDisabled(false);
+            }
+        } else {
+            if(state.protocols.length === 0){
+                handlerButtonIsDisabled(true);
+            } else {
+                handlerButtonIsDisabled(false);
+            }
+        }
     };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
@@ -175,40 +211,21 @@ function CreateMajorContent(props){
                 showRefElement={stateShowRef}
                 campaignPatterElement={state}
                 handlerClick={(parentId, refId) => {
-                    console.log(".__________. func 'handlerClick' parentId:", parentId, " refId:", refId, ".______.");
-
-                    /**
-                     * 
-                     * Сделать что бы был просмотр ссылки во вложенном объекте 
-                     *  Ссылка на другой STIX объект типа Сетевой трафик или
-                     *  Список ссылок на другие STIX объекты типа Сетевой трафик
-                     *  где в этих объектах есть свойства src_ref и dst_ref ссылающиеся на
-                     *  объекты типа ipv4-addr, ipv6-addr, mac, domain-name
-                     * 
-                     * Сделать модальное окно для создания объека networkTraffic
-                     * 
-                     */
-
                     socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-                            
-                        console.log(".......... func 'handlerClick' data:", data, "............");
-
-
                         if(!isExistTransmittedData(data)){
                             return;
                         }
 
                         for(let obj of data.information.additional_parameters.transmitted_data){
-                            
-                            console.log(".......... func 'handlerClick' parentId:", parentId, " refId:", refId, " obj:", obj, "............");
-                            
-                            //updateRefObj(parentId, obj);                           
+                            if(parentId.includes("network-traffic")){
+                                dispatchShowRef({ type: "updateNetworkRefObj", data: obj });                          
+                            }
                         }
                     });
 
                     socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
                         searchObjectId: refId,
-                        parentObjectId: parentId,
+                        parentObjectId: "",
                     }});
                 }}            
                 handlerEndDate={(e) => { dispatch({ type: "updateEndDate", data: e }); handlerCheckStateButtonIsDisabled(); }}
@@ -220,20 +237,16 @@ function CreateMajorContent(props){
                 handlerSrcPackets={(e) => { dispatch({ type: "updateSrcPackets", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDstByteCount={(e) => { dispatch({ type: "updateDstByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerSrcByteCount={(e) => { dispatch({ type: "updateSrcByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerListProtocols={(e) => { dispatch({ type: "updateProtocols", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerListProtocols={(e) => { dispatch({ type: "updateProtocols", data: e }); handlerCheckStateButtonIsDisabled(e); }}
                 // это обработчик для ссылок на объекты содержащие ТОЛЬКО одну строчку, подходит только для свойств src_ref и dst_ref которые после 
                 //просмотра будет содержать только свойство value STIX объектов: ipv4-addr, ipv6-addr, mac-addr, domain-name
                 handlerClickShortRef={(refId, propertyName) => {
-                    console.log("func 'CreateDialogContentNetworkTrafficSTIXObject', function 'handlerClickShortRef', ref = ", refId, " propertyName = ", propertyName);
-
                     socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
                         if(!isExistTransmittedData(data)){
                             return;
                         }
 
                         for(let obj of data.information.additional_parameters.transmitted_data){ 
-                            console.log("func 'CreateDialogContentNetworkTrafficSTIXObject', function 'handlerClickShortRef', obj = ", obj, " propertyName = ", propertyName);
-
                             if(obj.type === "ipv4-addr" || obj.type === "ipv6-addr" || obj.type === "mac-addr" || obj.type === "domain-name"){
                                 dispatch({ type: "addShortRef", data: { value: obj.value, propName: propertyName } });        
                             }
@@ -248,8 +261,6 @@ function CreateMajorContent(props){
                 // это обработчик для ссылок на объекты содержащие полную информацию (для визуализации используется CreateShortInformationSTIXObject), 
                 //подходит для свойств src_payload_ref и dst_payload_ref содержащие ссылки на STIX объект artifact 
                 handlerButtonShowLink={(refId) => {
-                    console.log("func 'CreateDialogContentNetworkTrafficSTIXObject', function 'handlerButtonShowLink'");
-
                     dispatchShowRef({ type: "addId", data: refId });
                     dispatchShowRef({ type: "cleanObj", data: {} });
     

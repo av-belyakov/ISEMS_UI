@@ -29,13 +29,14 @@
             "token": "udu8e88388eg8d88s8f88w838f3"
         },
         "managingRecordsStructuredInformationAboutComputerThreats": {
+            "hostTmp": "192.168.13.3",
             "host": "192.168.9.208",
             "port": "13001",
             "token": "14bb17070e252a0fbcb79c42a0bd7bc0"
         },
         "managingRecordsStructuredInformationAboutComputerThreatsDomainName": {
             "host": "test-uchet-db.cloud.gcm",
-            "port": "13000",
+            "port": "13001",
             "token": "14bb17070e252a0fbcb79c42a0bd7bc0"
         }
     },

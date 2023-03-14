@@ -9,6 +9,7 @@ import {
     TextField,
 } from "@material-ui/core";
 import { Form } from "react-bootstrap";
+import { red } from "@material-ui/core/colors";
 import { isString } from "lodash";
 import { JSONTree } from "reactjsontree";
 import PropTypes from "prop-types";
@@ -21,7 +22,8 @@ import { helpers } from "../../../common_helpers/helpers";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 const defaultData = "0001-01-01T00:00:00.000Z";
-const minDefaultData = new Date();
+//const minDefaultData = new Date();
+const minDefaultData = "1970-01-01T00:00:00.000Z";
 
 let getLinkImage = (elem) => {
     if(!isString(elem)){
@@ -157,7 +159,7 @@ export default function CreateNetworkTrafficPatternElements(props){
                             variant="inline"
                             ampm={false}
                             value={dateTimeStart}
-                            minDate={new Date("2000-01-01")}
+                            minDate={new Date("1970-01-01")}
                             maxDate={new Date()}
                             onChange={handlerStartDate}
                             format="dd.MM.yyyy HH:mm"
@@ -176,7 +178,7 @@ export default function CreateNetworkTrafficPatternElements(props){
                             variant="inline"
                             ampm={false}
                             value={dateTimeEnd}
-                            minDate={new Date("2000-01-02")}
+                            minDate={new Date("1970-01-01")}
                             maxDate={new Date()}
                             onChange={handlerEndDate}
                             format="dd.MM.yyyy HH:mm"
@@ -405,7 +407,9 @@ export default function CreateNetworkTrafficPatternElements(props){
             ""}
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Перечень протоколов, наблюдаемых в сетевом трафике:</span></Grid>
+            <Grid item container md={5} justifyContent="flex-end">
+                <span className="text-muted mt-2">Перечень протоколов, наблюдаемых в сетевом трафике:</span>
+            </Grid>
             <Grid item md={7}>
                 <TokenInput
                     readOnly={isDisabled}
@@ -414,6 +418,15 @@ export default function CreateNetworkTrafficPatternElements(props){
                     onTokenValuesChange={handlerListProtocols} />
             </Grid>
         </Grid>
+
+        {campaignPatterElement.protocols && campaignPatterElement.protocols.length === 0? 
+            <Grid container direction="row" spacing={3}>
+                <Grid item container md={5} justifyContent="flex-end"></Grid>
+                <Grid item container md={7} justifyContent="flex-start">
+                    <span style={{ color: red[400], paddingLeft: "4px" }}>* перечень протоколов обязателен к заполнению</span>
+                </Grid>
+            </Grid>:
+            ""}
 
         {campaignPatterElement.encapsulated_by_ref && (typeof campaignPatterElement.encapsulated_by_ref !== "undefined") && campaignPatterElement.encapsulated_by_ref.length !== 0?
             <Grid container direction="row" spacing={3} className="mt-2">
@@ -479,7 +492,7 @@ export default function CreateNetworkTrafficPatternElements(props){
                                     <CardContent>
                                         <CreateShortInformationSTIXObject 
                                             obj={showRefElement.obj}
-                                            handlerClick={handlerClick.bind(null, showRefElement.id, item)}
+                                            handlerClick={handlerClick}
                                         />
                                     </CardContent>
                                 </Collapse>
@@ -490,7 +503,7 @@ export default function CreateNetworkTrafficPatternElements(props){
             </React.Fragment>:
             ""}
 
-        {(campaignPatterElement !== null && campaignPatterElement.extensions)?
+        {/*(campaignPatterElement !== null && campaignPatterElement.extensions)?
             Object.keys(campaignPatterElement.extensions).length === 0?
                 "":
                 <React.Fragment>
@@ -526,7 +539,7 @@ export default function CreateNetworkTrafficPatternElements(props){
                         </Grid>
                     </Grid>
                 </React.Fragment>:
-            ""}
+                                ""*/}
 
         {(campaignPatterElement !== null && campaignPatterElement.ipfix)?
             Object.keys(campaignPatterElement.ipfix).length === 0?

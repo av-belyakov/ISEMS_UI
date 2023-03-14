@@ -50,6 +50,7 @@ const CreateMacAddrPatternNewSTIXObject = lazy(() => import("./contentMacAddrPat
 const CreateMutexPatternNewSTIXObject = lazy(() => import("./contentMutexPatternNewSTIXObject.jsx"));
 const CreateURLPatternNewSTIXObject = lazy(() => import("./contentURLPatternNewSTIXObject.jsx"));
 const CreateSoftwarePatternNewSTIXObject = lazy(() => import("./contentSoftwarePatternNewSTIXObject.jsx"));
+const CreateNetworkTrafficPatternNewSTIXObject = lazy(() => import("./contentNetworkTrafficPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -627,7 +628,7 @@ function somethingModule(nameSTIX){
         "location": CreateLocationPatternNewSTIXObject,
         "mac-addr": CreateMacAddrPatternNewSTIXObject,
         "malware": CreateMalwarePatternNewSTIXObject,//"malware-analysis": "", напрямую относится к "malware"
-        //"network-traffic": CreateNetworkTrafficPatternElements,
+        "network-traffic": CreateNetworkTrafficPatternNewSTIXObject,
         "note": CreateNotePatternNewSTIXObject,
         "observed-data": CreateObservedDataPatternNewSTIXObject,
         "opinion": CreateOpinionPatternNewSTIXObject,

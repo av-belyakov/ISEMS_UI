@@ -807,6 +807,7 @@ function GetlabelsAdditionalTechnicalInformation(props){
 
         handlerFieldInput(newTokenValues);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [setValues]);
 
     return (<TokenInput

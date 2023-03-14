@@ -9,11 +9,11 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerMutexSTIXObject from "../reducer_handlers/reducerMutexSTIXObject.js";
-import CreateMutexPatternElements from "../type_elements_stix/mutexPatternElements.jsx";
+import reducerNetworkTrafficPatternSTIXObjects from "../reducer_handlers/reducerNetworkTrafficSTIXObject.js";
+import CreateNetworkTrafficPatternElements from "../type_elements_stix/networkTrafficPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-export default function CreateIPv4AddrPatternNewSTIXObject(props){
+export default function CreateNetworkTrafficPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
@@ -37,7 +37,7 @@ export default function CreateIPv4AddrPatternNewSTIXObject(props){
     />;
 }
      
-CreateIPv4AddrPatternNewSTIXObject.propTypes = {
+CreateNetworkTrafficPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
@@ -61,13 +61,17 @@ function CreateMajorElements(props){
     } = props;
 
     let currentObjectId = React.useMemo(() => {
-        return `mutex--${uuidv4()}`;
+        return `network-traffic--${uuidv4()}`;
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonAddClick ]);
 
-    const [ state, dispatch ] = useReducer(reducerMutexSTIXObject, {});
+    const [ state, dispatch ] = useReducer(reducerNetworkTrafficPatternSTIXObjects, { 
+        start: "1970-01-01T00:00:00.000Z",
+        end: "1970-01-01T00:00:00.000Z",
+        protocols: [] 
+    });
     useEffect(() => {
-        if(projectPatterElement.type === "mutex"){
+        if(projectPatterElement.type === "network-traffic"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
@@ -75,7 +79,7 @@ function CreateMajorElements(props){
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "mutex";
+            stateTmp.type = "network-traffic";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -91,24 +95,27 @@ function CreateMajorElements(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonChangeClick ]);
 
-    const handlerCheckStateButtonIsDisabled = (name) => {        
-        if(typeof name !== "undefined"){
-            if(name.length > 0){
-                return handlerChangeButtonAdd(false);
+    const handlerCheckStateButtonIsDisabled = (protocols) => {
+
+        console.log("func 'handlerCheckStateButtonIsDisabled', protocols: ", protocols, " state: ", state);
+
+        if(typeof protocols !== "undefined" && Array.isArray(protocols)){
+            if(protocols.length === 0){
+                //handlerButtonIsDisabled(true);
+                handlerChangeButtonAdd(true);
+            } else {
+                //handlerButtonIsDisabled(false);
+                handlerChangeButtonAdd(false);
             }
-
-            return handlerChangeButtonAdd(true);
+        } else {
+            if(state.protocols.length === 0){
+                //handlerButtonIsDisabled(true);
+                handlerChangeButtonAdd(true);
+            } else {
+                //handlerButtonIsDisabled(false);
+                handlerChangeButtonAdd(false);
+            }
         }
-
-        if(!state || !state.name){
-            return handlerChangeButtonAdd(true);
-        }
-
-        if(state.name.length > 0){
-            return handlerChangeButtonAdd(false);
-        }
-
-        return handlerChangeButtonAdd(true);
     };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
@@ -138,10 +145,27 @@ function CreateMajorElements(props){
                 <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
 
-            <CreateMutexPatternElements
+            <CreateNetworkTrafficPatternElements 
                 isDisabled={false}
+                showRefElement={{}}
                 campaignPatterElement={state}
-                handlerName={(e) => { let value = e.target.value; dispatch({ type: "updateName", data: value }); handlerCheckStateButtonIsDisabled(value); }}
+                handlerClick={() => {}}
+                handlerEndDate={(e) => { dispatch({ type: "updateEndDate", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSrcPort={(e) => { dispatch({ type: "updateSrcPort", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDstPort={(e) => { dispatch({ type: "updateDstPort", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerIsActive={(e) => { dispatch({ type: "updateIsActive", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerStartDate={(e) => { dispatch({ type: "updateStartDate", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDstPackets={(e) => { dispatch({ type: "updateDstPackets", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSrcPackets={(e) => { dispatch({ type: "updateSrcPackets", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDstByteCount={(e) => { dispatch({ type: "updateDstByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSrcByteCount={(e) => { dispatch({ type: "updateSrcByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerListProtocols={(e) => { dispatch({ type: "updateProtocols", data: e }); handlerCheckStateButtonIsDisabled(e); }}
+                // это обработчик для ссылок на объекты содержащие ТОЛЬКО одну строчку, подходит только для свойств src_ref и dst_ref которые после 
+                //просмотра будет содержать только свойство value STIX объектов: ipv4-addr, ipv6-addr, mac-addr, domain-name
+                handlerClickShortRef={() => {}}
+                // это обработчик для ссылок на объекты содержащие полную информацию (для визуализации используется CreateShortInformationSTIXObject), 
+                //подходит для свойств src_payload_ref и dst_payload_ref содержащие ссылки на STIX объект artifact 
+                handlerButtonShowLink={() => {}}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 

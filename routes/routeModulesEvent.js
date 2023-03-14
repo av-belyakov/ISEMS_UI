@@ -297,8 +297,9 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
             if (globalObject.hasData("tasks", msg.task_id)) {
                 let taskInfo = globalObject.getData("tasks", msg.task_id);
 
-                //debug("---- taskInfo ----");
-                //debug(taskInfo);
+                debug("---- taskInfo ----");
+                debug(`msg: ${msg}, taskInfo: ${taskInfo}`);
+                debug(msg);
 
                 /*
                 console.log("-----====== func 'routeModulesEvent', task info ======-----");

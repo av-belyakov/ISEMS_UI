@@ -1389,6 +1389,9 @@ let userAccountFunc = (obj) => {
 };
 
 let networkTrafficFunc = (obj, handlerClick) => {
+
+    console.log("func ____'networkTrafficFunc', obj ====== ", obj);
+
     let startTime = minDefaultData;
     let endTime = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
