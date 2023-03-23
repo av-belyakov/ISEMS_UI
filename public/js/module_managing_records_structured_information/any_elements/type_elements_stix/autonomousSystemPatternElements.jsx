@@ -24,8 +24,8 @@ export default function CreateAutonomousSystemPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
+            <Grid item container md={7}>
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
                     <span className="mt-2">{campaignPatterElement.name}</span>:
                     <TextField
@@ -40,10 +40,10 @@ export default function CreateAutonomousSystemPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted mt-2">Номер присвоенный Автономной системе:</span>
             </Grid>
-            <Grid item md={8}>
+            <Grid item md={7}>
                 <TextField
                     id="outlined-number-autonomous-system"
                     //multiline
@@ -71,10 +71,10 @@ export default function CreateAutonomousSystemPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted mt-2">Название регионального Интернет-реестра (RIR):</span>
             </Grid>
-            <Grid item md={8}>
+            <Grid item md={7}>
                 <TextField
                     id="outlined-rir"
                     //multiline

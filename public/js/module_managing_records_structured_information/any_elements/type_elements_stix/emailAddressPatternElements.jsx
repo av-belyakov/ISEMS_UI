@@ -51,8 +51,8 @@ export default function CreateEmailAddressPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Адрес электронной почты:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Адрес электронной почты:</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}
@@ -75,8 +75,8 @@ export default function CreateEmailAddressPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Почтовое имя которое видит человек при просмотре письма:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Почтовое имя которое видит человек при просмотре письма:</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}
@@ -90,10 +90,10 @@ export default function CreateEmailAddressPatternElements(props){
 
         {campaignPatterElement.belongs_to_ref && campaignPatterElement.belongs_to_ref.length !== 0?
             <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-                <Grid item container md={4} justifyContent="flex-end">
+                <Grid item container md={5} justifyContent="flex-end">
                     <span className="text-muted mt-3">Ссылка на учетную запись пользователя, которой принадлежит адрес электронной почты:</span>
                 </Grid>
-                <Grid item container md={8}>
+                <Grid item container md={7}>
                     <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 

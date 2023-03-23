@@ -51,10 +51,6 @@ export default function CreateFilePatternElements(props){
     let [ valueTmpHashSum, setValueTmpHashSum ] = useState({ type: "", description: "" });
     let [ buttonAddHashIsDisabled, setButtonAddHashIsDisabled ] = useState(true);
 
-    console.log("func 'CreateFilePatternElements' ====================================================== ");
-    console.log("func 'CreateFilePatternElements' campaignPatterElement = ", campaignPatterElement);
-    console.log("func 'CreateFilePatternElements' ====================================================== ");
-
     React.useEffect(() => {
         if((typeof campaignPatterElement.size !== "undefined") && new RegExp("^[0-9]{1,}$").test(campaignPatterElement.size) && campaignPatterElement.size[0] !== "0"){
             setIsInvalidSizeValue(false);
@@ -122,8 +118,8 @@ export default function CreateFilePatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
+            <Grid item container md={7}>
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
                     <span className="mt-2">{campaignPatterElement.name}</span>:
                     <TextField
@@ -149,10 +145,10 @@ export default function CreateFilePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted mt-2">Размер файла в байтах:</span>
             </Grid>
-            <Grid item container md={8}>
+            <Grid item container md={7}>
                 <TextField
                     id="size-element"
                     disabled={isDisabled}
@@ -177,17 +173,17 @@ export default function CreateFilePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Время создания файла:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время создания файла:</span></Grid>
+            <Grid item container md={7}>
                 {helpers.convertDateFromString(campaignPatterElement.ctime, { monthDescription: "long", dayDescription: "numeric" })}
             </Grid>
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted mt-2">Время модификации файла:</span>
             </Grid>
-            <Grid item container md={8}>
+            <Grid item container md={7}>
                 {isDisabled?
                     helpers.convertDateFromString(mtime, { monthDescription: "long", dayDescription: "numeric" }):
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -205,10 +201,10 @@ export default function CreateFilePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted mt-2">Время обращения к файлу:</span>
             </Grid>
-            <Grid item container md={8}>
+            <Grid item container md={7}>
                 {isDisabled?
                     helpers.convertDateFromString(atime, { monthDescription: "long", dayDescription: "numeric" }):
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -226,10 +222,10 @@ export default function CreateFilePatternElements(props){
         </Grid>        
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted mt-2">Кодировка имени файла:</span>
             </Grid>
-            <Grid item container md={8}>
+            <Grid item container md={7}>
                 <TextField
                     id="name-enc-element"
                     disabled={isDisabled}
@@ -241,10 +237,10 @@ export default function CreateFilePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted">Шестнадцатеричная константа “магическое число”, связанная с определенным форматом файла:</span>
             </Grid>
-            <Grid item container md={8}>
+            <Grid item container md={7}>
                 <TextField
                     id="magic-number-hex-element"
                     disabled={isDisabled}
@@ -256,10 +252,10 @@ export default function CreateFilePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted mt-2">MIME имени файла:</span>
             </Grid>
-            <Grid item container md={8}>
+            <Grid item container md={7}>
                 <TextField
                     id="mime-type-element"
                     disabled={isDisabled}
@@ -272,10 +268,10 @@ export default function CreateFilePatternElements(props){
 
         {campaignPatterElement.parent_directory_ref && campaignPatterElement.parent_directory_ref.length !== 0?
             <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-                <Grid item container md={4} justifyContent="flex-end">
+                <Grid item container md={5} justifyContent="flex-end">
                     <span className="text-muted mt-3">Родительская директория файла:</span>
                 </Grid>
-                <Grid item container md={8}>
+                <Grid item container md={7}>
                     <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
@@ -307,10 +303,10 @@ export default function CreateFilePatternElements(props){
 
         {campaignPatterElement.content_ref && campaignPatterElement.content_ref.length !== ""?
             <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-                <Grid item container md={4} justifyContent="flex-end">
+                <Grid item container md={5} justifyContent="flex-end">
                     <span className="text-muted mt-3">Контент файла:</span>
                 </Grid>
-                <Grid item container md={8}>
+                <Grid item container md={7}>
                     <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
@@ -400,75 +396,59 @@ export default function CreateFilePatternElements(props){
             </Grid>: 
             ""}
 
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={12} justifyContent="flex-start">
-                <span className="text-muted">Идентификаторы объектов:</span>
-            </Grid>
-        </Grid>
-        <Grid container direction="row">
-            <Grid item container md={12} justifyContent="flex-start">
-                {campaignPatterElement.contains_refs && campaignPatterElement.contains_refs.length > 0?
-                    campaignPatterElement.contains_refs.map((item, key) => {
-                        let type = item.split("--");
-                        let objectElem = helpers.getLinkImageSTIXObject(type[0]);
+        {campaignPatterElement.contains_refs && campaignPatterElement.contains_refs.length > 0?
+            <React.Fragment>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={12} justifyContent="flex-start">
+                        <span className="text-muted">Идентификаторы объектов:</span>
+                    </Grid>
+                </Grid>
+                <Grid container direction="row">
+                    <Grid item container md={12} justifyContent="flex-start">
+                        {campaignPatterElement.contains_refs.map((item, key) => {
+                            let type = item.split("--");
+                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
     
-                        if(typeof objectElem === "undefined" || type[0] === "relationship"){
-                            return "";
-                        }
+                            if(typeof objectElem === "undefined" || type[0] === "relationship"){
+                                return "";
+                            }
 
-                        let disabled = false;
-                        if(type[0] === "report"){                    
-                            disabled = true;
-                        }        
+                            let disabled = false;
+                            if(type[0] === "report"){                    
+                                disabled = true;
+                            }        
 
-                        return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_object_ref_${key}`}>
-                            <CardActions>
-                                <Button onClick={() => {                                        
-                                    handleExpandClick(item);
-                                }}
-                                disabled={disabled} >
-                                    <img 
-                                        src={`/images/stix_object/${objectElem.link}`} 
-                                        width="25" 
-                                        height="25" />
+                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_object_ref_${key}`}>
+                                <CardActions>
+                                    <Button onClick={() => {                                        
+                                        handleExpandClick(item);
+                                    }}
+                                    disabled={disabled} >
+                                        <img 
+                                            src={`/images/stix_object/${objectElem.link}`} 
+                                            width="25" 
+                                            height="25" />
                                         &nbsp;{item}
-                                </Button>
-                            </CardActions>
-                            <Collapse 
-                                in={showRefElement.id !== "" && showRefElement.id === refId && showRefElement.id === item && expanded} 
-                                timeout="auto" 
-                                unmountOnExit
-                            >
-                                <CardContent>
-                                    <CreateShortInformationSTIXObject 
-                                        obj={showRefElement.obj}
-                                        handlerClick={handlerClick} 
-                                    />
-                                </CardContent>
-                            </Collapse>                            
-                        </Card>);
-                    }):
-                    ""}
-            </Grid>
-        </Grid>
-
-        {
-            /**
-             * (e) => handlerMimeType(validatorjs.escape(e.target.value))
-            + Name 
-            + Size
-            + Ctime
-            + Mtime
-            + Atime 
-            + NameEnc
-            + MagicNumberHex
-            + MimeType
-            + ParentDirectoryRef
-            + Hashes HashesTypeSTIX         `json:"hashes" bson:"hashes"`
-            + ContainsRefs []IdentifierTypeSTIX ([]string)
-	        + ContentRef         IdentifierTypeSTIX
-             */
-        }
+                                    </Button>
+                                </CardActions>
+                                <Collapse 
+                                    in={showRefElement.id !== "" && showRefElement.id === refId && showRefElement.id === item && expanded} 
+                                    timeout="auto" 
+                                    unmountOnExit
+                                >
+                                    <CardContent>
+                                        <CreateShortInformationSTIXObject 
+                                            obj={showRefElement.obj}
+                                            handlerClick={handlerClick} 
+                                        />
+                                    </CardContent>
+                                </Collapse>                            
+                            </Card>);
+                        })}
+                    </Grid>
+                </Grid>
+            </React.Fragment>:
+            ""}
     </React.Fragment>);
 }
 

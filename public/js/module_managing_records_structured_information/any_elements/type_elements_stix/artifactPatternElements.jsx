@@ -64,8 +64,10 @@ export default function CreateArtifactPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end" className="mt-2"><span className="text-muted">Тип файлов IANA:</span></Grid>
-            <Grid item container md={8} >
+            <Grid item container md={5} justifyContent="flex-end" className="mt-2">
+                <span className="text-muted">Тип файлов IANA:</span>
+            </Grid>
+            <Grid item container md={7} >
                 <TextField
                     fullWidth
                     //disabled={isDisabled}
@@ -78,8 +80,10 @@ export default function CreateArtifactPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end" className="mt-2"><span className="text-muted">Бинарные данные в base64:</span></Grid>
-            <Grid item container md={8} >
+            <Grid item container md={5} justifyContent="flex-end" className="mt-2">
+                <span className="text-muted">Бинарные данные в base64:</span>
+            </Grid>
+            <Grid item container md={7} >
                 <TextField
                     fullWidth
                     //disabled={isDisabled}
@@ -93,8 +97,10 @@ export default function CreateArtifactPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end" className="mt-2"><span className="text-muted">Унифицированный указатель ресурса (URL):</span></Grid>
-            <Grid item container md={8} >
+            <Grid item container md={5} justifyContent="flex-end" className="mt-2">
+                <span className="text-muted">Унифицированный указатель ресурса (URL):</span>
+            </Grid>
+            <Grid item container md={7} >
                 <TextField
                     fullWidth
                     //disabled={isDisabled}
@@ -108,8 +114,10 @@ export default function CreateArtifactPatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end" className="mt-2 mb-2"><span className="text-muted">Ключ для дешифрования зашифрованных данных:</span></Grid>
-            <Grid item container md={8} >
+            <Grid item container md={5} justifyContent="flex-end" className="mt-2 mb-2">
+                <span className="text-muted">Ключ для дешифрования зашифрованных данных:</span>
+            </Grid>
+            <Grid item container md={7} >
                 <TextField
                     fullWidth
                     //disabled={isDisabled}

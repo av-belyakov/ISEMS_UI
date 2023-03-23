@@ -77,8 +77,8 @@ export default function CreateEmailMessagePatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Содержит ли email сообщение множественные MIME части:</span></Grid>
-            <Grid item container md={8} justifyContent="flex-start">
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Содержит ли email сообщение множественные MIME части:</span></Grid>
+            <Grid item container md={7} justifyContent="flex-start">
                 <Form.Group>
                     <Form.Control 
                         //disabled={!isDisabled}
@@ -95,10 +95,10 @@ export default function CreateEmailMessagePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted mt-2">Время когда email сообщение было отправлено:</span>
             </Grid>
-            <Grid item container md={8}>
+            <Grid item container md={7}>
                 {isDisabled?
                     helpers.convertDateFromString(dateSend, { monthDescription: "long", dayDescription: "numeric" }):
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -116,8 +116,8 @@ export default function CreateEmailMessagePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Содержимое поля <strong><i>Content-Type</i></strong> заголовка email сообщения:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Содержимое поля <strong><i>Content-Type</i></strong> заголовка email сообщения:</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}
@@ -134,11 +134,11 @@ export default function CreateEmailMessagePatternElements(props){
         </Grid>
 
         {campaignPatterElement.from_ref && campaignPatterElement.from_ref.length !== 0?
-            <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
-                <Grid item container md={4} justifyContent="flex-end">
+            <Grid container direction="row" spacing={3} className="pt-1">
+                <Grid item container md={5} justifyContent="flex-end">
                     <span className="text-muted mt-3">Содержимое поля <strong><i>From</i></strong> заголовка email сообщения:</span>
                 </Grid>
-                <Grid item container md={8}>
+                <Grid item container md={7}>
                     <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
@@ -166,10 +166,10 @@ export default function CreateEmailMessagePatternElements(props){
 
         {campaignPatterElement.sender_ref && campaignPatterElement.sender_ref.length !== 0?
             <Grid container direction="row" spacing={3}>
-                <Grid item container md={4} justifyContent="flex-end">
+                <Grid item container md={5} justifyContent="flex-end">
                     <span className="text-muted mt-3">Содержимое поля <strong><i>Sender</i></strong> заголовка email сообщения:</span>
                 </Grid>
-                <Grid item container md={8}>
+                <Grid item container md={7}>
                     <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>
                             <Button onClick={() => { 
@@ -212,7 +212,7 @@ export default function CreateEmailMessagePatternElements(props){
                                 return "";
                             }
 
-                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_to_ref_${key}`}>
+                            return (<Card variant="outlined" style={{ width: "100%", paddingTop: 1 }} key={`key_rf_to_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
                                         handleExpandClick(item);
@@ -256,7 +256,7 @@ export default function CreateEmailMessagePatternElements(props){
                                 return "";
                             }
 
-                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_cc_ref_${key}`}>
+                            return (<Card variant="outlined" style={{ width: "100%", paddingTop: 1 }} key={`key_rf_cc_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
                                         handleExpandClick(item);
@@ -300,7 +300,7 @@ export default function CreateEmailMessagePatternElements(props){
                                 return "";
                             }
 
-                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_bcc_ref_${key}`}>
+                            return (<Card variant="outlined" style={{ width: "100%", paddingTop: 1 }} key={`key_rf_bcc_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
                                         handleExpandClick(item);
@@ -328,8 +328,8 @@ export default function CreateEmailMessagePatternElements(props){
             ""}
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Содержимое поля <strong><i>Message-ID</i></strong> заголовка email сообщения:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Содержимое поля <strong><i>Message-ID</i></strong> заголовка email сообщения:</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}
@@ -346,8 +346,8 @@ export default function CreateEmailMessagePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Содержимое поля <strong><i>Subject</i></strong> заголовка email сообщения:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Содержимое поля <strong><i>Subject</i></strong> заголовка email сообщения:</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}
@@ -400,10 +400,10 @@ export default function CreateEmailMessagePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3} className="mt-2">
-            <Grid item container md={4} justifyContent="flex-end">
+            <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted  mt-3">Ссылка на {"\"сырое\""} (бинарное) содержимое email сообщения:</span>
             </Grid>
-            <Grid item container md={8}>
+            <Grid item container md={7}>
                 {campaignPatterElement.raw_email_ref && (typeof campaignPatterElement.raw_email_ref !== "undefined") && campaignPatterElement.raw_email_ref.length !== 0?
                     <Card variant="outlined" style={{ width: "100%" }}>
                         <CardActions>

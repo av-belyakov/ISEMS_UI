@@ -31,8 +31,8 @@ export default function CreateSoftwarePatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>
+            <Grid item container md={7}>
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
                     <span className="mt-2">{campaignPatterElement.name}</span>:
                     <TextField
@@ -47,8 +47,8 @@ export default function CreateSoftwarePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Запись Common Platform Enumeration (CPE):</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Запись Common Platform Enumeration (CPE):</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}
@@ -61,8 +61,8 @@ export default function CreateSoftwarePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Запись Тегов Software Identification ID (SWID):</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Запись Тегов Software Identification ID (SWID):</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}
@@ -81,8 +81,8 @@ export default function CreateSoftwarePatternElements(props){
         />
 
         <Grid container direction="row" spacing={3} style={{ marginTop: "2px" }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Название производителя программного обеспечения:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Название производителя программного обеспечения:</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}
@@ -95,8 +95,8 @@ export default function CreateSoftwarePatternElements(props){
         </Grid>
 
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Версия программного обеспечения:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Версия программного обеспечения:</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}

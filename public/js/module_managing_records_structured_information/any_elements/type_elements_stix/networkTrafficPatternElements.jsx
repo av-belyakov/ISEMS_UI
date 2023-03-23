@@ -105,49 +105,6 @@ export default function CreateNetworkTrafficPatternElements(props){
         handlerButtonShowLink(id);
     };
 
-
-    /*React.useEffect(() => {
-        if(!campaignPatterElement.url || (typeof campaignPatterElement.url === "undefined")){
-            setIsInvalidURLValue(true);
-
-            return;
-        }
-
-        if(validatorjs.isURL(campaignPatterElement.url)){
-            setIsInvalidURLValue(false);
-
-            return;
-        }
-
-        setIsInvalidURLValue(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ campaignPatterElement.url ]);
-
-    React.useEffect(() => {
-        if(!campaignPatterElement.payload_bin || (typeof campaignPatterElement.payload_bin === "undefined")){
-            setIsInvalidPayloadBinValue(true);
-
-            return;
-        }
-
-        if(validatorjs.isBase64(campaignPatterElement.payload_bin)){
-            setIsInvalidPayloadBinValue(false);
-
-            return;
-        }
-
-        setIsInvalidPayloadBinValue(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ campaignPatterElement.payload_bin ]);
-    
-    network-traffic--e7a939ca-78c6-5f27-8ae0-4ad112454626
-
-
-    network-traffic--ac267abc-1a41-536d-8e8d-98458d9bf491
-    network-traffic--09ca55c3-97e5-5966-bad0-1d41d557ae13
-    network-traffic--630d7bb1-0bbc-53a6-a6d4-f3c2d35c2734
-    */
-
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Начало инициирования сетевого трафика:</span></Grid>
@@ -187,7 +144,7 @@ export default function CreateNetworkTrafficPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} className="pl-4 mt-1 mb-3">
+        <Grid container direction="row" spacing={3} className="pl-4 mt-1">
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-1">Продолжается ли сетевой трафик:</span></Grid>
             <Grid item container md={7} justifyContent="flex-start">
                 <Form.Group>
@@ -205,7 +162,7 @@ export default function CreateNetworkTrafficPatternElements(props){
         </Grid>
 
         {campaignPatterElement.src_ref && campaignPatterElement.src_ref.length !== 0?
-            <Grid container direction="row" spacing={3}>
+            <Grid container direction="row" spacing={3} className="mt-2">
                 <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес или доменное имя источника:</span></Grid>
                 <Grid item container md={7}>
                     {(typeof campaignPatterElement.source_ref !== "undefined")?
@@ -275,7 +232,7 @@ export default function CreateNetworkTrafficPatternElements(props){
         </Grid>
 
         {campaignPatterElement.dst_ref && campaignPatterElement.dst_ref.length !== 0?
-            <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid container direction="row" spacing={3} className="mt-2">
                 <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">IP адрес или доменное имя источника:</span></Grid>
                 <Grid item container md={7}>
                     {(typeof campaignPatterElement.destination_ref !== "undefined")?
@@ -345,7 +302,7 @@ export default function CreateNetworkTrafficPatternElements(props){
         </Grid>
 
         {campaignPatterElement.src_payload_ref && (typeof campaignPatterElement.src_payload_ref !== "undefined") && campaignPatterElement.src_payload_ref.length !== 0?
-            <Grid container direction="row" spacing={3} className="mt-2">
+            <Grid container direction="row" spacing={3} className="pt-1">
                 <Grid item container md={5} justifyContent="flex-end">
                     <span className="text-muted mt-3">Ссылка на STIX объект с полезной нагрузкой отправляемой источником:</span>
                 </Grid>
@@ -376,7 +333,7 @@ export default function CreateNetworkTrafficPatternElements(props){
             ""}
 
         {campaignPatterElement.dst_payload_ref && (typeof campaignPatterElement.dst_payload_ref !== "undefined") && campaignPatterElement.dst_payload_ref.length !== 0?
-            <Grid container direction="row" spacing={3} className="mt-1">
+            <Grid container direction="row" spacing={3} className="pt-1">
                 <Grid item container md={5} justifyContent="flex-end">
                     <span className="text-muted mt-3">Ссылка на STIX объект связанный с полезной нагрузкой получаемой из пункта назначения:</span>
                 </Grid>
@@ -406,7 +363,7 @@ export default function CreateNetworkTrafficPatternElements(props){
             </Grid>:
             ""}
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3} className="pt-1">
             <Grid item container md={5} justifyContent="flex-end">
                 <span className="text-muted mt-2">Перечень протоколов, наблюдаемых в сетевом трафике:</span>
             </Grid>
@@ -429,7 +386,7 @@ export default function CreateNetworkTrafficPatternElements(props){
             ""}
 
         {campaignPatterElement.encapsulated_by_ref && (typeof campaignPatterElement.encapsulated_by_ref !== "undefined") && campaignPatterElement.encapsulated_by_ref.length !== 0?
-            <Grid container direction="row" spacing={3} className="mt-2">
+            <Grid container direction="row" spacing={3} className="pt-1">
                 <Grid item container md={5} justifyContent="flex-end">
                     <span className="text-muted  mt-3">Ссылка на другой STIX объект типа Сетевой трафик:</span>
                 </Grid>
@@ -476,7 +433,7 @@ export default function CreateNetworkTrafficPatternElements(props){
                                 return "";
                             }
 
-                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_encapsulates_ref_${key}`}>
+                            return (<Card variant="outlined" style={{ width: "100%", paddingTop: 1 }} key={`key_encapsulates_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
                                         handleExpandClick(item);
@@ -502,44 +459,6 @@ export default function CreateNetworkTrafficPatternElements(props){
                 </Grid>
             </React.Fragment>:
             ""}
-
-        {/*(campaignPatterElement !== null && campaignPatterElement.extensions)?
-            Object.keys(campaignPatterElement.extensions).length === 0?
-                "":
-                <React.Fragment>
-                    <Grid container direction="row" className="mt-2">
-                        <Grid item md={12}><span className="text-muted">Дополнительная информация по расширениям, относящимся к объекту:</span></Grid>
-                    </Grid>
-                    <Grid container direction="row" className="mt-2">
-                        <Grid item md={12}>
-                            {(campaignPatterElement !== null && campaignPatterElement.extensions)?
-                                <JSONTree 
-                                    data={campaignPatterElement.extensions} 
-                                    theme={{
-                                        base00: "#272822",
-                                        base01: "#383830",
-                                        base02: "#49483e",
-                                        base03: "#75715e",
-                                        base04: "#a59f85",
-                                        base05: "#f8f8f2",
-                                        base06: "#f5f4f1",
-                                        base07: "#f9f8f5",
-                                        base08: "#f92672",
-                                        base09: "#fd971f",
-                                        base0A: "#f4bf75",
-                                        base0B: "#a6e22e",
-                                        base0C: "#a1efe4",
-                                        base0D: "#66d9ef",
-                                        base0E: "#ae81ff",
-                                        base0F: "#cc6633",
-                                    }}
-                                    hideRoot
-                                />:
-                                ""}    
-                        </Grid>
-                    </Grid>
-                </React.Fragment>:
-                                ""*/}
 
         {(campaignPatterElement !== null && campaignPatterElement.ipfix)?
             Object.keys(campaignPatterElement.ipfix).length === 0?

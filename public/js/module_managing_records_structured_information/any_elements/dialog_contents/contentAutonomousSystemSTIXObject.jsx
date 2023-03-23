@@ -161,7 +161,7 @@ function CreateMajorContent(props){
     };
 
     return (<React.Fragment>
-        <Grid item container md={10}>
+        <Grid item container md={12}>
             <CreateAutonomousSystemPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}

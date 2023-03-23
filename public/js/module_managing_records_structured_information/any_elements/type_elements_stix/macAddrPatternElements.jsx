@@ -33,8 +33,8 @@ export default function CreateMacAddrPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">MAC адрес:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">MAC адрес:</span></Grid>
+            <Grid item container md={7}>
                 <TextField
                     fullWidth
                     disabled={isDisabled}

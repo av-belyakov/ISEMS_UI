@@ -31,8 +31,8 @@ export default function CreateDomainNamePatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Сетевое доменное имя:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Сетевое доменное имя:</span></Grid>
+            <Grid item container md={7}>
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
                     <span className="mt-2">
                         <Link href={campaignPatterElement.value} onClick={() => {}} style={{ color: blue[400], margin: "2px" }}>{campaignPatterElement.value}</Link>

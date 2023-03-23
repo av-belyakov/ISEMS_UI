@@ -26,8 +26,8 @@ export default function CreateDirectoryPatternElements(props){
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
-            <Grid item container md={8}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Директория файловой системы:</span></Grid>
+            <Grid item container md={7}>
                 {(campaignPatterElement.id && campaignPatterElement.id !== "")? 
                     <span className="mt-2">
                         <Link href={campaignPatterElement.path} onClick={() => {}} style={{ color: blue[400], margin: "2px" }}>{campaignPatterElement.path}</Link>
@@ -55,15 +55,15 @@ export default function CreateDirectoryPatternElements(props){
 
         {campaignPatterElement.path_enc?
             <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Кодировка для пути (указывается, если путь хранится в кодировке, отличной от Unicode):</span></Grid>
-                <Grid item container md={8} justifyContent="flex-start">{campaignPatterElement.path_enc}</Grid>
+                <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Кодировка для пути (указывается, если путь хранится в кодировке, отличной от Unicode):</span></Grid>
+                <Grid item container md={7} justifyContent="flex-start">{campaignPatterElement.path_enc}</Grid>
             </Grid>:
             ""}
 
         {campaignPatterElement.ctime && campaignPatterElement.ctime !== "0001-01-01T00:00:00Z"?
             <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Время создания директории:</span></Grid>
-                <Grid item container md={8} justifyContent="flex-start">
+                <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время создания директории:</span></Grid>
+                <Grid item container md={7} justifyContent="flex-start">
                     {helpers.convertDateFromString(new Date(campaignPatterElement.ctime).toISOString(), { monthDescription: "long", dayDescription: "numeric" })}
                 </Grid>
             </Grid>:
@@ -71,8 +71,8 @@ export default function CreateDirectoryPatternElements(props){
 
         {campaignPatterElement.mtime && campaignPatterElement.mtime !== "0001-01-01T00:00:00Z"?
             <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Время модификации или записи в директорию:</span></Grid>
-                <Grid item container md={8} justifyContent="flex-start">
+                <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время модификации или записи в директорию:</span></Grid>
+                <Grid item container md={7} justifyContent="flex-start">
                     {helpers.convertDateFromString(new Date(campaignPatterElement.mtime).toISOString(), { monthDescription: "long", dayDescription: "numeric" })}
                 </Grid>
             </Grid>:
@@ -80,8 +80,8 @@ export default function CreateDirectoryPatternElements(props){
 
         {campaignPatterElement.atime && campaignPatterElement.atime !== "0001-01-01T00:00:00Z"?
             <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Время последнего обращения к директории:</span></Grid>
-                <Grid item container md={8} justifyContent="flex-start">
+                <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время последнего обращения к директории:</span></Grid>
+                <Grid item container md={7} justifyContent="flex-start">
                     {helpers.convertDateFromString(new Date(campaignPatterElement.atime).toISOString(), { monthDescription: "long", dayDescription: "numeric" })}
                 </Grid>
             </Grid>:

@@ -8,10 +8,8 @@ import {
 import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
-//import reducerEmailMessagePatternSTIXObjects from "../reducer_handlers/reducerEmailMessageSTIXObject.js";
 import reducerNetworkTrafficPatternSTIXObjects from "../reducer_handlers/reducerNetworkTrafficSTIXObject.js";
 import CreateNetworkTrafficPatternElements from "../type_elements_stix/networkTrafficPatternElements.jsx";
-//import CreateEmailMessagePatternElements from "../type_elements_stix/emailMessagePatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
 function isExistTransmittedData(data){
@@ -39,17 +37,6 @@ function reducerShowRef(state, action){
     case "addObject":
         return {...state, obj: action.data};
     case "updateNetworkRefObj":
-
-        /**
-         * 
-         * Разобратся с неверной датой при просмотре краткой информации об объекте типа network-traffic
-         * если дата изначально не была добавлена то она не соотвествует 1970.01.01
-         * 
-         * {"commonpropertiesobjectstix.id": "network-traffic--68ead79b-28db-4811-85f6-971f46548343"}
-         */
-
-        console.log("===== func 'reducerShowRef', action.type:", action.type, " action.data:", action.data, " state:", state);
-
         if(state.obj.src_ref === action.data.id){
             state.obj.src_ref = action.data.value;
         }
@@ -138,8 +125,6 @@ function CreateMajorContent(props){
 
     const [ state, dispatch ] = useReducer(reducerNetworkTrafficPatternSTIXObjects, {});
     const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
-    
-    console.log("____ func 'CreateDialogContentNetworkTrafficSTIXObject', state network traffic: ", state, " ____");
 
     useEffect(() => {
         socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
@@ -165,9 +150,6 @@ function CreateMajorContent(props){
     }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
     useEffect(() => {
         if(buttonSaveChangeTrigger){
-
-            console.log("func 'CreateDialogContentNetworkTrafficSTIXObject', useEffect(), 'isems-mrsi ui request: insert STIX object', STATE: ", state);
-
             socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
            
             handlerButtonSaveChangeTrigger();

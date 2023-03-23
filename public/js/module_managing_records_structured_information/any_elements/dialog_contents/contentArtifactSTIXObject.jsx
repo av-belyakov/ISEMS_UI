@@ -197,7 +197,7 @@ function CreateMajorContent(props){
     };
 
     return (<React.Fragment>
-        <Grid item container md={10}>
+        <Grid item container md={12}>
             <Grid container direction="row" className="pt-3">
                 <CreateArtifactPatternElements 
                     isDisabled={false}
