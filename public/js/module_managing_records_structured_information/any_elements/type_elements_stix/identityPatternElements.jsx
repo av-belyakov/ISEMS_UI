@@ -66,7 +66,7 @@ export default function CreateIdentityPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание:</span></Grid>
             <Grid item container md={8}>
                 <TextField
@@ -82,7 +82,7 @@ export default function CreateIdentityPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Роли для идентификации действий:</span></Grid>
             <Grid item md={8}>
                 <TokenInput
@@ -113,7 +113,7 @@ export default function CreateIdentityPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4, paddingBottom: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
                 <span className="text-muted">Любая контактная информация (email, телефонные номера и т.д.):</span>
             </Grid>

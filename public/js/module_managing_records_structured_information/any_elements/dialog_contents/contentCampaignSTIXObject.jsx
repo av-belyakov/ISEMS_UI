@@ -179,7 +179,7 @@ function CreateMajorContent(props){
     };
 
     return (<Grid item container md={8} style={{ display: "block" }}>
-        <Grid container direction="row" className="pt-3">
+        <Grid container direction="row" className="pt-3 pb-3">
             <CreateCampaingPatternElements 
                 isDisabled={false}
                 campaignPatterElement={state}

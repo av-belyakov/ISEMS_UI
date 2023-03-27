@@ -72,7 +72,7 @@ export default function CreateAttackPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3} style={{ paddingTop: 3 }}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Альтернативные имена:</span></Grid>
             <Grid item md={8}>
                 <TokenInput

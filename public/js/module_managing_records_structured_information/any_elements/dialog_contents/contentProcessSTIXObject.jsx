@@ -163,15 +163,15 @@ function CreateMajorContent(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
-    const handlerCheckStateButtonIsDisabled = (protocols) => {
-        if(typeof protocols !== "undefined" && Array.isArray(protocols)){
-            if(protocols.length === 0){
+    const handlerCheckStateButtonIsDisabled = (pid) => {
+        if(typeof pid !== "undefined"){
+            if(pid === 0){
                 handlerButtonIsDisabled(true);
             } else {
                 handlerButtonIsDisabled(false);
             }
         } else {
-            if(state.protocols.length === 0){
+            if(state.pid === 0){
                 handlerButtonIsDisabled(true);
             } else {
                 handlerButtonIsDisabled(false);
@@ -191,16 +191,49 @@ function CreateMajorContent(props){
         }
     };
 
+    /*
+    сделать просмотр ссылок для данного объекта в полях
+
+    OpenedConnectionRefs []IdentifierTypeSTIX          `json:"opened_connection_refs" bson:"opened_connection_refs"`
+	CreatorUserRef       IdentifierTypeSTIX            `json:"creator_user_ref" bson:"creator_user_ref"`
+	ImageRef             IdentifierTypeSTIX            `json:"image_ref" bson:"image_ref"`
+	ParentRef            IdentifierTypeSTIX            `json:"parent_ref" bson:"parent_ref"`
+	ChildRefs            []IdentifierTypeSTIX          `json:"child_refs" bson:"child_refs"`
+
+    */
+
     return (<Grid item container md={12}>
-        <Grid container direction="row" className="pt-3">
+        <Grid container direction="row" className="pt-3 pb-3">
             <CreateProcessPatternElements
                 isDisabled={false}
                 showRefElement={stateShowRef}
                 campaignPatterElement={state}
-                handlerCWD={(e) => { dispatch({ type: "updateCWD", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerIsHidden={(e) => { dispatch({ type: "updateIsHidden", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerCWD={(e) => { dispatch({ type: "updateCWD", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerPID={(e) => { dispatch({ type: "updatePID", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerIsHidden={(e) => { dispatch({ type: "updateIsHidden", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerCreatedTime={(e) => { dispatch({ type: "updateCreatedTime", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerCommandLine={(e) => { dispatch({ type: "updateCommandLine", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerCommandLine={(e) => { dispatch({ type: "updateCommandLine", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                // это обработчик для ссылок на объекты содержащие полную информацию (для визуализации используется CreateShortInformationSTIXObject), 
+                //подходит для свойств src_payload_ref и dst_payload_ref содержащие ссылки на STIX объект artifact 
+                handlerButtonShowLink={(refId) => {
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+    
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){ 
+                            dispatchShowRef({ type: "addObject", data: obj });        
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
+                }}
                 handlerAddEnvironmentVariables={(e) => { dispatch({ type: "updateAddEnvironmentVariables", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerDeleteEnviromentVariableElement={(e) => { dispatch({ type: "updateDeleteEnviromentVariableElement", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />

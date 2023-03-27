@@ -201,7 +201,7 @@ function CreateMajorContent(props){
     };
 
     return (<Grid item container md={12}>
-        <Grid container direction="row" className="pt-3">
+        <Grid container direction="row" className="pt-3 pb-3">
             <CreateIpv4AddrPatternElements
                 isDisabled={false}
                 showRefElement={stateShowRef}

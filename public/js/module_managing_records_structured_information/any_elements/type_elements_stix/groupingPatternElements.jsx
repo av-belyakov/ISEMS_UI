@@ -146,7 +146,7 @@ export default function CreateGroupingPatternElements(props){
                                 disabled = true;
                             }        
 
-                            return (<Card variant="outlined" style={{ width: "100%" }} key={`key_rf_object_ref_${key}`}>
+                            return (<Card variant="outlined" style={{ width: "100%", paddingTop: "1px" }} key={`key_rf_object_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => {                                        
                                         handleExpandClick(item);

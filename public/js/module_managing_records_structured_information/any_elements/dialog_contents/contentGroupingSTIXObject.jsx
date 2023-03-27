@@ -167,11 +167,7 @@ function CreateMajorContent(props){
         console.log("func 'updateRefObj', parentId = ", parentId, " data = ", data);
 
         for(let value in listFieldSTIXObjectRefs){
-            //console.log("func 'updateRefObj', parentId = ", parentId, " value = ", value);
-
             if(parentId.includes(value)){
-                console.log("func 'updateRefObj', VALUE = ", value, " ************* listFieldSTIXObjectRefs[value]:", listFieldSTIXObjectRefs[value]);
-
                 dispatch({ type: listFieldSTIXObjectRefs[value], data: data });
             }
         }
@@ -238,20 +234,10 @@ function CreateMajorContent(props){
                 return;
             }
     
-            console.log("+++++++ =++++++++ state.mainObj:", state.mainObj);
-    
             for(let obj of data.information.additional_parameters.transmitted_data){
-                console.log("func 'CreateDialogContentGroupingSTIXObject', LISTENER ADD OBJECT:", obj);
-    
-                /*if(!obj.id.includes("directory")){
-                    continue;
-                }*/
-
                 dispatch({ type: "updateRefObj", data: obj });
             }
         });
-
-        console.log("_____________________ func 'handlerButtonShowLink', refId:'", refId, "'________________");
         
         dispatch({ type: "updateRefId", data: refId });
         dispatch({ type: "updateRefObj", data: {} });
@@ -260,8 +246,6 @@ function CreateMajorContent(props){
             return;
         }
 
-        console.log("_____________________ func 'handlerButtonShowLink', refId:'", refId, "'_______ SEND ---> _________");
-
         socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
             searchObjectId: refId,
             parentObjectId: state.mainObj.id,
@@ -269,7 +253,7 @@ function CreateMajorContent(props){
     };
 
     return (<Grid item container md={8} style={{ display: "block" }}>
-        <Grid container direction="row" className="pt-3">
+        <Grid container direction="row" className="pt-3 pb-3">
             <CreateGroupingPatternElements 
                 isDisabled={false}
                 showRefId={state.refId}

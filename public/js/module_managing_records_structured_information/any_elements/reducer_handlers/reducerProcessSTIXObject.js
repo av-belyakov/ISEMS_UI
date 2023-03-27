@@ -1,6 +1,5 @@
 export default function reducerProcessSTIXObject(state, action){
-    let lastSeen = "";
-    let firstSeen = "";
+    let createdTime = "";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
@@ -16,59 +15,26 @@ export default function reducerProcessSTIXObject(state, action){
         return action.data;
     case "cleanAll":
         return {};
-    /*case "updateCreatedTime":
-        return {...state, created: action.data};
-    case "updateModifiedTime":
-        return {...state, modified: action.data};
-    case "updateFirstSeenTime":
-        return {...state, first_seen: action.data};
-    case "updateLastSeenTime":
-        return {...state, last_seen: action.data};
-    case "updateName":
-        if(state.name === action.data){
-            return {...state};
-        }
-                
-        return {...state, name: action.data};   
-    case "updateDescription":
-        if(state.description === action.data){
-            return {...state};
+    case "updatePID":
+        return {...state, pid: +action.data};            
+    case "updateCWD":
+        return {...state, cwd: action.data};
+    case "updateIsHidden":
+        return {...state, is_hidden: (action.data === "true")};
+    case "updateCreatedTime":
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            createdTime = new Date(tmp + (ms * -1));
+        } else {
+            createdTime = new Date(tmp - (ms * -1));
         }
 
-        return {...state, description: action.data};
-    case "updateInfrastructureTypes":
-        return {...state, infrastructure_types: action.data};
-    case "updateTokenValuesChange":
-        return {...state, aliases: action.data};
-    case "updateKillChainPhases":
-        if(!state.kill_chain_phases){
-            state.kill_chain_phases = [];
-        }
+        state.created_time = new Date(Date.parse(createdTime)).toISOString();
 
-        state.kill_chain_phases.push(action.data);
-    
         return {...state};
-
-    case "updateDateTimeFirstSeen":
-        tmp = Date.parse(action.data);
-    
-        if(currentTimeZoneOffsetInHours < 0){
-            firstSeen = new Date(tmp + (ms * -1));
-        } else {
-            firstSeen = new Date(tmp - (ms * -1));
-        }
-    
-        return {...state, first_seen: firstSeen};
-    case "updateDateTimeLastSeen":
-        tmp = Date.parse(action.data);
-    
-        if(currentTimeZoneOffsetInHours < 0){
-            lastSeen = new Date(tmp + (ms * -1));
-        } else {
-            lastSeen = new Date(tmp - (ms * -1));
-        }
-    
-        return {...state, last_seen: lastSeen};*/
+    case "updateCommandLine":
+        return {...state, command_line: action.data};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

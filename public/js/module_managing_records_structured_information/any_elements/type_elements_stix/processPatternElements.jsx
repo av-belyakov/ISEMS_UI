@@ -30,9 +30,11 @@ export default function CreateProcessPatternElements(props){
         showRefElement,
         campaignPatterElement,
         handlerCWD,
+        handlerPID,
         handlerIsHidden,
         handlerCreatedTime,
         handlerCommandLine,
+        handlerButtonShowLink,
         handlerAddEnvironmentVariables,
         handlerDeleteEnviromentVariableElement,
     } = props;
@@ -57,7 +59,7 @@ export default function CreateProcessPatternElements(props){
     let [ refId, setRefId ] = React.useState("");
 
     let handleExpandClick = (id) => {
-        /*if(id === refId && expanded){
+        if(id === refId && expanded){
             setExpanded(false);
             
             return;
@@ -70,7 +72,7 @@ export default function CreateProcessPatternElements(props){
             setExpanded(!expanded);
         }
 
-        handlerButtonShowLink(id);*/
+        handlerButtonShowLink(id);
     };
 
     const getListEnviromentVariables = (envList) => {
@@ -135,13 +137,15 @@ export default function CreateProcessPatternElements(props){
                     onChange={(e) => {
                         let pid = e.target.value;
 
-                        if(!new RegExp("^[0-9]{1,}$").test(pid) || pid[0] === "0"){
+                        if(!new RegExp("^[0-9]{1,}$").test(pid) || pid === 0){
                             setInvalidPID(true);
+
+                            return;
                         } else {
                             setInvalidPID(false);
                         }
 
-                        setInvalidPID(e);
+                        handlerPID(pid);
                     }}
                     value={(campaignPatterElement.pid)? campaignPatterElement.pid: ""}
                     helperText="поле может содержать только цифры"
@@ -458,9 +462,11 @@ CreateProcessPatternElements.propTypes = {
     showRefElement: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerCWD: PropTypes.func.isRequired,
+    handlerPID: PropTypes.func.isRequired,
     handlerIsHidden: PropTypes.func.isRequired,
     handlerCreatedTime: PropTypes.func.isRequired,
     handlerCommandLine: PropTypes.func.isRequired,
+    handlerButtonShowLink: PropTypes.func.isRequired,
     handlerAddEnvironmentVariables: PropTypes.func.isRequired,
     handlerDeleteEnviromentVariableElement: PropTypes.func.isRequired,
 };

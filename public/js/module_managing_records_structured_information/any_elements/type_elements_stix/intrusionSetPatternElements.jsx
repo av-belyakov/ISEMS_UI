@@ -92,7 +92,7 @@ export default function CreateIntrusionSetPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3} style={{ paddingTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
                 <span className="text-muted mt-2">Первое обнаружение:</span>
             </Grid>
@@ -113,7 +113,7 @@ export default function CreateIntrusionSetPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3} style={{ paddingTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end">
                 <span className="text-muted mt-2">Последнее обнаружение:</span>
             </Grid>
@@ -150,7 +150,7 @@ export default function CreateIntrusionSetPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3} style={{ paddingTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Альтернативные имена:</span></Grid>
             <Grid item md={8}>
                 <TokenInput
@@ -161,7 +161,7 @@ export default function CreateIntrusionSetPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+        <Grid container direction="row" spacing={3} style={{ paddingTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Высокоуровневые цели этого набора вторжения:</span></Grid>
             <Grid item md={8}>
                 <TokenInput

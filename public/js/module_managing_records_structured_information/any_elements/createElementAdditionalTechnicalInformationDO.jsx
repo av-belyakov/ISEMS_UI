@@ -106,11 +106,11 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
     };
 
     return (<React.Fragment>
-        <Grid container direction="row" className="mt-4">
+        <Grid container direction="row" style={{ marginTop: 4 }}>
             <Grid item md={12}><span className="text-muted"><strong>Дополнительная техническая информация</strong></span></Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} className="mt-1 pl-4">
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Версия спецификации STIX:</span></Grid>
             <Grid item md={8} className="text-start">
                 {(reportInfo.id && reportInfo.id !== "")?
@@ -122,13 +122,14 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             </Grid>
         </Grid>
             
-        {((typeof reportInfo.lang !== "undefined") && (reportInfo.lang !== null) && (reportInfo.lang.length !== 0)) ? 
-            <Grid container direction="row" spacing={3} className="pl-4">
+        {((typeof reportInfo.lang !== "undefined") && (reportInfo.lang !== null) && (reportInfo.lang.length !== 0))? 
+            <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Текстовый код языка:</span></Grid>
                 <Grid item md={8} className="text-start"><i>{reportInfo.lang.toUpperCase()}</i></Grid>
-            </Grid> : ""}
+            </Grid>: 
+            ""}
 
-        <Grid container direction="row" spacing={3} className="pl-4">
+        <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
             <Grid item md={4} className="text-end">
                 <span className="text-muted mt-n1">Уверенность создателя в правильности своих данных от 0 до 100</span>&sup1;<span className="text-muted">:</span>
             </Grid>
@@ -148,7 +149,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
         </Grid>
 
         {((typeof reportInfo.created_by_ref !== "undefined") && (reportInfo.created_by_ref !== null) && (reportInfo.created_by_ref.length !== 0))? 
-            <Grid container direction="row" spacing={3} className="mt-1 pl-4">
+            <Grid container direction="row" spacing={3} style={{ marginTop: 1 }}>
                 <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Идентификатор источника:</span></Grid>
                 <Grid item md={8} className="text-start">
                     <TextField size="small" defaultValue={reportInfo.created_by_ref} disabled fullWidth/>
@@ -160,7 +161,7 @@ export default function CreateElementAdditionalTechnicalInformationDO(props){
             getLabelsAdditionalTechnicalInformation()
         }
 
-        <Grid container direction="row" spacing={3} className="pl-4 mt-1 mb-3">
+        <Grid container direction="row" spacing={3} className="pl-4 mb-3">
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-1">Определены ли данные содержащиеся в объекте:</span></Grid>
             <Grid item container md={8} justifyContent="flex-start">
                 <Form.Group>
