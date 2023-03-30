@@ -13,12 +13,13 @@ import { Form } from "react-bootstrap";
 //import TokenInput from "react-customize-token-input";
 //import { JSONTree } from "reactjsontree";
 import { red } from "@material-ui/core/colors";
+import DateFnsUtils from "dateIoFnsUtils";
+import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import DateFnsUtils from "dateIoFnsUtils";
-import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
+import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 const defaultData = "0001-01-01T00:00:00.000Z";
 const minDefaultData = "1970-01-01T00:00:00.000Z";
@@ -31,6 +32,7 @@ export default function CreateProcessPatternElements(props){
         campaignPatterElement,
         handlerCWD,
         handlerPID,
+        handlerClick,
         handlerIsHidden,
         handlerCreatedTime,
         handlerCommandLine,
@@ -44,7 +46,9 @@ export default function CreateProcessPatternElements(props){
     let createdTime = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
-    
+
+    console.log("_____=== func 'CreateProcessPatternElements', showRefElement:", showRefElement);
+
     if(currentTimeZoneOffsetInHours > 0){
         if(typeof campaignPatterElement.created_time !== "undefined" && campaignPatterElement.created_time !== defaultData){
             createdTime = new Date(Date.parse(campaignPatterElement.created_time) + ms);
@@ -110,7 +114,7 @@ export default function CreateProcessPatternElements(props){
                             }
 
                             return (<li key={`key_item_env_${num}`}>
-                                {key}:{value}&nbsp;
+                                {key}:&nbsp;&nbsp;&nbsp;{value}&nbsp;
                                 <IconButton aria-label="delete-hash" onClick={handlerDeleteEnviromentVariableElement.bind(null, key)}>
                                     {isDisabled? "": <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />}
                                 </IconButton>
@@ -241,10 +245,10 @@ export default function CreateProcessPatternElements(props){
                         </CardActions>
                         <Collapse in={showRefElement.id === campaignPatterElement.creator_user_ref && refId === campaignPatterElement.creator_user_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {/*<CreateShortInformationSTIXObject 
+                                <CreateShortInformationSTIXObject 
                                     obj={showRefElement.obj}
                                     handlerClick={handlerClick} 
-                                />*/}
+                                />
                             </CardContent>
                         </Collapse>
                     </Card>
@@ -272,10 +276,10 @@ export default function CreateProcessPatternElements(props){
                         </CardActions>
                         <Collapse in={showRefElement.id === campaignPatterElement.image_ref && refId === campaignPatterElement.image_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {/*<CreateShortInformationSTIXObject 
+                                <CreateShortInformationSTIXObject 
                                     obj={showRefElement.obj}
                                     handlerClick={handlerClick} 
-                                />*/}
+                                />
                             </CardContent>
                         </Collapse>
                     </Card>
@@ -303,10 +307,10 @@ export default function CreateProcessPatternElements(props){
                         </CardActions>
                         <Collapse in={showRefElement.id === campaignPatterElement.parent_ref && refId === campaignPatterElement.parent_ref && expanded} timeout="auto" unmountOnExit>
                             <CardContent>
-                                {/*<CreateShortInformationSTIXObject 
+                                <CreateShortInformationSTIXObject 
                                     obj={showRefElement.obj}
                                     handlerClick={handlerClick} 
-                                />*/}
+                                />
                             </CardContent>
                         </Collapse>
                     </Card>
@@ -318,22 +322,6 @@ export default function CreateProcessPatternElements(props){
             handlerAddEnvironmentVariables={handlerAddEnvironmentVariables} />
 
         {getListEnviromentVariables(campaignPatterElement.environment_variables)}
-
-        {/**
-         *  Надо сделать обработчики для данного объекта
-         * Надо переделать интервалы для списков с marginTop на paddingTop 
-         * 
-                     process--657b4ffa-5ba9-4e1b-90ff-1409fdf5e9fb 
-                     
-                     network-traffic--4103f222-7a5b-49bf-8b89-5013ab4b911d
-                     network-traffic--ac267abc-1a41-536d-8e8d-98458d9bf491
-                     process--07bc30cad-ebc2-4579-881d-b9cdc7f2b33c
-                     process--99ab297d-4c39-48ea-9d64-052d596864df
-
-                     process--f52a906a-0dfc-40bd-92f1-e7778ead38a9
-                     file--07ef806c-30d9-4428-b660-318edbc01af5
-                     user-account--a2a4b272-f3b1-484a-9588-051675bf68a0 
-                     */}
 
         {campaignPatterElement.opened_connection_refs && (typeof campaignPatterElement.opened_connection_refs !== "undefined") && campaignPatterElement.opened_connection_refs.length > 0?
             <React.Fragment>
@@ -355,7 +343,7 @@ export default function CreateProcessPatternElements(props){
                             return (<Card variant="outlined" style={{ width: "100%", paddingTop: 1 }} key={`key_opened_connection_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
-                                        //handleExpandClick(item);
+                                        handleExpandClick(item);
                                     }}>
                                         <img 
                                             src={`/images/stix_object/${objectElem.link}`} 
@@ -366,10 +354,10 @@ export default function CreateProcessPatternElements(props){
                                 </CardActions>
                                 <Collapse in={showRefElement.id === item && refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {/*<CreateShortInformationSTIXObject 
+                                        <CreateShortInformationSTIXObject 
                                             obj={showRefElement.obj}
-                                            handlerClick={handlerClick}
-                                />*/}
+                                            handlerClick={handlerClick} 
+                                        />
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -399,7 +387,7 @@ export default function CreateProcessPatternElements(props){
                             return (<Card variant="outlined" style={{ width: "100%", paddingTop: 1 }} key={`key_child_ref_${key}`}>
                                 <CardActions>
                                     <Button onClick={() => { 
-                                        //handleExpandClick(item);
+                                        handleExpandClick(item);
                                     }}>
                                         <img 
                                             src={`/images/stix_object/${objectElem.link}`} 
@@ -410,10 +398,10 @@ export default function CreateProcessPatternElements(props){
                                 </CardActions>
                                 <Collapse in={showRefElement.id === item && refId === item && expanded} timeout="auto" unmountOnExit>
                                     <CardContent>
-                                        {/*<CreateShortInformationSTIXObject 
+                                        <CreateShortInformationSTIXObject 
                                             obj={showRefElement.obj}
-                                            handlerClick={handlerClick}
-                                />*/}
+                                            handlerClick={handlerClick} 
+                                        />
                                     </CardContent>
                                 </Collapse>
                             </Card>);
@@ -463,6 +451,7 @@ CreateProcessPatternElements.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,
     handlerCWD: PropTypes.func.isRequired,
     handlerPID: PropTypes.func.isRequired,
+    handlerClick: PropTypes.func.isRequired,
     handlerIsHidden: PropTypes.func.isRequired,
     handlerCreatedTime: PropTypes.func.isRequired,
     handlerCommandLine: PropTypes.func.isRequired,
@@ -511,27 +500,36 @@ type ProcessCyberObservableObjectSTIX struct {
 export function CreateEnvironmentVariables(props){
     let { handlerAddEnvironmentVariables } = props;
 
-    let [ environmentVariables, setEnvironmentVariables ] = useState({ env: "", value: "" });
+    let [ environmentVariablesEnv, setEnvironmentVariablesEnv ] = useState("");
+    let [ environmentVariablesValue, setEnvironmentVariablesValue ] = useState("");
+    let [ invalidEnv, setInvalidEnv ] = useState(true);
+    let [ invalidValue, setInvalidValue ] = useState(true);
     let [ buttonAddEnvVariabIsDisable, setButtonAddEnvVariabIsDisable ] = useState(true);
 
+    console.log("------- func 'CreateEnvironmentVariables', environmentVariablesEnv = ", environmentVariablesEnv, ", environmentVariablesValue = ", environmentVariablesValue, "  **********");
+
     return (<Grid container direction="row" spacing={3} key="key_input_hash_field">
-        <Grid item md={2}>
+        <Grid item md={3}>
             <TextField
                 id="environment-variables-env"
                 label="переменная окружения"
                 fullWidth
-                value={environmentVariables.env}
+                value={environmentVariablesEnv}
+                error={invalidEnv}
                 onChange={(e) => {
-                    setEnvironmentVariables((prevState) => {
-                        prevState.env = e.target.value;
+                    setEnvironmentVariablesEnv(e.target.value);
 
-                        return prevState;
-                    });
-
-                    if((e.target.value.length > 0) && (environmentVariables.value.length > 0)){ 
-                        setButtonAddEnvVariabIsDisable(false);
-                    } else {
+                    if(!new RegExp("^[a-zA-Z0-9_-]{2,}$").test(e.target.value)){
+                        setInvalidEnv(true);
                         setButtonAddEnvVariabIsDisable(true);
+        
+                        return;
+                    }
+        
+                    setInvalidEnv(false);
+        
+                    if(!invalidValue){
+                        setButtonAddEnvVariabIsDisable(false);
                     }
                 }}
             />
@@ -541,29 +539,36 @@ export function CreateEnvironmentVariables(props){
                 id="environment-variables-value"
                 label="параметры переменной окружения"
                 fullWidth
-                value={environmentVariables.value}
+                value={environmentVariablesValue}
+                error={invalidValue}
                 onChange={(e) => {
-                    setEnvironmentVariables((prevState) => {
-                        prevState.env = e.target.value;
+                    setEnvironmentVariablesValue(e.target.value);
 
-                        return prevState;
-                    });
-
-                    if((e.target.value.length > 0) && (environmentVariables.env.length > 0)){ 
-                        setButtonAddEnvVariabIsDisable(false);
-                    } else {
+                    if(!new RegExp("^[a-zA-Z0-9._/-]{3,}$").test(e.target.value)){
+                        setInvalidValue(true);
                         setButtonAddEnvVariabIsDisable(true);
+        
+                        return;
+                    }
+        
+                    setInvalidValue(false);
+        
+                    if(!invalidEnv){
+                        setButtonAddEnvVariabIsDisable(false);
                     }
                 }}
             />
         </Grid>
-        <Grid item md={3} className="text-end mt-4">
+        <Grid item md={2} className="text-end mt-4">
             <Button 
                 onClick={() => {
-                    handlerAddEnvironmentVariables(environmentVariables);
+                    handlerAddEnvironmentVariables({ env: environmentVariablesEnv, value: environmentVariablesValue });
+
+                    setEnvironmentVariablesEnv("");
+                    setEnvironmentVariablesValue("");
                 }} 
                 disabled={buttonAddEnvVariabIsDisable}
-            >добавить переменную окружения</Button>
+            >добавить</Button>
         </Grid>
     </Grid>);
 }

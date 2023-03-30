@@ -1,5 +1,5 @@
-export default function reducerProcessSTIXObject(state, action){
-    let createdTime = "";
+export default function reducerUserAccountSTIXObject(state, action){
+    let dateTime = "";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
@@ -15,7 +15,91 @@ export default function reducerProcessSTIXObject(state, action){
         return action.data;
     case "cleanAll":
         return {};
-    case "updatePID":
+    case "updateUserId":
+        return {...state, user_id: action.data};    
+    case "updateCredential":
+        return {...state, credential: action.data};
+    case "updateAccountType":
+        return {...state, account_type: action.data};
+    case "updateDisplayName":
+        return {...state, display_name: action.data};
+    case "updateAccountLogin":
+        return {...state, account_login: action.data};
+    case "updateIsPrivileged":
+        return {...state, is_privileged: (action.data === "true")};
+    case "updateIsDisabled":
+        return {...state, is_disabled: (action.data === "true")};
+    case "updateCanEscalatePrivs":
+        return {...state, can_escalate_privs: (action.data === "true")};
+    case "updateIsServiceAccount":
+        return {...state, is_service_account: (action.data === "true")};
+    case "updateAccountCreated":
+        // timestamp
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            dateTime = new Date(tmp + (ms * -1));
+        } else {
+            dateTime = new Date(tmp - (ms * -1));
+        }
+
+        state.account_created = new Date(Date.parse(dateTime)).toISOString();
+
+        return {...state};
+    case "updateAccountExpires":
+        // timestamp
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            dateTime = new Date(tmp + (ms * -1));
+        } else {
+            dateTime = new Date(tmp - (ms * -1));
+        }
+
+        state.account_expires = new Date(Date.parse(dateTime)).toISOString();
+
+        return {...state};
+    case "updateAccountLastLogin":
+        // timestamp
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            dateTime = new Date(tmp + (ms * -1));
+        } else {
+            dateTime = new Date(tmp - (ms * -1));
+        }
+
+        state.account_last_login = new Date(Date.parse(dateTime)).toISOString();
+
+        return {...state};
+    case "updateAccountFirstLogin":
+        // timestamp
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            dateTime = new Date(tmp + (ms * -1));
+        } else {
+            dateTime = new Date(tmp - (ms * -1));
+        }
+
+        state.account_first_login = new Date(Date.parse(dateTime)).toISOString();
+
+        return {...state};
+    case "updateCredentialLastChanged":
+        // timestamp
+        tmp = Date.parse(action.data);
+
+        if(currentTimeZoneOffsetInHours < 0){
+            dateTime = new Date(tmp + (ms * -1));
+        } else {
+            dateTime = new Date(tmp - (ms * -1));
+        }
+
+        state.credential_last_changed = new Date(Date.parse(dateTime)).toISOString();
+
+        return {...state};
+                        
+        /*    case "updatePID":
         return {...state, pid: +action.data};            
     case "updateCWD":
         return {...state, cwd: action.data};
@@ -52,7 +136,7 @@ export default function reducerProcessSTIXObject(state, action){
 
         delete state.environment_variables[action.data];
 
-        return {...state/*, command_line: action.data*/};
+        return {...state};*/
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

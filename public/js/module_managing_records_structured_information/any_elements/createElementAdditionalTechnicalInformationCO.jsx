@@ -59,8 +59,6 @@ export default function CreateElementAdditionalTechnicalInformationCO(props){
         handlerElementDefanged({ data: data.target.value, objectId: objectId }); 
     };
 
-    console.log("func 'CreateElementAdditionalTechnicalInformationCO', reportInfo: ", reportInfo);
-
     return (<React.Fragment>
         <Grid container direction="row" className="mt-4">
             <Grid item md={12}><span className="text-muted"><strong>Дополнительная техническая информация</strong></span></Grid>

@@ -1,93 +1,209 @@
-"use strict";
-
-import React from "react";
-import { Col, Row } from "react-bootstrap";
+import React, { useEffect, useReducer } from "react";
 import { 
-    //AppBar,
-    //Button,
-    //Container,
-    //Dialog,
+    Button,
+    DialogActions,
     DialogContent,
-    LinearProgress,
     Grid,
-    //Toolbar,
-    //Typography,
 } from "@material-ui/core";
-import { teal, grey } from "@material-ui/core/colors";
-import { makeStyles } from "@material-ui/core/styles";
-//import { v4 as uuidv4 } from "uuid";
+import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
+import reducerUserAccountSTIXObject from "../reducer_handlers/reducerUserAccountSTIXObject.js";
 import CreateUserAccountPatternElements from "../type_elements_stix/userAccountPatternElements.jsx";
+import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: "fixed",
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    appBreadcrumbs: {
-        position: "fixed",
-        top: "60px",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        paddingLeft: theme.spacing(4),
-    },
-    buttonSave: {
-        color: theme.palette.getContrastText(teal[500]),
-        backgroundColor: teal[500],
-    },
-    title: {
-        marginLeft: theme.spacing(2),
-        flex: 1,
-    },
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-}));
+function isExistTransmittedData(data){
+    if((data.information === null) || (typeof data.information === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+        return false;
+    }
+
+    if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+        return false;
+    }
+
+    if(data.information.additional_parameters.transmitted_data.length === 0){
+        return false;
+    }
+
+    return true;
+}
 
 export default function CreateDialogContentUserAccountSTIXObject(props){
     let { 
-        listObjectInfo, 
-        currentIdSTIXObject,
-        handlerDialog,
-        handlerDialogClose,
+        socketIo,
         isNotDisabled,
+        parentIdSTIXObject,
+        currentAdditionalIdSTIXObject,
+        handlerDialogClose,
     } = props;
 
-    if((listObjectInfo[currentIdSTIXObject] === null) || (typeof listObjectInfo[currentIdSTIXObject] === "undefined")){
-        return (<DialogContent>
-            <Grid container direction="row" spacing={3}>
-                <Grid item container md={12} justifyContent="center" className="pb-3">
-                    поиск информации об STIX объекте типа Учетная запись пользователя (User account CO STIX)
-                </Grid>
-            </Grid>
-            <LinearProgress />
-        </DialogContent>);
-    }
+    let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
+    let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
+
+    const handlerButtonIsDisabled = (status) => {
+            setButtonIsDisabled(status);
+        },
+        handlerButtonSaveChangeTrigger = () => {
+            setButtonSaveChangeTrigger((prevState) => !prevState);
+        };
 
     return (<React.Fragment>
         <DialogContent>
-            <Row className="mt-2">
-                <Col md={12} className="pl-3 pr-3">
-                Просмотр и редактирование STIX объекта типа Учетная запись пользователя (User account CO STIX)
-                -----------------------------------------------------------------------------------------------
-                Заполненного объекта в БД НЕТ, можно попробовать сделать ручное формирование пользователем нового объекта
-                </Col>
-                <Col md={12} className="pt-2 pl-3 pr-3">{JSON.stringify(listObjectInfo[currentIdSTIXObject])}</Col>
-            </Row>
+            <Grid container direction="row" spacing={3}>
+                <CreateMajorContent 
+                    socketIo={socketIo}
+                    parentIdSTIXObject={parentIdSTIXObject}
+                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
+                    buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+                    isNotDisabled={isNotDisabled}
+                    handlerDialogClose={handlerDialogClose}
+                    handlerButtonIsDisabled={handlerButtonIsDisabled}
+                    handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
+                />
+            </Grid>            
         </DialogContent>
+        <DialogActions>
+            <Button 
+                onClick={handlerDialogClose} 
+                style={{ color: blue[500] }}
+                color="primary">закрыть</Button>            
+            {isNotDisabled && <Button
+                disabled={buttonIsDisabled} 
+                onClick={() => setButtonSaveChangeTrigger(true)}
+                style={{ color: blue[500] }} 
+                color="primary">
+                    сохранить
+            </Button>}
+        </DialogActions>
     </React.Fragment>);
 }
-
+     
 CreateDialogContentUserAccountSTIXObject.propTypes = {
-    listObjectInfo: PropTypes.object.isRequired,
-    currentIdSTIXObject: PropTypes.string.isRequired,
-    handlerDialog: PropTypes.func.isRequired,
-    handlerDialogClose: PropTypes.func.isRequired,
+    socketIo: PropTypes.object.isRequired,
     isNotDisabled: PropTypes.bool.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
+};
+
+function CreateMajorContent(props){
+    let {
+        socketIo,
+        parentIdSTIXObject,
+        currentIdSTIXObject,
+        buttonSaveChangeTrigger,
+        isNotDisabled,
+        handlerDialogClose,
+        handlerButtonIsDisabled,
+        handlerButtonSaveChangeTrigger,
+    } = props;
+
+    const [ state, dispatch ] = useReducer(reducerUserAccountSTIXObject, {});
+
+    useEffect(() => {
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+            if(!isExistTransmittedData(data)){
+                return;
+            }
+
+            for(let obj of data.information.additional_parameters.transmitted_data){     
+                dispatch({ type: "newAll", data: obj });
+            }
+        });
+
+        if(currentIdSTIXObject !== ""){
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentIdSTIXObject,
+                parentObjectId: parentIdSTIXObject,
+            }});
+        }
+
+        return () => {
+            dispatch({ type: "newAll", data: {} });
+        };
+    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    useEffect(() => {
+        if(buttonSaveChangeTrigger){
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+           
+            handlerButtonSaveChangeTrigger();
+            handlerDialogClose();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+
+    const handlerCheckStateButtonIsDisabled = (accountLogin) => {
+        if(typeof accountLogin !== "undefined"){
+            if(accountLogin === ""){
+                handlerButtonIsDisabled(true);
+            } else {
+                handlerButtonIsDisabled(false);
+            }
+        } else {
+            if(state.account_login === ""){
+                handlerButtonIsDisabled(true);
+            } else {
+                handlerButtonIsDisabled(false);
+            }
+        }
+    };
+
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
+        if(obj.modalType === "granular_markings") {
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
+        }
+    
+        if(obj.modalType === "extensions") {
+            dispatch({ type: "updateExtensions", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
+        }
+    };
+
+    return (<Grid item container md={12}>
+        <Grid container direction="row" className="pt-3 pb-3">
+            <CreateUserAccountPatternElements
+                isDisabled={false}
+                campaignPatterElement={state}
+                handlerUserId={(e) => { dispatch({ type: "updateUserId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerCredential={(e) => { dispatch({ type: "updateCredential", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerIsDisabled={(e) => { dispatch({ type: "updateIsDisabled", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountType={(e) => { dispatch({ type: "updateAccountType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDisplayName={(e) => { dispatch({ type: "updateDisplayName", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountLogin={(e) => { dispatch({ type: "updateAccountLogin", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handlerIsPrivileged={(e) => { dispatch({ type: "updateIsPrivileged", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountCreated={(e) => { dispatch({ type: "updateAccountCreated", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountExpires={(e) => { dispatch({ type: "updateAccountExpires", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountLastLogin={(e) => { dispatch({ type: "updateAccountLastLogin", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerCanEscalatePrivs={(e) => { dispatch({ type: "updateCanEscalatePrivs", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerIsServiceAccount={(e) => { dispatch({ type: "updateIsServiceAccount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountFirstLogin={(e) => { dispatch({ type: "updateAccountFirstLogin", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerCredentialLastChanged={(e) => { dispatch({ type: "updateCredentialLastChanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            />
+        </Grid>
+
+        <CreateElementAdditionalTechnicalInformationCO 
+            objectId={currentIdSTIXObject}
+            reportInfo={state}
+            isNotDisabled={isNotDisabled}
+            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
+        />
+    </Grid>);
+}
+
+CreateMajorContent.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
+    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
+    handlerButtonIsDisabled: PropTypes.func.isRequired,
+    handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
 };

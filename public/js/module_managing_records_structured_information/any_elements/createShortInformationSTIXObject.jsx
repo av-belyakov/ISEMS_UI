@@ -697,8 +697,6 @@ let fileFunc = (obj, handlerClick) => {
     for(let item in obj.hashes){
         hashList.push({ type: item, hash: obj.hashes[item] });
     }
-                
-    console.log("func 'fileFunc' obj: ", obj);
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
@@ -731,35 +729,6 @@ let fileFunc = (obj, handlerClick) => {
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Словарь хешей для файла:</span></Grid>
             <Grid item container md={7} justifyContent="flex-end"></Grid>
         </Grid>
-        
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Ссылка на объект Артифакт:</span></Grid>
-            <Grid item container md={7}>
-                {_.isString(obj.content_ref)?
-                    ((typeof getLinkImage(obj.content_ref) !== "undefined")?
-                        <Button onClick={() => {                                        
-                            handlerClick(obj.id, obj.content_ref);
-                        }}>
-                            <img src={`/images/stix_object/${getLinkImage(obj.content_ref).link}`} width="25" height="25" />
-                                &nbsp;{obj.content_ref}
-                        </Button>:
-                        <span className="text-muted mt-2"><i>информация не найдена</i></span>):
-                    <React.Fragment>
-                        <Grid container direction="row">
-                            <Grid item container md={12} justifyContent="flex-start" className="text-muted mt-2">
-                                {obj.content_ref.id}
-                            </Grid>
-
-                        </Grid>
-                        <Grid container direction="row">
-                            <Grid item container md={12} justifyContent="flex-start">
-                                {artifactFunc(obj.content_ref)}
-                            </Grid>
-                        </Grid>
-                    </React.Fragment>}
-            </Grid>
-        </Grid>
-
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Хеш суммы:</span></Grid>
             <Grid item container md={7} justifyContent="flex-start"></Grid>
@@ -1100,10 +1069,38 @@ let processFunc = (obj) => {
 
         <Grid container direction="row" spacing={3}>
             <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted mt-2">Время создания процесса:</span>
+                <span className="text-muted">Время создания процесса:</span>
             </Grid>
             <Grid item md={7}>
                 {helpers.convertDateFromString(createdTime, { monthDescription: "long", dayDescription: "numeric" })}
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Текущая рабочая директория процесса:</span></Grid>
+            <Grid item container md={7} >
+                <TextField
+                    disabled
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                    value={obj.cwd? obj.cwd: ""}
+                    onChange={() => {}}
+                />
+            </Grid>
+        </Grid>
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 4, marginBottom: 1 }}>
+            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Определяет полный перечень команд используемых для запуска процесса, включая имя процесса и аргументы:</span></Grid>
+            <Grid item container md={7}>
+                <TextField
+                    multiline
+                    minRows={1}
+                    maxRows={8}
+                    disabled
+                    fullWidth
+                    value={obj.command_line? obj.command_line: ""}
+                    onChange={() => {}}
+                    variant="outlined"/>
             </Grid>
         </Grid>
     </React.Fragment>);

@@ -36,7 +36,7 @@ export default function CreateListTypesComputerThreat(props){
         id={"select-search-computer_threat_type"}
         select
         fullWidth
-        label={"тип ком. угрозы"}
+        label={"тип компьютерной угрозы"}
         value={currentTypesComputerThreat}
         onChange={(obj) => { 
             setCurrentTypesComputerThreat(obj.target.value);

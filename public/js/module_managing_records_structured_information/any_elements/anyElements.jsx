@@ -2006,3 +2006,56 @@ CreateListContextGrouping.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired, 
     handlerContext: PropTypes.func.isRequired,
 };
+
+export function CreateListAccountType(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerAccountType, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["account-type-ov"].content.length; i++){
+            if(elem === dictionaryLists["account-type-ov"].content[i].name){
+                return dictionaryLists["account-type-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.account_type);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["account-type-ov"] && <React.Fragment>
+        <TextField
+            id={"select-account-type"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"перечень типов аккаунтов"}
+            value={campaignPatterElement.account_type? campaignPatterElement.account_type: "" }
+            onChange={(e) => {
+                handlerAccountType.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="account-type-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["account-type-ov"].content.map((item, key) => {
+                return (<MenuItem key={`account-type-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListAccountType.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerAccountType: PropTypes.func.isRequired,
+};

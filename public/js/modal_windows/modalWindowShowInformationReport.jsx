@@ -322,8 +322,6 @@ function CreateReportInformation(props){
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
-    console.log("func 'CreateReportInformation', START... showReportId = ", showReportId, " idForCreateListObjectRefs:", idForCreateListObjectRefs);
-
     const [state, dispatch] = useReducer(reducer, {});
     useEffect(() => {
         socketIo.once("isems-mrsi response ui: send search request, get report for id", (data) => {

@@ -51,6 +51,8 @@ const CreateMutexPatternNewSTIXObject = lazy(() => import("./contentMutexPattern
 const CreateURLPatternNewSTIXObject = lazy(() => import("./contentURLPatternNewSTIXObject.jsx"));
 const CreateSoftwarePatternNewSTIXObject = lazy(() => import("./contentSoftwarePatternNewSTIXObject.jsx"));
 const CreateNetworkTrafficPatternNewSTIXObject = lazy(() => import("./contentNetworkTrafficPatternNewSTIXObject.jsx"));
+const CreateProcessPatternNewSTIXObject = lazy(() => import("./contentProcessPatternNewSTIXObject.jsx"));
+const CreateUserAccountPatternNewSTIXObject = lazy(() => import("./contentUserAccountPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -606,7 +608,7 @@ function somethingModule(nameSTIX){
         "directory": CreateDirectoryPatternNewSTIXObject, 
         "file": CreateFilePatternNewSTIXObject, 
         "mutex": CreateMutexPatternNewSTIXObject,
-        //"process": CreateProcessPatternElements, 
+        "process": CreateProcessPatternNewSTIXObject, 
         "software": CreateSoftwarePatternNewSTIXObject,
         "url": CreateURLPatternNewSTIXObject,
         //"windows-registry-key": CreateWindowsRegistryKeyPatternElements,
@@ -634,7 +636,7 @@ function somethingModule(nameSTIX){
         "opinion": CreateOpinionPatternNewSTIXObject,
         "threat-actor": CreateThreatActorPatternNewSTIXObject,
         "tool": CreateToolPatternNewSTIXObject,
-        //"user-account": CreateUserAccountPatternElements,
+        "user-account": CreateUserAccountPatternNewSTIXObject,
         "vulnerability": CreateVulnerabilityPatternNewSTIXObject,
         ////"indicator": ContentAuxiliarySTIXObject,
         //"malware-analysis": CreateMalwareAnalysisPatternElements,

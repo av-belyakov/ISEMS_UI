@@ -9,11 +9,11 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";
-import reducerNetworkTrafficPatternSTIXObjects from "../reducer_handlers/reducerNetworkTrafficSTIXObject.js";
-import CreateNetworkTrafficPatternElements from "../type_elements_stix/networkTrafficPatternElements.jsx";
+import reducerUserAccountSTIXObject from "../reducer_handlers/reducerUserAccountSTIXObject.js";
+import CreateUserAccountPatternElements from "../type_elements_stix/userAccountPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-export default function CreateNetworkTrafficPatternNewSTIXObject(props){
+export default function CreateUserAccountPatternNewSTIXObject(props){
     let { 
         isNotDisabled,
         buttonAddClick,
@@ -37,7 +37,7 @@ export default function CreateNetworkTrafficPatternNewSTIXObject(props){
     />;
 }
      
-CreateNetworkTrafficPatternNewSTIXObject.propTypes = {
+CreateUserAccountPatternNewSTIXObject.propTypes = {
     isNotDisabled: PropTypes.bool.isRequired,
     buttonAddClick: PropTypes.bool.isRequired,
     buttonChangeClick: PropTypes.bool.isRequired,
@@ -61,17 +61,18 @@ function CreateMajorElements(props){
     } = props;
 
     let currentObjectId = React.useMemo(() => {
-        return `network-traffic--${uuidv4()}`;
+        return `user-account--${uuidv4()}`;
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonAddClick ]);
 
-    const [ state, dispatch ] = useReducer(reducerNetworkTrafficPatternSTIXObjects, { 
-        start: "1970-01-01T00:00:00.000Z",
-        end: "1970-01-01T00:00:00.000Z",
-        protocols: [] 
+    const [ state, dispatch ] = useReducer(reducerUserAccountSTIXObject, { 
+        is_service_account: false,
+        is_privileged: false,
+        can_escalate_privs: false,
+        is_disabled: false,
     });
     useEffect(() => {
-        if(projectPatterElement.type === "network-traffic"){
+        if(projectPatterElement.type === "user-account"){
             dispatch({ type: "newAll", data: projectPatterElement });
         }
     }, [ projectPatterElement ]);
@@ -79,7 +80,7 @@ function CreateMajorElements(props){
         if(buttonAddClick){
             let stateTmp = Object.assign(state);
             stateTmp.id = currentObjectId;
-            stateTmp.type = "network-traffic";
+            stateTmp.type = "user-account";
             stateTmp.spec_version = "2.1";
             stateTmp.lang = "RU";
 
@@ -95,24 +96,25 @@ function CreateMajorElements(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonChangeClick ]);
 
-    const handlerCheckStateButtonIsDisabled = (protocols) => {
+    const handlerCheckStateButtonIsDisabled = (accountLogin) => {
+        if(typeof accountLogin !== "undefined"){
+            if(accountLogin === ""){
+                console.log("func 'handlerCheckStateButtonIsDisabled', 1111");
 
-        console.log("func 'handlerCheckStateButtonIsDisabled', protocols: ", protocols, " state: ", state);
-
-        if(typeof protocols !== "undefined" && Array.isArray(protocols)){
-            if(protocols.length === 0){
-                //handlerButtonIsDisabled(true);
                 handlerChangeButtonAdd(true);
             } else {
-                //handlerButtonIsDisabled(false);
+                console.log("func 'handlerCheckStateButtonIsDisabled', 2222");
+
                 handlerChangeButtonAdd(false);
             }
         } else {
-            if(state.protocols.length === 0){
-                //handlerButtonIsDisabled(true);
+            if(typeof state.account_login === "undefined" || state.account_login === ""){
+                console.log("func 'handlerCheckStateButtonIsDisabled', 3333 state.account_login: ", state.account_login);
+
                 handlerChangeButtonAdd(true);
             } else {
-                //handlerButtonIsDisabled(false);
+                console.log("func 'handlerCheckStateButtonIsDisabled', 4444 state.account_login: ", state.account_login);
+
                 handlerChangeButtonAdd(false);
             }
         }
@@ -135,7 +137,7 @@ function CreateMajorElements(props){
             <Grid container direction="row">
                 <Grid item container md={8} justifyContent="flex-start">
                     <Typography variant="overline" display="block" gutterBottom>
-                        {`${helpers.getLinkImageSTIXObject("network-traffic").description}`}
+                        {`${helpers.getLinkImageSTIXObject("user-account").description}`}
                     </Typography> 
                 </Grid>
             </Grid>
@@ -145,27 +147,23 @@ function CreateMajorElements(props){
                 <Grid item container md={8}>{state.id? state.id: currentObjectId}</Grid>
             </Grid>
 
-            <CreateNetworkTrafficPatternElements 
+            <CreateUserAccountPatternElements
                 isDisabled={false}
-                showRefElement={{}}
                 campaignPatterElement={state}
-                handlerClick={() => {}}
-                handlerEndDate={(e) => { dispatch({ type: "updateEndDate", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerSrcPort={(e) => { dispatch({ type: "updateSrcPort", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDstPort={(e) => { dispatch({ type: "updateDstPort", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerIsActive={(e) => { dispatch({ type: "updateIsActive", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerStartDate={(e) => { dispatch({ type: "updateStartDate", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDstPackets={(e) => { dispatch({ type: "updateDstPackets", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerSrcPackets={(e) => { dispatch({ type: "updateSrcPackets", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDstByteCount={(e) => { dispatch({ type: "updateDstByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerSrcByteCount={(e) => { dispatch({ type: "updateSrcByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerListProtocols={(e) => { dispatch({ type: "updateProtocols", data: e }); handlerCheckStateButtonIsDisabled(e); }}
-                // это обработчик для ссылок на объекты содержащие ТОЛЬКО одну строчку, подходит только для свойств src_ref и dst_ref которые после 
-                //просмотра будет содержать только свойство value STIX объектов: ipv4-addr, ipv6-addr, mac-addr, domain-name
-                handlerClickShortRef={() => {}}
-                // это обработчик для ссылок на объекты содержащие полную информацию (для визуализации используется CreateShortInformationSTIXObject), 
-                //подходит для свойств src_payload_ref и dst_payload_ref содержащие ссылки на STIX объект artifact 
-                handlerButtonShowLink={() => {}}
+                handlerUserId={(e) => { dispatch({ type: "updateUserId", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerCredential={(e) => { dispatch({ type: "updateCredential", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerIsDisabled={(e) => { dispatch({ type: "updateIsDisabled", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountType={(e) => { dispatch({ type: "updateAccountType", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDisplayName={(e) => { dispatch({ type: "updateDisplayName", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountLogin={(e) => { dispatch({ type: "updateAccountLogin", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handlerIsPrivileged={(e) => { dispatch({ type: "updateIsPrivileged", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountCreated={(e) => { dispatch({ type: "updateAccountCreated", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountExpires={(e) => { dispatch({ type: "updateAccountExpires", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountLastLogin={(e) => { dispatch({ type: "updateAccountLastLogin", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerCanEscalatePrivs={(e) => { dispatch({ type: "updateCanEscalatePrivs", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerIsServiceAccount={(e) => { dispatch({ type: "updateIsServiceAccount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAccountFirstLogin={(e) => { dispatch({ type: "updateAccountFirstLogin", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerCredentialLastChanged={(e) => { dispatch({ type: "updateCredentialLastChanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />
 
             <CreateElementAdditionalTechnicalInformationCO 
