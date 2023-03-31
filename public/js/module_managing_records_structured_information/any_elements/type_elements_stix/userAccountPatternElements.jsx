@@ -1,30 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { 
-    Button,
-    Card,
-    CardActions,
-    CardContent,
-    Collapse,
     Grid,
     TextField,
-    IconButton,
 } from "@material-ui/core";
 import { Form } from "react-bootstrap";
-//import TokenInput from "react-customize-token-input";
-//import { JSONTree } from "reactjsontree";
-import { red } from "@material-ui/core/colors";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateListAccountType } from "../anyElements.jsx";
 
-//const defaultData = "0001-01-01T00:00:00.000Z";
 const defaultData = "0001-01-01T00:00";
 const minDefaultData = "1970-01-01T00:00:00.000Z";
-//const minDefaultData = new Date();
 
 export default function CreateUserAccountPatternElements(props){
     let { 
@@ -53,8 +41,6 @@ export default function CreateUserAccountPatternElements(props){
     let accountLastLogin = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
-
-    console.log("_____=== func 'CreateProcessPatternElements', campaignPatterElement:", campaignPatterElement);
 
     if(currentTimeZoneOffsetInHours > 0){
         if(typeof campaignPatterElement.account_created !== "undefined" && campaignPatterElement.account_created.slice(0, 16) !== defaultData){

@@ -99,6 +99,8 @@ const minDefaultData = new Date();
 export function CreateShortInformationSTIXObject(props){
     let { obj, handlerClick } = props;
 
+    console.log("func 'CreateShortInformationSTIXObject', obj:", obj);
+
     let objectList = {
         "artifact": artifactFunc,
         "attack-pattern": attackPatternFunc,

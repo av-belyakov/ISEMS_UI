@@ -7,9 +7,24 @@ export default function reducerUserAccountSTIXObject(state, action){
 
     switch(action.type){
     case "newAll":        
-        if(action.data.first_seen && action.data.last_seen){
-            action.data.last_seen = new Date(Date.parse(action.data.last_seen)).toISOString();
-            action.data.first_seen = new Date(Date.parse(action.data.first_seen)).toISOString();
+        if(action.data.account_created){
+            action.data.account_created = new Date(Date.parse(action.data.account_created)).toISOString();
+        }
+
+        if(action.data.account_expires){
+            action.data.account_expires = new Date(Date.parse(action.data.account_expires)).toISOString();
+        }
+
+        if(action.data.account_last_login){
+            action.data.account_last_login = new Date(Date.parse(action.data.account_last_login)).toISOString();
+        }
+
+        if(action.data.account_first_login){
+            action.data.account_first_login = new Date(Date.parse(action.data.account_first_login)).toISOString();
+        }
+
+        if(action.data.credential_last_changed){
+            action.data.credential_last_changed = new Date(Date.parse(action.data.credential_last_changed)).toISOString();
         }
 
         return action.data;
@@ -98,45 +113,6 @@ export default function reducerUserAccountSTIXObject(state, action){
         state.credential_last_changed = new Date(Date.parse(dateTime)).toISOString();
 
         return {...state};
-                        
-        /*    case "updatePID":
-        return {...state, pid: +action.data};            
-    case "updateCWD":
-        return {...state, cwd: action.data};
-    case "updateIsHidden":
-        return {...state, is_hidden: (action.data === "true")};
-    case "updateCreatedTime":
-        tmp = Date.parse(action.data);
-
-        if(currentTimeZoneOffsetInHours < 0){
-            createdTime = new Date(tmp + (ms * -1));
-        } else {
-            createdTime = new Date(tmp - (ms * -1));
-        }
-
-        state.created_time = new Date(Date.parse(createdTime)).toISOString();
-
-        return {...state};
-    case "updateCommandLine":
-        return {...state, command_line: action.data};
-    case "updateAddEnvironmentVariables":
-
-        console.log("func 'reducerProcessSTIXObject', action.type: ", action.type, " action.data: ", action.data, " state = ", state);
-
-        if(!state.environment_variables){
-            state.environment_variables = {};
-        }
-
-        state.environment_variables[action.data.env] = action.data.value;
-
-        return {...state};
-    case "updateDeleteEnviromentVariableElement":
-
-        console.log("func 'reducerProcessSTIXObject', action.type = ", action.type, " action.data = ", action.data);
-
-        delete state.environment_variables[action.data];
-
-        return {...state};*/
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

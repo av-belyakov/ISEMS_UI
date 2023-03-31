@@ -10,7 +10,6 @@ import {
     IconButton,
 } from "@material-ui/core";
 import { Form } from "react-bootstrap";
-//import TokenInput from "react-customize-token-input";
 //import { JSONTree } from "reactjsontree";
 import { red } from "@material-ui/core/colors";
 import DateFnsUtils from "dateIoFnsUtils";
@@ -21,7 +20,7 @@ import PropTypes from "prop-types";
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
-const defaultData = "0001-01-01T00:00:00.000Z";
+const defaultData = "0001-01-01T00:00";
 const minDefaultData = "1970-01-01T00:00:00.000Z";
 //const minDefaultData = new Date();
 
@@ -47,14 +46,12 @@ export default function CreateProcessPatternElements(props){
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
-    console.log("_____=== func 'CreateProcessPatternElements', showRefElement:", showRefElement);
-
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.created_time !== "undefined" && campaignPatterElement.created_time !== defaultData){
+        if(typeof campaignPatterElement.created_time !== "undefined" && campaignPatterElement.created_time.slice(0, 16) !== defaultData){
             createdTime = new Date(Date.parse(campaignPatterElement.created_time) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.created_time !== "undefined" && campaignPatterElement.created_time !== defaultData){
+        if(typeof campaignPatterElement.created_time !== "undefined" && campaignPatterElement.created_time.slice(0, 16) !== defaultData){
             createdTime = new Date(Date.parse(campaignPatterElement.created_time) - (ms * -1));
         }
     }

@@ -1,539 +1,307 @@
-import React, { useState } from "react";
+import React, { useEffect, useReducer } from "react";
 import { 
     Button,
-    Card,
-    CardActions,
-    CardContent,
-    Collapse,
+    DialogActions,
+    DialogContent,
     Grid,
-    TextField,
-    IconButton,
 } from "@material-ui/core";
-import { Form } from "react-bootstrap";
-import { red } from "@material-ui/core/colors";
-import DateFnsUtils from "dateIoFnsUtils";
-import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
+import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
-import { helpers } from "../../../common_helpers/helpers";
-import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
+//import reducerNetworkTrafficPatternSTIXObjects from "../reducer_handlers/reducerNetworkTrafficSTIXObject.js";
+import reducerWindowsRegistryKeyPatternSTIXObjects from "../reducer_handlers/reducerWindowsRegistryKeySTIXObject.js";
+//import CreateNetworkTrafficPatternElements from "../type_elements_stix/networkTrafficPatternElements.jsx";
+import CreateWindowsRegistryKeyPatternElements from "../type_elements_stix/windowsRegistryKeyPatternElements.jsx";
+import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
-const defaultData = "0001-01-01T00:00:00.000Z";
-const minDefaultData = "1970-01-01T00:00:00.000Z";
-//const minDefaultData = new Date();
-
-export default function CreateDialogContentWindowsRegistryKeySTIXObject(props){
-    let { 
-        isDisabled,
-        showRefElement,
-        campaignPatterElement,
-        handlerKey,
-        handlerClick,
-        handlerModifiedTime,
-
-        /*handlerCWD,
-        handlerPID,
-        handlerClick,
-        handlerIsHidden,
-        handlerCreatedTime,
-        handlerCommandLine,
-        handlerButtonShowLink,
-        handlerAddEnvironmentVariables,
-        handlerDeleteEnviromentVariableElement,*/
-    } = props;
-
-    let [ invalidKey, setInvalidKey ] = useState(false);
-
-    let modifiedTime = minDefaultData;
-    let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
-    let ms = currentTimeZoneOffsetInHours * 3600000;
-
-    console.log("_____=== func 'CreateProcessPatternElements', showRefElement:", showRefElement);
-
-    if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.modified_time !== "undefined" && campaignPatterElement.modified_time !== defaultData){
-            modifiedTime = new Date(Date.parse(campaignPatterElement.modified_time) + ms);
-        }
-    } else {
-        if(typeof campaignPatterElement.modified_time !== "undefined" && campaignPatterElement.modified_time !== defaultData){
-            modifiedTime = new Date(Date.parse(campaignPatterElement.modified_time) - (ms * -1));
-        }
+function isExistTransmittedData(data){
+    if((data.information === null) || (typeof data.information === "undefined")){
+        return false;
     }
 
-    let [ expanded, setExpanded ] = React.useState(false);
-    let [ refId, setRefId ] = React.useState("");
+    if((data.information.additional_parameters === null) || (typeof data.information.additional_parameters === "undefined")){
+        return false;
+    }
 
-    let handleExpandClick = (id) => {
-        if(id === refId && expanded){
-            setExpanded(false);
-            
-            return;
-        }
+    if((data.information.additional_parameters.transmitted_data === null) || (typeof data.information.additional_parameters.transmitted_data === "undefined")){
+        return false;
+    }
 
-        if(id !== refId){
-            setExpanded(true); 
-            setRefId(id);
-        } else {            
-            setExpanded(!expanded);
-        }
+    if(data.information.additional_parameters.transmitted_data.length === 0){
+        return false;
+    }
 
-        handlerButtonShowLink(id);
-    };
+    return true;
+}
 
-    /*const getListEnviromentVariables = (envList) => {
-        if(typeof envList === "undefined"){
-            return "";
-        }
+function reducerShowRef(state, action){
+    switch(action.type){
+    case "addObject":
+        return {...state, obj: action.data};
+    case "addId":
+        return {...state, id: action.data};
+    case "cleanObj":
+        return {...state, obj: {}};
+    }
+}
 
-        if(Array.isArray(envList) && envList.length === 0){
-            return "";
-        }
+export default function CreateDialogContentNetworkTrafficSTIXObject(props){
+    let { 
+        socketIo,
+        isNotDisabled,
+        parentIdSTIXObject,
+        currentAdditionalIdSTIXObject,
+        handlerDialogClose,
+    } = props;
 
-        let tmpList = [];
-        for(let k in envList){
-            let objTmp = {};
-            objTmp[k] = envList[k];
-            tmpList.push(objTmp);
-        }
+    let [ buttonIsDisabled, setButtonIsDisabled ] = React.useState(true);
+    let [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = React.useState(false);
 
-        let key, value = "";
-        return (<React.Fragment>
-            <Grid container direction="row">
-                <Grid item container md={12} justifyContent="flex-start">
-                    <span className="text-muted">
-                    Список переменных окружения:
-                    </span>
-                </Grid>
-            </Grid>
-            <Grid container direction="row">
-                <Grid item container md={12} justifyContent="flex-start">
-                    <ol>
-                        {tmpList.map((item, num) => {
-                            for(let k in item){
-                                key = k;
-                                value = item[k];
-                            }
-
-                            return (<li key={`key_item_env_${num}`}>
-                                {key}:&nbsp;&nbsp;&nbsp;{value}&nbsp;
-                                <IconButton aria-label="delete-hash" onClick={handlerDeleteEnviromentVariableElement.bind(null, key)}>
-                                    {isDisabled? "": <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />}
-                                </IconButton>
-                            </li>);
-                        })}
-                    </ol>
-                </Grid>
-            </Grid>
-        </React.Fragment>);
-    };*/
-
-    /**
-Key - содержит полный путь к разделу реестра. Значение ключа,должно быть сохранено в регистре. В название ключа все сокращения должны быть раскрыты.
-//  Values - содержит значения, найденные в разделе реестра.
-//  ModifiedTime - время, в формате "2016-05-12T08:17:27.000Z", последнего изменения раздела реестра.
-//  CreatorUserRef - содержит ссылку на учетную запись пользователя, из под которой создан раздел реестра. Объект, на который ссылается это свойство, должен иметь тип user-account.
-//  NumberOfSubkeys - Указывает количество подразделов, содержащихся в разделе реестра.
-type WindowsRegistryKeyCyberObservableObjectSTIX struct {
-	CommonPropertiesObjectSTIX
-	OptionalCommonPropertiesCyberObservableObjectSTIX
-	+ Key             string                         `json:"key" bson:"key"`
-	Values          []WindowsRegistryValueTypeSTIX `json:"values" bson:"values"`
-	+ ModifiedTime    time.Time                      `json:"modified_time" bson:"modified_time"`
-	+ CreatorUserRef  IdentifierTypeSTIX             `json:"creator_user_ref" bson:"creator_user_ref"`
-	NumberOfSubkeys int                            `json:"number_of_subkeys" bson:"number_of_subkeys"`
- */
+    const handlerButtonIsDisabled = (status) => {
+            setButtonIsDisabled(status);
+        },
+        handlerButtonSaveChangeTrigger = () => {
+            setButtonSaveChangeTrigger((prevState) => !prevState);
+        };
 
     return (<React.Fragment>
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-            <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted">Полный путь к разделу реестра:</span>
-            </Grid>
-            <Grid item md={7}>
-                <TextField
-                    id="outlined-pid"
-                    fullWidth
-                    error={invalidKey}
-                    size="small"
-                    disabled={isDisabled}
-                    onChange={(e) => {
-                        let key = e.target.value;
-
-                        if(!new RegExp("^[0-9/_\\-.]{1,}$").test(key) || key === 0){
-                            setInvalidKey(true);
-
-                            return;
-                        } else {
-                            setInvalidKey(false);
-                        }
-
-                        handlerKey(key);
-                    }}
-                    value={(campaignPatterElement.key)? campaignPatterElement.key: ""}
-                    helperText="обязательное поле"
-                />
-            </Grid>
-        </Grid>
-
-        {/**  
-         * 
-         * Values          []WindowsRegistryValueTypeSTIX `json:"values" bson:"values"`  
-         * 
-         * */}
-
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted mt-2">Время последнего изменения раздела реестра:</span>
-            </Grid>
-            <Grid item container md={7}>
-                {isDisabled?
-                    helpers.convertDateFromString(modifiedTime, { monthDescription: "long", dayDescription: "numeric" })
-                    :<MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <DateTimePicker
-                            variant="inline"
-                            ampm={false}
-                            value={modifiedTime}
-                            minDate={new Date("1970-01-01")}
-                            maxDate={new Date()}
-                            onChange={handlerModifiedTime}
-                            format="dd.MM.yyyy HH:mm"
-                        />
-                    </MuiPickersUtilsProvider>}
-            </Grid>
-        </Grid>
-
-        {campaignPatterElement.creator_user_ref && (typeof campaignPatterElement.creator_user_ref !== "undefined") && campaignPatterElement.creator_user_ref.length !== 0?
-            <Grid container direction="row" spacing={3} style={{ paddingTop: 1 }}>
-                <Grid item container md={5} justifyContent="flex-end">
-                    <span className="text-muted mt-3">Учетная запись пользователя, из под которой был создан раздел реестра:</span>
-                </Grid>
-                <Grid item container md={7}>
-                    <Card variant="outlined" style={{ width: "100%" }}>
-                        <CardActions>
-                            <Button onClick={() => { 
-                                handleExpandClick(campaignPatterElement.creator_user_ref);
-                            }}>
-                                <img 
-                                    src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.creator_user_ref.split("--")[0]).link}`} 
-                                    width="25" 
-                                    height="25" />
-                                    &nbsp;{campaignPatterElement.creator_user_ref}
-                            </Button>
-                        </CardActions>
-                        <Collapse in={showRefElement.id === campaignPatterElement.creator_user_ref && refId === campaignPatterElement.creator_user_ref && expanded} timeout="auto" unmountOnExit>
-                            <CardContent>
-                                <CreateShortInformationSTIXObject 
-                                    obj={showRefElement.obj}
-                                    handlerClick={handlerClick} 
-                                />
-                            </CardContent>
-                        </Collapse>
-                    </Card>
-                </Grid>
-            </Grid>:
-            ""}
-
-
-        {/*<Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end">
-                <span className="text-muted mt-2">Время создания процесса:</span>
-            </Grid>
-            <Grid item container md={7}>
-                {isDisabled?
-                    helpers.convertDateFromString(createdTime, { monthDescription: "long", dayDescription: "numeric" })
-                    :<MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <DateTimePicker
-                            variant="inline"
-                            ampm={false}
-                            value={createdTime}
-                            minDate={new Date("1970-01-01")}
-                            maxDate={new Date()}
-                            onChange={handlerCreatedTime}
-                            format="dd.MM.yyyy HH:mm"
-                        />
-                    </MuiPickersUtilsProvider>}
-            </Grid>
-        </Grid>
-
-        <Grid container direction="row" spacing={3}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted mt-2">Текущая рабочая директория процесса:</span></Grid>
-            <Grid item container md={7} >
-                <TextField
-                    fullWidth
-                    disabled={isDisabled}
-                    id="name-element-cwd"
-                    InputLabelProps={{ shrink: true }}
-                    onChange={handlerCWD}
-                    value={(campaignPatterElement.cwd)? campaignPatterElement.cwd: ""}
-                />
-            </Grid>
-        </Grid>
-
-        <Grid container direction="row" spacing={3} style={{ marginTop: 4, marginBottom: 1 }}>
-            <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Определяет полный перечень команд используемых для запуска процесса, включая имя процесса и аргументы:</span></Grid>
-            <Grid item container md={7}>
-                <TextField
-                    id="outlined-command-line"
-                    multiline
-                    minRows={1}
-                    maxRows={8}
-                    disabled={isDisabled}
-                    fullWidth
-                    onChange={handlerCommandLine}
-                    value={(campaignPatterElement.command_line)? campaignPatterElement.command_line: ""}
-                    variant="outlined"/>
-            </Grid>
-        </Grid>
-
-        {campaignPatterElement.creator_user_ref && (typeof campaignPatterElement.creator_user_ref !== "undefined") && campaignPatterElement.creator_user_ref.length !== 0?
-            <Grid container direction="row" spacing={3} style={{ paddingTop: 1 }}>
-                <Grid item container md={5} justifyContent="flex-end">
-                    <span className="text-muted mt-3">Информация о пользователе создавшем объект:</span>
-                </Grid>
-                <Grid item container md={7}>
-                    <Card variant="outlined" style={{ width: "100%" }}>
-                        <CardActions>
-                            <Button onClick={() => { 
-                                handleExpandClick(campaignPatterElement.creator_user_ref);
-                            }}>
-                                <img 
-                                    src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.creator_user_ref.split("--")[0]).link}`} 
-                                    width="25" 
-                                    height="25" />
-                                    &nbsp;{campaignPatterElement.creator_user_ref}
-                            </Button>
-                        </CardActions>
-                        <Collapse in={showRefElement.id === campaignPatterElement.creator_user_ref && refId === campaignPatterElement.creator_user_ref && expanded} timeout="auto" unmountOnExit>
-                            <CardContent>
-                                <CreateShortInformationSTIXObject 
-                                    obj={showRefElement.obj}
-                                    handlerClick={handlerClick} 
-                                />
-                            </CardContent>
-                        </Collapse>
-                    </Card>
-                </Grid>
-            </Grid>:
-            ""}
-
-        {campaignPatterElement.image_ref && (typeof campaignPatterElement.image_ref !== "undefined") && campaignPatterElement.image_ref.length !== 0?
-            <Grid container direction="row" spacing={3} style={{ paddingTop: 1 }}>
-                <Grid item container md={5} justifyContent="flex-end">
-                    <span className="text-muted mt-3">Исполняемый двоичный файл выполненный как образ процесса:</span>
-                </Grid>
-                <Grid item container md={7}>
-                    <Card variant="outlined" style={{ width: "100%" }}>
-                        <CardActions>
-                            <Button onClick={() => { 
-                                handleExpandClick(campaignPatterElement.image_ref);
-                            }}>
-                                <img 
-                                    src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.image_ref.split("--")[0]).link}`} 
-                                    width="25" 
-                                    height="25" />
-                                    &nbsp;{campaignPatterElement.image_ref}
-                            </Button>
-                        </CardActions>
-                        <Collapse in={showRefElement.id === campaignPatterElement.image_ref && refId === campaignPatterElement.image_ref && expanded} timeout="auto" unmountOnExit>
-                            <CardContent>
-                                <CreateShortInformationSTIXObject 
-                                    obj={showRefElement.obj}
-                                    handlerClick={handlerClick} 
-                                />
-                            </CardContent>
-                        </Collapse>
-                    </Card>
-                </Grid>
-            </Grid>:
-            ""}
-
-        {campaignPatterElement.parent_ref && (typeof campaignPatterElement.parent_ref !== "undefined") && campaignPatterElement.parent_ref.length !== 0?
-            <Grid container direction="row" spacing={3} style={{ paddingTop: 1 }}>
-                <Grid item container md={5} justifyContent="flex-end">
-                    <span className="text-muted mt-3">Родительский процесс породивший текущий процесс:</span>
-                </Grid>
-                <Grid item container md={7}>
-                    <Card variant="outlined" style={{ width: "100%" }}>
-                        <CardActions>
-                            <Button onClick={() => { 
-                                handleExpandClick(campaignPatterElement.parent_ref);
-                            }}>
-                                <img 
-                                    src={`/images/stix_object/${helpers.getLinkImageSTIXObject(campaignPatterElement.parent_ref.split("--")[0]).link}`} 
-                                    width="25" 
-                                    height="25" />
-                                    &nbsp;{campaignPatterElement.parent_ref}
-                            </Button>
-                        </CardActions>
-                        <Collapse in={showRefElement.id === campaignPatterElement.parent_ref && refId === campaignPatterElement.parent_ref && expanded} timeout="auto" unmountOnExit>
-                            <CardContent>
-                                <CreateShortInformationSTIXObject 
-                                    obj={showRefElement.obj}
-                                    handlerClick={handlerClick} 
-                                />
-                            </CardContent>
-                        </Collapse>
-                    </Card>
-                </Grid>
-            </Grid>:
-            ""}
-
-        <CreateEnvironmentVariables
-            handlerAddEnvironmentVariables={handlerAddEnvironmentVariables} />
-
-        {getListEnviromentVariables(campaignPatterElement.environment_variables)}
-
-        {campaignPatterElement.opened_connection_refs && (typeof campaignPatterElement.opened_connection_refs !== "undefined") && campaignPatterElement.opened_connection_refs.length > 0?
-            <React.Fragment>
-                <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                    <Grid item container md={12} justifyContent="flex-start">
-                        <span className="text-muted">Список открытых процессом сетевых соединений:</span>
-                    </Grid>
-                </Grid>
-                <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                    <Grid item container md={12} justifyContent="flex-start">
-                        {campaignPatterElement.opened_connection_refs.map((item, key) => {
-                            let type = item.split("--");
-                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-        
-                            if(typeof objectElem === "undefined" ){
-                                return "";
-                            }
-
-                            return (<Card variant="outlined" style={{ width: "100%", paddingTop: 1 }} key={`key_opened_connection_ref_${key}`}>
-                                <CardActions>
-                                    <Button onClick={() => { 
-                                        handleExpandClick(item);
-                                    }}>
-                                        <img 
-                                            src={`/images/stix_object/${objectElem.link}`} 
-                                            width="25" 
-                                            height="25" />
-                                        &nbsp;{item}
-                                    </Button>
-                                </CardActions>
-                                <Collapse in={showRefElement.id === item && refId === item && expanded} timeout="auto" unmountOnExit>
-                                    <CardContent>
-                                        <CreateShortInformationSTIXObject 
-                                            obj={showRefElement.obj}
-                                            handlerClick={handlerClick} 
-                                        />
-                                    </CardContent>
-                                </Collapse>
-                            </Card>);
-                        })}
-                    </Grid>
-                </Grid>
-            </React.Fragment>:
-            ""}
-
-        {campaignPatterElement.child_refs && (typeof campaignPatterElement.child_refs !== "undefined") && campaignPatterElement.child_refs.length > 0?
-            <React.Fragment>
-                <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                    <Grid item container md={12} justifyContent="flex-start">
-                        <span className="text-muted">Дочерние процессы порожденные текущим процессом:</span>
-                    </Grid>
-                </Grid>
-                <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
-                    <Grid item container md={12} justifyContent="flex-start">
-                        {campaignPatterElement.child_refs.map((item, key) => {
-                            let type = item.split("--");
-                            let objectElem = helpers.getLinkImageSTIXObject(type[0]);
-        
-                            if(typeof objectElem === "undefined" ){
-                                return "";
-                            }
-
-                            return (<Card variant="outlined" style={{ width: "100%", paddingTop: 1 }} key={`key_child_ref_${key}`}>
-                                <CardActions>
-                                    <Button onClick={() => { 
-                                        handleExpandClick(item);
-                                    }}>
-                                        <img 
-                                            src={`/images/stix_object/${objectElem.link}`} 
-                                            width="25" 
-                                            height="25" />
-                                        &nbsp;{item}
-                                    </Button>
-                                </CardActions>
-                                <Collapse in={showRefElement.id === item && refId === item && expanded} timeout="auto" unmountOnExit>
-                                    <CardContent>
-                                        <CreateShortInformationSTIXObject 
-                                            obj={showRefElement.obj}
-                                            handlerClick={handlerClick} 
-                                        />
-                                    </CardContent>
-                                </Collapse>
-                            </Card>);
-                        })}
-                    </Grid>
-                </Grid>
-            </React.Fragment>:
-            ""}
-
-        {/*(campaignPatterElement !== null && campaignPatterElement.extensions)?
+        <DialogContent>
             <Grid container direction="row" spacing={3}>
-                <Grid item md={4} className="text-end mt-2">
-                    <span className="text-muted">Дополнительные расширения:</span>
-                </Grid>
-                <Grid item md={8}>
-                    <JSONTree 
-                        data={campaignPatterElement.extensions} 
-                        theme={{
-                            base00: "#272822",
-                            base01: "#383830",
-                            base02: "#49483e",
-                            base03: "#75715e",
-                            base04: "#a59f85",
-                            base05: "#f8f8f2",
-                            base06: "#f5f4f1",
-                            base07: "#f9f8f5",
-                            base08: "#f92672",
-                            base09: "#fd971f",
-                            base0A: "#f4bf75",
-                            base0B: "#a6e22e",
-                            base0C: "#a1efe4",
-                            base0D: "#66d9ef",
-                            base0E: "#ae81ff",
-                            base0F: "#cc6633",
-                        }}
-                        hideRoot
-                    />
-                </Grid>
-            </Grid>:
-                    ""*/}
+                <CreateMajorContent 
+                    socketIo={socketIo}
+                    parentIdSTIXObject={parentIdSTIXObject}
+                    currentIdSTIXObject={currentAdditionalIdSTIXObject}
+                    buttonSaveChangeTrigger={buttonSaveChangeTrigger}
+                    isNotDisabled={isNotDisabled}
+                    handlerDialogClose={handlerDialogClose}
+                    handlerButtonIsDisabled={handlerButtonIsDisabled}
+                    handlerButtonSaveChangeTrigger={handlerButtonSaveChangeTrigger}
+                />
+            </Grid>            
+        </DialogContent>
+        <DialogActions>
+            <Button 
+                onClick={handlerDialogClose} 
+                style={{ color: blue[500] }}
+                color="primary">закрыть</Button>            
+            {isNotDisabled && <Button
+                disabled={buttonIsDisabled} 
+                onClick={() => setButtonSaveChangeTrigger(true)}
+                style={{ color: blue[500] }} 
+                color="primary">
+                    сохранить
+            </Button>}
+        </DialogActions>
     </React.Fragment>);
 }
-
-CreateDialogContentWindowsRegistryKeySTIXObject.propTypes = {
-    isDisabled: PropTypes.bool.isRequired,
-    showRefElement: PropTypes.object.isRequired,
-    campaignPatterElement: PropTypes.object.isRequired,
-    handlerCWD: PropTypes.func.isRequired,
-    handlerPID: PropTypes.func.isRequired,
-    handlerClick: PropTypes.func.isRequired,
-    handlerIsHidden: PropTypes.func.isRequired,
-    handlerCreatedTime: PropTypes.func.isRequired,
-    handlerCommandLine: PropTypes.func.isRequired,
-    handlerButtonShowLink: PropTypes.func.isRequired,
-    handlerAddEnvironmentVariables: PropTypes.func.isRequired,
-    handlerDeleteEnviromentVariableElement: PropTypes.func.isRequired,
+     
+CreateDialogContentNetworkTrafficSTIXObject.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentAdditionalIdSTIXObject: PropTypes.string.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
 };
 
-/**
-// WindowsRegistryKeyCyberObservableObjectSTIX объект "Windows Registry Key Object", по терминалогии STIX. Содержит описание значений полей раздела реестра Windows.
-//  Key - содержит полный путь к разделу реестра. Значение ключа,должно быть сохранено в регистре. В название ключа все сокращения должны быть раскрыты.
-//  Values - содержит значения, найденные в разделе реестра.
-//  ModifiedTime - время, в формате "2016-05-12T08:17:27.000Z", последнего изменения раздела реестра.
-//  CreatorUserRef - содержит ссылку на учетную запись пользователя, из под которой создан раздел реестра. Объект, на который ссылается это свойство, должен иметь тип user-account.
-//  NumberOfSubkeys - Указывает количество подразделов, содержащихся в разделе реестра.
-type WindowsRegistryKeyCyberObservableObjectSTIX struct {
-	CommonPropertiesObjectSTIX
-	OptionalCommonPropertiesCyberObservableObjectSTIX
-	Key             string                         `json:"key" bson:"key"`
-	Values          []WindowsRegistryValueTypeSTIX `json:"values" bson:"values"`
-	ModifiedTime    time.Time                      `json:"modified_time" bson:"modified_time"`
-	CreatorUserRef  IdentifierTypeSTIX             `json:"creator_user_ref" bson:"creator_user_ref"`
-	NumberOfSubkeys int                            `json:"number_of_subkeys" bson:"number_of_subkeys"`
+function CreateMajorContent(props){
+    let {
+        socketIo,
+        parentIdSTIXObject,
+        currentIdSTIXObject,
+        buttonSaveChangeTrigger,
+        isNotDisabled,
+        handlerDialogClose,
+        handlerButtonIsDisabled,
+        handlerButtonSaveChangeTrigger,
+    } = props;
+
+    const [ state, dispatch ] = useReducer(reducerWindowsRegistryKeyPatternSTIXObjects, {});
+    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
+
+    useEffect(() => {
+        socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+            if(!isExistTransmittedData(data)){
+                return;
+            }
+
+            for(let obj of data.information.additional_parameters.transmitted_data){     
+                dispatch({ type: "newAll", data: obj });
+            }
+        });
+
+        if(currentIdSTIXObject !== ""){
+            socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                searchObjectId: currentIdSTIXObject,
+                parentObjectId: parentIdSTIXObject,
+            }});
+        }
+
+        return () => {
+            dispatch({ type: "newAll", data: {} });
+        };
+    }, [ socketIo, currentIdSTIXObject, parentIdSTIXObject ]);
+    useEffect(() => {
+        if(buttonSaveChangeTrigger){
+            socketIo.emit("isems-mrsi ui request: insert STIX object", { arguments: [ state ] });
+           
+            handlerButtonSaveChangeTrigger();
+            handlerDialogClose();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
+
+    const handlerCheckStateButtonIsDisabled = (key) => {
+        if(typeof key !== "undefined"){
+            if(key.length === 0){
+                handlerButtonIsDisabled(true);
+            } else {
+                handlerButtonIsDisabled(false);
+            }
+        } else {
+            if(state.key.length === 0){
+                handlerButtonIsDisabled(true);
+            } else {
+                handlerButtonIsDisabled(false);
+            }
+        }
+    };
+
+    const handlerDialogElementAdditionalThechnicalInfo = (obj) => {    
+        if(obj.modalType === "granular_markings") {
+            dispatch({ type: "updateGranularMarkings", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
+        }
+    
+        if(obj.modalType === "extensions") {
+            dispatch({ type: "updateExtensions", data: obj.data });
+            handlerCheckStateButtonIsDisabled();
+        }
+    };
+
+    return (<Grid item container md={12}>
+        <Grid container direction="row" className="pt-3">
+            <CreateWindowsRegistryKeyPatternElements 
+                isDisabled={false}
+                showRefElement={stateShowRef}
+                campaignPatterElement={state}
+                handlerKey={(e) => { dispatch({ type: "updateKey", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handlerModifiedTime={(e) => { dispatch({ type: "updateModifiedTime", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerButtonShowLink={(refId) => {                   
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){ 
+                            dispatchShowRef({ type: "addObject", data: obj });        
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
+                }}
+                handlerNumberOfSubkeys={(e) => { dispatch({ type: "updateNumberOfSubkeys", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            />
+            
+            {/*<CreateNetworkTrafficPatternElements 
+                isDisabled={false}
+                showRefElement={stateShowRef}
+                campaignPatterElement={state}
+                handlerClick={(parentId, refId) => {
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){
+                            if(parentId.includes("network-traffic")){
+                                dispatchShowRef({ type: "updateNetworkRefObj", data: obj });                          
+                            }
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: "",
+                    }});
+                }}            
+                handlerEndDate={(e) => { dispatch({ type: "updateEndDate", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSrcPort={(e) => { dispatch({ type: "updateSrcPort", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDstPort={(e) => { dispatch({ type: "updateDstPort", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerIsActive={(e) => { dispatch({ type: "updateIsActive", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerStartDate={(e) => { dispatch({ type: "updateStartDate", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDstPackets={(e) => { dispatch({ type: "updateDstPackets", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSrcPackets={(e) => { dispatch({ type: "updateSrcPackets", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDstByteCount={(e) => { dispatch({ type: "updateDstByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSrcByteCount={(e) => { dispatch({ type: "updateSrcByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerListProtocols={(e) => { dispatch({ type: "updateProtocols", data: e }); handlerCheckStateButtonIsDisabled(e); }}
+                // это обработчик для ссылок на объекты содержащие ТОЛЬКО одну строчку, подходит только для свойств src_ref и dst_ref которые после 
+                //просмотра будет содержать только свойство value STIX объектов: ipv4-addr, ipv6-addr, mac-addr, domain-name
+                handlerClickShortRef={(refId, propertyName) => {
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){ 
+                            if(obj.type === "ipv4-addr" || obj.type === "ipv6-addr" || obj.type === "mac-addr" || obj.type === "domain-name"){
+                                dispatch({ type: "addShortRef", data: { value: obj.value, propName: propertyName } });        
+                            }
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
+                }}
+                // это обработчик для ссылок на объекты содержащие полную информацию (для визуализации используется CreateShortInformationSTIXObject), 
+                //подходит для свойств src_payload_ref и dst_payload_ref содержащие ссылки на STIX объект artifact 
+                handlerButtonShowLink={(refId) => {
+                    dispatchShowRef({ type: "addId", data: refId });
+                    dispatchShowRef({ type: "cleanObj", data: {} });
+    
+                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
+                        if(!isExistTransmittedData(data)){
+                            return;
+                        }
+
+                        for(let obj of data.information.additional_parameters.transmitted_data){ 
+                            dispatchShowRef({ type: "addObject", data: obj });        
+                        }
+                    });
+
+                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
+                        searchObjectId: refId,
+                        parentObjectId: state.id,
+                    }});
+                }}
+            />*/}
+        </Grid>
+
+        <CreateElementAdditionalTechnicalInformationCO 
+            objectId={currentIdSTIXObject}
+            reportInfo={state}
+            isNotDisabled={isNotDisabled}
+            handlerElementDefanged={(e) => { dispatch({ type: "updateDefanged", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerElementDelete={(e) => { dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); handlerCheckStateButtonIsDisabled(); }}
+            handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo}             
+        />
+    </Grid>);
 }
- */
+
+CreateMajorContent.propTypes = {
+    socketIo: PropTypes.object.isRequired,
+    parentIdSTIXObject: PropTypes.string.isRequired,
+    currentIdSTIXObject: PropTypes.string.isRequired,
+    buttonSaveChangeTrigger: PropTypes.bool.isRequired,
+    isNotDisabled: PropTypes.bool.isRequired,
+    handlerDialogClose: PropTypes.func.isRequired,
+    handlerButtonIsDisabled: PropTypes.func.isRequired,
+    handlerButtonSaveChangeTrigger: PropTypes.func.isRequired,
+};

@@ -7,9 +7,8 @@ export default function reducerProcessSTIXObject(state, action){
 
     switch(action.type){
     case "newAll":        
-        if(action.data.first_seen && action.data.last_seen){
-            action.data.last_seen = new Date(Date.parse(action.data.last_seen)).toISOString();
-            action.data.first_seen = new Date(Date.parse(action.data.first_seen)).toISOString();
+        if(action.data.created_time){
+            action.data.created_time = new Date(Date.parse(action.data.created_time)).toISOString();
         }
 
         return action.data;

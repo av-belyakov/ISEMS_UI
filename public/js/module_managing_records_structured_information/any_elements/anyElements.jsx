@@ -2059,3 +2059,56 @@ CreateListAccountType.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,
     handlerAccountType: PropTypes.func.isRequired,
 };
+
+export function CreateListWindowsRegistryDatatype(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerWindowsRegistryDatatype, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["windows-registry-datatype-enum"].content.length; i++){
+            if(elem === dictionaryLists["windows-registry-datatype-enum"].content[i].name){
+                return dictionaryLists["windows-registry-datatype-enum"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.resource_level);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["windows-registry-datatype-enum"] && <React.Fragment>
+        <TextField
+            id={"select-windows-registry-datatype"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"уровень ресурсов атаки"}
+            value={campaignPatterElement.resource_level? campaignPatterElement.resource_level: "" }
+            onChange={(e) => {
+                handlerWindowsRegistryDatatype.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="windows-registry-datatype-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["windows-registry-datatype-enum"].content.map((item, key) => {
+                return (<MenuItem key={`windows-registry-datatype-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListWindowsRegistryDatatype.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerWindowsRegistryDatatype: PropTypes.func.isRequired,
+};

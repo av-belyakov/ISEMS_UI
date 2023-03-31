@@ -1952,5 +1952,97 @@ export default {
                 "text": "системный уровень целостности"
             }
         ]
+    },
+    "windows-registry-datatype-enum": {
+        "id": "windows-registry-datatype-enum",
+        "name": "windows-registry-datatype-enum",
+        "summary": "Перечисление типов данных реестра Windows",
+        "text": "Перечисление типов данных реестра Windows. Значения применяються в объектах кибер наблюдений (Cyber Observable Object):  Windows Registry Key",
+        "content": [
+            {
+                "id": "REG_NONE",
+                "name": "REG_NONE",
+                "summary": "не определено",
+                "text": "значение типа не определено"
+            },
+            {
+                "id": "REG_SZ",
+                "name": "REG_SZ",
+                "summary": "строка заканчивающаяся нулем",
+                "text": "строка заканчивающаяся нулем (строка в Unicode, либо строка ANSI)"
+            },
+            {
+                "id": "REG_EXPAND_SZ",
+                "name": "REG_EXPAND_SZ",
+                "summary": "строка с нулем и нерасширенными ссылками",
+                "text": "строка, заканчивающаяся нулем, которая содержит нерасширенные ссылки на переменные окружения"
+            },
+            {
+                "id": "REG_BINARY",
+                "name": "REG_BINARY",
+                "summary": "бинарные данные",
+                "text": "бинарные данные любой формы"
+            },
+            {
+                "id": "REG_DWORD",
+                "name": "REG_DWORD",
+                "summary": "32 битное число",
+                "text": "32 битное число"
+            },
+            {
+                "id": "REG_DWORD_BIG_ENDIAN",
+                "name": "REG_DWORD_BIG_ENDIAN",
+                "summary": "32 битное число в формате big-endian format",
+                "text": "32 битное число в формате big-endian format"
+            },
+            {
+                "id": "REG_DWORD_LITTLE_ENDIAN",
+                "name": "REG_DWORD_LITTLE_ENDIAN",
+                "summary": "32 битное число в формате little-endian format",
+                "text": "32 битное число в формате little-endian format"
+            },
+            {
+                "id": "REG_LINK",
+                "name": "REG_LINK",
+                "summary": "строка Unicode с нулем и символической ссылкой",
+                "text": "строка Unicode с нулевым завершением, содержащая целевой путь символической ссылки"
+            },
+            {
+                "id": "REG_MULTI_SZ",
+                "name": "REG_MULTI_SZ",
+                "summary": "строки с \0 в конце",
+                "text": "последовательность строк, заканчивающихся нулем, заканчивающаяся пустой строкой (\0)"
+            },
+            {
+                "id": "REG_RESOURCE_LIST",
+                "name": "REG_RESOURCE_LIST",
+                "summary": "список ресурсов для драйверов аппаратного устройства",
+                "text": "cерия вложенных списков, предназначенных для хранения списка ресурсов, используемых драйвером аппаратного устройства или одним из физических устройств, которыми он управляет"
+            },
+            {
+                "id": "REG_FULL_RESOURCE_DESCRIPTION",
+                "name": "REG_FULL_RESOURCE_DESCRIPTION",
+                "summary": "список ресурсов для физического аппаратного устройства",
+                "text": "серия вложенных списков, предназначенных для хранения списка ресурсов, используемых физическим аппаратным устройством"
+            },
+            {
+                "id": "REG_RESOURCE_REQUIREMENTS_LIST",
+                "name": "REG_RESOURCE_REQUIREMENTS_LIST",
+                "summary": "требования к аппаратным ресурсам драйвера устройства",
+                "text": "список требований к аппаратным ресурсам драйвера устройства в дереве карты ресурсов"
+            },
+            {
+                "id": "REG_QWORD",
+                "name": "REG_QWORD",
+                "summary": "64 битное число",
+                "text": "64 битное число"
+            },
+            {
+                "id": "REG_INVALID_TYPE",
+                "name": "REG_INVALID_TYPE",
+                "summary": "специальный невалидный ключ",
+                "text": "специальный невалидный ключ"
+            }
+        ]
     }
 };
