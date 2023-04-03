@@ -8,9 +8,7 @@ import {
 import { blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
-//import reducerNetworkTrafficPatternSTIXObjects from "../reducer_handlers/reducerNetworkTrafficSTIXObject.js";
 import reducerWindowsRegistryKeyPatternSTIXObjects from "../reducer_handlers/reducerWindowsRegistryKeySTIXObject.js";
-//import CreateNetworkTrafficPatternElements from "../type_elements_stix/networkTrafficPatternElements.jsx";
 import CreateWindowsRegistryKeyPatternElements from "../type_elements_stix/windowsRegistryKeyPatternElements.jsx";
 import CreateElementAdditionalTechnicalInformationCO from "../createElementAdditionalTechnicalInformationCO.jsx";
 
@@ -186,6 +184,7 @@ function CreateMajorContent(props){
                 campaignPatterElement={state}
                 handlerKey={(e) => { dispatch({ type: "updateKey", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
                 handlerModifiedTime={(e) => { dispatch({ type: "updateModifiedTime", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerAddItemValues={(e) => { dispatch({ type: "addItemElementValues", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerButtonShowLink={(refId) => {                   
                     dispatchShowRef({ type: "addId", data: refId });
                     dispatchShowRef({ type: "cleanObj", data: {} });
@@ -206,82 +205,8 @@ function CreateMajorContent(props){
                     }});
                 }}
                 handlerNumberOfSubkeys={(e) => { dispatch({ type: "updateNumberOfSubkeys", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerDeleteItemValues={(e) => { dispatch({ type: "deleteItemElementValues", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />
-            
-            {/*<CreateNetworkTrafficPatternElements 
-                isDisabled={false}
-                showRefElement={stateShowRef}
-                campaignPatterElement={state}
-                handlerClick={(parentId, refId) => {
-                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-                        if(!isExistTransmittedData(data)){
-                            return;
-                        }
-
-                        for(let obj of data.information.additional_parameters.transmitted_data){
-                            if(parentId.includes("network-traffic")){
-                                dispatchShowRef({ type: "updateNetworkRefObj", data: obj });                          
-                            }
-                        }
-                    });
-
-                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-                        searchObjectId: refId,
-                        parentObjectId: "",
-                    }});
-                }}            
-                handlerEndDate={(e) => { dispatch({ type: "updateEndDate", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerSrcPort={(e) => { dispatch({ type: "updateSrcPort", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDstPort={(e) => { dispatch({ type: "updateDstPort", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerIsActive={(e) => { dispatch({ type: "updateIsActive", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerStartDate={(e) => { dispatch({ type: "updateStartDate", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDstPackets={(e) => { dispatch({ type: "updateDstPackets", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerSrcPackets={(e) => { dispatch({ type: "updateSrcPackets", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDstByteCount={(e) => { dispatch({ type: "updateDstByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerSrcByteCount={(e) => { dispatch({ type: "updateSrcByteCount", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
-                handlerListProtocols={(e) => { dispatch({ type: "updateProtocols", data: e }); handlerCheckStateButtonIsDisabled(e); }}
-                // это обработчик для ссылок на объекты содержащие ТОЛЬКО одну строчку, подходит только для свойств src_ref и dst_ref которые после 
-                //просмотра будет содержать только свойство value STIX объектов: ipv4-addr, ipv6-addr, mac-addr, domain-name
-                handlerClickShortRef={(refId, propertyName) => {
-                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-                        if(!isExistTransmittedData(data)){
-                            return;
-                        }
-
-                        for(let obj of data.information.additional_parameters.transmitted_data){ 
-                            if(obj.type === "ipv4-addr" || obj.type === "ipv6-addr" || obj.type === "mac-addr" || obj.type === "domain-name"){
-                                dispatch({ type: "addShortRef", data: { value: obj.value, propName: propertyName } });        
-                            }
-                        }
-                    });
-
-                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-                        searchObjectId: refId,
-                        parentObjectId: state.id,
-                    }});
-                }}
-                // это обработчик для ссылок на объекты содержащие полную информацию (для визуализации используется CreateShortInformationSTIXObject), 
-                //подходит для свойств src_payload_ref и dst_payload_ref содержащие ссылки на STIX объект artifact 
-                handlerButtonShowLink={(refId) => {
-                    dispatchShowRef({ type: "addId", data: refId });
-                    dispatchShowRef({ type: "cleanObj", data: {} });
-    
-                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-                        if(!isExistTransmittedData(data)){
-                            return;
-                        }
-
-                        for(let obj of data.information.additional_parameters.transmitted_data){ 
-                            dispatchShowRef({ type: "addObject", data: obj });        
-                        }
-                    });
-
-                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-                        searchObjectId: refId,
-                        parentObjectId: state.id,
-                    }});
-                }}
-            />*/}
         </Grid>
 
         <CreateElementAdditionalTechnicalInformationCO 

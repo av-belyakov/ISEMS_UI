@@ -1,5 +1,4 @@
 const listExtendedObject = [
-    //SDO
     {name: "report", listProperties: [ 
         "object_refs" 
     ]}, //object_refs (any STIX object)
@@ -81,6 +80,9 @@ const listExtendedObject = [
         "parent_ref",
         "child_refs",
     ]}, //opened_connection_refs (SCO network-traffic)
+    {name: "windows-registry-key", listProperties: [
+        "creator_user_ref",
+    ]}, //creator_user_ref (SCO user-account)
     // creator_user_ref (SCO user-account), image_ref (SCO file), parent_ref (process)
     // child_refs (process)
 ];

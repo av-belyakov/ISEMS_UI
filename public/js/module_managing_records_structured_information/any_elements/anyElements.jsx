@@ -682,7 +682,7 @@ export function CreateListHashes(props){
             select
             disabled={isDisabled}
             fullWidth
-            label={"словарь хешей для URL или PayloadBin"}
+            label={"словарь хешей"}
             value={campaignPatterElement.hashes? campaignPatterElement.hashes: "" }
             onChange={(e) => {
                 handlerHashes.call(null, e);
@@ -1871,7 +1871,7 @@ export function CreateReceivedLines(props){
                     setInvalidReceivedLines(true);
                     setValueReceivedLines("");
                     setIsDisabledButtonNewReceivedLines(true);
-                }} disabled={isDisabledButtonNewReceivedLines}>добавить элемент поля 'Received'</Button>
+                }} disabled={isDisabledButtonNewReceivedLines}>{"добавить элемент поля \"Received\""}</Button>
         </Grid>
     </Grid>);
 }
@@ -2063,7 +2063,7 @@ CreateListAccountType.propTypes = {
 export function CreateListWindowsRegistryDatatype(props){
     let { 
         isDisabled,
-        campaignPatterElement, 
+        windowsRegistryDatatype, 
         handlerWindowsRegistryDatatype, 
     } = props;
 
@@ -2081,7 +2081,7 @@ export function CreateListWindowsRegistryDatatype(props){
         return "";
     };
 
-    let text = getContentText(campaignPatterElement.resource_level);
+    let text = getContentText(windowsRegistryDatatype);
     let [ textMenuItem, setTextMenuItem ] = useState(text);
 
     return (dictionaryLists["windows-registry-datatype-enum"] && <React.Fragment>
@@ -2091,7 +2091,7 @@ export function CreateListWindowsRegistryDatatype(props){
             disabled={isDisabled}
             fullWidth
             label={"уровень ресурсов атаки"}
-            value={campaignPatterElement.resource_level? campaignPatterElement.resource_level: "" }
+            value={windowsRegistryDatatype? windowsRegistryDatatype: "" }
             onChange={(e) => {
                 handlerWindowsRegistryDatatype.call(null, e);
                 setTextMenuItem(getContentText(e.target.value));
@@ -2109,6 +2109,6 @@ export function CreateListWindowsRegistryDatatype(props){
 
 CreateListWindowsRegistryDatatype.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
-    campaignPatterElement: PropTypes.object.isRequired,
+    windowsRegistryDatatype: PropTypes.string.isRequired,
     handlerWindowsRegistryDatatype: PropTypes.func.isRequired,
 };

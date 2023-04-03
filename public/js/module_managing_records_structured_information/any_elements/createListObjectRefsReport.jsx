@@ -248,8 +248,6 @@ const loreducer = (state, action) => {
 
         return {...state, list: state.list};
     case "addList":
-        //console.log("**************============== func 'loreducer' action.type = ", action.type, " action.data = ", action.data);
-
         for(let item of action.data.addId){
             for(let i = 0; i < state.list.length; i++){
                 if(state.list[i].id !== action.data.parentId){
@@ -329,13 +327,8 @@ export default function CreateListObjectRefsReport(props){
 
     let addId = (idForCreateListObjectRefs.addId.length === 0)? 0: idForCreateListObjectRefs.addId[0].obj.id;
 
-    //console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", stateReport:", stateReport, " listObjReducer ======= ", listObjReducer, " (*)(*)");
-
     useEffect(() => {
         let listener = (data) => {
-
-            //console.log("(*)(*) ____ func 'CreateListObjectRefsReport', majorParentId: ", majorParentId, ", useEffect(():", data, " (*)(*)");
-
             let listObj = data.information.additional_parameters.transmitted_data.filter((item) => {
                 return item.type !== "relationship" && item.type !== "sighting"; 
             });
@@ -384,9 +377,6 @@ export default function CreateListObjectRefsReport(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ confirmDeleteLink ]),
     useEffect(() => {
-
-        //console.log("**) ____ func 'CreateListObjectRefsReport', useEffect ----- idForCreateListObjectRefs.parentId: ", idForCreateListObjectRefs.parentId, " idForCreateListObjectRefs.addId:", idForCreateListObjectRefs.addId);
-
         //для изменения содержимого списка listObjReducer.listId типа { currentId: item, childId: [] }
         setListObjReducer({ type: "addListId", data: idForCreateListObjectRefs });
 
@@ -419,25 +409,12 @@ export default function CreateListObjectRefsReport(props){
             return listTmp;
         },
         handleClick = (num, currentId, depth) => {  
-            
-            //console.log("func 'handleClick' __________ num: '", num, "' currentId: '", currentId, "' depth: '", depth, "', listActivatedObjectNumbers: ", listActivatedObjectNumbers);
-            //console.log("func 'handleClick' __________ listActivatedObjectNumbers[depth]: '", listActivatedObjectNumbers[depth], " typeof listActivatedObjectNumbers[depth] = ", listActivatedObjectNumbers[depth]);
-
             let tmp = listActivatedObjectNumbers.slice();
             if(typeof listActivatedObjectNumbers[depth] !== "undefined" && listActivatedObjectNumbers[depth] === num){        
-
-                //console.log("func 'handleClick' __________ 111");
-
                 tmp.splice(depth, 10);
             } else if (typeof listActivatedObjectNumbers[depth] !== "undefined" && listActivatedObjectNumbers[depth] !== num) {
-
-                //console.log("func 'handleClick' __________ 222 num = ", num, " listActivatedObjectNumbers[depth] = ", listActivatedObjectNumbers[depth], " listActivatedObjectNumbers[depth] !== num:", listActivatedObjectNumbers[depth] !== num);
-
                 tmp[depth] = num;
             } else {        
-
-                //console.log("func 'handleClick' __________ 333");
-
                 tmp.push(num);
             }
 
@@ -512,9 +489,6 @@ export default function CreateListObjectRefsReport(props){
             let listProperties = getListPropertiesExtendedObject(type[0]);
 
             let titleWarning = "Не заполнено ключевое поле, являющееся обязательным для данного объекта. Вероятнее всего отсутствуют ссылки на другой STIX объект, например в поле object_refs.";
-            //titleWarning += " При сохранении Отчета даны объект не будет добавлен в базу данных. Для того чтобы исправить это необходимо добавить в текущий объект ссылку на какой либо другой объект STIX.";
-
-            //console.log("*********************** open = ", open, " key = ", key, " listActivatedObjectNumbers[depth] = ", listActivatedObjectNumbers[depth]);
 
             return (<React.Fragment key={`rf_${key}`}>
                 <ListItem 
@@ -584,11 +558,6 @@ export default function CreateListObjectRefsReport(props){
         });
     };
 
-    //directory--9b77ec55-ab31-4b54-ac28-13aa8c95cea5
-    //domain-name--0af940f8-35ce-46e7-918b-66078773e48d
-    //directory--8e462c0b-bd93-4e7a-824d-163f9ccc47b4
-    // {"commonpropertiesobjectstix.id": "report--5e251d2d-6967-42e5-a800-1728c56cc9ba"}
-
     return (<React.Fragment>
         <Row className="mt-4">
             <Col md={12}><span className="text-muted">Идентификаторы объектов связанных с данным Отчётом</span></Col>
@@ -614,7 +583,6 @@ export default function CreateListObjectRefsReport(props){
                     <List
                         component="nav"
                         aria-labelledby="nested-list-subheader"
-                        //subheader={}
                     >
                         {getListId(listObjReducer.listId, majorParentId, 0)}
                     </List>
@@ -632,7 +600,6 @@ CreateListObjectRefsReport.propTypes = {
     idForCreateListObjectRefs: PropTypes.object.isRequired,
     handlerDialogConfirm: PropTypes.func.isRequired,
     handlerDeleteObjectRef: PropTypes.func.isRequired,
-    //handlerReportUpdateObjectRefs: PropTypes.func.isRequired, 
     handlerShowObjectRefSTIXObject: PropTypes.func.isRequired,
     handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
 };

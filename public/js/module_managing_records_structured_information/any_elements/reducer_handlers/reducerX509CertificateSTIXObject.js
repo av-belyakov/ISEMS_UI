@@ -1,4 +1,4 @@
-export default function reducerWindowsRegistryKeyPatternSTIXObjects(state, action){
+export default function reducerX509CertificatePatternSTIXObjects(state, action){
     let dateTime = "";
     let defaultData = "0001-01-01T00:00:00Z";
     let minDefaultData = "1970-01-01T00:00:00.000Z";
@@ -22,7 +22,41 @@ export default function reducerWindowsRegistryKeyPatternSTIXObjects(state, actio
         return {};
     case "addId":
         return {...state, id: action.data};
-    case "updateKey":
+
+
+        /**
+         * 
+         * доделать обработчики и X509V3Extensions          X509V3ExtensionsTypeSTIX `json:"x509_v3_extensions" bson:"x509_v3_extensions"`
+         * 
+         */
+    case "updateHashes":
+        //return {...state, id: action.data};
+        return {...state};
+    case "updateIssuer":
+        return {...state};
+    case "updateSubject":
+        return {...state};
+    case "updateVersion":
+        return {...state};
+    case "updateIsSelfSigned":
+        return {...state};
+    case "updateSerialNumber":
+        return {...state};
+    case "updateValidityNotAfter":
+        return {...state};
+    case "updateValidityNotBefore":
+        return {...state};
+    case "updateSignatureAlgorithm":
+        return {...state};
+    case "updateSubjectPublicKeyModulus":
+        return {...state};
+    case "updateSubjectPublicKeyExponent":
+        return {...state};
+    case "updateSubjectPublicKeyAlgorithm":
+        return {...state};
+
+
+    /*case "updateKey":
         return {...state, key: action.data};
     case "updateModifiedTime":
 
@@ -48,7 +82,7 @@ export default function reducerWindowsRegistryKeyPatternSTIXObjects(state, actio
     case "deleteItemElementValues":
         state.values.splice(action.data, 1);
 
-        return {...state};
+        return {...state};*/
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

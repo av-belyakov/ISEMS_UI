@@ -53,6 +53,7 @@ const CreateSoftwarePatternNewSTIXObject = lazy(() => import("./contentSoftwareP
 const CreateNetworkTrafficPatternNewSTIXObject = lazy(() => import("./contentNetworkTrafficPatternNewSTIXObject.jsx"));
 const CreateProcessPatternNewSTIXObject = lazy(() => import("./contentProcessPatternNewSTIXObject.jsx"));
 const CreateUserAccountPatternNewSTIXObject = lazy(() => import("./contentUserAccountPatternNewSTIXObject.jsx"));
+const CreateWindowsRegistryKeyPatternNewSTIXObject = lazy(() => import("./contentWindowsRegistryKeyPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -611,7 +612,7 @@ function somethingModule(nameSTIX){
         "process": CreateProcessPatternNewSTIXObject, 
         "software": CreateSoftwarePatternNewSTIXObject,
         "url": CreateURLPatternNewSTIXObject,
-        //"windows-registry-key": CreateWindowsRegistryKeyPatternElements,
+        "windows-registry-key": CreateWindowsRegistryKeyPatternNewSTIXObject,
         //"x509-certificate": CreateX509CertificatePatternElements,
         "attack-pattern": CreateDialogContentAttackPatternNewSTIXObject,
         "autonomous-system": CreateAutonomousSystemPatternNewSTIXObject, 

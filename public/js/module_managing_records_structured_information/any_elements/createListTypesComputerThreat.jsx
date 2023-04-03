@@ -30,6 +30,7 @@ export default function CreateListTypesComputerThreat(props){
     useEffect(() => {
         socketIo.once("isems-mrsi response ui: list types computer threat", listener);
         socketIo.emit("isems-mrsi ui request: get list types computer threat", { arguments: {}});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (<TextField

@@ -366,17 +366,15 @@ function GetGranularMarkings(props){
                 return (<Card className={classes.customPaper} key={`key_granular_markings_${key}_fragment`}>
                     <CardHeader 
                         subheader={markingRef}
-                        action={<React.Fragment>
-                            <IconButton aria-label="delete" onClick={()=>{ 
-                                handlerElementDelete({ 
-                                    itemType: "granular_markings", 
-                                    item: markingRef,
-                                    orderNumber: key,
-                                    objectId: objectId }); 
-                            }}>
-                                <IconDeleteOutline style={{ color: red[400] }} />
-                            </IconButton>
-                        </React.Fragment>} />
+                        action={<IconButton aria-label="delete" onClick={()=>{ 
+                            handlerElementDelete({ 
+                                itemType: "granular_markings", 
+                                item: markingRef,
+                                orderNumber: key,
+                                objectId: objectId }); 
+                        }}>
+                            <IconDeleteOutline style={{ color: red[400] }} />
+                        </IconButton>} />
                     <CardContent>
                         {((typeof item.lang === "undefined") || (item.lang === null) || (item.lang.length === 0) ? 
                             "": 

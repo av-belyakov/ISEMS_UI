@@ -1,25 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import { 
     Button,
     Card,
     CardActions,
     CardContent,
-    CardHeader,
     Typography, 
     TextField,
     Grid,
     IconButton,
     Collapse,
-//    IconButton,
 } from "@material-ui/core";
-//import { Form } from "react-bootstrap";
-//import { red } from "@material-ui/core/colors";
 import DateFnsUtils from "dateIoFnsUtils";
 import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
-import { grey, green, red, blue } from "@material-ui/core/colors";
+import { grey, green, red } from "@material-ui/core/colors";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
-import { cloneDeep } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
@@ -31,6 +25,32 @@ const defaultData = "0001-01-01T00:00";
 const minDefaultData = "1970-01-01T00:00:00.000Z";
 //const minDefaultData = new Date();
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        width: "100%",
+    },
+    heading: {
+        fontSize: theme.typography.pxToRem(15),
+        fontWeight: theme.typography.fontWeightRegular,
+    },
+    customPaper: {
+        width: "100%",
+        color: theme.palette.getContrastText(grey[50]),
+        backgroundColor: grey[50],
+        margin: theme.spacing(1),
+    },
+    buttonCreateElement: {
+        color: theme.palette.getContrastText(green[500]),
+        backgroundColor: green[500],
+        "&:hover": {
+            backgroundColor: green[700],
+        },
+    },
+    formControlTypeHashRE: {
+        minWidth: 120,
+    },
+}));
+
 export default function CreateWindowsRegistryKeyPatternElements(props){
     let { 
         isDisabled,
@@ -38,18 +58,10 @@ export default function CreateWindowsRegistryKeyPatternElements(props){
         campaignPatterElement,
         handlerKey,
         handlerModifiedTime,
+        handlerAddItemValues,
         handlerButtonShowLink,
         handlerNumberOfSubkeys,
-
-        /*handlerCWD,
-        handlerPID,
-        handlerClick,
-        handlerIsHidden,
-        handlerCreatedTime,
-        handlerCommandLine,
-        handlerButtonShowLink,
-        handlerAddEnvironmentVariables,
-        handlerDeleteEnviromentVariableElement,*/
+        handlerDeleteItemValues,
     } = props;
 
     let [ invalidKey, setInvalidKey ] = useState(false);
@@ -57,9 +69,6 @@ export default function CreateWindowsRegistryKeyPatternElements(props){
     let modifiedTime = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
-
-    console.log("_____=== func 'CreateProcessPatternElements', showRefElement:", showRefElement, " campaignPatterElement = ", campaignPatterElement);
-    console.log("showRefElement.id = ", showRefElement.id, " campaignPatterElement.creator_user_ref = ", campaignPatterElement.creator_user_ref, " refId = ", refId, " expanded = ", expanded);
 
     if(currentTimeZoneOffsetInHours > 0){
         if(typeof campaignPatterElement.modified_time !== "undefined" && campaignPatterElement.modified_time.slice(0, 16) !== defaultData){
@@ -90,73 +99,6 @@ export default function CreateWindowsRegistryKeyPatternElements(props){
 
         handlerButtonShowLink(id);
     };
-
-    let handlerWindowsRegistryDatatype = (item) => {
-        console.log("func 'handlerWindowsRegistryDatatype', item = ", item);
-    };
-
-    /*const getListEnviromentVariables = (envList) => {
-        if(typeof envList === "undefined"){
-            return "";
-        }
-
-        if(Array.isArray(envList) && envList.length === 0){
-            return "";
-        }
-
-        let tmpList = [];
-        for(let k in envList){
-            let objTmp = {};
-            objTmp[k] = envList[k];
-            tmpList.push(objTmp);
-        }
-
-        let key, value = "";
-        return (<React.Fragment>
-            <Grid container direction="row">
-                <Grid item container md={12} justifyContent="flex-start">
-                    <span className="text-muted">
-                    Список переменных окружения:
-                    </span>
-                </Grid>
-            </Grid>
-            <Grid container direction="row">
-                <Grid item container md={12} justifyContent="flex-start">
-                    <ol>
-                        {tmpList.map((item, num) => {
-                            for(let k in item){
-                                key = k;
-                                value = item[k];
-                            }
-
-                            return (<li key={`key_item_env_${num}`}>
-                                {key}:&nbsp;&nbsp;&nbsp;{value}&nbsp;
-                                <IconButton aria-label="delete-hash" onClick={handlerDeleteEnviromentVariableElement.bind(null, key)}>
-                                    {isDisabled? "": <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />}
-                                </IconButton>
-                            </li>);
-                        })}
-                    </ol>
-                </Grid>
-            </Grid>
-        </React.Fragment>);
-    };*/
-
-    /**
-Key - содержит полный путь к разделу реестра. Значение ключа,должно быть сохранено в регистре. В название ключа все сокращения должны быть раскрыты.
-//  Values - содержит значения, найденные в разделе реестра.
-//  ModifiedTime - время, в формате "2016-05-12T08:17:27.000Z", последнего изменения раздела реестра.
-//  CreatorUserRef - содержит ссылку на учетную запись пользователя, из под которой создан раздел реестра. Объект, на который ссылается это свойство, должен иметь тип user-account.
-//  NumberOfSubkeys - Указывает количество подразделов, содержащихся в разделе реестра.
-type WindowsRegistryKeyCyberObservableObjectSTIX struct {
-	CommonPropertiesObjectSTIX
-	OptionalCommonPropertiesCyberObservableObjectSTIX
-	+ Key             string                         `json:"key" bson:"key"`
-	Values          []WindowsRegistryValueTypeSTIX `json:"values" bson:"values"`
-	+ ModifiedTime    time.Time                      `json:"modified_time" bson:"modified_time"`
-	+ CreatorUserRef  IdentifierTypeSTIX             `json:"creator_user_ref" bson:"creator_user_ref"`
-	+ NumberOfSubkeys int                            `json:"number_of_subkeys" bson:"number_of_subkeys"`
- */
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
@@ -272,10 +214,9 @@ type WindowsRegistryKeyCyberObservableObjectSTIX struct {
             </Grid>
         </Grid>
         <GetWindowsRegistryValue  
-            objectId={""}
             objectInfo={campaignPatterElement}
-            handlerElementAdd={() => {}}
-            handlerElementDelete={() => {}}
+            handlerElementAdd={handlerAddItemValues}
+            handlerElementDelete={handlerDeleteItemValues}
         />
 
         {/*(campaignPatterElement !== null && campaignPatterElement.extensions)?
@@ -318,8 +259,10 @@ CreateWindowsRegistryKeyPatternElements.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,
     handlerKey: PropTypes.func.isRequired,
     handlerModifiedTime: PropTypes.func.isRequired,
+    handlerAddItemValues: PropTypes.func.isRequired,
     handlerButtonShowLink: PropTypes.func.isRequired,
     handlerNumberOfSubkeys: PropTypes.func.isRequired,
+    handlerDeleteItemValues: PropTypes.func.isRequired,
 };
 
 /**
@@ -340,98 +283,48 @@ type WindowsRegistryKeyCyberObservableObjectSTIX struct {
 }
  */
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-    customPaper: {
-        width: "100%",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        margin: theme.spacing(1),
-    },
-    buttonCreateElement: {
-        color: theme.palette.getContrastText(green[500]),
-        backgroundColor: green[500],
-        "&:hover": {
-            backgroundColor: green[700],
-        },
-    },
-    formControlTypeHashRE: {
-        minWidth: 120,
-    },
-}));
+let patternWindowsRegistryValue = {
+    name: "",
+    data: "",
+    data_type: "",
+};
 
-/*
-<CreateListWindowsRegistryDatatype 
-            isDisabled={isDisabled}
-            campaignPatterElement={campaignPatterElement}
-            handlerWindowsRegistryDatatype={handlerWindowsRegistryDatatype}
-        />
-          
-         * "windows-registry-datatype-enum"
-         * 
-         * 
-         * Values          []WindowsRegistryValueTypeSTIX `json:"values" bson:"values"`  
-         * 
-         * // WindowsRegistryValueTypeSTIX объект "Windows Registry Value Type", по терминалогии STIX. Данный тип фиксирует
-//
-//	значения свойств находящихся в разделе реестра Windows. Поскольку все свойства этого типа являются необязательными,
-//
-// по крайней мере одно из свойств, определенных ниже, должно быть инициализировано при использовании этого типа.
-// Name - содержит название параметра реестра. Для указания значения ключа реестра по умолчанию необходимо использовать пустую строку.
-// Data - содержит данные, содержащиеся в значении реестра.
-// DataType - содержит тип данных реестра (REG_*), используемый в значении реестра. Значения этого свойства должны быть получены из перечисления windows-registry-datatype enum.
-type WindowsRegistryValueTypeSTIX struct {
-	Name     string       `json:"name" bson:"name"`
-	Data     string       `json:"data" bson:"data"`
-	DataType EnumTypeSTIX  string  `json:"data_type" bson:"data_type"`
+function reducerRegValue(state, action){
+    switch(action.type) {
+    case "name":
+        return {...state, name: action.data};
+    case "data":
+        return {...state, data: action.data};
+    case "data_type":
+        return {...state, data_type: action.data};
+    case "clear":
+        return {...state, patternWindowsRegistryValue};
+    }
 }
-         * 
-         * */
 
 function GetWindowsRegistryValue(props){
     let {  
-        objectId,
         objectInfo,
         handlerElementAdd,
         handlerElementDelete,
     } = props;
 
-    console.log("func 'GetWindowsRegistryValue', objectInfo = ", objectInfo);
-
-    /**
- * 
- * надо сделать значения относящиеся к разделу реестра
- * 
- */
-
     const classes = useStyles();
-    let patternWindowsRegistryValue = {
-        name: "",
-        data: "",
-        data_type: "",
-    };
 
-    let [ winRegValue, setWinRegValue ] = useState(patternWindowsRegistryValue);
+    let [ winRegValue, reducerWinRegValue ] = useReducer(reducerRegValue, patternWindowsRegistryValue);
     let [ buttonAddSelectorIsDisabled, setButtonAddSelectorIsDisabled ] = useState(true);
 
-    /*let [ valueTmpSelector, setValueTmpSelector ] = useState("");
-    let [ buttonAddNewGMIsDisabled, setButtonAddNewGMIsDisabled ] = useState(true);
-    let handlerDelSelector = (num) => {
-        let tmp = cloneDeep(valueGM);
-        tmp.selectors.splice(num, 1);
-
-        if(tmp.selectors.length === 0){
-            setButtonAddNewGMIsDisabled(true);
+    let handlerCheckWinRegValue = () => {
+        let wrvNameIsTrue = winRegValue.name && winRegValue.name !== "";
+        let wrvDataIsTrue = winRegValue.data && winRegValue.data !== "";
+        let wrvDataTupeIsTrue = winRegValue.data_type && winRegValue.data_type !== "";
+        
+        if(wrvNameIsTrue || wrvDataIsTrue || wrvDataTupeIsTrue){
+            setButtonAddSelectorIsDisabled(false);
+        } else {
+            setButtonAddSelectorIsDisabled(true);
         }
-
-        setValueGM(tmp);
-    };*/
+    };
 
     return (<Grid container direction="row" key="key_granular_markings_link">
         <Grid container direction="row" spacing={3}>
@@ -441,12 +334,7 @@ function GetWindowsRegistryValue(props){
                     label="наименование параметра реестра"
                     fullWidth={true}
                     value={winRegValue.name}
-                    onChange={(e) => {
-                        /*let valueGMTmp = cloneDeep(valueGM);
-
-                        valueGMTmp.lang = e.target.value.toUpperCase();
-                        setValueGM(valueGMTmp);*/
-                    }}
+                    onChange={(e) => { reducerWinRegValue({ type: "name", data: e.target.value }); handlerCheckWinRegValue(); }}
                 />
             </Grid>
             <Grid item md={8}>
@@ -455,12 +343,7 @@ function GetWindowsRegistryValue(props){
                     label="данные, содержащиеся в значении реестра"
                     fullWidth={true}
                     value={winRegValue.data}
-                    onChange={(e) => {
-                        /*let valueGMTmp = cloneDeep(valueGM);
-
-                                valueGMTmp.marking_ref = e.target.value;
-                                setValueGM(valueGMTmp);*/
-                    }}
+                    onChange={(e) => { reducerWinRegValue({ type: "data", data: e.target.value }); handlerCheckWinRegValue(); }}
                 />
             </Grid>
         </Grid>
@@ -468,122 +351,65 @@ function GetWindowsRegistryValue(props){
             <Grid item md={10}>
                 <CreateListWindowsRegistryDatatype 
                     isDisabled={false}
-                    campaignPatterElement={/*winRegValue.data_type*/{}}
-                    handlerWindowsRegistryDatatype={() => {}}
+                    windowsRegistryDatatype={winRegValue.data_type}
+                    handlerWindowsRegistryDatatype={(e) => { reducerWinRegValue({ type: "data_type", data: e.target.value }); handlerCheckWinRegValue(); }}
                 />
             </Grid>
             <Grid item md={2} className="text-end mt-3">
                 <Button 
-                    onClick={() => {
-                        /*if(valueTmpSelector === ""){
-                            return;
-                        }
-
-                        let valueGMTmp = cloneDeep(valueGM);
-
-                        valueGMTmp.selectors.push(valueTmpSelector);
-                        setValueGM(valueGMTmp);
-                        setValueTmpSelector("");
-
-                        setButtonAddNewGMIsDisabled(false);
-                        setButtonAddSelectorIsDisabled(true);*/
-                    }} 
+                    onClick={handlerElementAdd.bind(null, winRegValue)} 
                     disabled={buttonAddSelectorIsDisabled}
                 >
-                        добавить свойства
+                    добавить
                 </Button>
             </Grid>
         </Grid>
 
-        {(objectInfo.value && objectInfo.value.length !== 0)?  
-            <Grid container direction="row" className="mt-3">
-                <ol>
-                    {objectInfo.value.map((item, num) => {
-                        return (<li key={`key_item_wrvalue_${num}`}>
-                            {item}&nbsp;
-                            <IconButton aria-label="delete-item_wrvalue" onClick={() => handlerElementDelete.call(null, num)}>
-                                <RemoveCircleOutlineOutlinedIcon style={{ color: red[400] }} />
-                            </IconButton>
-                        </li>);
-                    })}
-                </ol>
-            </Grid>:
-            ""}
-
-        {/*<Grid container direction="row" key="key_granular_markings_link">
-            <Grid item md={12} className="text-end pt-2 pb-2">
-                <Button onClick={() => {
-                    let tmpData = cloneDeep(valueGM);
-                    setValueGM(patternValueGM);
-                    setButtonAddNewGMIsDisabled(true);
-
-                    tmpData.external_id = `granular_markings--${uuidv4()}`;
-
-                    handlerDialogElementAdditionalThechnicalInfo({ 
-                        actionType: "new",
-                        modalType: "granular_markings", 
-                        objectId: objectId,
-                        orderNumber: -1,
-                        data: tmpData,
-                    });
-                }} disabled={buttonAddNewGMIsDisabled}>
-                    {"добавить новую \"гранулярную метку\""}
-                </Button>
-            </Grid>
-        </Grid>
-
-        {((typeof reportInfo.granular_markings === "undefined") || (reportInfo.granular_markings === null) || (reportInfo.granular_markings.length === 0))?
+        {((typeof objectInfo.values === "undefined") || (objectInfo.values === null) || (objectInfo.values.length === 0))?
             "":
-            reportInfo.granular_markings.map((item, key) => {
-                let markingRef = "";
-
-                if((typeof item.marking_ref !== "undefined") && (item.marking_ref !== null) && (item.marking_ref.length !== 0)){
-                    markingRef = item.marking_ref;
-                }
-
-                return (<Card className={classes.customPaper} key={`key_granular_markings_${key}_fragment`}>
-                    <CardHeader 
-                        subheader={markingRef}
-                        action={<React.Fragment>
-                            <IconButton aria-label="delete" onClick={()=>{ 
-                                handlerElementDelete({ 
-                                    itemType: "granular_markings", 
-                                    item: markingRef,
-                                    orderNumber: key,
-                                    objectId: objectId }); 
-                            }}>
-                                <IconDeleteOutline style={{ color: red[400] }} />
-                            </IconButton>
-                        </React.Fragment>} />
+            objectInfo.values.map((item, key) => {
+                return (<Card className={classes.customPaper} key={`key_value_${key}_fragment`}>
                     <CardContent>
-                        {((typeof item.lang === "undefined") || (item.lang === null) || (item.lang.length === 0) ? 
+                        <Grid container direction="row" key={`key_icon_delete_${key}`}>
+                            <Grid item container md={12} justifyContent="flex-end">
+                                <IconButton aria-label="delete" onClick={()=>{ 
+                                    handlerElementDelete(key); 
+                                }}>
+                                    <IconDeleteOutline style={{ color: red[400] }} />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+
+                        {((typeof item.name === "undefined") || (item.name === null) || (item.name.length === 0) ? 
                             "": 
-                            <Grid container direction="row" key={`key_granular_mark_${key}_2`}>
+                            <Grid container direction="row" key={`key_name_${key}`}>
                                 <Grid item md={12}>
-                                    <Typography variant="body2" component="p"><span className="text-muted">текстовый код языка:</span> {item.lang}</Typography>
+                                    <Typography variant="body2" component="p"><span className="text-muted">наименование:</span> {item.name}</Typography>
                                 </Grid>
                             </Grid>)}
 
-                        {((item.selectors === null) && (typeof item.selectors === "undefined"))?
-                            "":
-                            <Grid container direction="row" key={`key_granular_mark_${key}_3`}>
+                        {((typeof item.data === "undefined") || (item.data === null) || (item.data.length === 0) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_data_${key}`}>
                                 <Grid item md={12}>
-                                    <span>
-                                        <span className="text-muted">список селекторов для содержимого объекта STIX, к которому применяется это свойство:</span>
-                                        <ol>{item.selectors.map((i, num) => {
-                                            return <li key={`hash_${i.selectors}_${num}`}>{i}</li>;
-                                        })}</ol>
-                                    </span>
+                                    <Typography variant="body2" component="p"><span className="text-muted">данные:</span> {item.data}</Typography>
                                 </Grid>
-                            </Grid>}
+                            </Grid>)}
+
+                        {((typeof item.data_type === "undefined") || (item.data_type === null) || (item.data_type.length === 0) ? 
+                            "": 
+                            <Grid container direction="row" key={`key_data_type_${key}`}>
+                                <Grid item md={12}>
+                                    <Typography variant="body2" component="p"><span className="text-muted">тип данных:</span> {item.data_type}</Typography>
+                                </Grid>
+                            </Grid>)}
                     </CardContent>
                 </Card>);
-            })}*/}
+            })}
     </Grid>);
 }
 
 GetWindowsRegistryValue.propTypes = { 
-    objectId: PropTypes.string.isRequired,
     objectInfo: PropTypes.object.isRequired,
     handlerElementAdd: PropTypes.func.isRequired,
     handlerElementDelete: PropTypes.func.isRequired,
