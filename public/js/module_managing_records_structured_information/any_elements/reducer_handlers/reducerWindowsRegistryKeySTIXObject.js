@@ -25,9 +25,6 @@ export default function reducerWindowsRegistryKeyPatternSTIXObjects(state, actio
     case "updateKey":
         return {...state, key: action.data};
     case "updateModifiedTime":
-
-        console.log("func 'reducerWindowsRegistryKeyPatternSTIXObjects', action.type:", action.type, " action.data:", action.data, " state:", state);
-
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){

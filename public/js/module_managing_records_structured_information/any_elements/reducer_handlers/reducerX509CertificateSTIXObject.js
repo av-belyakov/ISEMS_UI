@@ -1,7 +1,5 @@
 export default function reducerX509CertificatePatternSTIXObjects(state, action){
     let dateTime = "";
-    let defaultData = "0001-01-01T00:00:00Z";
-    let minDefaultData = "1970-01-01T00:00:00.000Z";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
@@ -9,11 +7,21 @@ export default function reducerX509CertificatePatternSTIXObjects(state, action){
 
     switch(action.type){
     case "newAll":
-        if(state.modified_time){
-            if(action.data.modified_time === defaultData){
-                action.data.modified_time = minDefaultData;
-            } else {
-                action.data.modified_time = new Date(Date.parse(action.data.modified_time)).toISOString();
+        if(action.data.validity_not_after){
+            action.data.validity_not_after = new Date(Date.parse(action.data.validity_not_after)).toISOString();
+        }
+
+        if(action.data.validity_not_before){
+            action.data.validity_not_before = new Date(Date.parse(action.data.validity_not_before)).toISOString();
+        }
+
+        if(action.data.x509_v3_extensions){
+            if(action.data.x509_v3_extensions.private_key_usage_period_not_after){
+                action.data.x509_v3_extensions.private_key_usage_period_not_after = new Date(Date.parse(action.data.x509_v3_extensions.private_key_usage_period_not_after)).toISOString();
+            }
+
+            if(action.data.x509_v3_extensions.private_key_usage_period_not_before){
+                action.data.x509_v3_extensions.private_key_usage_period_not_before = new Date(Date.parse(action.data.x509_v3_extensions.private_key_usage_period_not_before)).toISOString();
             }
         }
 
@@ -22,46 +30,33 @@ export default function reducerX509CertificatePatternSTIXObjects(state, action){
         return {};
     case "addId":
         return {...state, id: action.data};
-
-
-        /**
-         * 
-         * доделать обработчики и X509V3Extensions          X509V3ExtensionsTypeSTIX `json:"x509_v3_extensions" bson:"x509_v3_extensions"`
-         * 
-         */
     case "updateHashes":
-        //return {...state, id: action.data};
-        return {...state};
+        return {...state, hashes: action.data};
     case "updateIssuer":
-        return {...state};
+        //console.log("func 'reducerX509CertificatePatternSTIXObjects', action.type:", action.type, " action.data:", action.data, " state:", state);
+
+        return {...state, issuer: action.data};
     case "updateSubject":
-        return {...state};
+        return {...state, subject: action.data};
     case "updateVersion":
-        return {...state};
+        return {...state, version: action.data};
     case "updateIsSelfSigned":
-        return {...state};
+        return {...state, is_self_signed: (action.data === "true")};
     case "updateSerialNumber":
-        return {...state};
+        return {...state, serial_number: action.data};
     case "updateValidityNotAfter":
+        tmp = Date.parse(action.data);
+    
+        if(currentTimeZoneOffsetInHours < 0){
+            dateTime = new Date(tmp + (ms * -1));
+        } else {
+            dateTime = new Date(tmp - (ms * -1));
+        }
+        
+        state.validity_not_after = new Date(Date.parse(dateTime)).toISOString();
+
         return {...state};
     case "updateValidityNotBefore":
-        return {...state};
-    case "updateSignatureAlgorithm":
-        return {...state};
-    case "updateSubjectPublicKeyModulus":
-        return {...state};
-    case "updateSubjectPublicKeyExponent":
-        return {...state};
-    case "updateSubjectPublicKeyAlgorithm":
-        return {...state};
-
-
-    /*case "updateKey":
-        return {...state, key: action.data};
-    case "updateModifiedTime":
-
-        console.log("func 'reducerWindowsRegistryKeyPatternSTIXObjects', action.type:", action.type, " action.data:", action.data, " state:", state);
-
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
@@ -69,20 +64,39 @@ export default function reducerX509CertificatePatternSTIXObjects(state, action){
         } else {
             dateTime = new Date(tmp - (ms * -1));
         }
-        
-        state.modified_time = new Date(Date.parse(dateTime)).toISOString();
-        
-        return {...state};
-    case "updateNumberOfSubkeys":
-        return {...state, number_of_subkeys: +action.data};
-    case "addItemElementValues":
-        state.values.push(action.data);
+    
+        state.validity_not_before = new Date(Date.parse(dateTime)).toISOString();
 
         return {...state};
-    case "deleteItemElementValues":
-        state.values.splice(action.data, 1);
+    case "updateSignatureAlgorithm":
+        return {...state, signature_algorithm: action.data};
+    case "updateSubjectPublicKeyModulus":
+        return {...state, subject_public_key_modulus: action.data};
+    case "updateSubjectPublicKeyExponent":
+        return {...state, subject_public_key_exponent: +action.data};
+    case "updateSubjectPublicKeyAlgorithm":
+        return {...state, subject_public_key_algorithm: action.data};
 
-        return {...state};*/
+    case "updateExtensions":
+        //        console.log("func 'reducerWindowsRegistryKeyPatternSTIXObjects', action.type:", action.type, " action.data:", action.data, " state:", state);
+
+        if(action.data.type === "private_key_usage_period_not_before" || action.data.type === "private_key_usage_period_not_after"){
+            tmp = Date.parse(action.data.elem);
+    
+            if(currentTimeZoneOffsetInHours < 0){
+                dateTime = new Date(tmp + (ms * -1));
+            } else {
+                dateTime = new Date(tmp - (ms * -1));
+            }
+        
+            state.x509_v3_extensions[action.data.type] = new Date(Date.parse(dateTime)).toISOString();
+
+            return {...state};
+        }
+
+        state.x509_v3_extensions[action.data.type] = action.data.elem.target.value;
+
+        return {...state};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

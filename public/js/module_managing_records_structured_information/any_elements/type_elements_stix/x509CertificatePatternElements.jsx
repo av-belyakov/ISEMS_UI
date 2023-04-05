@@ -1,61 +1,23 @@
-import React, { useState, useReducer } from "react";
+import React, { useState } from "react";
 import { 
-    Button,
-    Card,
-    CardActions,
-    CardContent,
-    Typography, 
     TextField,
     Grid,
-    IconButton,
-    Collapse,
 } from "@material-ui/core";
 import { Form } from "react-bootstrap";
 import DateFnsUtils from "dateIoFnsUtils";
-import IconDeleteOutline from "@material-ui/icons/DeleteOutline";
-import { grey, green, red } from "@material-ui/core/colors";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
-import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 import { CreateListHashes  } from "../anyElements.jsx";
 
 const defaultData = "0001-01-01T00:00";
 const minDefaultData = "1970-01-01T00:00:00.000Z";
 //const minDefaultData = new Date();
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        width: "100%",
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-    customPaper: {
-        width: "100%",
-        color: theme.palette.getContrastText(grey[50]),
-        backgroundColor: grey[50],
-        margin: theme.spacing(1),
-    },
-    buttonCreateElement: {
-        color: theme.palette.getContrastText(green[500]),
-        backgroundColor: green[500],
-        "&:hover": {
-            backgroundColor: green[700],
-        },
-    },
-    formControlTypeHashRE: {
-        minWidth: 120,
-    },
-}));
-
 export default function CreateX509CertificatePatternElements(props){
     let { 
         isDisabled,
-        showRefElement,
         campaignPatterElement,
         handlerHashes,
         handlerIssuer,
@@ -69,73 +31,58 @@ export default function CreateX509CertificatePatternElements(props){
         handlerSubjectPublicKeyModulus,
         handlerSubjectPublicKeyExponent,
         handlerSubjectPublicKeyAlgorithm,
+        handlerExtensions,
     } = props;
 
     let [ invalidIssuer, setInvalidIssuer ] = useState(false);
 
     let validityNotBefore = minDefaultData;
     let validityNotAfter = minDefaultData;
+    let privateKeyUsagePeriodNotBefore = minDefaultData;
+    let privateKeyUsagePeriodNotAfter = minDefaultData;
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
-    console.log("_____=== func 'CreateX509CertificatePatternElements', showRefElement:", showRefElement, " campaignPatterElement = ", campaignPatterElement);
-    console.log("showRefElement.id = ", showRefElement.id, " campaignPatterElement.creator_user_ref = ", campaignPatterElement.creator_user_ref, " refId = ", refId, " expanded = ", expanded);
+    console.log("_____=== func 'CreateX509CertificatePatternElements', campaignPatterElement = ", campaignPatterElement);
+    console.log("campaignPatterElement.x509_v3_extensions = ", campaignPatterElement.x509_v3_extensions);
 
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.validity_not_before !== "undefined" && campaignPatterElement.validity_not_before.slice(0, 16) !== defaultData){
+        if(campaignPatterElement.validity_not_before && campaignPatterElement.validity_not_before.slice(0, 16) !== defaultData){
             validityNotBefore = new Date(Date.parse(campaignPatterElement.validity_not_before) + ms);
         }
 
-        if(typeof campaignPatterElement.validity_not_after !== "undefined" && campaignPatterElement.validity_not_after.slice(0, 16) !== defaultData){
+        if(campaignPatterElement.validity_not_after && campaignPatterElement.validity_not_after.slice(0, 16) !== defaultData){
             validityNotAfter = new Date(Date.parse(campaignPatterElement.validity_not_after) + ms);
         }
+
+        if(campaignPatterElement.x509_v3_extensions){
+            if(campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_before && campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_before.slice(0, 16) !== defaultData){
+                privateKeyUsagePeriodNotBefore = new Date(Date.parse(campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_before) + ms);
+            }
+
+            if(campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_after && campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_after.slice(0, 16) !== defaultData){
+                privateKeyUsagePeriodNotAfter = new Date(Date.parse(campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_after) + ms);
+            }
+        }
     } else {
-        if(typeof campaignPatterElement.validity_not_before !== "undefined" && campaignPatterElement.validity_not_before.slice(0, 16) !== defaultData){
+        if(campaignPatterElement.validity_not_before && campaignPatterElement.validity_not_before.slice(0, 16) !== defaultData){
             validityNotBefore = new Date(Date.parse(campaignPatterElement.validity_not_before) - (ms * -1));
         }
 
-        if(typeof campaignPatterElement.validity_not_after !== "undefined" && campaignPatterElement.validity_not_after.slice(0, 16) !== defaultData){
+        if(campaignPatterElement.validity_not_after && campaignPatterElement.validity_not_after.slice(0, 16) !== defaultData){
             validityNotAfter = new Date(Date.parse(campaignPatterElement.validity_not_after) - (ms * -1));
         }
+
+        if(campaignPatterElement.x509_v3_extensions){
+            if(campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_before && campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_before.slice(0, 16) !== defaultData){
+                privateKeyUsagePeriodNotBefore = new Date(Date.parse(campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_before) + ms);
+            }
+
+            if(campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_after && campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_after.slice(0, 16) !== defaultData){
+                privateKeyUsagePeriodNotAfter = new Date(Date.parse(campaignPatterElement.x509_v3_extensions.private_key_usage_period_not_after) + ms);
+            }
+        }
     }
-
-    let [ expanded, setExpanded ] = React.useState(false);
-    let [ refId, setRefId ] = React.useState("");
-
-    let handleExpandClick = (id) => {
-        if(id === refId && expanded){
-            setExpanded(false);
-            
-            return;
-        }
-
-        if(id !== refId){
-            setExpanded(true); 
-            setRefId(id);
-        } else {            
-            setExpanded(!expanded);
-        }
-
-        handlerButtonShowLink(id);
-    };
-
-    /**
-    + IsSelfSigned              bool                     `json:"is_self_signed" bson:"is_self_signed"`
-    + Hashes                    HashesTypeSTIX           `json:"hashes" bson:"hashes"`    
-    + Version                   string                   `json:"version" bson:"version"`
-	+ SerialNumber              string                   `json:"serial_number" bson:"serial_number"`
-	+ SignatureAlgorithm        string                   `json:"signature_algorithm" bson:"signature_algorithm"`
-	+ Issuer                    string                   `json:"issuer" bson:"issuer"`
-	+ ValidityNotBefore         time.Time                `json:"validity_not_before" bson:"validity_not_before"`
-	+ ValidityNotAfter          time.Time                `json:"validity_not_after" bson:"validity_not_after"`
-	+ Subject                   string                   `json:"subject" bson:"subject"`
-	+ SubjectPublicKeyAlgorithm string                   `json:"subject_public_key_algorithm" bson:"subject_public_key_algorithm"`
-	+ SubjectPublicKeyModulus   string                   `json:"subject_public_key_modulus" bson:"subject_public_key_modulus"`
-	+ SubjectPublicKeyExponent  int                      `json:"subject_public_key_exponent" bson:"subject_public_key_exponent"`
-    
-    X509V3Extension - указывает любые стандартные расширения X.509 v3, которые могут использоваться в сертификате.
-    X509V3Extensions          X509V3ExtensionsTypeSTIX `json:"x509_v3_extensions" bson:"x509_v3_extensions"`
-*/
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
@@ -213,7 +160,9 @@ export default function CreateX509CertificatePatternElements(props){
                     size="small"
                     disabled={isDisabled}
                     onChange={(e) => {
-                        if(e.target.issuer.length === 0){
+                        //console.log("Название удостоверяющего центра выдавшего сертификат = ", )
+
+                        if(e.target.value.length === 0){
                             setInvalidIssuer(true);
 
                             return;
@@ -340,16 +289,267 @@ export default function CreateX509CertificatePatternElements(props){
             handlerHashes={handlerHashes}
         />
 
-        {/**
-        * 
-        * надо сделать     X509V3Extension - указывает любые стандартные расширения X.509 v3, которые могут использоваться в сертификате.
-        *   X509V3Extensions          X509V3ExtensionsTypeSTIX `json:"x509_v3_extensions" bson:"x509_v3_extensions"`
-        * 
-        * 
-        * 
-        */}
+        {campaignPatterElement.x509_v3_extensions? 
+            <React.Fragment>
+                <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+                    <Grid item container md={12} justifyContent="flex-start">
+                        <strong className="text-muted mt-2">Любые стандартные расширения X.509 v3, которые могут использоваться в сертификате</strong>
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Является ли сертификат сертификатом Удостоверяющего центра (CA):</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-basic_constraints"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "basic_constraints", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.basic_constraints)? campaignPatterElement.x509_v3_extensions.basic_constraints: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Пространство имен, где располагаюся все имена применяемые в сертификатах:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-name_constraints"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "name_constraints", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.name_constraints)? campaignPatterElement.x509_v3_extensions.name_constraints: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Любые ограничения на проверку сертификатов, выданных Удостоверяющим центром:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-policy_contraints"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "policy_contraints", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.policy_contraints)? campaignPatterElement.x509_v3_extensions.policy_contraints: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Многозначное расширение, состоящее из списка имен разрешенных для использования ключей:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-key_usage"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "key_usage", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.key_usage)? campaignPatterElement.x509_v3_extensions.key_usage: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Список целей, для которых может использоваться открытый ключ сертификата:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-extended_key_usage"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "extended_key_usage", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.extended_key_usage)? campaignPatterElement.x509_v3_extensions.extended_key_usage: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Идентификатор, который обеспечивает средство идентификации сертификатов, содержащих определенный открытый ключ:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-subject_key_identifier"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "subject_key_identifier", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.subject_key_identifier)? campaignPatterElement.x509_v3_extensions.subject_key_identifier: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Идентификатор, который обеспечивает средство идентификации открытого ключа, соответствующего закрытому ключу, используемому для подписи сертификата:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-authority_key_identifier"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "authority_key_identifier", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.authority_key_identifier)? campaignPatterElement.x509_v3_extensions.authority_key_identifier: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Дополнительные идентификаторы, которые должны быть привязаны к субъекту сертификата:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-subject_alternative_name"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "subject_alternative_name", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.subject_alternative_name)? campaignPatterElement.x509_v3_extensions.subject_alternative_name: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Дополнительные идентификаторы, которые должны быть привязаны к эмитенту сертификата:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-issuer_alternative_name"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "issuer_alternative_name", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.issuer_alternative_name)? campaignPatterElement.x509_v3_extensions.issuer_alternative_name: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Идентификационные признаки субъекта:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-subject_directory_attributes"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "subject_directory_attributes", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.subject_directory_attributes)? campaignPatterElement.x509_v3_extensions.subject_directory_attributes: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Способ получения информации CRL:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-crl_distribution_points"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "crl_distribution_points", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.crl_distribution_points)? campaignPatterElement.x509_v3_extensions.crl_distribution_points: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Дополнительные идентификаторы, которые должны быть привязаны к эмитенту сертификата:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-inhibit_any_policy"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "inhibit_any_policy", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.inhibit_any_policy)? campaignPatterElement.x509_v3_extensions.inhibit_any_policy: ""}
+                        />
+                    </Grid>
+                </Grid>
 
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted mt-2">Начало срока действия закрытого ключа:</span>
+                    </Grid>
+                    <Grid item container md={7}>
+                        {isDisabled?
+                            helpers.convertDateFromString(privateKeyUsagePeriodNotBefore, { monthDescription: "long", dayDescription: "numeric" })
+                            :<MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DateTimePicker
+                                    variant="inline"
+                                    ampm={false}
+                                    value={privateKeyUsagePeriodNotBefore}
+                                    minDate={new Date("1970-01-01")}
+                                    maxDate={new Date()}
+                                    onChange={(e) => handlerExtensions({type: "private_key_usage_period_not_before", elem: e})}
+                                    format="dd.MM.yyyy HH:mm"
+                                />
+                            </MuiPickersUtilsProvider>}
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted mt-2">Окончание срока действия закрытого ключа:</span>
+                    </Grid>
+                    <Grid item container md={7}>
+                        {isDisabled?
+                            helpers.convertDateFromString(privateKeyUsagePeriodNotAfter, { monthDescription: "long", dayDescription: "numeric" })
+                            :<MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DateTimePicker
+                                    variant="inline"
+                                    ampm={false}
+                                    value={privateKeyUsagePeriodNotAfter}
+                                    minDate={new Date("1970-01-01")}
+                                    maxDate={new Date()}
+                                    onChange={(e) => handlerExtensions({type: "private_key_usage_period_not_after", elem: e})}
+                                    format="dd.MM.yyyy HH:mm"
+                                />
+                            </MuiPickersUtilsProvider>}
+                    </Grid>
+                </Grid>
 
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Последовательность из одного или нескольких терминов информации о политике:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-certificate_policies"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "certificate_policies", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.certificate_policies)? campaignPatterElement.x509_v3_extensions.certificate_policies: ""}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container direction="row" spacing={3}>
+                    <Grid item container md={5} justifyContent="flex-end">
+                        <span className="text-muted">Одна или несколько пар идентификаторов:</span>
+                    </Grid>
+                    <Grid item md={7}>
+                        <TextField
+                            id="outlined-ext-policy_mappings"
+                            fullWidth
+                            size="small"
+                            disabled={isDisabled}
+                            onChange={(e) => handlerExtensions({type: "policy_mappings", elem: e})}
+                            value={(campaignPatterElement.x509_v3_extensions.policy_mappings)? campaignPatterElement.x509_v3_extensions.policy_mappings: ""}
+                        />
+                    </Grid>
+                </Grid>
+            </React.Fragment>:
+            ""}
 
         {/*(campaignPatterElement !== null && campaignPatterElement.extensions)?
             <Grid container direction="row" spacing={3}>
@@ -387,7 +587,6 @@ export default function CreateX509CertificatePatternElements(props){
 
 CreateX509CertificatePatternElements.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
-    showRefElement: PropTypes.object.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerHashes: PropTypes.func.isRequired,
     handlerIssuer: PropTypes.func.isRequired,
@@ -401,6 +600,7 @@ CreateX509CertificatePatternElements.propTypes = {
     handlerSubjectPublicKeyModulus: PropTypes.func.isRequired,
     handlerSubjectPublicKeyExponent: PropTypes.func.isRequired,
     handlerSubjectPublicKeyAlgorithm: PropTypes.func.isRequired,
+    handlerExtensions: PropTypes.func.isRequired,
 };
 
 /**
@@ -437,155 +637,23 @@ type X509CertificateCyberObservableObjectSTIX struct {
 	SubjectPublicKeyExponent  int                      `json:"subject_public_key_exponent" bson:"subject_public_key_exponent"`
 	X509V3Extensions          X509V3ExtensionsTypeSTIX `json:"x509_v3_extensions" bson:"x509_v3_extensions"`
 }
+
+type X509V3ExtensionsTypeSTIX struct {
+	BasicConstraints               string    `json:"basic_constraints" bson:"basic_constraints"`
+	NameConstraints                string    `json:"name_constraints" bson:"name_constraints"`
+	PolicyContraints               string    `json:"policy_contraints" bson:"policy_contraints"`
+	KeyUsage                       string    `json:"key_usage" bson:"key_usage"`
+	ExtendedKeyUsage               string    `json:"extended_key_usage" bson:"extended_key_usage"`
+	SubjectKeyIdentifier           string    `json:"subject_key_identifier" bson:"subject_key_identifier"`
+	AuthorityKeyIdentifier         string    `json:"authority_key_identifier" bson:"authority_key_identifier"`
+	SubjectAlternativeName         string    `json:"subject_alternative_name" bson:"subject_alternative_name"`
+	IssuerAlternativeName          string    `json:"issuer_alternative_name" bson:"issuer_alternative_name"`
+	SubjectDirectoryAttributes     string    `json:"subject_directory_attributes" bson:"subject_directory_attributes"`
+	CrlDistributionPoints          string    `json:"crl_distribution_points" bson:"crl_distribution_points"`
+	InhibitAnyPolicy               string    `json:"inhibit_any_policy" bson:"inhibit_any_policy"`
+	PrivateKeyUsagePeriodNotBefore time.Time `json:"private_key_usage_period_not_before" bson:"private_key_usage_period_not_before"`
+	PrivateKeyUsagePeriodNotAfter  time.Time `json:"private_key_usage_period_not_after" bson:"private_key_usage_period_not_after"`
+	CertificatePolicies            string    `json:"certificate_policies" bson:"certificate_policies"`
+	PolicyMappings                 string    `json:"policy_mappings" bson:"policy_mappings"`
+} 
  */
-
-/**
-// WindowsRegistryKeyCyberObservableObjectSTIX объект "Windows Registry Key Object", по терминалогии STIX. Содержит описание значений полей раздела реестра Windows.
-//  Key - содержит полный путь к разделу реестра. Значение ключа,должно быть сохранено в регистре. В название ключа все сокращения должны быть раскрыты.
-//  Values - содержит значения, найденные в разделе реестра.
-//  ModifiedTime - время, в формате "2016-05-12T08:17:27.000Z", последнего изменения раздела реестра.
-//  CreatorUserRef - содержит ссылку на учетную запись пользователя, из под которой создан раздел реестра. Объект, на который ссылается это свойство, должен иметь тип user-account.
-//  NumberOfSubkeys - Указывает количество подразделов, содержащихся в разделе реестра.
-type WindowsRegistryKeyCyberObservableObjectSTIX struct {
-	CommonPropertiesObjectSTIX
-	OptionalCommonPropertiesCyberObservableObjectSTIX
-	Key             string                         `json:"key" bson:"key"`
-	Values          []WindowsRegistryValueTypeSTIX `json:"values" bson:"values"`
-	ModifiedTime    time.Time                      `json:"modified_time" bson:"modified_time"`
-	CreatorUserRef  IdentifierTypeSTIX             `json:"creator_user_ref" bson:"creator_user_ref"`
-	NumberOfSubkeys int                            `json:"number_of_subkeys" bson:"number_of_subkeys"`
-}
- 
-
-let patternWindowsRegistryValue = {
-    name: "",
-    data: "",
-    data_type: "",
-};
-
-function reducerRegValue(state, action){
-    switch(action.type) {
-    case "name":
-        return {...state, name: action.data};
-    case "data":
-        return {...state, data: action.data};
-    case "data_type":
-        return {...state, data_type: action.data};
-    case "clear":
-        return {...state, patternWindowsRegistryValue};
-    }
-}
-
-function GetWindowsRegistryValue(props){
-    let {  
-        objectInfo,
-        handlerElementAdd,
-        handlerElementDelete,
-    } = props;
-
-    const classes = useStyles();
-
-    let [ winRegValue, reducerWinRegValue ] = useReducer(reducerRegValue, patternWindowsRegistryValue);
-    let [ buttonAddSelectorIsDisabled, setButtonAddSelectorIsDisabled ] = useState(true);
-
-    let handlerCheckWinRegValue = () => {
-        let wrvNameIsTrue = winRegValue.name && winRegValue.name !== "";
-        let wrvDataIsTrue = winRegValue.data && winRegValue.data !== "";
-        let wrvDataTupeIsTrue = winRegValue.data_type && winRegValue.data_type !== "";
-        
-        if(wrvNameIsTrue || wrvDataIsTrue || wrvDataTupeIsTrue){
-            setButtonAddSelectorIsDisabled(false);
-        } else {
-            setButtonAddSelectorIsDisabled(true);
-        }
-    };
-
-    return (<Grid container direction="row" key="key_granular_markings_link">
-        <Grid container direction="row" spacing={3}>
-            <Grid item md={4}>
-                <TextField
-                    id="windows-registry-value-name"
-                    label="наименование параметра реестра"
-                    fullWidth={true}
-                    value={winRegValue.name}
-                    onChange={(e) => { reducerWinRegValue({ type: "name", data: e.target.value }); handlerCheckWinRegValue(); }}
-                />
-            </Grid>
-            <Grid item md={8}>
-                <TextField
-                    id="windows-registry-value-data"
-                    label="данные, содержащиеся в значении реестра"
-                    fullWidth={true}
-                    value={winRegValue.data}
-                    onChange={(e) => { reducerWinRegValue({ type: "data", data: e.target.value }); handlerCheckWinRegValue(); }}
-                />
-            </Grid>
-        </Grid>
-        <Grid container direction="row" key="key_input_hash_field">
-            <Grid item md={10}>
-                <CreateListWindowsRegistryDatatype 
-                    isDisabled={false}
-                    windowsRegistryDatatype={winRegValue.data_type}
-                    handlerWindowsRegistryDatatype={(e) => { reducerWinRegValue({ type: "data_type", data: e.target.value }); handlerCheckWinRegValue(); }}
-                />
-            </Grid>
-            <Grid item md={2} className="text-end mt-3">
-                <Button 
-                    onClick={handlerElementAdd.bind(null, winRegValue)} 
-                    disabled={buttonAddSelectorIsDisabled}
-                >
-                    добавить
-                </Button>
-            </Grid>
-        </Grid>
-
-        {((typeof objectInfo.values === "undefined") || (objectInfo.values === null) || (objectInfo.values.length === 0))?
-            "":
-            objectInfo.values.map((item, key) => {
-                return (<Card className={classes.customPaper} key={`key_value_${key}_fragment`}>
-                    <CardContent>
-                        <Grid container direction="row" key={`key_icon_delete_${key}`}>
-                            <Grid item container md={12} justifyContent="flex-end">
-                                <IconButton aria-label="delete" onClick={()=>{ 
-                                    handlerElementDelete(key); 
-                                }}>
-                                    <IconDeleteOutline style={{ color: red[400] }} />
-                                </IconButton>
-                            </Grid>
-                        </Grid>
-
-                        {((typeof item.name === "undefined") || (item.name === null) || (item.name.length === 0) ? 
-                            "": 
-                            <Grid container direction="row" key={`key_name_${key}`}>
-                                <Grid item md={12}>
-                                    <Typography variant="body2" component="p"><span className="text-muted">наименование:</span> {item.name}</Typography>
-                                </Grid>
-                            </Grid>)}
-
-                        {((typeof item.data === "undefined") || (item.data === null) || (item.data.length === 0) ? 
-                            "": 
-                            <Grid container direction="row" key={`key_data_${key}`}>
-                                <Grid item md={12}>
-                                    <Typography variant="body2" component="p"><span className="text-muted">данные:</span> {item.data}</Typography>
-                                </Grid>
-                            </Grid>)}
-
-                        {((typeof item.data_type === "undefined") || (item.data_type === null) || (item.data_type.length === 0) ? 
-                            "": 
-                            <Grid container direction="row" key={`key_data_type_${key}`}>
-                                <Grid item md={12}>
-                                    <Typography variant="body2" component="p"><span className="text-muted">тип данных:</span> {item.data_type}</Typography>
-                                </Grid>
-                            </Grid>)}
-                    </CardContent>
-                </Card>);
-            })}
-    </Grid>);
-}
-
-GetWindowsRegistryValue.propTypes = { 
-    objectInfo: PropTypes.object.isRequired,
-    handlerElementAdd: PropTypes.func.isRequired,
-    handlerElementDelete: PropTypes.func.isRequired,
-};*/
-

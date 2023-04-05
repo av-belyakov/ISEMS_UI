@@ -54,6 +54,7 @@ const CreateNetworkTrafficPatternNewSTIXObject = lazy(() => import("./contentNet
 const CreateProcessPatternNewSTIXObject = lazy(() => import("./contentProcessPatternNewSTIXObject.jsx"));
 const CreateUserAccountPatternNewSTIXObject = lazy(() => import("./contentUserAccountPatternNewSTIXObject.jsx"));
 const CreateWindowsRegistryKeyPatternNewSTIXObject = lazy(() => import("./contentWindowsRegistryKeyPatternNewSTIXObject.jsx"));
+const CreateX509CertificatePatternNewSTIXObject = lazy(() => import("./contentX509CertificatePatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -613,7 +614,7 @@ function somethingModule(nameSTIX){
         "software": CreateSoftwarePatternNewSTIXObject,
         "url": CreateURLPatternNewSTIXObject,
         "windows-registry-key": CreateWindowsRegistryKeyPatternNewSTIXObject,
-        //"x509-certificate": CreateX509CertificatePatternElements,
+        "x509-certificate": CreateX509CertificatePatternNewSTIXObject,
         "attack-pattern": CreateDialogContentAttackPatternNewSTIXObject,
         "autonomous-system": CreateAutonomousSystemPatternNewSTIXObject, 
         "campaign": CreateCampaignPatternNewSTIXObject,
@@ -623,7 +624,6 @@ function somethingModule(nameSTIX){
         "email-message": CreateEmailMessagePatternNewSTIXObject,
         "grouping": CreateGroupingPatternNewSTIXObject,
         "identity": CreateIdentityPatternNewSTIXObject,
-        ////"incident": CreateIncidentSTIXObject,
         "infrastructure": CreateInfrastructurePatternNewSTIXObject,
         "intrusion-set": CreateIntrusionSetPatternNewSTIXObject,
         "ipv4-addr": CreateIPv4AddrPatternNewSTIXObject,

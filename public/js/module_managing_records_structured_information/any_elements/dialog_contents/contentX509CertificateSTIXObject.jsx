@@ -34,17 +34,6 @@ function isExistTransmittedData(data){
     return true;
 }
 
-function reducerShowRef(state, action){
-    switch(action.type){
-    case "addObject":
-        return {...state, obj: action.data};
-    case "addId":
-        return {...state, id: action.data};
-    case "cleanObj":
-        return {...state, obj: {}};
-    }
-}
-
 export default function CreateDialogContentX509CertificateSTIXObject(props){
     let { 
         socketIo,
@@ -116,7 +105,6 @@ function CreateMajorContent(props){
     } = props;
 
     const [ state, dispatch ] = useReducer(reducerX509CertificatePatternSTIXObjects, {});
-    const [ stateShowRef, dispatchShowRef ] = useReducer(reducerShowRef, { id: "", obj: {} });
 
     useEffect(() => {
         socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
@@ -150,15 +138,15 @@ function CreateMajorContent(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonSaveChangeTrigger, handlerButtonSaveChangeTrigger ]);
 
-    const handlerCheckStateButtonIsDisabled = (key) => {
-        if(typeof key !== "undefined"){
-            if(key.length === 0){
+    const handlerCheckStateButtonIsDisabled = (issuer) => {
+        if(typeof issuer !== "undefined"){
+            if(issuer.length === 0){
                 handlerButtonIsDisabled(true);
             } else {
                 handlerButtonIsDisabled(false);
             }
         } else {
-            if(state.key.length === 0){
+            if(state.issuer.length === 0){
                 handlerButtonIsDisabled(true);
             } else {
                 handlerButtonIsDisabled(false);
@@ -182,51 +170,21 @@ function CreateMajorContent(props){
         <Grid container direction="row" className="pt-3">
             <CreateX509CertificatePatternElements 
                 isDisabled={false}
-                showRefElement={stateShowRef}
                 campaignPatterElement={state}
-                handlerHashes={(e) => { dispatch({ type: "updateHashes", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handlerHashes={(e) => { dispatch({ type: "updateHashes", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
                 handlerIssuer={(e) => { dispatch({ type: "updateIssuer", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerSubject={(e) => { dispatch({ type: "updateSubject", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerVersion={(e) => { dispatch({ type: "updateVersion", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerIsSelfSigned={(e) => { dispatch({ type: "updateIsSelfSigned", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerSerialNumber={(e) => { dispatch({ type: "updateSerialNumber", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerValidityNotAfter={(e) => { dispatch({ type: "updateValidityNotAfter", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerValidityNotBefore={(e) => { dispatch({ type: "updateValidityNotBefore", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerSignatureAlgorithm={(e) => { dispatch({ type: "updateSignatureAlgorithm", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerSubjectPublicKeyModulus={(e) => { dispatch({ type: "updateSubjectPublicKeyModulus", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerSubjectPublicKeyExponent={(e) => { dispatch({ type: "updateSubjectPublicKeyExponent", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerSubjectPublicKeyAlgorithm={(e) => { dispatch({ type: "updateSubjectPublicKeyAlgorithm", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
+                handlerSubject={(e) => { dispatch({ type: "updateSubject", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerVersion={(e) => { dispatch({ type: "updateVersion", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerIsSelfSigned={(e) => { dispatch({ type: "updateIsSelfSigned", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSerialNumber={(e) => { dispatch({ type: "updateSerialNumber", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerValidityNotAfter={(e) => { dispatch({ type: "updateValidityNotAfter", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerValidityNotBefore={(e) => { dispatch({ type: "updateValidityNotBefore", data: e }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSignatureAlgorithm={(e) => { dispatch({ type: "updateSignatureAlgorithm", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSubjectPublicKeyModulus={(e) => { dispatch({ type: "updateSubjectPublicKeyModulus", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSubjectPublicKeyExponent={(e) => { dispatch({ type: "updateSubjectPublicKeyExponent", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerSubjectPublicKeyAlgorithm={(e) => { dispatch({ type: "updateSubjectPublicKeyAlgorithm", data: e.target.value }); handlerCheckStateButtonIsDisabled(); }}
+                handlerExtensions={(obj) => { dispatch({ type: "updateExtensions", data: obj }); handlerCheckStateButtonIsDisabled(); }}
             />
-
-            {/*<CreateWindowsRegistryKeyPatternElements 
-                isDisabled={false}
-                showRefElement={stateShowRef}
-                campaignPatterElement={state}
-                handlerKey={(e) => { dispatch({ type: "updateKey", data: e.target.value }); handlerCheckStateButtonIsDisabled(e.target.value); }}
-                handlerModifiedTime={(e) => { dispatch({ type: "updateModifiedTime", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerAddItemValues={(e) => { dispatch({ type: "addItemElementValues", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerButtonShowLink={(refId) => {                   
-                    dispatchShowRef({ type: "addId", data: refId });
-                    dispatchShowRef({ type: "cleanObj", data: {} });
-
-                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-                        if(!isExistTransmittedData(data)){
-                            return;
-                        }
-
-                        for(let obj of data.information.additional_parameters.transmitted_data){ 
-                            dispatchShowRef({ type: "addObject", data: obj });        
-                        }
-                    });
-
-                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-                        searchObjectId: refId,
-                        parentObjectId: state.id,
-                    }});
-                }}
-                handlerNumberOfSubkeys={(e) => { dispatch({ type: "updateNumberOfSubkeys", data: e }); handlerCheckStateButtonIsDisabled(); }}
-                handlerDeleteItemValues={(e) => { dispatch({ type: "deleteItemElementValues", data: e }); handlerCheckStateButtonIsDisabled(); }}
-            />*/}
         </Grid>
 
         <CreateElementAdditionalTechnicalInformationCO 
