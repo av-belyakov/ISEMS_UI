@@ -37,6 +37,7 @@ const ContentIPv6AddrSTIXObject = lazy(() => import(/* webpackChunkName 'Content
 const ContentLocationSTIXObject = lazy(() => import(/* webpackChunkName 'ContentLocationSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentLocationSTIXObject.jsx"));
 const ContentMacAddrSTIXObject = lazy(() => import(/* webpackChunkName 'ContentMacAddrSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentMacAddrSTIXObject.jsx"));
 const ContentMalwareSTIXObject = lazy(() => import(/* webpackChunkName 'ContentMalwareSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentMalwareSTIXObject.jsx"));
+const CreateDialogContentMalwareAnalysisSTIXObject = lazy(() => import(/* webpackChunkName 'CreateDialogContentMalwareAnalysisSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentMalwareAnalysisSTIXObject.jsx"));
 const ContentNetworkTrafficSTIXObject = lazy(() => import(/* webpackChunkName 'ContentNetworkTrafficSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentNetworkTrafficSTIXObject.jsx"));
 const ContentNoteSTIXObject = lazy(() => import(/* webpackChunkName 'ContentNoteSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentNoteSTIXObject.jsx"));
 const ContentObservedDataSTIXObject = lazy(() => import(/* webpackChunkName 'ContentObservedDataSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentObservedDataSTIXObject.jsx"));
@@ -155,7 +156,7 @@ function somethingModule(nameSTIX){
         "vulnerability": ContentVulnerabilitySTIXObject,
         "indicator": ContentAuxiliarySTIXObject,
         // "email-message": ContentAuxiliarySTIXObject,
-        "malware-analysis": ContentAuxiliarySTIXObject,
+        "malware-analysis": CreateDialogContentMalwareAnalysisSTIXObject,
         "relationship": ContentAuxiliarySTIXObject,
         "sighting": ContentAuxiliarySTIXObject,
     };

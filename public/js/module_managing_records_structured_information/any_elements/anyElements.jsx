@@ -2112,3 +2112,56 @@ CreateListWindowsRegistryDatatype.propTypes = {
     windowsRegistryDatatype: PropTypes.string.isRequired,
     handlerWindowsRegistryDatatype: PropTypes.func.isRequired,
 };
+
+export function CreateListMalwareResult(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerResult, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["malware-result-ov"].content.length; i++){
+            if(elem === dictionaryLists["malware-result-ov"].content[i].name){
+                return dictionaryLists["malware-result-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.result);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["malware-result-ov"] && <React.Fragment>
+        <TextField
+            id={"select-malware-result-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"перечень результатов классификации определенных аналитическим инструментом или сканером"}
+            value={campaignPatterElement.result? campaignPatterElement.result: "" }
+            onChange={(e) => {
+                handlerResult.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="malware-result-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["malware-result-ov"].content.map((item, key) => {
+                return (<MenuItem key={`malware-result-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListMalwareResult.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerResult: PropTypes.func.isRequired,
+};

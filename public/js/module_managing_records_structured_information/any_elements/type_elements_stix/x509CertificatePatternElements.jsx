@@ -160,8 +160,6 @@ export default function CreateX509CertificatePatternElements(props){
                     size="small"
                     disabled={isDisabled}
                     onChange={(e) => {
-                        //console.log("Название удостоверяющего центра выдавшего сертификат = ", )
-
                         if(e.target.value.length === 0){
                             setInvalidIssuer(true);
 
@@ -291,7 +289,7 @@ export default function CreateX509CertificatePatternElements(props){
 
         {campaignPatterElement.x509_v3_extensions? 
             <React.Fragment>
-                <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+                <Grid container direction="row" spacing={3} style={{ marginTop: 6 }}>
                     <Grid item container md={12} justifyContent="flex-start">
                         <strong className="text-muted mt-2">Любые стандартные расширения X.509 v3, которые могут использоваться в сертификате</strong>
                     </Grid>

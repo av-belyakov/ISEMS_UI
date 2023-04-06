@@ -15,7 +15,9 @@ export default function reducerNetworkTrafficPatternSTIXObjects(state, action){
             } else {
                 action.data.start = new Date(Date.parse(action.data.start)).toISOString();
             }
+        }
 
+        if(action.data.end){
             if(action.data.end === defaultData){
                 action.data.end = minDefaultData;
             } else {

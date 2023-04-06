@@ -30,9 +30,12 @@ export default function reducerObservedDataSTIXObjects(state, action){
 
     switch(action.type){
     case "newAll":
-        if(action.data.first_observed && action.data.last_observed){
-            action.data.last_observed = new Date(Date.parse(action.data.last_observed)).toISOString();
+        if(action.data.first_observed){
             action.data.first_observed = new Date(Date.parse(action.data.first_observed)).toISOString();
+        }
+
+        if(action.data.last_observed){
+            action.data.last_observed = new Date(Date.parse(action.data.last_observed)).toISOString();
         }
 
         return {...state, mainObj: action.data};

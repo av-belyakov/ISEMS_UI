@@ -7,8 +7,11 @@ export default function reducerFilePatternSTIXObjects(state, action){
 
     switch(action.type){
     case "newAll":           
-        if(action.data.mtime && action.data.atime){
+        if(action.data.mtime){
             action.data.mtime = new Date(Date.parse(action.data.mtime)).toISOString();
+        }
+
+        if(action.data.atime){
             action.data.atime = new Date(Date.parse(action.data.atime)).toISOString();
         }
 

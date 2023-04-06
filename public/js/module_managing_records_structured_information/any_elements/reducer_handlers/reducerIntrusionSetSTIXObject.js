@@ -8,9 +8,12 @@ export default function reducerIntrusionSetSTIXObject(state, action){
 
     switch(action.type){
     case "newAll":
-        if(action.data.first_seen && action.data.last_seen){
-            action.data.last_seen = new Date(Date.parse(action.data.last_seen)).toISOString();
+        if(action.data.first_seen){
             action.data.first_seen = new Date(Date.parse(action.data.first_seen)).toISOString();
+        }
+
+        if(action.data.last_seen){
+            action.data.last_seen = new Date(Date.parse(action.data.last_seen)).toISOString();
         }
 
         return action.data;
