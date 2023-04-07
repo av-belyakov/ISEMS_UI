@@ -1,4 +1,4 @@
-import React, { lazy } from "react";
+import React, { lazy, useEffect, useState, useReducer } from "react";
 import { 
     Box,
     Button,
@@ -20,7 +20,6 @@ import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers";
 import ContentNullSTIXObject from "../dialog_contents/contentNullSTIXObject.jsx";
-import { useEffect } from "react";
 
 const CreateDialogContentAttackPatternNewSTIXObject = lazy(() => import("./contentAttackPatternNewSTIXObject.jsx"));
 const CreateCourseOfActionPatternNewSTIXObject = lazy(() => import("./contentCourseOfActionPatternNewSTIXObject.jsx"));
@@ -33,6 +32,7 @@ const CreateLocationPatternNewSTIXObject = lazy(() => import("./contentLocationP
 const CreateNotePatternNewSTIXObject = lazy(() => import("./contentNotePatternNewSTIXObject.jsx"));
 const CreateToolPatternNewSTIXObject = lazy(() => import("./contentToolPatternNewSTIXObject.jsx"));
 const CreateMalwarePatternNewSTIXObject = lazy(() => import("./contentMalwarePatternNewSTIXObject.jsx"));
+const CreateMalwareAnalysisPatternNewSTIXObject = lazy(() => import("./contentMalwareAnalysisPatternNewSTIXObject.jsx"));
 const CreateThreatActorPatternNewSTIXObject = lazy(() => import("./contentThreatActorPatternSTIXObject.jsx"));
 const CreateOpinionPatternNewSTIXObject = lazy(() => import("./contentOpinionPatternNewSTIXObject.jsx"));
 const CreateVulnerabilityPatternNewSTIXObject = lazy(() => import("./contentVulnerabilityPatternNewSTIXObject.jsx"));
@@ -185,15 +185,15 @@ export default function CreateDialogContentNewSTIXObject(props){
         handlerDialogClose,
     } = props;
 
-    let [ typeObjectSTIX, setTypeObjectSTIX ] = React.useState("");
-    let [ itemReactSearchAutocomplete, setItemReactSearchAutocomplete ] = React.useState([]);
-    let [ currentRefObjectSTIX, setCurrentRefObjectSTIX ] = React.useState(listRefsForObjectSTIX.find((item) => item === "object_refs")? "object_refs": listRefsForObjectSTIX[0]);
-    let [ projectPatterElement, dispatchProjectPatterElement ] = React.useReducer(reducer, {});
-    let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = React.useState([]);
-    let [ buttonAddClick, setButtonAddClick ] = React.useState(false);
-    let [ buttonAddIsDisabled, setButtonAddIsDisabled ] = React.useState(true);
-    let [ buttonChangeClick, setButtonChangeClick ] = React.useState(false);
-    let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = React.useState(true);
+    let [ projectPatterElement, dispatchProjectPatterElement ] = useReducer(reducer, {});
+    let [ typeObjectSTIX, setTypeObjectSTIX ] = useState("");
+    let [ itemReactSearchAutocomplete, setItemReactSearchAutocomplete ] = useState([]);
+    let [ currentRefObjectSTIX, setCurrentRefObjectSTIX ] = useState(listRefsForObjectSTIX.find((item) => item === "object_refs")? "object_refs": listRefsForObjectSTIX[0]);
+    let [ listNewOrModifySTIXObject, setListNewOrModifySTIXObject ] = useState([]);
+    let [ buttonAddClick, setButtonAddClick ] = useState(false);
+    let [ buttonAddIsDisabled, setButtonAddIsDisabled ] = useState(true);
+    let [ buttonChangeClick, setButtonChangeClick ] = useState(false);
+    let [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
 
     useEffect(() => {
         if(listNewOrModifySTIXObject.length > 0){
@@ -209,8 +209,6 @@ export default function CreateDialogContentNewSTIXObject(props){
     if(parentType === "file"){
         listRefPropertyObject["contains_refs"] = sco;
     }
-
-    console.log("func 'CreateDialogContentNewSTIXObject' !!!!!!!!! parentType !!!!!! = ", parentType, " listRefsForObjectSTIX == ", listRefsForObjectSTIX, " listObjectTypeTmp:", listObjectTypeTmp);
 
     for(let value of listRefsForObjectSTIX){      
         if(listRefPropertyObject[value]){
@@ -233,9 +231,6 @@ export default function CreateDialogContentNewSTIXObject(props){
     //if(currentIdSTIXObject.includes("file")
     if(typeof typesRelationshipsBetweenObjects[parentType] !== "undefined"){
         for(let value of listObjectTypeTmp){
-
-            console.log("func 'CreateDialogContentNewSTIXObject' !!!!!!!!! value !!!!!! = ", value);
-
             if(typesRelationshipsBetweenObjects[parentType].find((item) => item === value)){
                 continue;
             }
@@ -260,12 +255,6 @@ export default function CreateDialogContentNewSTIXObject(props){
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ typeObjectSTIX ]);
-
-    //console.log("func 'CreateDialogContentNewSTIXObject' currentRefObjectSTIX = ", currentRefObjectSTIX);
-    //console.log(helpers.getListLinkImageSTIXObject());
-    //console.log("------  listRefsForObjectSTIX = ", listRefsForObjectSTIX);
-    //console.log("helpers.getListOnceProperties() = ", helpers.getListOnceProperties());
-    //console.log("helpers.getListManyProperties() = ", helpers.getListManyProperties());
 
     const formatResult = (item) => {
         return (
@@ -294,15 +283,11 @@ export default function CreateDialogContentNewSTIXObject(props){
 
 
     let handlerAddSTIXObject = (elem) => {
-
-        console.log("^^^^^^^^^^^^^ func 'handlerAddSTIXObject', elem: ", elem, ", listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " ^^^^^^^^^");
-
         let elemIsExist = false;
         let listNewOrModifySTIXObjectTmp = listNewOrModifySTIXObject.slice();
 
         for(let item of listNewOrModifySTIXObjectTmp){
             if(item.obj.id === elem.id){
-            //if(item.id === elem.id){
                 elemIsExist = true;
         
                 return;
@@ -314,32 +299,22 @@ export default function CreateDialogContentNewSTIXObject(props){
         }
 
         listNewOrModifySTIXObjectTmp.push({ "obj": elem, "ref": currentRefObjectSTIX });
-        //listNewOrModifySTIXObjectTmp.push(elem);
         setButtonAddClick(false);
         setListNewOrModifySTIXObject(listNewOrModifySTIXObjectTmp);
     };
     
     let handlerChangeButtonAdd = (status) => {
-
-        console.log("@@@@@@@@@@@@@@@@ func 'handlerChangeButtonAdd', status = ", status);
-
         setButtonAddIsDisabled(status);
     };
 
     let handlerChangeNewSTIXObject = (state) => {
-        console.log("!!!! ____ func 'handlerChangeNewSTIXObject', state = ", state);
-
         for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
             if(listNewOrModifySTIXObject[i].obj.id === state.id){
                 listNewOrModifySTIXObject[i].obj = state;
-                //if(listNewOrModifySTIXObject[i].id === state.id){
-                //listNewOrModifySTIXObject[i] = state;
 
                 break;
             }
         }
-
-        console.log("!!!! ____ func 'handlerChangeNewSTIXObject', AFTER listNewOrModifySTIXObject = ", listNewOrModifySTIXObject);
 
         setButtonChangeClick(false);
     };
@@ -368,28 +343,15 @@ export default function CreateDialogContentNewSTIXObject(props){
                                                 className="mb-2" 
                                                 size="small" 
                                                 aria-label="show-element" 
-                                                onClick={() => {
-                                                    //console.log("1. ____ func Show Element ____ item.obj.id:", item.obj.id, " listNewOrModifySTIXObject:", listNewOrModifySTIXObject, " projectPatterElement:", projectPatterElement);
-                                                    
+                                                onClick={() => {                                                   
                                                     for(let k of listNewOrModifySTIXObject){
-
-                                                        //console.log("2. ____ func Show Element ____ k (listNewOrModifySTIXObject) = ", k, " item.id = ", item.id);
-
                                                         if(k.obj.id === item.obj.id){
-                                                        //if(k.id === item.id){
-                                                            //console.log("3. ____ func Show Element ____ k.obj.id === item.id, k = '", k, "' _____");
-
-                                                            //setModifySTIXObject(k);
                                                             dispatchProjectPatterElement({ type: "newAll", data: k.obj });
                                                             setTypeObjectSTIX(k.obj.type);
-                                                            //dispatchProjectPatterElement({ type: "newAll", data: k });
-                                                            //setTypeObjectSTIX(k.type);
 
                                                             break;
                                                         }
                                                     } 
-                                                    
-                                                    console.log("добавлены ссылки на следующие STIX объекты ProjectPatterElement:", projectPatterElement);
                                                 }}>
                                                 <img 
                                                     key={`key_img_new_or_modify_${key}`} 
@@ -423,22 +385,6 @@ export default function CreateDialogContentNewSTIXObject(props){
                                     onChange={(obj) => {
                                         setTypeObjectSTIX(obj.target.value);
 
-                                        /**
-                                         * 
-                                         * сохранить данные из projectPatterElement в listNewOrModifySTIXObject
-                                         *                                          
-                                        console.log("onChange тип искомого или создаваемого объекта projectPatterElement:", projectPatterElement);
-
-                                        for(let i = 0; i < listNewOrModifySTIXObject.length; i++){
-                                            if(listNewOrModifySTIXObject[i].id === projectPatterElement.id){
-                                                listNewOrModifySTIXObject[i] = projectPatterElement;
-
-                                                break;
-                                            }
-                                        }
-
-                                         */
-
                                         dispatchProjectPatterElement({ type: "cleanAll" });
                                     }}>
                                     <MenuItem key={"key-type-none"} value="">тип не определен</MenuItem>
@@ -451,9 +397,6 @@ export default function CreateDialogContentNewSTIXObject(props){
                                 <Grid item container md={12} justifyContent="flex-start">
                                     <RadioGroup row aria-label="quiz" name="quiz" value={currentRefObjectSTIX} onChange={handleRadioChange}>
                                         {listRefsForObjectSTIX.map((item) => {
-
-                                            console.log("func 'listRefsForObjectSTIX', ITEM:", item);
-
                                             let isDisabled = false;
                                             if(typeObjectSTIX === ""){
                                                 isDisabled = true;
@@ -553,7 +496,6 @@ export default function CreateDialogContentNewSTIXObject(props){
                 disabled={buttonAddIsDisabled}
                 onClick={() => { 
                     setButtonAddClick(true);
-                    //setTypeObjectSTIX(""); 
                     setButtonAddIsDisabled(true);
                 }}
                 style={{ color: blue[500] }}>
@@ -563,9 +505,6 @@ export default function CreateDialogContentNewSTIXObject(props){
                     disabled={buttonAddIsDisabled}
                     onClick={() => { 
                         setButtonChangeClick(true);
-
-                        //setButtonAddClick(true);
-                        //setButtonAddIsDisabled(true);
                     }}
                     style={{ color: blue[500] }}>
                     сохранить изменения
@@ -640,7 +579,7 @@ function somethingModule(nameSTIX){
         "user-account": CreateUserAccountPatternNewSTIXObject,
         "vulnerability": CreateVulnerabilityPatternNewSTIXObject,
         ////"indicator": ContentAuxiliarySTIXObject,
-        //"malware-analysis": CreateMalwareAnalysisPatternElements,
+        "malware-analysis": CreateMalwareAnalysisPatternNewSTIXObject,
     };
 
     if(!nameList[nameSTIX]){

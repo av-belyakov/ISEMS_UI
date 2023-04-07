@@ -10,7 +10,8 @@ const listExtendedObject = [
         "sample_refs" 
     ]},//operating_system_refs (SCO software) 
     // and sample_refs (SCO file and artifact)
-    {name: "malware-analysis", listProperties: [ 
+    {name: "malware-analysis", listProperties: [
+        "analysis_sco_refs", 
         "host_vm_ref",
         "operating_system_ref",
         "installed_software_refs",
