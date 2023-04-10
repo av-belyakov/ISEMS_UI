@@ -22,8 +22,8 @@ import PropTypes from "prop-types";
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
-const defaultData = "0001-01-01T00:00:00.000Z";
-const currentData = new Date();
+const defaultData = "0001-01-01T00:00";
+const currentData = Date.now();
 
 export default function CreateFilePatternElements(props){
     let { 
@@ -63,19 +63,19 @@ export default function CreateFilePatternElements(props){
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.mtime !== "undefined" && campaignPatterElement.mtime !== defaultData){
+        if(typeof campaignPatterElement.mtime !== "undefined" && campaignPatterElement.mtime.slice(0, 16) !== defaultData){
             mtime = new Date(Date.parse(campaignPatterElement.mtime) + ms);
         }
 
-        if(typeof campaignPatterElement.atime !== "undefined" && campaignPatterElement.atime !== defaultData){
+        if(typeof campaignPatterElement.atime !== "undefined" && campaignPatterElement.atime.slice(0, 16) !== defaultData){
             atime = new Date(Date.parse(campaignPatterElement.atime) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.mtime !== "undefined" && campaignPatterElement.mtime !== defaultData){
+        if(typeof campaignPatterElement.mtime !== "undefined" && campaignPatterElement.mtime.slice(0, 16) !== defaultData){
             mtime = new Date(Date.parse(campaignPatterElement.mtime) - (ms * -1));
         }
 
-        if(typeof campaignPatterElement.atime !== "undefined" && campaignPatterElement.atime !== defaultData){
+        if(typeof campaignPatterElement.atime !== "undefined" && campaignPatterElement.atime.slice(0, 16) !== defaultData){
             atime = new Date(Date.parse(campaignPatterElement.atime) - (ms * -1));
         }
     }

@@ -1,6 +1,5 @@
 export default function reducerIntrusionSetSTIXObject(state, action){
-    let lastSeen = "";
-    let firstSeen = "";
+    let dateTime = "";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
@@ -45,22 +44,22 @@ export default function reducerIntrusionSetSTIXObject(state, action){
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
-            firstSeen = new Date(tmp + (ms * -1));
+            dateTime = new Date(tmp + (ms * -1));
         } else {
-            firstSeen = new Date(tmp - (ms * -1));
+            dateTime = new Date(tmp - (ms * -1));
         }
 
-        return {...state, first_seen: firstSeen};
+        return {...state, first_seen: new Date(Date.parse(dateTime)).toISOString()};
     case "updateDateTimeLastSeen":
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
-            lastSeen = new Date(tmp + (ms * -1));
+            dateTime = new Date(tmp + (ms * -1));
         } else {
-            lastSeen = new Date(tmp - (ms * -1));
+            dateTime = new Date(tmp - (ms * -1));
         }
 
-        return {...state, last_seen: lastSeen};
+        return {...state, last_seen: new Date(Date.parse(dateTime)).toISOString()};
     case "updateInfrastructureTypes":
         return {...state, infrastructure_types: action.data};
     case "updateAliasesTokenValuesChange":

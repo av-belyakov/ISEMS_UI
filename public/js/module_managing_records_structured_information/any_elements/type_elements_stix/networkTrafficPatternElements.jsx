@@ -21,7 +21,7 @@ import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
-const defaultData = "0001-01-01T00:00:00.000Z";
+const defaultData = "0001-01-01T00:00";
 //const minDefaultData = new Date();
 const minDefaultData = "1970-01-01T00:00:00.000Z";
 
@@ -68,19 +68,19 @@ export default function CreateNetworkTrafficPatternElements(props){
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.start !== "undefined" && campaignPatterElement.start !== defaultData){
+        if(typeof campaignPatterElement.start !== "undefined" && campaignPatterElement.start.slice(0, 16) !== defaultData){
             dateTimeStart = new Date(Date.parse(campaignPatterElement.start) + ms);
         }
 
-        if(typeof campaignPatterElement.end !== "undefined" && campaignPatterElement.end !== defaultData){
+        if(typeof campaignPatterElement.end !== "undefined" && campaignPatterElement.end.slice(0, 16) !== defaultData){
             dateTimeEnd = new Date(Date.parse(campaignPatterElement.end) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.start !== "undefined" && campaignPatterElement.start !== defaultData){
+        if(typeof campaignPatterElement.start !== "undefined" && campaignPatterElement.start.slice(0, 16) !== defaultData){
             dateTimeStart = new Date(Date.parse(campaignPatterElement.start) - (ms * -1));
         }
 
-        if(typeof campaignPatterElement.end !== "undefined" && campaignPatterElement.end !== defaultData){
+        if(typeof campaignPatterElement.end !== "undefined" && campaignPatterElement.end.slice(0, 16) !== defaultData){
             dateTimeEnd = new Date(Date.parse(campaignPatterElement.end) - (ms * -1));
         }
     }

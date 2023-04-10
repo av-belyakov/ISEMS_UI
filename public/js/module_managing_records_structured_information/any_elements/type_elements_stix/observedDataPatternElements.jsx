@@ -17,19 +17,8 @@ import PropTypes from "prop-types";
 import { helpers } from "../../../common_helpers/helpers";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
-const defaultData = "0001-01-01T00:00:00.000Z";
-const minDefaultData = new Date();
-
-/*
-let getLinkImage = (elem) => {
-    let tmp = [""];
-    if(typeof elem !== "undefined" && elem.includes("--")){
-        tmp = elem.split("--");
-    }
-
-    return helpers.getLinkImageSTIXObject(tmp[0]);
-};
-*/
+const defaultData = "0001-01-01T00:00";
+const minDefaultData = Date.now();
 
 export default function CreateObservedDataPatternElements(props){
     let { 
@@ -53,19 +42,19 @@ export default function CreateObservedDataPatternElements(props){
     let ms = currentTimeZoneOffsetInHours * 3600000;
     
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed !== defaultData){
+        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed.slice(0, 16) !== defaultData){
             firstObserved = new Date(Date.parse(campaignPatterElement.first_observed) + ms);
         }
 
-        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed !== defaultData){
+        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed.slice(0, 16) !== defaultData){
             lastObserved = new Date(Date.parse(campaignPatterElement.last_observed) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed !== defaultData){
+        if(typeof campaignPatterElement.first_observed !== "undefined" && campaignPatterElement.first_observed.slice(0, 16) !== defaultData){
             firstObserved = new Date(Date.parse(campaignPatterElement.first_observed) - (ms * -1));
         }
 
-        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed !== defaultData){
+        if(typeof campaignPatterElement.last_observed !== "undefined" && campaignPatterElement.last_observed.slice(0, 16) !== defaultData){
             lastObserved = new Date(Date.parse(campaignPatterElement.last_observed) - (ms * -1));
         }
     }
@@ -84,7 +73,6 @@ export default function CreateObservedDataPatternElements(props){
 
         handlerClickButtonObjectRef(id);
     };
-
 
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>

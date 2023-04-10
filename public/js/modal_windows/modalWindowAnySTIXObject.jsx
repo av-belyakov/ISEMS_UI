@@ -32,6 +32,7 @@ const ContentIdentitySTIXObject = lazy(() => import(/* webpackChunkName 'Content
 const ContentIncidentSTIXObject = lazy(() => import(/* webpackChunkName 'ContentIncidentSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentIncidentSTIXObject.jsx"));
 const ContentInfrastructureSTIXObject = lazy(() => import(/* webpackChunkName 'ContentInfrastructureSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentInfrastructureSTIXObject.jsx"));
 const ContentIntrusionSetSTIXObject = lazy(() => import(/* webpackChunkName 'ContentIntrusionSetSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentIntrusionSetSTIXObject.jsx"));
+const CreateIndicatorSTIXObject = lazy(() => import(/* webpackChunkName 'CreateIndicatorSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentIndicatorSTIXObject.jsx"));
 const ContentIPv4AddrSTIXObject = lazy(() => import(/* webpackChunkName 'ContentIPv4AddrSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentIPv4AddrSTIXObject.jsx"));
 const ContentIPv6AddrSTIXObject = lazy(() => import(/* webpackChunkName 'ContentIPv6AddrSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentIPv6AddrSTIXObject.jsx"));
 const ContentLocationSTIXObject = lazy(() => import(/* webpackChunkName 'ContentLocationSTIXObject' */ "../module_managing_records_structured_information/any_elements/dialog_contents/contentLocationSTIXObject.jsx"));
@@ -154,8 +155,7 @@ function somethingModule(nameSTIX){
         "tool": ContentToolSTIXObject,
         "user-account": ContentUserAccountSTIXObject,
         "vulnerability": ContentVulnerabilitySTIXObject,
-        "indicator": ContentAuxiliarySTIXObject,
-        // "email-message": ContentAuxiliarySTIXObject,
+        "indicator": CreateIndicatorSTIXObject,
         "malware-analysis": CreateDialogContentMalwareAnalysisSTIXObject,
         "relationship": ContentAuxiliarySTIXObject,
         "sighting": ContentAuxiliarySTIXObject,

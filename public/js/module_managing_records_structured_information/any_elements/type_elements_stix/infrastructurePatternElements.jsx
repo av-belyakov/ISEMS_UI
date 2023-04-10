@@ -11,7 +11,7 @@ import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import { CreateKillChainPhases, CreateKillChainPhasesList, CreateListInfrastructureTypes } from "../anyElements.jsx";
 
-const minDefaultData = "0001-01-01T00:00:00Z";
+const minDefaultData = "0001-01-01T00:00";
 //defaultData = "2001-01-01T00:00:01Z";
 
 export default function CreateInfrastructurePatternElements(props){
@@ -34,19 +34,19 @@ export default function CreateInfrastructurePatternElements(props){
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen.slice(0, 16) !== firstSeen){
             firstSeen = new Date(Date.parse(campaignPatterElement.first_seen) + ms);
         }
 
-        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== lastSeen){
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen.slice(0, 16) !== lastSeen){
             lastSeen = new Date(Date.parse(campaignPatterElement.last_seen) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== firstSeen){
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen.slice(0, 16) !== firstSeen){
             firstSeen = new Date(Date.parse(campaignPatterElement.first_seen) - (ms * -1));
         }
 
-        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== lastSeen){
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen.slice(0, 16) !== lastSeen){
             lastSeen = new Date(Date.parse(campaignPatterElement.last_seen) - (ms * -1));
         }
     }

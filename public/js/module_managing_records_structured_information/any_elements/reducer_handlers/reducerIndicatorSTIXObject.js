@@ -1,68 +1,69 @@
-export default function reducerMalwareSTIXObjects(state, action){
-    let lastSeen = "";
-    let firstSeen = "";
+const defaultData = "0001-01-01T00:00";
+
+export default function reducerIndicatorSTIXObjects(state, action){
+    let dateTime = "";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
  
     let tmp = "";
 
     switch(action.type){
-    case "newAll":
-        if(action.data.first_seen){
-            action.data.first_seen = new Date(Date.parse(action.data.first_seen)).toISOString();
+    case "newAll":   
+        console.log("func 'reducerIndicatorSTIXObjects', action.type:", action.type, " action.data:", action.data);
+
+        if(action.data.valid_from && action.data.valid_from.slice(0, 16) !== defaultData){
+            action.data.valid_from = new Date(Date.parse(action.data.valid_from)).toISOString();
+        } else {
+            if(currentTimeZoneOffsetInHours > 0){
+                action.data.valid_from = Date.now() + ms;
+            } else {
+                action.data.valid_from = Date.now() - (ms * -1);
+            }
         }
 
-        if(action.data.last_seen){
-            action.data.last_seen = new Date(Date.parse(action.data.last_seen)).toISOString();
+        if(action.data.valid_until){
+            action.data.valid_until = new Date(Date.parse(action.data.valid_until)).toISOString();
         }
 
         return action.data;
     case "cleanAll":
-        return {};
+        return {}; 
     case "updateName":
-        if(state.name === action.data){
-            return {...state};
-        }
-        
-        return {...state, name: action.data};    
+        return {...state, name: action.data};
+    case "updatePattern":
+        return {...state, pattern: action.data};
+    case "updateIndicator":
+        return {...state, indicator_types: action.data};
     case "updateDescription":
-        if(state.description === action.data){
-            return {...state};
-        }
-    
         return {...state, description: action.data};
-    case "updateCreatedTime":
-        return {...state, created: action.data};
-    case "updateModifiedTime":
-        return {...state, modified: action.data};
-    case "updateFirstSeenTime":
+    case "updatePatternType":
+        return {...state, pattern_type: action.data};
+    case "updatePatternVersion":
+        return {...state, pattern_version: action.data};
+    case "updateValidFrom":
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
-            firstSeen = new Date(tmp + (ms * -1));
+            dateTime = new Date(tmp + (ms * -1));
         } else {
-            firstSeen = new Date(tmp - (ms * -1));
+            dateTime = new Date(tmp - (ms * -1));
         }
 
-        return {...state, first_seen: new Date(Date.parse(firstSeen)).toISOString()};
-    case "updateLastSeenTime":
+        state.mainObj.valid_from = new Date(Date.parse(dateTime)).toISOString();
+
+        return {...state};
+    case "updateValidUntil":
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
-            lastSeen = new Date(tmp + (ms * -1));
+            dateTime = new Date(tmp + (ms * -1));
         } else {
-            lastSeen = new Date(tmp - (ms * -1));
+            dateTime = new Date(tmp - (ms * -1));
         }
 
-        return {...state, last_seen: new Date(Date.parse(lastSeen)).toISOString()};
-    case "addId":
-        return {...state, id: action.data};
-    case "updateMalwareTypes":
-        return {...state, malware_types: action.data};
-    case "updateIsFamily":
-        return {...state, is_family: (action.data === "true")};
-    case "updateAliases":
-        return {...state, aliases: action.data};
+        state.mainObj.valid_until = new Date(Date.parse(dateTime)).toISOString();
+        
+        return {...state};
     case "updateAddKillChainPhases":
         if(!state.kill_chain_phases){
             state.kill_chain_phases = [];
@@ -70,33 +71,11 @@ export default function reducerMalwareSTIXObjects(state, action){
                 
         state.kill_chain_phases.push(action.data);
 
-        return {...state};    
-    case "updateDateTimeFirstSeen":
-        tmp = Date.parse(action.data);
-    
-        if(currentTimeZoneOffsetInHours < 0){
-            firstSeen = new Date(tmp + (ms * -1));
-        } else {
-            firstSeen = new Date(tmp - (ms * -1));
-        }
-    
-        return {...state, first_seen: firstSeen};
-    case "updateDateTimeLastSeen":
-        tmp = Date.parse(action.data);
-    
-        if(currentTimeZoneOffsetInHours < 0){
-            lastSeen = new Date(tmp + (ms * -1));
-        } else {
-            lastSeen = new Date(tmp - (ms * -1));
-        }
-    
-        return {...state, last_seen: lastSeen};
-    case "updateArchitectureExecutionEnvs":
-        return {...state, architecture_execution_envs: action.data};
-    case "updateImplementationLanguages":
-        return {...state, implementation_languages: action.data};
-    case "updateCapabilities":
-        return {...state, capabilities: action.data};
+        return {...state};   
+    case "deleteKillChainPhases":
+        state.kill_chain_phases.splice(action.data, 1);
+            
+        return {...state};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

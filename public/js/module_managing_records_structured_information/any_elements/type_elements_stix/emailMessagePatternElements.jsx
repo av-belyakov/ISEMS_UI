@@ -23,7 +23,7 @@ import {
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
 const defaultData = "0001-01-01T00:00:00.000Z";
-const minDefaultData = new Date();
+const minDefaultData = Date.now();
 
 export default function CreateEmailMessagePatternElements(props){
     let { 

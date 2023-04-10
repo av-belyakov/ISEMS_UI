@@ -2164,3 +2164,116 @@ CreateListMalwareResult.propTypes = {
     campaignPatterElement: PropTypes.object.isRequired,
     handlerResult: PropTypes.func.isRequired,
 };
+
+export function CreateListPatternType(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerPattern, 
+    } = props;
+
+    const getContentText = (elem) => {
+        if(elem === "" || !elem){
+            return "";
+        }
+
+        for(let i = 0; i < dictionaryLists["pattern-type-ov"].content.length; i++){
+            if(elem === dictionaryLists["pattern-type-ov"].content[i].name){
+                return dictionaryLists["pattern-type-ov"].content[i].text;
+            }
+        }
+
+        return "";
+    };
+
+    let text = getContentText(campaignPatterElement.pattern_type);
+    let [ textMenuItem, setTextMenuItem ] = useState(text);
+
+    return (dictionaryLists["pattern-type-ov"] && <React.Fragment>
+        <TextField
+            id={"select-pattern-class"}
+            select
+            disabled={isDisabled}
+            fullWidth
+            label={"языковые шаблоны"}
+            value={campaignPatterElement.pattern_type? campaignPatterElement.pattern_type: "" }
+            onChange={(e) => {
+                handlerPattern.call(null, e);
+                setTextMenuItem(getContentText(e.target.value));
+            }} >
+            <MenuItem key="pattern-item-value-empty" value="">пустое значение</MenuItem>
+            {dictionaryLists["pattern-type-ov"].content.map((item, key) => {
+                return (<MenuItem key={`pattern-item-${key}`} value={item.name}>
+                    {item.summary}
+                </MenuItem>);
+            })}
+        </TextField>
+        <Typography variant="caption" display="block" gutterBottom>{(textMenuItem === "")? text: textMenuItem}</Typography>
+    </React.Fragment>);
+}
+
+CreateListPatternType.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerPattern: PropTypes.func.isRequired,
+};
+
+export function CreateListIndicatorTypes(props){
+    let { 
+        isDisabled,
+        campaignPatterElement, 
+        handlerIndicator, 
+    } = props;
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const getSummary = (value) => {
+        for(let i = 0; i < dictionaryLists["indicator-type-ov"].content.length; i++){
+            if(value === dictionaryLists["indicator-type-ov"].content[i].name){
+                return dictionaryLists["indicator-type-ov"].content[i].summary;
+            }
+        }
+
+        return value;
+    };
+
+    console.log("func 'CreateListIndicatorTypes', campaignPatterElement.indicator_types: ", campaignPatterElement.indicator_types);
+
+    return (dictionaryLists["indicator-type-ov"] && <FormControl fullWidth disabled={isDisabled} className={classes.formControl}>        
+        <InputLabel id="indicator-mutiple-chip-id">
+            перечень категорий индикаторов
+        </InputLabel>
+        <Select
+            labelId="indicator-mutiple-chip-label"
+            id="indicator-mutiple-chip-id"
+            multiple
+            value={campaignPatterElement.indicator_types? campaignPatterElement.indicator_types: []}
+            onChange={(e) => handlerIndicator.call(null, e)}
+            input={<Input id="indicator-multiple-chip-input" />}
+            renderValue={(selected) => (
+                <div className={classes.chips}>
+                    {selected.map((value) => (
+                        <Chip key={value} label={getSummary(value)} className={classes.chip} />
+                    ))}
+                </div>
+            )}
+        >
+            {dictionaryLists["indicator-type-ov"].content.map((item, key) => (
+                <MenuItem 
+                    key={`indicator-item-${key}`} 
+                    value={item.name} 
+                    style={getStyles(item.name, campaignPatterElement.indicator_types, theme)}
+                >
+                    {item.summary}
+                </MenuItem>
+            ))}
+        </Select>
+    </FormControl>);
+}
+
+CreateListIndicatorTypes.propTypes = {
+    isDisabled: PropTypes.bool.isRequired,
+    campaignPatterElement: PropTypes.object.isRequired,
+    handlerIndicator: PropTypes.func.isRequired,
+};

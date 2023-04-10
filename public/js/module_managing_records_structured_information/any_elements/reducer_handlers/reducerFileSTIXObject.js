@@ -1,6 +1,5 @@
 export default function reducerFilePatternSTIXObjects(state, action){
-    let mtime = "";
-    let atime = "";
+    let dateTime = "";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
     let tmp;
@@ -34,25 +33,24 @@ export default function reducerFilePatternSTIXObjects(state, action){
         return {...state, magic_number_hex: action.data};
     case "updateDateTimeMtime":
         tmp = Date.parse(action.data);
-        //console.log("func 'reducerFilePatternSTIXObjects', action.type:", action.type, " tmp:", tmp);
 
         if(currentTimeZoneOffsetInHours < 0){
-            mtime = new Date(tmp + (ms * -1)).toISOString();
+            dateTime = new Date(tmp + (ms * -1)).toISOString();
         } else {
-            mtime = new Date(tmp - (ms * -1)).toISOString();
+            dateTime = new Date(tmp - (ms * -1)).toISOString();
         }
 
-        return {...state, mtime: mtime};
+        return {...state, mtime: new Date(Date.parse(dateTime)).toISOString()};
     case "updateDateTimeAtime":
         tmp = Date.parse(action.data);
     
         if(currentTimeZoneOffsetInHours < 0){
-            atime = new Date(tmp + (ms * -1));
+            dateTime = new Date(tmp + (ms * -1));
         } else {
-            atime = new Date(tmp - (ms * -1));
+            dateTime = new Date(tmp - (ms * -1));
         }
     
-        return {...state, atime: atime};
+        return {...state, atime: new Date(Date.parse(dateTime)).toISOString()};
     case "updateAddHashes":       
         if(!state.hashes){
             state.hashes = {};

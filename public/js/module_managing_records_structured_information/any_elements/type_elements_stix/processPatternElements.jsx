@@ -10,7 +10,6 @@ import {
     IconButton,
 } from "@material-ui/core";
 import { Form } from "react-bootstrap";
-//import { JSONTree } from "reactjsontree";
 import { red } from "@material-ui/core/colors";
 import DateFnsUtils from "dateIoFnsUtils";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";

@@ -15,8 +15,8 @@ import {
     CreateListSecondaryMotivations,
 } from "../anyElements.jsx";
 
-const defaultData = "0001-01-01T00:00:00.000Z";
-const minDefaultData = new Date();
+const defaultData = "0001-01-01T00:00";
+const minDefaultData = Date.now();
 
 export default function CreateIntrusionSetPatternElements(props){
     let { 
@@ -39,19 +39,19 @@ export default function CreateIntrusionSetPatternElements(props){
     let ms = currentTimeZoneOffsetInHours * 3600000;
     
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== defaultData){
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen.slice(0, 16) !== defaultData){
             firstSeen = new Date(Date.parse(campaignPatterElement.first_seen) + ms);
         }
 
-        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== defaultData){
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen.slice(0, 16) !== defaultData){
             lastSeen = new Date(Date.parse(campaignPatterElement.last_seen) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen !== defaultData){
+        if(typeof campaignPatterElement.first_seen !== "undefined" && campaignPatterElement.first_seen.slice(0, 16) !== defaultData){
             firstSeen = new Date(Date.parse(campaignPatterElement.first_seen) - (ms * -1));
         }
 
-        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen !== defaultData){
+        if(typeof campaignPatterElement.last_seen !== "undefined" && campaignPatterElement.last_seen.slice(0, 16) !== defaultData){
             lastSeen = new Date(Date.parse(campaignPatterElement.last_seen) - (ms * -1));
         }
     }
