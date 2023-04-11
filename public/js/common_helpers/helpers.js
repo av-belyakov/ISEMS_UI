@@ -72,11 +72,7 @@ const listLink = {
     "identity": {
         "link": "identity-square-dark-300-dpi.png",
         "description": "Идентичность (Identity DO STIX)",
-    },		
-    "incident": {
-        "link": "incident-square-dark-300-dpi.png",
-        "description": "Инцидент (Incident DO STIX)",
-    },	
+    },
     "indicator": {
         "link": "indicator-square-dark-300-dpi.png",
         "description": "Индикатор (Indicator DO STIX)",

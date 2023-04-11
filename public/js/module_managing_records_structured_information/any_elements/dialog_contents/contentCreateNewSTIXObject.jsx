@@ -55,6 +55,7 @@ const CreateProcessPatternNewSTIXObject = lazy(() => import("./contentProcessPat
 const CreateUserAccountPatternNewSTIXObject = lazy(() => import("./contentUserAccountPatternNewSTIXObject.jsx"));
 const CreateWindowsRegistryKeyPatternNewSTIXObject = lazy(() => import("./contentWindowsRegistryKeyPatternNewSTIXObject.jsx"));
 const CreateX509CertificatePatternNewSTIXObject = lazy(() => import("./contentX509CertificatePatternNewSTIXObject.jsx"));
+const CreateIndicatorPatternNewSTIXObject = lazy(() => import("./contentIndicatorPatternNewSTIXObject.jsx"));
 
 const sco = [ 
     "artifact",				
@@ -578,7 +579,7 @@ function somethingModule(nameSTIX){
         "tool": CreateToolPatternNewSTIXObject,
         "user-account": CreateUserAccountPatternNewSTIXObject,
         "vulnerability": CreateVulnerabilityPatternNewSTIXObject,
-        ////"indicator": ContentAuxiliarySTIXObject,
+        "indicator": CreateIndicatorPatternNewSTIXObject,
         "malware-analysis": CreateMalwareAnalysisPatternNewSTIXObject,
     };
 

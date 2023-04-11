@@ -21,15 +21,6 @@ export default function CreateIdentityPatternElements(props){
         handlerContactInformation,
     } = props;
 
-    let currentTime = helpers.getToISODatetime();
-    
-    if(!campaignPatterElement.created){
-        campaignPatterElement.created = currentTime;
-    }
-    if(!campaignPatterElement.modified){
-        campaignPatterElement.modified = currentTime;
-    }
-
     return (<React.Fragment>
         <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Наименование:</span></Grid>

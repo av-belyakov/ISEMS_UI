@@ -146,68 +146,23 @@ function CreateMajorContent(props){
     }, [ buttonSaveChangeTrigger ]);
     
     const handlerCheckStateButtonIsDisabled = (type, elem) => {
-        console.log("func 'handlerCheckStateButtonIsDisabled' type:", type, " elem:", elem);
-
         if(typeof type !== "undefined" && (type === "pattern" || type === "pattern_type")){
             if(typeof elem === "undefined" || elem === ""){
-
-                console.log("func 'handlerCheckStateButtonIsDisabled' aaa111111");
-
                 handlerButtonIsDisabled(true);
             } else {
-
-                console.log("func 'handlerCheckStateButtonIsDisabled' aaa222222");
-
                 handlerButtonIsDisabled(false);
             }
 
             return;
         }
-
-        /*
-        if(typeof type !== "undefined" && type === "pattern_type"){
-            if(typeof elem === "undefined" || !Array.isArray(elem) || elem.length === 0){
-
-                console.log("func 'handlerCheckStateButtonIsDisabled' bbb111111");
-
-                handlerButtonIsDisabled(true);
-            } else {
-
-                console.log("func 'handlerCheckStateButtonIsDisabled' bbb222222");
-
-                handlerButtonIsDisabled(false);
-            }
-
-            return;
-        }
-        */
-
-        console.log("func 'handlerCheckStateButtonIsDisabled' state.pattern_type:", state.pattern_type, " state.pattern:", state.pattern);
 
         if(state.pattern === "" || state.pattern_type === ""){
-            console.log("func 'handlerCheckStateButtonIsDisabled' ccc111111");
-
             handlerButtonIsDisabled(true);
         
             return;
         }
 
-        console.log("func 'handlerCheckStateButtonIsDisabled' eee-----");
-
         handlerButtonIsDisabled(false);
-        /*if(typeof protocols !== "undefined" && Array.isArray(protocols)){
-            if(protocols.length === 0){
-                handlerButtonIsDisabled(true);
-            } else {
-                handlerButtonIsDisabled(false);
-            }
-        } else {
-            if(state.protocols.length === 0){
-                handlerButtonIsDisabled(true);
-            } else {
-                handlerButtonIsDisabled(false);
-            }
-        }*/
     };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
@@ -256,57 +211,6 @@ function CreateMajorContent(props){
                 handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChainPhases", data: e }); handlerCheckStateButtonIsDisabled(); }}
                 handlerAddKillChainPhases={(e) => { dispatch({ type: "updateAddKillChainPhases", data: e }); handlerCheckStateButtonIsDisabled(); }}
             />
-            
-            {/*<CreateMalwarePatternElements 
-                isDisabled={false}
-                showRefElement={stateShowRef}
-                campaignPatterElement={state}
-                handlerName={(e) => { dispatch({ type: "updateName", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                handlerAliases={(e) => { dispatch({ type: "updateAliases", data: e }); handlerButtonIsDisabled(); }}
-                // Aliases - альтернативные имена используемые для этого субъекта угроз
-                handlerIsFamily={(e) => { dispatch({ type: "updateIsFamily", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                // IsFamily - представляет ли объект семейство вредоносных программ (если true) или экземпляр вредоносного ПО (если false) (ОБЯЗАТЕЛЬНОЕ ЗНАЧЕНИЕ)
-                handlerLastSeen={(e) => { dispatch({ type: "updateLastSeenTime", data: e }); handlerButtonIsDisabled(); }}
-                // LastSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был зафиксирован в последний раз
-                handlerFirstSeen={(e) => { dispatch({ type: "updateFirstSeenTime", data: e }); handlerButtonIsDisabled(); }}
-                // FirstSeen - время, в формате "2016-05-12T08:17:27.000Z", когда данный субъект угроз был впервые зафиксирован
-                //handlerSampleRefs={(e) => { dispatch({ type: "updateSampleRefs", data: e }); handlerButtonIsDisabled(); }}        
-                // SampleRefs - определяет список идентификаторов файлов или артифактов ассоциируемых с вредоносным ПО или семейством вредоносных программ.
-                //  По факту данное поле может содержать только SCO объекты file, artifact.
-                handlerDescription={(e) => { dispatch({ type: "updateDescription", data: e.target.value }); handlerButtonIsDisabled(); }}
-                handlerCapabilities={(e) => { dispatch({ type: "updateCapabilities", data: e.target.value }); handlerButtonIsDisabled(); }}
-                // Capabilities - заранее определенный (предложенный) перечень возможных идентификаторов используемых для обнаружения вредоносного ПО или семейства вредоносных программ
-                handlerMalwareTypes={(e) => { dispatch({ type: "updateMalwareTypes", data: e.target.value }); handlerButtonIsDisabled(e.target.value); }}
-                // MalwareTypes - заранее определенный (предложенный) перечень вредоносного ПО 
-                handlerButtonShowLink={(refId) => {
-                    dispatchShowRef({ type: "addId", data: refId });
-                    dispatchShowRef({ type: "cleanObj", data: {} });
-            
-                    socketIo.once("isems-mrsi response ui: send search request, get STIX object for id", (data) => {
-                        if(!isExistTransmittedData(data)){
-                            return;
-                        }
-
-                        for(let obj of data.information.additional_parameters.transmitted_data){ 
-                            dispatchShowRef({ type: "addObject", data: obj });        
-                        }
-                    });
-
-                    socketIo.emit("isems-mrsi ui request: send search request, get STIX object for id", { arguments: { 
-                        searchObjectId: refId,
-                        parentObjectId: state.id,
-                    }});
-                }}
-                handlerDeleteKillChain={(e) => { dispatch({ type: "deleteKillChainPhases", data: e }); handlerButtonIsDisabled(); }}
-                handlerAddKillChainPhases={(e) => { dispatch({ type: "updateAddKillChainPhases", data: e }); handlerButtonIsDisabled(); }}
-                // KillChainPhases - список цепочки фактов, к которым может быть отнесено это вредоносное ПО
-                //handlerOperatingSystemRefs={(e) => { dispatch({ type: "OperatingSystemRefs", data: e }); handlerButtonIsDisabled(); }}
-                // OperatingSystemRefs - перечень идентификаторов ОС в которых может быть выполнено вредоносное ПО или семейство вредоносных программ
-                handlerImplementationLanguages={(e) => { dispatch({ type: "updateImplementationLanguages", data: e.target.value }); handlerButtonIsDisabled(); }}
-                // ImplementationLanguages - заранее определенный (предложенный) перечень языков программирования, используемых для реализации вредоносного ПО или семейства вредоносных программ
-                handlerArchitectureExecutionEnvs={(e) => { dispatch({ type: "updateArchitectureExecutionEnvs", data: e.target.value }); handlerButtonIsDisabled(); }}
-                // ArchitectureExecutionEnvs - заранее определенный (предложенный) перечень архитектур в которых может быть выполнено вредоносное ПО или семейство вредоносных программ
-            />*/}
         </Grid> 
     
         <CreateElementAdditionalTechnicalInformationDO

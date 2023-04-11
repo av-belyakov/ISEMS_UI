@@ -65,11 +65,18 @@ function CreateMajorElements(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonAddClick ]);
 
-    const [ state, dispatch ] = useReducer(reducerIdentitySTIXObject, {});
+    let currentTime = helpers.getToISODatetime();
+    const [ state, dispatch ] = useReducer(reducerIdentitySTIXObject, {
+        created: currentTime,
+        modified: currentTime,
+    });
+
+    console.log("func 'CreateIdentityPatternNewSTIXObject', state:", state, " --------");
+
     useEffect(() => {
         if(projectPatterElement.type === "identity"){
             dispatch({ type: "newAll", data: projectPatterElement });
-        }
+        } 
     }, [ projectPatterElement ]);
 
     useEffect(() => {

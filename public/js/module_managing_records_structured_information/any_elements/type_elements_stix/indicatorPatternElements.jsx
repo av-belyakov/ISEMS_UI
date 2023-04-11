@@ -15,10 +15,8 @@ import {
     CreateListIndicatorTypes,
 } from "../anyElements.jsx";
 
-//const defaultData = "0001-01-01T00:00:00.000Z";
 const defaultData = "0001-01-01T00:00";
 const minDefaultData = "1970-01-01T00:00:00.000Z";
-//const minDefaultData = new Date();
 
 export default function CreateIndicatorPatternElements(props){
     let { 
@@ -37,11 +35,21 @@ export default function CreateIndicatorPatternElements(props){
     } = props;
     
     let [ invalidePattern, setInvalidePattern ] = React.useState(((typeof campaignPatterElement.pattern === "undefined") || (campaignPatterElement.pattern === "")));
+    let [ isInvalidPatternType, setIsInvalidPatternType ] = React.useState(((typeof campaignPatterElement.pattern_type === "undefined") || (campaignPatterElement.pattern_type === "")));
 
     React.useEffect(() => {
         if((typeof campaignPatterElement.pattern !== "undefined") && campaignPatterElement.pattern !== ""){
             setInvalidePattern(false);
+        } else {
+            setInvalidePattern(true);
         }
+
+        if((typeof campaignPatterElement.pattern_type !== "undefined") && campaignPatterElement.pattern_type !== ""){
+            setIsInvalidPatternType(false);
+        } else {
+            setIsInvalidPatternType(true);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [campaignPatterElement.pattern]);
 
     let validFrom = minDefaultData;
@@ -50,19 +58,19 @@ export default function CreateIndicatorPatternElements(props){
     let ms = currentTimeZoneOffsetInHours * 3600000;
     
     if(currentTimeZoneOffsetInHours > 0){
-        //if(typeof campaignPatterElement.valid_from !== "undefined" && campaignPatterElement.valid_from !== defaultData){
-        //    validFrom = new Date(Date.parse(campaignPatterElement.valid_from) + ms);
-        //}
+        if(typeof campaignPatterElement.valid_from !== "undefined" && campaignPatterElement.valid_from !== defaultData){
+            validFrom = new Date(Date.parse(campaignPatterElement.valid_from) + ms);
+        }
 
-        if(typeof campaignPatterElement.valid_until !== "undefined" && campaignPatterElement.valid_until.slice(0, 16) !== defaultData){
+        if(typeof campaignPatterElement.valid_until !== "undefined" && campaignPatterElement.valid_until.slice(0, 16) !== defaultData){            
             validUntil = new Date(Date.parse(campaignPatterElement.valid_until) + ms);
         }
     } else {
-        //if(typeof campaignPatterElement.valid_from !== "undefined" && campaignPatterElement.valid_from !== defaultData){
-        //    validFrom = new Date(Date.parse(campaignPatterElement.valid_from) - (ms * -1));
-        //}
+        if(typeof campaignPatterElement.valid_from !== "undefined" && campaignPatterElement.valid_from !== defaultData){
+            validFrom = new Date(Date.parse(campaignPatterElement.valid_from) - (ms * -1));
+        }
 
-        if(typeof campaignPatterElement.valid_until !== "undefined" && campaignPatterElement.valid_until.slice(0, 16) !== defaultData){
+        if(typeof campaignPatterElement.valid_until !== "undefined" && campaignPatterElement.valid_until.slice(0, 16) !== defaultData){           
             validUntil = new Date(Date.parse(campaignPatterElement.valid_until) - (ms * -1));
         }
     }
@@ -113,7 +121,7 @@ export default function CreateIndicatorPatternElements(props){
                             variant="inline"
                             ampm={false}
                             value={validFrom}
-                            minDate={new Date("2000-01-01")}
+                            minDate={new Date("1970-01-01")}
                             maxDate={new Date()}
                             onChange={handlerValidFrom}
                             format="dd.MM.yyyy HH:mm"
@@ -134,7 +142,7 @@ export default function CreateIndicatorPatternElements(props){
                             variant="inline"
                             ampm={false}
                             value={validUntil}
-                            minDate={new Date("2000-01-02")}
+                            minDate={new Date("1970-01-01")}
                             maxDate={new Date()}
                             onChange={handlerValidUntil}
                             format="dd.MM.yyyy HH:mm"
@@ -143,23 +151,7 @@ export default function CreateIndicatorPatternElements(props){
             </Grid>
         </Grid>
 
-        <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
-            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание:</span></Grid>
-            <Grid item container md={8}>
-                <TextField
-                    id="outlined-description-static"
-                    multiline
-                    minRows={3}
-                    maxRows={8}
-                    fullWidth
-                    disabled={isDisabled}
-                    onChange={handlerDescription}
-                    value={(campaignPatterElement.description)? campaignPatterElement.description: ""}
-                    variant="outlined"/>
-            </Grid>
-        </Grid>
-
-        <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
+        <Grid container direction="row" spacing={3}>
             <Grid item container md={4} justifyContent="flex-end"><span className="text-muted mt-2">Шаблон для обнаружения индикаторов:</span></Grid>
             <Grid item container md={8}>
                 <TextField
@@ -191,9 +183,34 @@ export default function CreateIndicatorPatternElements(props){
 
         <CreateListPatternType 
             isDisabled={isDisabled}
+            isInvalidValue={isInvalidPatternType}
             campaignPatterElement={campaignPatterElement}
-            handlerPattern={handlerPatternType}
+            handlerPattern={(e) => {
+                if(e.target.value === ""){
+                    setIsInvalidPatternType(true);
+                } else {
+                    setIsInvalidPatternType(false);
+                }
+
+                handlerPatternType(e);
+            }}
         />
+
+        <Grid container direction="row" spacing={3} style={{ marginTop: 2 }}>
+            <Grid item container md={4} justifyContent="flex-end"><span className="text-muted">Подробное описание:</span></Grid>
+            <Grid item container md={8}>
+                <TextField
+                    id="outlined-description-static"
+                    multiline
+                    minRows={3}
+                    maxRows={8}
+                    fullWidth
+                    disabled={isDisabled}
+                    onChange={handlerDescription}
+                    value={(campaignPatterElement.description)? campaignPatterElement.description: ""}
+                    variant="outlined"/>
+            </Grid>
+        </Grid>
 
         <CreateListIndicatorTypes 
             isDisabled={isDisabled}

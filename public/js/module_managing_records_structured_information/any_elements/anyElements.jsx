@@ -2168,6 +2168,7 @@ CreateListMalwareResult.propTypes = {
 export function CreateListPatternType(props){
     let { 
         isDisabled,
+        isInvalidValue,
         campaignPatterElement, 
         handlerPattern, 
     } = props;
@@ -2195,6 +2196,7 @@ export function CreateListPatternType(props){
             select
             disabled={isDisabled}
             fullWidth
+            error={isInvalidValue}
             label={"языковые шаблоны"}
             value={campaignPatterElement.pattern_type? campaignPatterElement.pattern_type: "" }
             onChange={(e) => {
@@ -2214,6 +2216,7 @@ export function CreateListPatternType(props){
 
 CreateListPatternType.propTypes = {
     isDisabled: PropTypes.bool.isRequired,
+    isInvalidValue: PropTypes.bool.isRequired,
     campaignPatterElement: PropTypes.object.isRequired,
     handlerPattern: PropTypes.func.isRequired,
 };

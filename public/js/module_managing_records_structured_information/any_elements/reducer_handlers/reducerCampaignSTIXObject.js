@@ -1,6 +1,5 @@
 export default function reducerCampaignSTIXObjects(state, action){
-    let lastSeen = "";
-    let firstSeen = "";
+    let dateTime = "";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
@@ -49,22 +48,22 @@ export default function reducerCampaignSTIXObjects(state, action){
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
-            firstSeen = new Date(tmp + (ms * -1));
+            dateTime = new Date(tmp + (ms * -1));
         } else {
-            firstSeen = new Date(tmp - (ms * -1));
+            dateTime = new Date(tmp - (ms * -1));
         }
 
-        return {...state, first_seen: new Date(Date.parse(firstSeen)).toISOString()};
+        return {...state, first_seen: new Date(Date.parse(dateTime)).toISOString()};
     case "updateDateTimeLastSeen":
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
-            lastSeen = new Date(tmp + (ms * -1));
+            dateTime = new Date(tmp + (ms * -1));
         } else {
-            lastSeen = new Date(tmp - (ms * -1));
+            dateTime = new Date(tmp - (ms * -1));
         }
 
-        return {...state, last_seen: new Date(Date.parse(lastSeen)).toISOString()};
+        return {...state, last_seen: new Date(Date.parse(dateTime)).toISOString()};
     case "updateConfidence":
         if(state.confidence === action.data.data){
             return {...state};

@@ -54,14 +54,14 @@ export default function CreateDirectoryPatternElements(props){
         </Grid>
 
         {campaignPatterElement.path_enc?
-            <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid container direction="row" spacing={3} style={{ marginBottom: 2 }}>
                 <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Кодировка для пути (указывается, если путь хранится в кодировке, отличной от Unicode):</span></Grid>
                 <Grid item container md={7} justifyContent="flex-start">{campaignPatterElement.path_enc}</Grid>
             </Grid>:
             ""}
 
         {campaignPatterElement.ctime && campaignPatterElement.ctime !== "0001-01-01T00:00:00Z"?
-            <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid container direction="row" spacing={3}>
                 <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время создания директории:</span></Grid>
                 <Grid item container md={7} justifyContent="flex-start">
                     {helpers.convertDateFromString(new Date(campaignPatterElement.ctime).toISOString(), { monthDescription: "long", dayDescription: "numeric" })}
@@ -70,7 +70,7 @@ export default function CreateDirectoryPatternElements(props){
             ""}
 
         {campaignPatterElement.mtime && campaignPatterElement.mtime !== "0001-01-01T00:00:00Z"?
-            <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid container direction="row" spacing={3}>
                 <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время модификации или записи в директорию:</span></Grid>
                 <Grid item container md={7} justifyContent="flex-start">
                     {helpers.convertDateFromString(new Date(campaignPatterElement.mtime).toISOString(), { monthDescription: "long", dayDescription: "numeric" })}
@@ -79,7 +79,7 @@ export default function CreateDirectoryPatternElements(props){
             ""}
 
         {campaignPatterElement.atime && campaignPatterElement.atime !== "0001-01-01T00:00:00Z"?
-            <Grid container direction="row" spacing={3} style={{ marginTop: 4 }}>
+            <Grid container direction="row" spacing={3}>
                 <Grid item container md={5} justifyContent="flex-end"><span className="text-muted">Время последнего обращения к директории:</span></Grid>
                 <Grid item container md={7} justifyContent="flex-start">
                     {helpers.convertDateFromString(new Date(campaignPatterElement.atime).toISOString(), { monthDescription: "long", dayDescription: "numeric" })}

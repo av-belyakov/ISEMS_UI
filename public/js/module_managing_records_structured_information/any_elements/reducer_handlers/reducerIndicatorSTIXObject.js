@@ -28,6 +28,10 @@ export default function reducerIndicatorSTIXObjects(state, action){
         return action.data;
     case "cleanAll":
         return {}; 
+    case "updateCreatedTime":
+        return {...state, created: action.data};
+    case "updateModifiedTime":
+        return {...state, modified: action.data};
     case "updateName":
         return {...state, name: action.data};
     case "updatePattern":
@@ -49,9 +53,7 @@ export default function reducerIndicatorSTIXObjects(state, action){
             dateTime = new Date(tmp - (ms * -1));
         }
 
-        state.mainObj.valid_from = new Date(Date.parse(dateTime)).toISOString();
-
-        return {...state};
+        return {...state, valid_from: new Date(Date.parse(dateTime)).toISOString()};
     case "updateValidUntil":
         tmp = Date.parse(action.data);
 
@@ -61,9 +63,7 @@ export default function reducerIndicatorSTIXObjects(state, action){
             dateTime = new Date(tmp - (ms * -1));
         }
 
-        state.mainObj.valid_until = new Date(Date.parse(dateTime)).toISOString();
-        
-        return {...state};
+        return {...state, valid_until: new Date(Date.parse(dateTime)).toISOString()};
     case "updateAddKillChainPhases":
         if(!state.kill_chain_phases){
             state.kill_chain_phases = [];

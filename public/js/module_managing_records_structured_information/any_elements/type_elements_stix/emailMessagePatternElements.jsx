@@ -22,7 +22,7 @@ import {
 } from "../anyElements.jsx";
 import { CreateShortInformationSTIXObject } from "../createShortInformationSTIXObject.jsx";
 
-const defaultData = "0001-01-01T00:00:00.000Z";
+const defaultData = "0001-01-01T00:00";
 const minDefaultData = Date.now();
 
 export default function CreateEmailMessagePatternElements(props){
@@ -66,11 +66,11 @@ export default function CreateEmailMessagePatternElements(props){
     let ms = currentTimeZoneOffsetInHours * 3600000;
     
     if(currentTimeZoneOffsetInHours > 0){
-        if(typeof campaignPatterElement.date !== "undefined" && campaignPatterElement.date !== defaultData){
+        if(typeof campaignPatterElement.date !== "undefined" && campaignPatterElement.date.slice(0, 16) !== defaultData){
             dateSend = new Date(Date.parse(campaignPatterElement.date) + ms);
         }
     } else {
-        if(typeof campaignPatterElement.date !== "undefined" && campaignPatterElement.date !== defaultData){
+        if(typeof campaignPatterElement.date !== "undefined" && campaignPatterElement.date.slice(0, 16) !== defaultData){
             dateSend = new Date(Date.parse(campaignPatterElement.date) - (ms * -1));
         }
     }

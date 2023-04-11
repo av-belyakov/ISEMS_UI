@@ -6,7 +6,6 @@ import {
     Typography, 
 } from "@material-ui/core";
 import { v4 as uuidv4 } from "uuid";
-import validatorjs from "validatorjs";
 import PropTypes from "prop-types";
 
 import { helpers } from "../../../common_helpers/helpers.js";

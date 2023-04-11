@@ -1,5 +1,5 @@
 export default function reducerEmailMessagePatternSTIXObjects(state, action){
-    let dateSend = "";
+    let dateTime = "";
     let currentTimeZoneOffsetInHours = new Date().getTimezoneOffset() / 60;
     let ms = currentTimeZoneOffsetInHours * 3600000;
 
@@ -26,14 +26,12 @@ export default function reducerEmailMessagePatternSTIXObjects(state, action){
         tmp = Date.parse(action.data);
 
         if(currentTimeZoneOffsetInHours < 0){
-            dateSend = new Date(tmp + (ms * -1));
+            dateTime = new Date(tmp + (ms * -1));
         } else {
-            dateSend = new Date(tmp - (ms * -1));
+            dateTime = new Date(tmp - (ms * -1));
         }
 
-        state.date = new Date(Date.parse(dateSend)).toISOString();
-
-        return {...state};
+        return {...state, date: new Date(Date.parse(dateTime)).toISOString()};
     case "updateMessageId":
         return {...state, message_id: action.data};
     case "updateContentType":
