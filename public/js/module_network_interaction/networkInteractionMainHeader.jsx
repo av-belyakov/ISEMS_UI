@@ -11,6 +11,7 @@ import ModalWindowEncodeDecoder from "../modal_windows/modalWindowEncodeDecoder.
 import ModalWindowAddFilteringTask from "../modal_windows/modalWindowAddFilteringTask.jsx";
 import ModalWindowShowInformationConnectionStatusSources from "../modal_windows/modalWindowShowInformationConnectionStatusSources.jsx";
 
+
 class CreatePageManagingNetworkInteractions extends React.Component {
     constructor(props) {
         super(props);
@@ -326,6 +327,7 @@ CreatePageManagingNetworkInteractions.propTypes = {
     listItems: PropTypes.object.isRequired,
 };
 
-ReactDOM.clientRoot(document.getElementById("header-page-content")).render(<CreatePageManagingNetworkInteractions
+const root = ReactDOM.createRoot(document.getElementById("header-page-content"));
+root.render(<CreatePageManagingNetworkInteractions
     socketIo={socket}
     listItems={receivedFromServer} />);

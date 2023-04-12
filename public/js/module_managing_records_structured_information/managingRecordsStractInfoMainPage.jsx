@@ -269,10 +269,7 @@ class CreateMainPage extends React.Component {
         return list;
     }
 
-    render() {
-
-        console.log("_______________==================________________");
-        
+    render() {       
         return (<BrowserRouter>
             <CssBaseline />
 
@@ -296,6 +293,7 @@ CreateMainPage.propTypes = {
     receivedData: PropTypes.object.isRequired,
 };
 
-ReactDOM.createRoot(document.getElementById("main-page-content")).render(<CreateMainPage
+const root = ReactDOM.createRoot(document.getElementById("main-page-content"));
+root.render(<CreateMainPage
     socketIo={socket}
     receivedData={receivedFromServer} />);
