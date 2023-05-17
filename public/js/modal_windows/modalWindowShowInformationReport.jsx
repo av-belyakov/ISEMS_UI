@@ -172,7 +172,6 @@ function ModalWindowShowInformationReport({
     handlerShowModalWindowCreateNewSTIXObject,
     handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
 }) {
-
     const [ buttonSaveIsDisabled, setButtonSaveIsDisabled ] = useState(true);
     const [ buttonSaveChangeTrigger, setButtonSaveChangeTrigger ] = useState(false);
 

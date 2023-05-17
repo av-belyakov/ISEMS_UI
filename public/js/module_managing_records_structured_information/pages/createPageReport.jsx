@@ -62,8 +62,8 @@ export default function CreatePageReport(props) {
             console.log("func 'CreatePageReport', func 'handlerCloseModalWindowInformationReport', ____");
 
             setCurrentReportId("");
-            setShowModalWindowInformationReport(false);
             setIdForCreateListObjectRefs({ "parentId": "", "addId": [] });
+            setShowModalWindowInformationReport(false);
         },
         handlerChangeAddedNewReport = () => {
             setAddedNewReport((prevStatus) => !prevStatus);
@@ -79,10 +79,6 @@ export default function CreatePageReport(props) {
         
             socketIo.emit("isems-mrsi ui request: insert STIX object", {arguments: list});
 
-            //setAddedNewReport(true);
-            handlerCloseModalWindowInformationReport();
-
-            /**
             setCurrentReportId("");
             setCurrentObjectId("");
             setParentSTIXObject({});
@@ -90,7 +86,7 @@ export default function CreatePageReport(props) {
             setObjectsIdModalWindowConfirmDeleteLinkFromObjRefs([]);
 
             setShowModalWindowAddNewReport(false);
-             */
+            setShowModalWindowInformationReport(false);
         },
         handlerDialogCloseModalWindowSTIXObject = () => {
             setCurrentAdditionalIdSTIXObject("");

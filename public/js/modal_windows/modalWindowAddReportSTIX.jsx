@@ -171,9 +171,6 @@ export default function ModalWindowAddReportSTIX(props) {
         handlerShowModalWindowCreateNewSTIXObject,
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
-
-    console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT ))))))) idForCreateListObjectRefs = ", idForCreateListObjectRefs);
-
     const tzoffset = (new Date()).getTimezoneOffset() * 60000;
     const [state, dispatch] = useReducer(reducer, {
         id: `report--${uuidv4()}`,
@@ -217,10 +214,6 @@ export default function ModalWindowAddReportSTIX(props) {
     });
 
     let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
-
-    console.log("func 'ModalWindowAddReportSTIX', MOUNT ((((((((( WINDOW ADD REPORT ))))))) STATE = ", state, " buttonReportSave = ", buttonReportSave, " idForCreateListObjectRefs.addId.length === 0 (", idForCreateListObjectRefs.addId.length === 0, ") state.name === '' (", state.name === "", ")");
-    console.log("func 'ModalWindowAddReportSTIX', MOUNT state.object_refs: ", state.object_refs);
-    console.log("func 'ModalWindowAddReportSTIX', MOUNT objectsIdModalWindowConfirmDeleteLinkFromObjRefs: ", objectsIdModalWindowConfirmDeleteLinkFromObjRefs);
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
         if(obj.modalType === "external_references"){
@@ -271,7 +264,6 @@ export default function ModalWindowAddReportSTIX(props) {
                 break;
             }
 
-            //listObjectInfoTmp = _.cloneDeep(listObjectInfo);
             listObjectInfoTmp = lodashCloneDeep(listObjectInfo);
             for(let obj of data.information.additional_parameters.transmitted_data){
                 listObjectInfoTmp[obj.id] = obj;
@@ -313,7 +305,6 @@ export default function ModalWindowAddReportSTIX(props) {
 
             setListPreviousState(listPreviousStateTmp);
 
-            //optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
             optionsPreviousStateTmp = lodashCloneDeep(optionsPreviousState);
             optionsPreviousStateTmp.objectId = objectId;
             optionsPreviousStateTmp.currentPartNumber = data.information.additional_parameters.number_transmitted_part + optionsPreviousStateTmp.currentPartNumber;
@@ -323,7 +314,6 @@ export default function ModalWindowAddReportSTIX(props) {
             break;
 
         case "isems-mrsi ui request: send search request, count list different objects STIX object for id":
-            //optionsPreviousStateTmp = _.cloneDeep(optionsPreviousState);
             optionsPreviousStateTmp = lodashCloneDeep(optionsPreviousState);
             optionsPreviousStateTmp.objectId = data.information.additional_parameters.document_id;
             optionsPreviousStateTmp.countFoundDocuments = data.information.additional_parameters.number_documents_found;
@@ -334,9 +324,6 @@ export default function ModalWindowAddReportSTIX(props) {
         }
     };
     React.useEffect(() => {
-
-        console.log("func 'ModalWindowAddReportSTIX', React.useEffect MAJOR ");
-
         socketIo.on("isems-mrsi response ui", listener);
         
         return () => {
@@ -346,16 +333,11 @@ export default function ModalWindowAddReportSTIX(props) {
     }, []);
 
     React.useEffect(() => {
-
-        console.log("func 'ModalWindowAddReportSTIX', React.useEffect idForCreateListObjectRefs.addId.length: ", idForCreateListObjectRefs.addId, ", state = ", state);
-
         if(idForCreateListObjectRefs.addId.length > 0 && state.name !== ""){
             setButtonReportSave(false);
         } else {
             setButtonReportSave(true);
         }
-
-        console.log("_______ func 'ModalWindowAddReportSTIX', React.useEffect objectsIdModalWindowConfirmDeleteLinkFromObjRefs: ", objectsIdModalWindowConfirmDeleteLinkFromObjRefs);
 
         if(objectsIdModalWindowConfirmDeleteLinkFromObjRefs[0] === state.id){
             dispatch({ type: "deleteObjectRefs", data: objectsIdModalWindowConfirmDeleteLinkFromObjRefs[1] });
@@ -363,20 +345,6 @@ export default function ModalWindowAddReportSTIX(props) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ idForCreateListObjectRefs.addId.length ]);
-
-    /*let handlerButtonSaveIsNotDisabled = () => {
-            if(buttonSaveIsDisabled){
-                setButtonSaveIsDisabled(false);
-            }
-        },
-        handlerPressButtonSave = (state) => {
-            setButtonSaveChangeTrigger((prevState) => !prevState);
-            if(!buttonSaveIsDisabled){
-                setButtonSaveIsDisabled(true);
-            }
-
-            handlerButtonSave(state);
-        };*/
 
     return (<React.Fragment>
         <Dialog 
@@ -452,23 +420,6 @@ export default function ModalWindowAddReportSTIX(props) {
                     idForCreateListObjectRefs={idForCreateListObjectRefs}
                     handlerDialogConfirm={handlerDialogConfirm}
                     handlerDeleteObjectRef={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs} 
-                    /*handlerReportUpdateObjectRefs={(newObjectRefs) => {
-                        console.log("func 'handlerReportUpdateObjectRefs' newObjectRefs: '", newObjectRefs, "'");
-
-                        if(state.name !== ""){
-
-                            console.log("func 'handlerReportUpdateObjectRefs' state.name: '", state.name, "' FALSE");
-
-                            setButtonReportSave(false);
-                        } else {
-
-                            console.log("func 'handlerReportUpdateObjectRefs' state.name: '", state.name, "' TRUE");
-
-                            setButtonReportSave(true);
-                        }
-
-                        dispatch({ type: "updateObjectRefs", data: newObjectRefs });
-                    }}*/
                     handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
                     handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
                 />}
@@ -559,27 +510,6 @@ export default function ModalWindowAddReportSTIX(props) {
                     handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
                 />
             </Container>
-
-            {/*<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
-                <Row>
-                    <Col md={12}>
-                        <CreateReportInformation 
-                            socketIo={socketIo}
-                            showReportId={newReportId}
-                            userPermissions={userPermissions.editing_information.status}
-                            confirmDeleteLink={confirmDeleteLink}
-                            handlerDialogConfirm={handlerDialogConfirm}
-                            buttonSaveChangeTrigger={buttonSaveChangeTrigger}
-                            idForCreateListObjectRefs={idForCreateListObjectRefs}
-                            handlerPressButtonSave={handlerPressButtonSave}
-                            handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
-                            handlerButtonSaveIsNotDisabled={handlerButtonSaveIsNotDisabled}
-                            handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
-                            handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs}
-                        />
-                    </Col>
-                </Row>
-                        </Container>*/}
         </Dialog>
     </React.Fragment>);
 }
@@ -598,167 +528,3 @@ ModalWindowAddReportSTIX.propTypes = {
     handlerShowModalWindowCreateNewSTIXObject: PropTypes.func.isRequired,
     handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs: PropTypes.func.isRequired,
 };
-
-/**
-<Container maxWidth={false} style={{ backgroundColor: "#fafafa", position: "absolute", top: "80px" }}>
-                <Row className="mt-4">
-                    <Col md={12}>
-                        <TextField
-                            id="name-new-report"
-                            label="наименование"
-                            value={state.name}
-                            error={valuesIsInvalideReportName}
-                            fullWidth={true}
-                            helperText="обязательное для заполнения поле"
-                            onChange={(e) => {
-                                let elem = e.target.value;
-                                if(elem.length > 0){
-                                    setValuesIsInvalideReportName(false);
-
-                                    if(state.object_refs.length > 0){
-                                        setButtonReportSave(false);
-                                    } else {
-                                        setButtonReportSave(true);
-                                    }
-                                } else {
-                                    setButtonReportSave(true);
-                                    setValuesIsInvalideReportName(true);
-                                }
-
-                                dispatch({ type: "updateName", data: elem });
-                            }}
-                        />
-                    </Col>
-                </Row>
-                                    
-                <Row>
-                    <Col md={12} className="mt-3">
-                        <TextField
-                            id="outlined-multiline-static"
-                            label={"подробное описание"}
-                            multiline
-                            minRows={3}
-                            maxRows={8}
-                            fullWidth
-                            onChange={(e) => dispatch({ type: "updateDescription", data: e.target.value })}
-                            defaultValue={state.description}
-                            variant="outlined"/>
-                    </Col>  
-                </Row>
-
-                {//state.object_refs && <CreateListObjectRefs
-                 //   objectRefs={state.object_refs} 
-                 //   handlerDeleteObjectRef={(key) => {
-                 //       if(state.object_refs.length > 0){
-                 //           setButtonReportSave(true);
-                 //       } else {
-                 //           setButtonReportSave(false);
-                 //       }
-                 //       dispatch({ type: "deleteObjectRefs", data: key });
-                 //   }} 
-                 //   handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
-                 //   handlerChangeCurrentSTIXObject={() => {
-                 //       handlerShowModalWindowCreateNewSTIXObject(newReportId);
-                 //   }}
-                 // />}
-
-                {state.object_refs && <CreateListObjectRefsReport
-                    socketIo={socketIo}
-                    stateReport={state}
-                    majorParentId={newReportId}
-                    confirmDeleteLink={confirmDeleteLink}
-                    idForCreateListObjectRefs={idForCreateListObjectRefs}
-                    handlerDialogConfirm={handlerDialogConfirm}
-                    handlerDeleteObjectRef={handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs} 
-                    handlerReportUpdateObjectRefs={(newObjectRefs) => dispatch({ type: "updateObjectRefs", data: newObjectRefs })}
-                    handlerShowObjectRefSTIXObject={handlerShowObjectRefSTIXObject}
-                    handlerShowModalWindowCreateNewSTIXObject={handlerShowModalWindowCreateNewSTIXObject}
-                />}
-
-                <Row className="mt-1">
-                    <Col md={12}>
-                        <span className="text-muted">Дополнительная информация не входящая в основную спецификацию объекта SDO STIX 2.1</span>
-                    </Col>
-                </Row>
-
-                <Row className="mt-3">
-                    <Col md={12}>
-                        <span className="pl-4">
-                            <MainTextField
-                                uniqName={"additional_name_not_stix_specifications"}
-                                variant={"standard"}
-                                label={"дополнительное наименование"}
-                                value={(() => {
-                                    if(outsideSpecificationIsNotExist){
-                                        return "";
-                                    }
-        
-                                    if((state.outside_specification.additional_name === null) || (typeof state.outside_specification.additional_name === "undefined")){
-                                        return "";
-                                    }
-        
-                                    return state.outside_specification.additional_name;
-                                })()}
-                                fullWidth={true}
-                                onChange={(e) => dispatch({ type: "updateAdditionalName", data: e.target.value })}
-                            />
-                        </span>
-                    </Col>
-                </Row>
-
-                <Row className="mt-3">
-                    <Col md={12}>
-                        <span className="pl-4">
-                            <CreateListTypesDecisionsMadeComputerThreat
-                                socketIo={socketIo}
-                                defaultValue={() => {
-                                    if(outsideSpecificationIsNotExist){
-                                        return "";
-                                    }
-    
-                                    if((state.outside_specification.decisions_made_computer_threat === null) || (typeof state.outside_specification.decisions_made_computer_threat === "undefined")){
-                                        return "";
-                                    }
-    
-                                    return state.outside_specification.decisions_made_computer_threat;
-                                }}
-                                handlerDecisionsMadeComputerThreat={(e) => dispatch({ type: "updateDecisionsMadeComputerThreat", data: e })}
-                            />
-                        </span>
-                    </Col>
-                </Row>
-
-                <Row className="mt-3">
-                    <Col md={12}>
-                        <span className="pl-4">
-                            <CreateListTypesComputerThreat
-                                socketIo={socketIo}
-                                defaultValue={() => {
-                                    if(outsideSpecificationIsNotExist){
-                                        return "";
-                                    }
-    
-                                    if((state.outside_specification.computer_threat_type === null) || (typeof state.outside_specification.computer_threat_type === "undefined")){
-                                        return "";
-                                    }
-
-                                    return state.outside_specification.computer_threat_type;
-                                }}
-                                handlerTypesComputerThreat={(e) => dispatch({ type: "updateComputerThreatType", data: e })}
-                            />
-                        </span>
-                    </Col>
-                </Row>
-
-                <CreateElementAdditionalTechnicalInformationDO
-                    objectId={newReportId}
-                    reportInfo={state}
-                    isNotDisabled={userPermissions.create.status}
-                    handlerElementConfidence={(e) => dispatch({ type: "updateConfidence", data: e })}
-                    handlerElementDefanged={(e) => dispatch({ type: "updateDefanged", data: e })}
-                    handlerElementLabels={(e) => dispatch({ type: "updateLabels", data: e })}
-                    handlerElementDelete={(e) => dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e })}
-                    handlerDialogElementAdditionalThechnicalInfo={handlerDialogElementAdditionalThechnicalInfo} 
-                />
-            </Container>
- */
