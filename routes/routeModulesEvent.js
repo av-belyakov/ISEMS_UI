@@ -271,10 +271,10 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
     let connection = globalObject.getData("descriptionAPI", "managingRecordsStructuredInformationAboutComputerThreats", "connection");
     connection
         .on("connect", () => {
-            debug("--- CONNECTION with module ISEMS-MRSICT ---");
+            //debug("--- CONNECTION with module ISEMS-MRSICT ---");
         }).on("message", (msg) => {
-            debug("--- MESSAGE from module ISEMS-MRSICT ---");
-            debug(msg);
+            //debug("--- MESSAGE from module ISEMS-MRSICT ---");
+            //debug(msg);
         }).on("document message", (msg) => {
             //debug("--- DOCUMENT MESSAGE from module ISEMS-MRSICT ---");
             //debug(msg);
@@ -297,7 +297,7 @@ function eventsModuleManagingRecordsStructuredInfo(socketIo) {
             if (globalObject.hasData("tasks", msg.task_id)) {
                 let taskInfo = globalObject.getData("tasks", msg.task_id);
 
-                debug("---- taskInfo ----");
+                /*debug("---- taskInfo ----");
                 debug(`msg: ${msg}, taskInfo: ${taskInfo}`);
                 debug(msg);
 

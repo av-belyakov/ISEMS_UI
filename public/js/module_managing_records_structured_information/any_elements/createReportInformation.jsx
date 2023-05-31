@@ -8,18 +8,12 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
-//import { helpers } from "../common_helpers/helpers";
 import { helpers } from "../../common_helpers/helpers.js";
-//import { MainTextField } from "../module_managing_records_structured_information/any_elements/anyElements.jsx";
 import { MainTextField } from "./anyElements.jsx";
 import CreateListObjectRefsReport from "./createListObjectRefsReport.jsx";
-//import CreateListObjectRefsReport from "../module_managing_records_structured_information/any_elements/createListObjectRefsReport.jsx";
 import CreateListTypesComputerThreat from "./createListTypesComputerThreat.jsx";
-//import CreateListTypesComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesComputerThreat.jsx";
 import CreateListTypesDecisionsMadeComputerThreat from "./createListTypesDecisionsMadeComputerThreat.jsx";
-//import CreateListTypesDecisionsMadeComputerThreat from "../module_managing_records_structured_information/any_elements/createListTypesDecisionsMadeComputerThreat.jsx";
 import CreateElementAdditionalTechnicalInformationDO from "./createElementAdditionalTechnicalInformationDO.jsx";
-//import CreateElementAdditionalTechnicalInformationDO from "../module_managing_records_structured_information/any_elements/createElementAdditionalTechnicalInformationDO.jsx";
 
 const reducer = (state, action) => {
     let elemTmp = "";
@@ -62,9 +56,6 @@ const reducer = (state, action) => {
 
         return {...state};
     case "updateObjectRefs": 
-
-        //console.log("func 'reducer', state:", state, "  ------- action.type:", action.type, " -------- action.data:", action.data);
-
         //если это убрать то вываливается ошибка, а с этим происходит то что описано выше
         if(typeof state.object_refs !== "undefined"){
             state.object_refs = state.object_refs.concat(action.data);
@@ -169,8 +160,6 @@ export default function CreateReportInformation(props){
         handlerDialogShowModalWindowConfirmDeleteLinkFromObjRefs,
     } = props;
 
-    console.log("func 'CreateReportInformation', START... showReportId = ", showReportId, " idForCreateListObjectRefs:", idForCreateListObjectRefs);
-
     const [state, dispatch] = useReducer(reducer, {});
     useEffect(() => {
         socketIo.once("isems-mrsi response ui: send search request, get report for id", (data) => {
@@ -201,9 +190,6 @@ export default function CreateReportInformation(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-
-        console.log("\\\\\\ func 'CreateReportInformation', showReportId:", showReportId, " //////");
-
         if(showReportId !== ""){
             //запрос информации об STIX объекте типа 'report' (Отчёт) по его ID
             socketIo.emit("isems-mrsi ui request: send search request, get report for id", { arguments: showReportId });
@@ -386,19 +372,9 @@ export default function CreateReportInformation(props){
                 <span className="pl-4">
                     <CreateListTypesDecisionsMadeComputerThreat
                         socketIo={socketIo}
-                        defaultValue={() => {
-                            if(outsideSpecificationIsNotExist){
-                                return "";
-                            }
-    
-                            if((state.outside_specification.decisions_made_computer_threat === null) || (typeof state.outside_specification.decisions_made_computer_threat === "undefined")){
-                                return "";
-                            }
-    
-                            return state.outside_specification.decisions_made_computer_threat;
-                        }}
+                        currentValue={state}
                         handlerDecisionsMadeComputerThreat={(e) => {
-                            dispatch({ type: "updateDecisionsMadeComputerThreat", data: e });
+                            dispatch({ type: "updateDecisionsMadeComputerThreat", data: e.target.value });
                             handlerButtonSaveIsNotDisabled();
                         }}
                     />
@@ -410,19 +386,9 @@ export default function CreateReportInformation(props){
                 <span className="pl-4">
                     <CreateListTypesComputerThreat
                         socketIo={socketIo}
-                        defaultValue={() => {
-                            if(outsideSpecificationIsNotExist){
-                                return "";
-                            }
-    
-                            if((state.outside_specification.computer_threat_type === null) || (typeof state.outside_specification.computer_threat_type === "undefined")){
-                                return "";
-                            }
-
-                            return state.outside_specification.computer_threat_type;
-                        }}
+                        currentValue={state}
                         handlerTypesComputerThreat={(e) => {
-                            dispatch({ type: "updateComputerThreatType", data: e });
+                            dispatch({ type: "updateComputerThreatType", data: e.target.value });
                             handlerButtonSaveIsNotDisabled();
                         }}
                     />

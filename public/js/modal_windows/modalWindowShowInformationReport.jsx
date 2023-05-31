@@ -66,9 +66,6 @@ const reducer = (state, action) => {
 
         return {...state};
     case "updateObjectRefs": 
-
-        console.log("func 'reducer', state:", state, "  ------- action.type:", action.type, " -------- action.data:", action.data);
-
         //если это убрать то вываливается ошибка, а с этим происходит то что описано выше
         if(typeof state.object_refs !== "undefined"){
             state.object_refs = state.object_refs.concat(action.data);
@@ -363,12 +360,6 @@ function CreateReportInformation(props){
             handlerPressButtonSave(state);
         }
     }, [ buttonSaveChangeTrigger, state, handlerPressButtonSave ]);
-    /*useEffect(() => {
-        if(idForCreateListObjectRefs.parentId.includes("report")){
-            dispatch({ type: "updateObjectRefs", data: idForCreateListObjectRefs.addId.map((item) => item.obj.id) });
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ idForCreateListObjectRefs.parentId ]);*/
     
     const handlerPublished = () => {
         let requestId = uuidv4();
@@ -428,7 +419,7 @@ function CreateReportInformation(props){
     };
 
     let outsideSpecificationIsNotExist = ((state.outside_specification === null) || (typeof state.outside_specification === "undefined"));
-
+    
     return (<React.Fragment>
         <Row className="mt-4">
             <Col md={6}><span className="text-muted">Наименование:</span></Col>
@@ -532,19 +523,9 @@ function CreateReportInformation(props){
                 <span className="pl-4">
                     <CreateListTypesDecisionsMadeComputerThreat
                         socketIo={socketIo}
-                        defaultValue={() => {
-                            if(outsideSpecificationIsNotExist){
-                                return "";
-                            }
-    
-                            if((state.outside_specification.decisions_made_computer_threat === null) || (typeof state.outside_specification.decisions_made_computer_threat === "undefined")){
-                                return "";
-                            }
-    
-                            return state.outside_specification.decisions_made_computer_threat;
-                        }}
+                        currentValue={state}
                         handlerDecisionsMadeComputerThreat={(e) => {
-                            dispatch({ type: "updateDecisionsMadeComputerThreat", data: e });
+                            dispatch({ type: "updateDecisionsMadeComputerThreat", data: e.target.value });
                             handlerButtonSaveIsNotDisabled();
                         }}
                     />
@@ -556,19 +537,9 @@ function CreateReportInformation(props){
                 <span className="pl-4">
                     <CreateListTypesComputerThreat
                         socketIo={socketIo}
-                        defaultValue={() => {
-                            if(outsideSpecificationIsNotExist){
-                                return "";
-                            }
-    
-                            if((state.outside_specification.computer_threat_type === null) || (typeof state.outside_specification.computer_threat_type === "undefined")){
-                                return "";
-                            }
-
-                            return state.outside_specification.computer_threat_type;
-                        }}
+                        currentValue={state}
                         handlerTypesComputerThreat={(e) => {
-                            dispatch({ type: "updateComputerThreatType", data: e });
+                            dispatch({ type: "updateComputerThreatType", data: e.target.value });
                             handlerButtonSaveIsNotDisabled();
                         }}
                     />
@@ -668,6 +639,7 @@ function GroupsViewingAvailable(props){
         return () => {
             socketIo.off("isems-mrsi response ui: list of groups to which the report is available", listener);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handlerOnChangeAccessGroupToReport = (data) => {

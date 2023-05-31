@@ -94,6 +94,8 @@ export default function CreateMainTableForReport(props) {
                 return;
             }
     
+            console.log("func 'CreateMainTableForReport', useEffect received DATA:", data);
+
             let listReportsTmp = listReports.slice(),
                 listIdReport = [];
 
@@ -350,11 +352,16 @@ function CreateTable(props){
                         </TableRow>
                     </TableHead>
                     <TableBody>
-
                         {listReports.map((item, num) => {
                             let imgTypeSTIX = "",    
                                 listRefTypeTmp = new Set(),
                                 timePublished = <span className="text-secondary">не опубликован</span>;
+
+                            //console.log("func 'CreateMainTableForReport', ITEM = ", item);
+
+                            if(!Array.isArray(item.object_refs)){
+                                return;
+                            }
 
                             item.object_refs.forEach((element) => {
                                 listRefTypeTmp.add(element.split("--")[0]);

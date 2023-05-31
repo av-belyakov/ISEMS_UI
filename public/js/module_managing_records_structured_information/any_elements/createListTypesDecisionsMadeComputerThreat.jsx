@@ -11,9 +11,24 @@ import PropTypes from "prop-types";
  * @returns 
  */
 export default function CreateListTypesDecisionsMadeComputerThreat(props){
-    let { socketIo, defaultValue, handlerDecisionsMadeComputerThreat } = props;
+    let { socketIo, currentValue, handlerDecisionsMadeComputerThreat } = props;
 
-    let [ currentDecisionsMadeComputerThreat, setCurrentDecisionsMadeComputerThreat ] = useState(defaultValue);
+    let defaultValue = "";
+    let outsideSpecificationIsExist = ((currentValue.outside_specification === null) || (typeof currentValue.outside_specification === "undefined"));
+    let outsideIsExist = ((currentValue.outsideSpecificationSearchFields === null) || (typeof currentValue.outsideSpecificationSearchFields === "undefined"));
+
+    if(!outsideSpecificationIsExist){
+        if((currentValue.outside_specification.decisions_made_computer_threat !== null) && (typeof currentValue.outside_specification.decisions_made_computer_threat !== "undefined")){
+            defaultValue = currentValue.outside_specification.decisions_made_computer_threat;
+        }
+    } 
+
+    if(!outsideIsExist){
+        if((currentValue.outsideSpecificationSearchFields.decisionsMadeComputerThreat !== null) && (typeof currentValue.outsideSpecificationSearchFields.decisionsMadeComputerThreat !== "undefined")){
+            defaultValue = currentValue.outsideSpecificationSearchFields.decisionsMadeComputerThreat;
+        }
+    }
+
     let [ listTypesDecisionsMadeComputerThreat, setListTypesDecisionsMadeComputerThreat ] = useState({});
     let listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
@@ -30,6 +45,7 @@ export default function CreateListTypesDecisionsMadeComputerThreat(props){
     useEffect(() => {
         socketIo.once("isems-mrsi response ui: list types decisions made computer threat", listener);
         socketIo.emit("isems-mrsi ui request: get list types decisions made computer threat", { arguments: {}});        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (<TextField
@@ -37,11 +53,9 @@ export default function CreateListTypesDecisionsMadeComputerThreat(props){
         select
         fullWidth
         label={"принятое решение"}
-        value={currentDecisionsMadeComputerThreat}
-        onChange={(obj) => {
-            setCurrentDecisionsMadeComputerThreat(obj.target.value);
-            handlerDecisionsMadeComputerThreat(obj.target.value);
-        }} >
+        value={defaultValue}
+        onChange={handlerDecisionsMadeComputerThreat} 
+    >
         <MenuItem key="key-decisions_made_computer_threat-value-empty" value="">пустое значение</MenuItem>
         {Object.keys(listTypesDecisionsMadeComputerThreat).map((item) => {
             return (<MenuItem key={listTypesDecisionsMadeComputerThreat[item].ID} value={item}>
@@ -53,6 +67,6 @@ export default function CreateListTypesDecisionsMadeComputerThreat(props){
 
 CreateListTypesDecisionsMadeComputerThreat.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    defaultValue: PropTypes.func.isRequired,
+    currentValue: PropTypes.object.isRequired,
     handlerDecisionsMadeComputerThreat: PropTypes.func.isRequired,
 };

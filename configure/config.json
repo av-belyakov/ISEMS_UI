@@ -9,7 +9,8 @@
     },
     "mongoDB": {
         "socket": false,
-        "host": "192.168.9.208",
+        "host": "127.0.0.1",
+        "hostTmp": "192.168.9.208",
         "hostDomain": "test-uchet-db.cloud.gcm",
         "port": "27017",
         "user": "module-isems-ui",
@@ -29,8 +30,8 @@
             "token": "udu8e88388eg8d88s8f88w838f3"
         },
         "managingRecordsStructuredInformationAboutComputerThreats": {
-            "hostTmp": "192.168.13.3",
-            "host": "192.168.9.208",
+            "host": "192.168.13.3",
+            "hostTmp": "192.168.9.208",
             "port": "13001",
             "token": "14bb17070e252a0fbcb79c42a0bd7bc0"
         },

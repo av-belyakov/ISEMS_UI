@@ -156,12 +156,17 @@ function CreateMajorContent(props){
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ buttonSaveChangeTrigger ]);
 
-    const checkRequiredValue = (content, objectRefs, parentId) => {
+    /*const checkRequiredValue = (content, objectRefs, parentId) => {
+        //object_refs
+        
         if(content !== "" && objectRefs.find((item) => item === parentId)){
             return true;
         }
 
         return false;
+    };*/
+    const checkRequiredValue = (objectRefs) => {
+        return objectRefs.length > 0;
     };
 
     const handlerDialogElementAdditionalThechnicalInfo = (obj) => {
@@ -170,7 +175,7 @@ function CreateMajorContent(props){
             case "hashes_update":
                 dispatch({ type: "updateExternalReferencesHashesUpdate", data: { newHash: obj.data, orderNumber: obj.orderNumber }});
 
-                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                if(checkRequiredValue(state.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -180,7 +185,7 @@ function CreateMajorContent(props){
             case "hashes_delete":
                 dispatch({ type: "updateExternalReferencesHashesDelete", data: { hashName: obj.hashName, orderNumber: obj.orderNumber }});
                 
-                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                if(checkRequiredValue(state.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -190,7 +195,7 @@ function CreateMajorContent(props){
             default:
                 dispatch({ type: "updateExternalReferences", data: obj.data });
                 
-                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                if(checkRequiredValue(state.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -201,7 +206,7 @@ function CreateMajorContent(props){
         if(obj.modalType === "granular_markings") {
             dispatch({ type: "updateGranularMarkings", data: obj.data });
             
-            if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+            if(checkRequiredValue(state.object_refs)){
                 handlerButtonIsDisabled(false);
             } else {
                 handlerButtonIsDisabled(true);
@@ -211,7 +216,7 @@ function CreateMajorContent(props){
         if(obj.modalType === "extensions") {
             dispatch({ type: "updateExtensions", data: obj.data });
             
-            if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+            if(checkRequiredValue(state.object_refs)){
                 handlerButtonIsDisabled(false);
             } else {
                 handlerButtonIsDisabled(true);
@@ -228,25 +233,35 @@ function CreateMajorContent(props){
                 handlerAuthors={(value) => { 
                     dispatch({ type: "updateAuthors", data: value }); 
                     
-                    if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                    if(checkRequiredValue(state.object_refs)){
                         handlerButtonIsDisabled(false);
                     } else {
                         handlerButtonIsDisabled(true);
                     }
                 }}
                 handlerContent={(e) => { 
+                    console.log("func 'CreateDialogContentNoteSTIXObject', handlerContent, value = ", e.target.value);
+                    console.log("checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject) ", checkRequiredValue(state.object_refs));
+
+
+
                     dispatch({ type: "updateContent", data: e.target.value }); 
 
-                    if(checkRequiredValue(e.target.value, state.object_refs, parentIdSTIXObject)){
+                    if(checkRequiredValue(state.object_refs)){
                         handlerButtonIsDisabled(false);
                     } else {
                         handlerButtonIsDisabled(true);
                     }
                 }}
                 handlerAbstract={(e) => { 
+                    console.log("func 'CreateDialogContentNoteSTIXObject', handlerAbstract, value = ", e.target.value);
+                    console.log("checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject) ", checkRequiredValue(state.object_refs));
+
+
+
                     dispatch({ type: "updateAbstract", data: e.target.value }); 
                     
-                    if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                    if(checkRequiredValue(state.object_refs)){
                         handlerButtonIsDisabled(false);
                     } else {
                         handlerButtonIsDisabled(true);
@@ -281,7 +296,7 @@ function CreateMajorContent(props){
             handlerElementConfidence={(e) => { 
                 dispatch({ type: "updateConfidence", data: e }); 
                 
-                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                if(checkRequiredValue(state.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -290,7 +305,7 @@ function CreateMajorContent(props){
             handlerElementDefanged={(e) => { 
                 dispatch({ type: "updateDefanged", data: e }); 
                 
-                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                if(checkRequiredValue(state.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -299,7 +314,7 @@ function CreateMajorContent(props){
             handlerElementLabels={(e) => { 
                 dispatch({ type: "updateLabels", data: e }); 
                 
-                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                if(checkRequiredValue(state.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);
@@ -308,7 +323,7 @@ function CreateMajorContent(props){
             handlerElementDelete={(e) => { 
                 dispatch({ type: "deleteElementAdditionalTechnicalInformation", data: e }); 
                 
-                if(checkRequiredValue(state.content, state.object_refs, parentIdSTIXObject)){
+                if(checkRequiredValue(state.object_refs)){
                     handlerButtonIsDisabled(false);
                 } else {
                     handlerButtonIsDisabled(true);

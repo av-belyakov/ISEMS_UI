@@ -460,18 +460,8 @@ export default function ModalWindowAddReportSTIX(props) {
                         <span className="pl-4">
                             <CreateListTypesDecisionsMadeComputerThreat
                                 socketIo={socketIo}
-                                defaultValue={() => {
-                                    if(outsideSpecificationIsNotExist){
-                                        return "";
-                                    }
-    
-                                    if((state.outside_specification.decisions_made_computer_threat === null) || (typeof state.outside_specification.decisions_made_computer_threat === "undefined")){
-                                        return "";
-                                    }
-    
-                                    return state.outside_specification.decisions_made_computer_threat;
-                                }}
-                                handlerDecisionsMadeComputerThreat={(e) => dispatch({ type: "updateDecisionsMadeComputerThreat", data: e })}
+                                currentValue={state}
+                                handlerDecisionsMadeComputerThreat={(e) => dispatch({ type: "updateDecisionsMadeComputerThreat", data: e.target.value })}
                             />
                         </span>
                     </Col>
@@ -482,18 +472,8 @@ export default function ModalWindowAddReportSTIX(props) {
                         <span className="pl-4">
                             <CreateListTypesComputerThreat
                                 socketIo={socketIo}
-                                defaultValue={() => {
-                                    if(outsideSpecificationIsNotExist){
-                                        return "";
-                                    }
-    
-                                    if((state.outside_specification.computer_threat_type === null) || (typeof state.outside_specification.computer_threat_type === "undefined")){
-                                        return "";
-                                    }
-
-                                    return state.outside_specification.computer_threat_type;
-                                }}
-                                handlerTypesComputerThreat={(e) => dispatch({ type: "updateComputerThreatType", data: e })}
+                                currentValue={state}
+                                handlerTypesComputerThreat={(e) => dispatch({ type: "updateComputerThreatType", data: e.target.value })}
                             />
                         </span>
                     </Col>

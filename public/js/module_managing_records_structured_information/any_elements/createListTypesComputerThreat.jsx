@@ -11,9 +11,24 @@ import PropTypes from "prop-types";
  * @returns 
  */
 export default function CreateListTypesComputerThreat(props){
-    let { socketIo, defaultValue, handlerTypesComputerThreat } = props;
+    let { socketIo, currentValue, handlerTypesComputerThreat } = props;
 
-    let [ currentTypesComputerThreat, setCurrentTypesComputerThreat ] = useState(defaultValue);
+    let defaultValue = "";
+    let outsideSpecificationIsExist = ((currentValue.outside_specification === null) || (typeof currentValue.outside_specification === "undefined"));
+    let outsideIsExist = ((currentValue.outsideSpecificationSearchFields === null) || (typeof currentValue.outsideSpecificationSearchFields === "undefined"));
+
+    if(!outsideSpecificationIsExist){
+        if((currentValue.outside_specification.computer_threat_type !== null) && (typeof currentValue.outside_specification.computer_threat_type !== "undefined")){
+            defaultValue = currentValue.outside_specification.computer_threat_type;
+        }
+    } 
+
+    if(!outsideIsExist){
+        if((currentValue.outsideSpecificationSearchFields.computerThreatType !== null) && (typeof currentValue.outsideSpecificationSearchFields.computerThreatType !== "undefined")){
+            defaultValue = currentValue.outsideSpecificationSearchFields.computerThreatType;
+        }
+    }
+
     let [ listTypesComputerThreat, setListTypesComputerThreat ] = useState({});
     let listener = (data) => {
         if((data.information === null) || (typeof data.information === "undefined")){
@@ -38,12 +53,9 @@ export default function CreateListTypesComputerThreat(props){
         select
         fullWidth
         label={"тип компьютерной угрозы"}
-        value={currentTypesComputerThreat}
-        onChange={(obj) => { 
-            setCurrentTypesComputerThreat(obj.target.value);
-            handlerTypesComputerThreat(obj.target.value);
-
-        }} >
+        value={defaultValue}
+        onChange={handlerTypesComputerThreat} 
+    >
         <MenuItem key="key-computer_threat_type-value-empty" value="">пустое значение</MenuItem>
         {Object.keys(listTypesComputerThreat).map((item) => {
             return (<MenuItem key={listTypesComputerThreat[item].ID} value={item}>
@@ -55,6 +67,6 @@ export default function CreateListTypesComputerThreat(props){
 
 CreateListTypesComputerThreat.propTypes = {
     socketIo: PropTypes.object.isRequired,
-    defaultValue: PropTypes.func.isRequired,
+    currentValue: PropTypes.object.isRequired,
     handlerTypesComputerThreat: PropTypes.func.isRequired,
 };

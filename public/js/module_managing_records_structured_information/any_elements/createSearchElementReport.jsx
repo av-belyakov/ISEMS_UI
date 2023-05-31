@@ -216,14 +216,13 @@ export default function CreateSearchElementReport(props){
         return () => {
             socketIo.off("isems-mrsi response ui", listener);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ setShowBottonClean ]);
     useEffect(() => {
         if(addNewReport){
             setTimeout(() => location.reload(), 1000);
         }
     }, [ addNewReport, handlerSendSearchRequest, searchParameters ]);
-
-    console.log("func 'CreateSearchElementReport', MOUNT +++ (SEARCH Element Report) +++");
 
     let supportFuncAddValue = (searchParametersTmp) => {
             let myValue = new Set(searchParametersTmp.specificSearchFields[0].value);
@@ -558,13 +557,16 @@ export default function CreateSearchElementReport(props){
             }
         };
     let handlerDecisionsMadeComputerThreat = (data) => {
+
+            console.log("func 'CreateSearchElementReport', func 'handlerDecisionsMadeComputerThreat', DATA: ", data.target.value);
+
             let searchParametersTmp = _.cloneDeep(searchParameters);
-            searchParametersTmp.outsideSpecificationSearchFields.decisionsMadeComputerThreat = data;
+            searchParametersTmp.outsideSpecificationSearchFields.decisionsMadeComputerThreat = data.target.value;
             setSearchParameters(searchParametersTmp);
         },
         handlerTypesComputerThreat = (data) => {
             let searchParametersTmp = _.cloneDeep(searchParameters);
-            searchParametersTmp.outsideSpecificationSearchFields.computerThreatType = data;
+            searchParametersTmp.outsideSpecificationSearchFields.computerThreatType = data.target.value;
             setSearchParameters(searchParametersTmp);
         };
 
@@ -686,7 +688,7 @@ export default function CreateSearchElementReport(props){
                 <Grid item container md={2}>
                     <CreateListTypesDecisionsMadeComputerThreat
                         socketIo={socketIo}
-                        defaultValue={() => ""}
+                        currentValue={searchParameters}
                         handlerDecisionsMadeComputerThreat={handlerDecisionsMadeComputerThreat}
                     />
                 </Grid>
@@ -694,7 +696,7 @@ export default function CreateSearchElementReport(props){
                 <Grid item container md={2}>
                     <CreateListTypesComputerThreat
                         socketIo={socketIo}
-                        defaultValue={() => ""}
+                        currentValue={searchParameters}
                         handlerTypesComputerThreat={handlerTypesComputerThreat}
                     />
                 </Grid>
