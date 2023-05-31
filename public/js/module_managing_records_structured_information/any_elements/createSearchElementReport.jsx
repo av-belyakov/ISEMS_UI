@@ -557,9 +557,6 @@ export default function CreateSearchElementReport(props){
             }
         };
     let handlerDecisionsMadeComputerThreat = (data) => {
-
-            console.log("func 'CreateSearchElementReport', func 'handlerDecisionsMadeComputerThreat', DATA: ", data.target.value);
-
             let searchParametersTmp = _.cloneDeep(searchParameters);
             searchParametersTmp.outsideSpecificationSearchFields.decisionsMadeComputerThreat = data.target.value;
             setSearchParameters(searchParametersTmp);

@@ -34,6 +34,7 @@ export default function CreateSearchAreaOutputReports(props){
             sortableField: "data_created",
             searchParameters: searchParameters,
         };
+
         //запрос краткой информации (количество) по заданным параметрам
         socketIo.emit("isems-mrsi ui request: send search request, cound found elem, table page report", { arguments: searchReguest });
         //запрос полной информации по заданным параметрам

@@ -275,7 +275,7 @@ function CreateTable(props){
             if((typeof data.information.additional_parameters === "undefined") || (data.information.additional_parameters === null)){
                 return;
             }
-    
+
             let tmp = listGroupsWhichReportAvailable.slice();
             for(let item of data.information.additional_parameters){
                 if(typeof tmp.find((elem) => {
@@ -356,8 +356,6 @@ function CreateTable(props){
                             let imgTypeSTIX = "",    
                                 listRefTypeTmp = new Set(),
                                 timePublished = <span className="text-secondary">не опубликован</span>;
-
-                            //console.log("func 'CreateMainTableForReport', ITEM = ", item);
 
                             if(!Array.isArray(item.object_refs)){
                                 return;
